@@ -1,0 +1,69 @@
+{
+  "mcp_tools": {
+    "kaiwu_form": {
+      "name": "Kaiwu Form MCP",
+      "description": "需求收集、测试数据管理、Bug跟踪",
+      "usage": {
+        "requirement_phase": ["收集需求", "管理功能清单"],
+        "development_phase": [],
+        "testing_phase": []
+      },
+      "setup": "使用mcp_kaiwu-form-hx_*系列工具，需要先登录"
+    },
+    "chrome_devtools": {
+      "name": "Chrome DevTools MCP",
+      "description": "浏览器自动化、UI测试、原型验证",
+      "usage": {
+        "requirement_phase": ["生成原型", "验证UI"],
+        "development_phase": [],
+        "testing_phase": []
+      },
+      "setup": "使用mcp_chrome-devtools_*系列工具，需要先启动浏览器"
+    },
+    "web_search": {
+      "name": "WebSearch MCP",
+      "description": "技术调研、竞品分析",
+      "usage": {
+        "requirement_phase": ["技术调研", "竞品分析"],
+        "development_phase": [],
+        "testing_phase": []
+      },
+      "setup": "使用WebSearch工具"
+    },
+    "write": {
+      "name": "Write Tool",
+      "description": "生成文档、配置文件",
+      "usage": {
+        "requirement_phase": ["生成功能清单", "生成PRD文档", "生成流程图"],
+        "development_phase": [],
+        "testing_phase": []
+      },
+      "setup": "使用Write工具"
+    }
+  },
+  "workflow_mapping": {
+    "requirement_phase": {
+      "primary_tools": ["kaiwu_form", "chrome_devtools", "web_search", "write"],
+      "secondary_tools": []
+    }
+  },
+  "tool_priorities": {
+    "requirement_collection": ["kaiwu_form"],
+    "function_list_generation": ["write"],
+    "flowchart_design": ["write"],
+    "prototype_design": ["chrome_devtools"],
+    "prd_generation": ["write"],
+    "tech_research": ["web_search"],
+    "competitor_analysis": ["web_search"]
+  },
+  "mcpServers": {
+    "markitdown": {
+      "command": "/Users/apple/Desktop/文件/kaiwu_dida/.venv/bin/python",
+      "args": [
+        "-m",
+        "markitdown_mcp"
+      ],
+      "env": {}
+    }
+  }
+}

@@ -1,0 +1,3421 @@
+{
+  "version": "1.0",
+  "appId": null,
+  "lastSync": "2026-02-05T14:44:48.176Z",
+  "resources": {
+    "697ac1b0ff50db0007ad5bf8": {
+      "type": "lowcode",
+      "name": "BOM管理",
+      "code": "Bomqingdanpeizhi_63jvee",
+      "path": "kaiwu-app/智慧工厂管控平台/基础资料维护/生产基础数据/BOM管理",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "基础资料维护",
+        "生产基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.087Z"
+    },
+    "697ac1b0ff50db0007ad5c26": {
+      "type": "lowcode",
+      "name": "质检项维护",
+      "code": "zhijianxiangweihu_kqig3r",
+      "path": "kaiwu-app/智慧工厂管控平台/基础资料维护/质量基础数据/质检项维护",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "基础资料维护",
+        "质量基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.149Z"
+    },
+    "697ac1b0ff50db0007ad5c38": {
+      "type": "lowcode",
+      "name": "生产订单",
+      "code": "shengchandingdan_qohakc",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产计划管理/生产订单",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产",
+        "生产计划管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.203Z"
+    },
+    "697ac1b0ff50db0007ad5c2b": {
+      "type": "lowcode",
+      "name": "物料需求计划",
+      "code": "wuliaoxuqiujihua_wt37pq",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产计划管理/物料需求计划",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产",
+        "生产计划管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.264Z"
+    },
+    "697ac1b0ff50db0007ad5bfa": {
+      "type": "lowcode",
+      "name": "生产工单",
+      "code": "shengchangongdan_5ez7z3",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产工单",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.305Z"
+    },
+    "697ac1b0ff50db0007ad5c0f": {
+      "type": "lowcode",
+      "name": "生产任务",
+      "code": "shengchanrenwu-new_glo0o2",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产任务",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.359Z"
+    },
+    "697ac1b0ff50db0007ad5c30": {
+      "type": "lowcode",
+      "name": "生产上料",
+      "code": "shengchanshangliao_4rjbeb",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产上料",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.428Z"
+    },
+    "697ac1b0ff50db0007ad5c16": {
+      "type": "lowcode",
+      "name": "生产报工",
+      "code": "picibaogong-new_sjsuxw",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产报工",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.488Z"
+    },
+    "697ac1b0ff50db0007ad5c17": {
+      "type": "lowcode",
+      "name": "生产入库",
+      "code": "shengchanruku_gwa3jr",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产入库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.559Z"
+    },
+    "697ac1b0ff50db0007ad5c1d": {
+      "type": "lowcode",
+      "name": "生产副产品记录",
+      "code": "shengchanfuchanpinjilu_nfh2cs",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产副产品记录",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.612Z"
+    },
+    "697ac1b0ff50db0007ad5c48": {
+      "type": "lowcode",
+      "name": "不良品维修",
+      "code": "buliangpinweixiu_9aulvt",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/不良品维修",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.669Z"
+    },
+    "697ac1b0ff50db0007ad5c3e": {
+      "type": "lowcode",
+      "name": "工单用料明细",
+      "code": "gongdanyongliaomingxi_cqcbs5",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产报表/工单用料明细",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产",
+        "生产报表"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.726Z"
+    },
+    "697ac1b0ff50db0007ad5c3d": {
+      "type": "lowcode",
+      "name": "订单用料明细",
+      "code": "dingdanyongliaomingxi_p83pn8",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产报表/订单用料明细",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产",
+        "生产报表"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.826Z"
+    },
+    "697ac1b0ff50db0007ad5c42": {
+      "type": "lowcode",
+      "name": "过站信息查看",
+      "code": "guozhanxinxichakan_3s0jj8",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产报表/过站信息查看",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产",
+        "生产报表"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:44.961Z"
+    },
+    "697ac1b0ff50db0007ad5c4d": {
+      "type": "lowcode",
+      "name": "委外发货",
+      "code": "weiwaichuku_7k0e5a",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产委外/委外发货",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产",
+        "生产委外"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.046Z"
+    },
+    "697ac1b0ff50db0007ad5c4e": {
+      "type": "lowcode",
+      "name": "委外退库",
+      "code": "weiwaituiku_tqkye1",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产委外/委外退库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产",
+        "生产委外"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.112Z"
+    },
+    "697ac1b0ff50db0007ad5c4f": {
+      "type": "lowcode",
+      "name": "委外收货",
+      "code": "weiwaishouhuo_5sg7ie",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产委外/委外收货",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产",
+        "生产委外"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.215Z"
+    },
+    "697ac1b0ff50db0007ad5c50": {
+      "type": "lowcode",
+      "name": "委外退货",
+      "code": "weiwaituihuo_dez7wh",
+      "path": "kaiwu-app/智慧工厂管控平台/生产/生产委外/委外退货",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "生产",
+        "生产委外"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.280Z"
+    },
+    "697ac1b0ff50db0007ad5c27": {
+      "type": "lowcode",
+      "name": "质检方案维护",
+      "code": "zhijianfanganweihu_jfn0qx",
+      "path": "kaiwu-app/智慧工厂管控平台/质量/质检方案维护",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.342Z"
+    },
+    "697ac1b0ff50db0007ad5c45": {
+      "type": "lowcode",
+      "name": "来料检验",
+      "code": "lailiaojianyan_1yc2xy",
+      "path": "kaiwu-app/智慧工厂管控平台/质量/来料检验",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.400Z"
+    },
+    "697ac1b0ff50db0007ad5c2a": {
+      "type": "lowcode",
+      "name": "生产巡检",
+      "code": "shengchanxunjian_4tr1om",
+      "path": "kaiwu-app/智慧工厂管控平台/质量/生产巡检",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.452Z"
+    },
+    "697ac1b0ff50db0007ad5c3f": {
+      "type": "lowcode",
+      "name": "成品检验",
+      "code": "chengpinjianyan_f3t4g8",
+      "path": "kaiwu-app/智慧工厂管控平台/质量/成品检验",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.515Z"
+    },
+    "697ac1b0ff50db0007ad5c18": {
+      "type": "lowcode",
+      "name": "不合格返修记录",
+      "code": "buhegefanxiujilu_5ebh8d",
+      "path": "kaiwu-app/智慧工厂管控平台/质量/不合格返修记录",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.576Z"
+    },
+    "697ac1b0ff50db0007ad5c43": {
+      "type": "lowcode",
+      "name": "不良品锁定",
+      "code": "buliangpinsuoding_ek5xjh",
+      "path": "kaiwu-app/智慧工厂管控平台/质量/不良品锁定",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.637Z"
+    },
+    "697ac1b0ff50db0007ad5c4a": {
+      "type": "lowcode",
+      "name": "不合格品处理",
+      "code": "buhegepinchuli_nhespn",
+      "path": "kaiwu-app/智慧工厂管控平台/质量/不合格品处理",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.689Z"
+    },
+    "697ac1b0ff50db0007ad5c4b": {
+      "type": "lowcode",
+      "name": "报废填报",
+      "code": "baofeitianbao_5lt10p",
+      "path": "kaiwu-app/智慧工厂管控平台/质量/报废填报",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.749Z"
+    },
+    "697ac1b0ff50db0007ad5c22": {
+      "type": "lowcode",
+      "name": "仓库明细查询",
+      "code": "cangkumingxichaxun_m9wol3",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/仓库明细查询",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.807Z"
+    },
+    "697ac1b0ff50db0007ad5c28": {
+      "type": "lowcode",
+      "name": "物料码打印",
+      "code": "wuliaomadayin_0vh17g",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/物料码打印",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.874Z"
+    },
+    "697ac1b0ff50db0007ad5c46": {
+      "type": "lowcode",
+      "name": "新码打印",
+      "code": "xinmadayin_87l0r2",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/新码打印",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.927Z"
+    },
+    "697ac1b0ff50db0007ad5c20": {
+      "type": "lowcode",
+      "name": "入库管理",
+      "code": "rukuguanlixin_ufh9ob",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/入库业务/入库管理",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "入库业务"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:45.984Z"
+    },
+    "697ac1b0ff50db0007ad5c3a": {
+      "type": "lowcode",
+      "name": "调拨入库",
+      "code": "diaoboruku_hxt84w",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/入库业务/调拨入库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "入库业务"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:46.067Z"
+    },
+    "697ac1b0ff50db0007ad5c34": {
+      "type": "lowcode",
+      "name": "杂项入库",
+      "code": "zaxiangruku_mf0uli",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/入库业务/杂项入库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "入库业务"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:46.142Z"
+    },
+    "697ac1b0ff50db0007ad5c1f": {
+      "type": "lowcode",
+      "name": "借出归还",
+      "code": "jiechuguihuan_aquzgj",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/入库业务/借出归还",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "入库业务"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:46.222Z"
+    },
+    "697ac1b0ff50db0007ad5c03": {
+      "type": "lowcode",
+      "name": "出库管理",
+      "code": "chukuguanli_qq2vmd",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/出库业务/出库管理",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "出库业务"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:46.281Z"
+    },
+    "697ac1b0ff50db0007ad5c2e": {
+      "type": "lowcode",
+      "name": "调拨出库",
+      "code": "diaobochuku_mdl5mi",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/出库业务/调拨出库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "出库业务"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:46.338Z"
+    },
+    "697ac1b0ff50db0007ad5c36": {
+      "type": "lowcode",
+      "name": "杂项出库",
+      "code": "zaxiangchuku_5gx8xp",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/出库业务/杂项出库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "出库业务"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:46.406Z"
+    },
+    "697ac1b0ff50db0007ad5c1e": {
+      "type": "lowcode",
+      "name": "借出",
+      "code": "jiechu_9s3v9x",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/出库业务/借出",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "出库业务"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:46.791Z"
+    },
+    "697ac1b0ff50db0007ad5c24": {
+      "type": "lowcode",
+      "name": "扫码入库",
+      "code": "saomaruku_ms7kxz",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/扫码入库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:46.848Z"
+    },
+    "697ac1b0ff50db0007ad5c35": {
+      "type": "lowcode",
+      "name": "杂项扫码入库",
+      "code": "zaxiangsaomaruku_9mb8dc",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/杂项扫码入库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:46.905Z"
+    },
+    "697ac1b0ff50db0007ad5c25": {
+      "type": "lowcode",
+      "name": "扫码出库",
+      "code": "saomachuku_g06p8l",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/扫码出库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:46.957Z"
+    },
+    "697ac1b0ff50db0007ad5c09": {
+      "type": "lowcode",
+      "name": "库存盘点",
+      "code": "kucunguanli_ttky6k",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/库存盘点",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.032Z"
+    },
+    "697ac1b0ff50db0007ad5c3b": {
+      "type": "lowcode",
+      "name": "库存扫码盘点",
+      "code": "kucunsaomapandian_ypcf0a",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/库存扫码盘点",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.095Z"
+    },
+    "697ac1b0ff50db0007ad5c2d": {
+      "type": "lowcode",
+      "name": "借出扫码",
+      "code": "jiechusaoma_soyddz",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/借出扫码",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.181Z"
+    },
+    "697ac1b0ff50db0007ad5c2f": {
+      "type": "lowcode",
+      "name": "借出归还扫码",
+      "code": "jiechuguihuansaoma_dc8l1c",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/借出归还扫码",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.242Z"
+    },
+    "697ac1b0ff50db0007ad5c37": {
+      "type": "lowcode",
+      "name": "杂项扫码出库",
+      "code": "zaxiangsaomachuku_zx4d58",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/杂项扫码出库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.307Z"
+    },
+    "697ac1b0ff50db0007ad5c41": {
+      "type": "lowcode",
+      "name": "出入库明细",
+      "code": "churukumingxi_6df06n",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/库存记录/出入库明细",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "库存记录"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.380Z"
+    },
+    "697ac1b0ff50db0007ad5c13": {
+      "type": "lowcode",
+      "name": "库存清单",
+      "code": "kucunqingdan_4ivfdp",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/库存记录/库存清单",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "库存记录"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.460Z"
+    },
+    "697ac1b0ff50db0007ad5bf9": {
+      "type": "lowcode",
+      "name": "库存预警",
+      "code": "kucunyujing_eisufz",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/库存记录/库存预警",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "库存记录"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.517Z"
+    },
+    "697ac1b0ff50db0007ad5c19": {
+      "type": "lowcode",
+      "name": "期初库存",
+      "code": "qichukucun_92pkzd",
+      "path": "kaiwu-app/智慧工厂管控平台/库存管理/库存记录/期初库存",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "库存管理",
+        "库存记录"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.594Z"
+    },
+    "697ac1b0ff50db0007ad5c01": {
+      "type": "lowcode",
+      "name": "生产进度",
+      "code": "shengchanjindu_fi5wqs",
+      "path": "kaiwu-app/智慧工厂管控平台/可视化看板/生产进度",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "可视化看板"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.651Z"
+    },
+    "local_lowcode_20260202_prod_command_center": {
+      "type": "lowcode",
+      "name": "生产指挥中心",
+      "code": "shengchanzhihuizhongxin_20260202",
+      "path": "kaiwu-app/智慧工厂管控平台/可视化看板/生产指挥中心",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "可视化看板"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-02-02T00:00:00.000Z",
+      "isNew": true
+    },
+    "697ac1b0ff50db0007ad5c4c": {
+      "type": "lowcode",
+      "name": "仓库驾驶舱",
+      "code": "cangkujiashicang_6mol2p",
+      "path": "kaiwu-app/智慧工厂管控平台/可视化看板/仓库驾驶舱",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "可视化看板"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.710Z"
+    },
+    "697ac1b0ff50db0007ad5bfe": {
+      "type": "lowcode",
+      "name": "物料生产报表",
+      "code": "wuliaoshengchanbaobiao_mwk1rq",
+      "path": "kaiwu-app/智慧工厂管控平台/质量报表/物料生产报表",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "质量报表"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.791Z"
+    },
+    "697ac1b0ff50db0007ad5bff": {
+      "type": "lowcode",
+      "name": "生产品质报表",
+      "code": "shengchanpinzhibaobiao_j3q2rt",
+      "path": "kaiwu-app/智慧工厂管控平台/质量报表/生产品质报表",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "质量报表"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.850Z"
+    },
+    "697ac1b0ff50db0007ad5bf6": {
+      "type": "lowcode",
+      "name": "SOP管理",
+      "code": "SOPguanli_pv6inl",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/系统主数据/SOP管理",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:47.910Z"
+    },
+    "697ac1b0ff50db0007ad5bf7": {
+      "type": "lowcode",
+      "name": "工艺管理",
+      "code": "gongyiguanli_3ethfb",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/系统主数据/工艺管理",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.072Z"
+    },
+    "697ac1b0ff50db0007ad5c0d": {
+      "type": "lowcode",
+      "name": "销售订单",
+      "code": "xiaoshoudingdan_i3j2bs",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/销售数据库/销售订单",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "销售数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.174Z"
+    },
+    "697ac1b0ff50db0007ad5c0c": {
+      "type": "lowcode",
+      "name": "销售订单出库",
+      "code": "yijianchuku_k71try",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/销售数据库/销售订单出库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "销售数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.230Z"
+    },
+    "697ac1b0ff50db0007ad5c12": {
+      "type": "lowcode",
+      "name": "销售订单退货",
+      "code": "xiaoshoudingdantuihuo_7nn21g",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/销售数据库/销售订单退货",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "销售数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.286Z"
+    },
+    "697ac1b0ff50db0007ad5c0e": {
+      "type": "lowcode",
+      "name": "销售订单创建",
+      "code": "xiaoshouchukushenqing_3opxu4",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/销售数据库/销售订单创建",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "销售数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.339Z"
+    },
+    "697ac1b0ff50db0007ad5bfb": {
+      "type": "lowcode",
+      "name": "销售订单-old",
+      "code": "xiaoshouchuku_c7l85n",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/销售数据库/销售订单-old",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "销售数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.399Z"
+    },
+    "697ac1b0ff50db0007ad5c11": {
+      "type": "lowcode",
+      "name": "采购订单（老）",
+      "code": "caigoudaohuo_uybb8w",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/采购数据库/采购订单（老）",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.517Z"
+    },
+    "697ac1b0ff50db0007ad5c10": {
+      "type": "lowcode",
+      "name": "点击到货操作（老）",
+      "code": "dianjidaohuocaozuo_42erww",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/采购数据库/点击到货操作（老）",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.586Z"
+    },
+    "697ac1b0ff50db0007ad5c14": {
+      "type": "lowcode",
+      "name": "采购收货入库",
+      "code": "rukujihuadan_xqnloh",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/采购数据库/采购收货入库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.654Z"
+    },
+    "697ac1b0ff50db0007ad5c15": {
+      "type": "lowcode",
+      "name": "采购退/换货",
+      "code": "tui/huanhuo_9kgdl5",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/采购数据库/采购退/换货",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.719Z"
+    },
+    "697ac1b0ff50db0007ad5c44": {
+      "type": "lowcode",
+      "name": "工单执行SN码",
+      "code": "gongdanzhixingSNma_mk207l",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/生产数据库/工单执行SN码",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.775Z"
+    },
+    "697ac1b0ff50db0007ad5c40": {
+      "type": "lowcode",
+      "name": "报工数据变更",
+      "code": "baogongshujubiangeng_z1srbj",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/生产数据库/报工数据变更",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.836Z"
+    },
+    "697ac1b0ff50db0007ad5c00": {
+      "type": "lowcode",
+      "name": "用料查看",
+      "code": "yongliaoguanli_aw8vl0",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/生产数据库/用料查看",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.894Z"
+    },
+    "697ac1b0ff50db0007ad5c1a": {
+      "type": "lowcode",
+      "name": "箱单打印",
+      "code": "xiangdandayin_klvhfp",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/生产数据库/箱单打印",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:48.950Z"
+    },
+    "697ac1b0ff50db0007ad5c1b": {
+      "type": "lowcode",
+      "name": "箱单绑定SN码",
+      "code": "xiangdanbangdingSNma_f2lkhp",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/生产数据库/箱单绑定SN码",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.006Z"
+    },
+    "697ac1b0ff50db0007ad5c1c": {
+      "type": "lowcode",
+      "name": "箱单绑定扫码查询",
+      "code": "xiangdansaoma_rrb03t",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/生产数据库/箱单绑定扫码查询",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.073Z"
+    },
+    "697ac1b0ff50db0007ad5bfc": {
+      "type": "lowcode",
+      "name": "扫码出库",
+      "code": "saomalingliao_biiko9",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/生产数据库/扫码出库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.135Z"
+    },
+    "697ac1b0ff50db0007ad5c47": {
+      "type": "lowcode",
+      "name": "箱单码打印",
+      "code": "xiangdanmadayin_ld9hm9",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/生产数据库/箱单码打印",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.187Z"
+    },
+    "697ac1b0ff50db0007ad5c29": {
+      "type": "lowcode",
+      "name": "首件检验",
+      "code": "shoujianjianyan_m3dk2x",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/质量数据库/首件检验",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.275Z"
+    },
+    "697ac1b0ff50db0007ad5c07": {
+      "type": "lowcode",
+      "name": "调拨管理",
+      "code": "diaoboguanli_v1m1tu",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/调拨管理",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.347Z"
+    },
+    "697ac1b0ff50db0007ad5c06": {
+      "type": "lowcode",
+      "name": "领用申请",
+      "code": "lingyongshenqing_k1z5uq",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/领用申请",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.415Z"
+    },
+    "697ac1b0ff50db0007ad5c04": {
+      "type": "lowcode",
+      "name": "出库申请",
+      "code": "chukushenqing_paier0",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/出库申请",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.495Z"
+    },
+    "697ac1b0ff50db0007ad5c02": {
+      "type": "lowcode",
+      "name": "入库申请",
+      "code": "rukushenqing_9elq75",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/入库申请",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.557Z"
+    },
+    "697ac1b0ff50db0007ad5bfd": {
+      "type": "lowcode",
+      "name": "收货管理",
+      "code": "saomaruku_r9gu3n",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/收货管理",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.624Z"
+    },
+    "697ac1b0ff50db0007ad5c05": {
+      "type": "lowcode",
+      "name": "分配出库",
+      "code": "beihuoguanli_85jeeb",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/分配出库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.683Z"
+    },
+    "697ac1b0ff50db0007ad5c08": {
+      "type": "lowcode",
+      "name": "调拨申请",
+      "code": "diaoboshenqing_jio5fu",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/调拨申请",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.735Z"
+    },
+    "697ac1b0ff50db0007ad5c0a": {
+      "type": "lowcode",
+      "name": "盘点申请",
+      "code": "pandianshenqing_cilulr",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/盘点申请",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.798Z"
+    },
+    "697ac1b0ff50db0007ad5c0b": {
+      "type": "lowcode",
+      "name": "备货管理-old",
+      "code": "beihuoguanli-old_crreii",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/备货管理-old",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.877Z"
+    },
+    "697ac1b0ff50db0007ad5c21": {
+      "type": "lowcode",
+      "name": "登记入库",
+      "code": "dengjiruku_qss73c",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/登记入库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.936Z"
+    },
+    "697ac1b0ff50db0007ad5c32": {
+      "type": "lowcode",
+      "name": "入库管理扫码入库",
+      "code": "rukuguanlisaomaruku_5ddk1y",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/入库管理扫码入库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:49.990Z"
+    },
+    "697ac1b0ff50db0007ad5c23": {
+      "type": "lowcode",
+      "name": "登记出库",
+      "code": "dengjichuku_guiu2l",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/登记出库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:50.062Z"
+    },
+    "697ac1b0ff50db0007ad5c33": {
+      "type": "lowcode",
+      "name": "出库管理扫码出库",
+      "code": "chukuguanlisaomachuku_ft6i5x",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/出库管理扫码出库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:50.133Z"
+    },
+    "697ac1b0ff50db0007ad5c2c": {
+      "type": "lowcode",
+      "name": "借出归还入库",
+      "code": "jiechuguihuanruku_2no5gk",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/借出归还入库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:50.191Z"
+    },
+    "697ac1b0ff50db0007ad5c31": {
+      "type": "lowcode",
+      "name": "借出归还扫码入库",
+      "code": "jiechuguihuansaomaruku_jsr9l5",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/借出归还扫码入库",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:50.255Z"
+    },
+    "697ac1b0ff50db0007ad5c3c": {
+      "type": "lowcode",
+      "name": "库存扫码盘点",
+      "code": "kucunsaomapandian_jo7wga",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/库存扫码盘点",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:50.311Z"
+    },
+    "697ac1b0ff50db0007ad5c39": {
+      "type": "lowcode",
+      "name": "成品入库确定",
+      "code": "chengpinrukuqueding_0njq9o",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/成品入库确定",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:50.373Z"
+    },
+    "697ac1b0ff50db0007ad5c49": {
+      "type": "lowcode",
+      "name": "杂项出库test",
+      "code": "zaxiangchukutest_ezcwb3",
+      "path": "kaiwu-app/智慧工厂管控平台/系统数据库/仓库数据库/杂项出库test",
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:50.438Z"
+    },
+    "t697ac1b0ff50db0007ad5c76": {
+      "type": "form",
+      "name": "单位维护",
+      "formCode": "MES_danweiweihu",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/系统基础数据/MES_danweiweihu.json",
+      "groupNames": [
+        "基础资料维护",
+        "系统基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.535Z"
+    },
+    "t697ac1b0ff50db0007ad5c77": {
+      "type": "form",
+      "name": "物料分类",
+      "formCode": "MES_wuliaofenlei",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/系统基础数据/MES_wuliaofenlei.json",
+      "groupNames": [
+        "基础资料维护",
+        "系统基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.552Z"
+    },
+    "t697ac1b0ff50db0007ad5c78": {
+      "type": "form",
+      "name": "物料基础信息",
+      "formCode": "MES_wuliao",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/系统基础数据/MES_wuliao.json",
+      "groupNames": [
+        "基础资料维护",
+        "系统基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.577Z"
+    },
+    "t697ac1b0ff50db0007ad5c89": {
+      "type": "form",
+      "name": "人员资质维护",
+      "formCode": "PQualmnt",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/PQualmnt.json",
+      "groupNames": [
+        "基础资料维护"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.605Z"
+    },
+    "t697ac1b0ff50db0007ad5c74": {
+      "type": "form",
+      "name": "班次管理",
+      "formCode": "hangyuzhizaoMESxitong_banciguanli",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/生产基础数据/hangyuzhizaoMESxitong_banciguanli.json",
+      "groupNames": [
+        "基础资料维护",
+        "生产基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.623Z"
+    },
+    "t697ac1b0ff50db0007ad5ca5": {
+      "type": "form",
+      "name": "班组管理",
+      "formCode": "MES_shuzihuachejian_banzuguanli01",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/生产基础数据/MES_shuzihuachejian_banzuguanli01.json",
+      "groupNames": [
+        "基础资料维护",
+        "生产基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.645Z"
+    },
+    "t697ac1b0ff50db0007ad5c9e": {
+      "type": "form",
+      "name": "产线管理",
+      "formCode": "MES_chanxianguanli01",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/生产基础数据/MES_chanxianguanli01.json",
+      "groupNames": [
+        "基础资料维护",
+        "生产基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.667Z"
+    },
+    "t697ac1b0ff50db0007ad5ca7": {
+      "type": "form",
+      "name": "工序管理",
+      "formCode": "MES_gongxuguanli",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/生产基础数据/MES_gongxuguanli.json",
+      "groupNames": [
+        "基础资料维护",
+        "生产基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.685Z"
+    },
+    "t697ac1b0ff50db0007ad5ca6": {
+      "type": "form",
+      "name": "工艺管理",
+      "formCode": "MES_gongyijichubiao",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/生产基础数据/MES_gongyijichubiao.json",
+      "groupNames": [
+        "基础资料维护",
+        "生产基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.704Z"
+    },
+    "t697ac1b0ff50db0007ad5c57": {
+      "type": "form",
+      "name": "车间生产产品维护",
+      "formCode": "MES_chejian_product",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/生产基础数据/MES_chejian_product.json",
+      "groupNames": [
+        "基础资料维护",
+        "生产基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.726Z"
+    },
+    "t697ac1b0ff50db0007ad5ca2": {
+      "type": "form",
+      "name": "仓库维护",
+      "formCode": "MES_cangku",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/库存基础数据/MES_cangku.json",
+      "groupNames": [
+        "基础资料维护",
+        "库存基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.749Z"
+    },
+    "t697ac1b0ff50db0007ad5c9d": {
+      "type": "form",
+      "name": "库位维护",
+      "formCode": "MES_cangwei",
+      "path": "kaiwu-forms/智慧工厂管控平台/基础资料维护/库存基础数据/MES_cangwei.json",
+      "groupNames": [
+        "基础资料维护",
+        "库存基础数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.774Z"
+    },
+    "t697ac1b0ff50db0007ad5c6b": {
+      "type": "form",
+      "name": "生产报工记录变更",
+      "formCode": "hangyuzhizaoMESxitong_shengchanbaogongjilubiangeng",
+      "path": "kaiwu-forms/智慧工厂管控平台/生产/hangyuzhizaoMESxitong_shengchanbaogongjilubiangeng.json",
+      "groupNames": [
+        "生产"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.794Z"
+    },
+    "t697ac1b0ff50db0007ad5cd9": {
+      "type": "form",
+      "name": "缺料清单",
+      "formCode": "hangyuzhizaoMESxitong_queliaoqingdan",
+      "path": "kaiwu-forms/智慧工厂管控平台/生产/生产报表/hangyuzhizaoMESxitong_queliaoqingdan.json",
+      "groupNames": [
+        "生产",
+        "生产报表"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.820Z"
+    },
+    "t697ac1b0ff50db0007ad5c6d": {
+      "type": "form",
+      "name": "生产过程数据采集",
+      "formCode": "hangyuzhizaoMESxitong_shengchanguochengshujucaiji",
+      "path": "kaiwu-forms/智慧工厂管控平台/生产/生产报表/hangyuzhizaoMESxitong_shengchanguochengshujucaiji.json",
+      "groupNames": [
+        "生产",
+        "生产报表"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.841Z"
+    },
+    "t697ac1b0ff50db0007ad5c81": {
+      "type": "form",
+      "name": "首件检验",
+      "formCode": "MES_firstTest",
+      "path": "kaiwu-forms/智慧工厂管控平台/质量/MES_firstTest.json",
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.865Z"
+    },
+    "t697ac1b0ff50db0007ad5c67": {
+      "type": "form",
+      "name": "不合格品通知单",
+      "formCode": "MES_buhegepintongzhidan",
+      "path": "kaiwu-forms/智慧工厂管控平台/质量/MES_buhegepintongzhidan.json",
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.885Z"
+    },
+    "t697ac1b0ff50db0007ad5cc1": {
+      "type": "form",
+      "name": "报废记录",
+      "formCode": "MES_baofeijilu",
+      "path": "kaiwu-forms/智慧工厂管控平台/质量/MES_baofeijilu.json",
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.906Z"
+    },
+    "t697ac1b0ff50db0007ad5c6c": {
+      "type": "form",
+      "name": "过站信息",
+      "formCode": "hangyuzhizaoMESxitong_guozhanxinxi",
+      "path": "kaiwu-forms/智慧工厂管控平台/质量/hangyuzhizaoMESxitong_guozhanxinxi.json",
+      "groupNames": [
+        "质量"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.928Z"
+    },
+    "t697ac1b0ff50db0007ad5c7a": {
+      "type": "form",
+      "name": "  拉伸试验报告",
+      "formCode": "hangyuzhizaoMESxitong_  lashenshiyanbaogao",
+      "path": "kaiwu-forms/智慧工厂管控平台/实验/hangyuzhizaoMESxitong_  lashenshiyanbaogao.json",
+      "groupNames": [
+        "实验"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.955Z"
+    },
+    "t697ac1b0ff50db0007ad5c79": {
+      "type": "form",
+      "name": " 金相试验报告",
+      "formCode": "hangyuzhizaoMESxitong_ jinxiangshiyanbaogao",
+      "path": "kaiwu-forms/智慧工厂管控平台/实验/hangyuzhizaoMESxitong_ jinxiangshiyanbaogao.json",
+      "groupNames": [
+        "实验"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:10.976Z"
+    },
+    "t697ac1b0ff50db0007ad5c7b": {
+      "type": "form",
+      "name": "维氏硬度试验记录",
+      "formCode": "hangyuzhizaoMESxitong_  lashenshiyanbaogao_copy",
+      "path": "kaiwu-forms/智慧工厂管控平台/实验/hangyuzhizaoMESxitong_  lashenshiyanbaogao_copy.json",
+      "groupNames": [
+        "实验"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.000Z"
+    },
+    "t697ac1b0ff50db0007ad5c7c": {
+      "type": "form",
+      "name": "弯曲试验记录",
+      "formCode": "hangyuzhizaoMESxitong_  lashenshiyanbaogao_copy_copy",
+      "path": "kaiwu-forms/智慧工厂管控平台/实验/hangyuzhizaoMESxitong_  lashenshiyanbaogao_copy_copy.json",
+      "groupNames": [
+        "实验"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.039Z"
+    },
+    "t697ac1b0ff50db0007ad5c7d": {
+      "type": "form",
+      "name": "四点弯试验记录",
+      "formCode": "hangyuzhizaoMESxitong_  lashenshiyanbaogao_copy_copy_copy",
+      "path": "kaiwu-forms/智慧工厂管控平台/实验/hangyuzhizaoMESxitong_  lashenshiyanbaogao_copy_copy_copy.json",
+      "groupNames": [
+        "实验"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.071Z"
+    },
+    "t697ac1b0ff50db0007ad5c7e": {
+      "type": "form",
+      "name": " 熔深试验记录",
+      "formCode": "hangyuzhizaoMESxitong_  lashenshiyanbaogao_copy_copy_copy_copy",
+      "path": "kaiwu-forms/智慧工厂管控平台/实验/hangyuzhizaoMESxitong_  lashenshiyanbaogao_copy_copy_copy_copy.json",
+      "groupNames": [
+        "实验"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.133Z"
+    },
+    "t697ac1b0ff50db0007ad5c7f": {
+      "type": "form",
+      "name": "三坐标试验记录",
+      "formCode": "hangyuzhizaoMESxitong_  lashenshiyanbaogao_copy_copy_copy_copy_copy",
+      "path": "kaiwu-forms/智慧工厂管控平台/实验/hangyuzhizaoMESxitong_  lashenshiyanbaogao_copy_copy_copy_copy_copy.json",
+      "groupNames": [
+        "实验"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.159Z"
+    },
+    "t697ac1b0ff50db0007ad5c63": {
+      "type": "form",
+      "name": "请购单",
+      "formCode": "MES_apply_purchase_order",
+      "path": "kaiwu-forms/智慧工厂管控平台/采购管理/MES_apply_purchase_order.json",
+      "groupNames": [
+        "采购管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.182Z"
+    },
+    "t697ac1b0ff50db0007ad5c62": {
+      "type": "form",
+      "name": "请购单明细",
+      "formCode": "MES_apply_purchase_order_detail",
+      "path": "kaiwu-forms/智慧工厂管控平台/采购管理/MES_apply_purchase_order_detail.json",
+      "groupNames": [
+        "采购管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.207Z"
+    },
+    "t697ac1b0ff50db0007ad5c5f": {
+      "type": "form",
+      "name": "采购订单",
+      "formCode": "MES_purchase_order",
+      "path": "kaiwu-forms/智慧工厂管控平台/采购管理/MES_purchase_order.json",
+      "groupNames": [
+        "采购管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.229Z"
+    },
+    "t697ac1b0ff50db0007ad5c5e": {
+      "type": "form",
+      "name": "采购订单明细",
+      "formCode": "MES_purchase_order_detail",
+      "path": "kaiwu-forms/智慧工厂管控平台/采购管理/MES_purchase_order_detail.json",
+      "groupNames": [
+        "采购管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.260Z"
+    },
+    "t697ac1b0ff50db0007ad5c5c": {
+      "type": "form",
+      "name": "采购入库单",
+      "formCode": "hangyuzhizaoMESxitong_caigourukudan",
+      "path": "kaiwu-forms/智慧工厂管控平台/采购管理/hangyuzhizaoMESxitong_caigourukudan.json",
+      "groupNames": [
+        "采购管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.288Z"
+    },
+    "t697ac1b0ff50db0007ad5c5d": {
+      "type": "form",
+      "name": "采购退货单",
+      "formCode": "hangyuzhizaoMESxitong_caigoutuihuodan",
+      "path": "kaiwu-forms/智慧工厂管控平台/采购管理/hangyuzhizaoMESxitong_caigoutuihuodan.json",
+      "groupNames": [
+        "采购管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.315Z"
+    },
+    "t697ac1b0ff50db0007ad5c59": {
+      "type": "form",
+      "name": "销售订单",
+      "formCode": "MES_sales_order",
+      "path": "kaiwu-forms/智慧工厂管控平台/销售管理/MES_sales_order.json",
+      "groupNames": [
+        "销售管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.344Z"
+    },
+    "t697ac1b0ff50db0007ad5c58": {
+      "type": "form",
+      "name": "销售订单明细",
+      "formCode": "MES_sales_order_detail",
+      "path": "kaiwu-forms/智慧工厂管控平台/销售管理/MES_sales_order_detail.json",
+      "groupNames": [
+        "销售管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.390Z"
+    },
+    "t697ac1b0ff50db0007ad5c5a": {
+      "type": "form",
+      "name": "销售出库",
+      "formCode": "hangyuzhizaoMESxitong_xiaoshouchuku",
+      "path": "kaiwu-forms/智慧工厂管控平台/销售管理/hangyuzhizaoMESxitong_xiaoshouchuku.json",
+      "groupNames": [
+        "销售管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.491Z"
+    },
+    "t697ac1b0ff50db0007ad5c5b": {
+      "type": "form",
+      "name": "销售退货",
+      "formCode": "hangyuzhizaoMESxitong_xiaoshoutuihuo",
+      "path": "kaiwu-forms/智慧工厂管控平台/销售管理/hangyuzhizaoMESxitong_xiaoshoutuihuo.json",
+      "groupNames": [
+        "销售管理"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.527Z"
+    },
+    "t697ac1b0ff50db0007ad5c9c": {
+      "type": "form",
+      "name": "实时库存查询",
+      "formCode": "MES_kucunxiangxijilu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/库存统计/MES_kucunxiangxijilu.json",
+      "groupNames": [
+        "系统数据库",
+        "库存统计"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.570Z"
+    },
+    "t697ac1b0ff50db0007ad5cc2": {
+      "type": "form",
+      "name": "工序溯源",
+      "formCode": "MES_gongxusuyuan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/库存统计/MES_gongxusuyuan.json",
+      "groupNames": [
+        "系统数据库",
+        "库存统计"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.605Z"
+    },
+    "t697ac1b0ff50db0007ad5cc4": {
+      "type": "form",
+      "name": "线边仓库存查询",
+      "formCode": "MES_xianbiancangkucunchaxun",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/库存统计/MES_xianbiancangkucunchaxun.json",
+      "groupNames": [
+        "系统数据库",
+        "库存统计"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.774Z"
+    },
+    "t697ac1b0ff50db0007ad5ca1": {
+      "type": "form",
+      "name": "物料库存",
+      "formCode": "MES_wuliaokucun",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/库存统计/MES_wuliaokucun.json",
+      "groupNames": [
+        "系统数据库",
+        "库存统计"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.825Z"
+    },
+    "t697ac1b0ff50db0007ad5c80": {
+      "type": "form",
+      "name": "工厂维护",
+      "formCode": "hangyuzhizaoMESxitong_gongchangweihu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/hangyuzhizaoMESxitong_gongchangweihu.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.857Z"
+    },
+    "t697ac1b0ff50db0007ad5c73": {
+      "type": "form",
+      "name": "成品单",
+      "formCode": "hangyuzhizaoMESxitong_chengpindan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/hangyuzhizaoMESxitong_chengpindan.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.884Z"
+    },
+    "t697ac1b0ff50db0007ad5c90": {
+      "type": "form",
+      "name": "物料属性维护",
+      "formCode": "Mes3.0_BOMshuxing",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/Mes3.0_BOMshuxing.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.907Z"
+    },
+    "t697ac1b0ff50db0007ad5c91": {
+      "type": "form",
+      "name": "移动端配置",
+      "formCode": "shengchanzhixing",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/shengchanzhixing.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.934Z"
+    },
+    "t697ac1b0ff50db0007ad5cad": {
+      "type": "form",
+      "name": "系统配置项",
+      "formCode": "MES_kw_xitongpeizhixiang",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/MES_kw_xitongpeizhixiang.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.966Z"
+    },
+    "t697ac1b0ff50db0007ad5cbb": {
+      "type": "form",
+      "name": "数据字典",
+      "formCode": "MES_shujuzidian",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/MES_shujuzidian.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:11.994Z"
+    },
+    "t697ac1b0ff50db0007ad5c8f": {
+      "type": "form",
+      "name": "接口需求",
+      "formCode": "MES_xuqiujiekou",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/MES_xuqiujiekou.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.041Z"
+    },
+    "t697ac1b0ff50db0007ad5ca8": {
+      "type": "form",
+      "name": "产品",
+      "formCode": "MES_kw_product",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/MES_kw_product.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.077Z"
+    },
+    "t697ac1b0ff50db0007ad5cc3": {
+      "type": "form",
+      "name": "下载模版管理",
+      "formCode": "MES_xiazaimobanguanli",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/MES_xiazaimobanguanli.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.120Z"
+    },
+    "t697ac1b0ff50db0007ad5ccc": {
+      "type": "form",
+      "name": "SOP步骤表",
+      "formCode": "MES_SOPbuzhoubiao",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/MES_SOPbuzhoubiao.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.151Z"
+    },
+    "t697ac1b0ff50db0007ad5cd6": {
+      "type": "form",
+      "name": "工艺节点信息",
+      "formCode": "Mes_process_nodes",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/Mes_process_nodes.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.326Z"
+    },
+    "t697ac1b0ff50db0007ad5cd5": {
+      "type": "form",
+      "name": "工艺节点连接信息",
+      "formCode": "Mes_process_edges",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/Mes_process_edges.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.344Z"
+    },
+    "t697ac1b0ff50db0007ad5c72": {
+      "type": "form",
+      "name": "物料码新码打印记录",
+      "formCode": "hangyuzhizaoMESxitong_wuliaomadayinjilu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/系统主数据/hangyuzhizaoMESxitong_wuliaomadayinjilu.json",
+      "groupNames": [
+        "系统数据库",
+        "系统主数据"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.367Z"
+    },
+    "t697ac1b0ff50db0007ad5ca3": {
+      "type": "form",
+      "name": "销售订单",
+      "formCode": "MES_kw_xiaoshoudingdan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/销售数据库/MES_kw_xiaoshoudingdan.json",
+      "groupNames": [
+        "系统数据库",
+        "销售数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.391Z"
+    },
+    "t697ac1b0ff50db0007ad5ca0": {
+      "type": "form",
+      "name": "销售退回",
+      "formCode": "MES_xiaoshoutuihui",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/销售数据库/MES_xiaoshoutuihui.json",
+      "groupNames": [
+        "系统数据库",
+        "销售数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.421Z"
+    },
+    "t697ac1b0ff50db0007ad5ca4": {
+      "type": "form",
+      "name": "销售出库",
+      "formCode": "MES_kw_xiaoshouchuku",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/销售数据库/MES_kw_xiaoshouchuku.json",
+      "groupNames": [
+        "系统数据库",
+        "销售数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.450Z"
+    },
+    "t697ac1b0ff50db0007ad5c93": {
+      "type": "form",
+      "name": "采购申请单（老）",
+      "formCode": "MES_caigoushenqingdan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/采购数据库/MES_caigoushenqingdan.json",
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.469Z"
+    },
+    "t697ac1b0ff50db0007ad5cb3": {
+      "type": "form",
+      "name": "采购换货记录（老）",
+      "formCode": "MES_caigouhuanhuojilu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/采购数据库/MES_caigouhuanhuojilu.json",
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.487Z"
+    },
+    "t697ac1b0ff50db0007ad5cb2": {
+      "type": "form",
+      "name": "采购订单详情（老）",
+      "formCode": "MES_caigoudingdanxiangqing",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/采购数据库/MES_caigoudingdanxiangqing.json",
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.509Z"
+    },
+    "t697ac1b0ff50db0007ad5cbe": {
+      "type": "form",
+      "name": "到货报验单（老）",
+      "formCode": "MES_daohuobaoyandan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/采购数据库/MES_daohuobaoyandan.json",
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.534Z"
+    },
+    "t697ac1b0ff50db0007ad5cb0": {
+      "type": "form",
+      "name": "采购到货记录（老）",
+      "formCode": "MES_daohuojilu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/采购数据库/MES_daohuojilu.json",
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.556Z"
+    },
+    "t697ac1b0ff50db0007ad5c95": {
+      "type": "form",
+      "name": "采购申请单明细（老）",
+      "formCode": "MES_caigoushenqingdanmingxi",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/采购数据库/MES_caigoushenqingdanmingxi.json",
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.575Z"
+    },
+    "t697ac1b0ff50db0007ad5c94": {
+      "type": "form",
+      "name": "采购订单明细（老）",
+      "formCode": "MES_caigoudingdanmingxi",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/采购数据库/MES_caigoudingdanmingxi.json",
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.598Z"
+    },
+    "t697ac1b0ff50db0007ad5c52": {
+      "type": "form",
+      "name": "配方管理",
+      "formCode": "MES_recipe",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/采购数据库/MES_recipe.json",
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.620Z"
+    },
+    "t697ac1b0ff50db0007ad5c53": {
+      "type": "form",
+      "name": "配方工序管理",
+      "formCode": "MES_recipe_process",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/采购数据库/MES_recipe_process.json",
+      "groupNames": [
+        "系统数据库",
+        "采购数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.641Z"
+    },
+    "t697ac1b0ff50db0007ad5c9a": {
+      "type": "form",
+      "name": "车间管理",
+      "formCode": "MES_chejian_o5z6uo01",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_chejian_o5z6uo01.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.659Z"
+    },
+    "t697ac1b0ff50db0007ad5cc7": {
+      "type": "form",
+      "name": "生产订单流程（老）",
+      "formCode": "MES_shengchandingdanliucheng",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_shengchandingdanliucheng.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.681Z"
+    },
+    "t697ac1b0ff50db0007ad5cca": {
+      "type": "form",
+      "name": "生产工单",
+      "formCode": "MES_kw_shengchanjihua",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_kw_shengchanjihua.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.703Z"
+    },
+    "t697ac1b0ff50db0007ad5cd0": {
+      "type": "form",
+      "name": "用料清单",
+      "formCode": "MES_kw_yonliaoqingdan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_kw_yonliaoqingdan.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.724Z"
+    },
+    "t697ac1b0ff50db0007ad5ccb": {
+      "type": "form",
+      "name": "生产任务",
+      "formCode": "MES_kw_shengchanrenwu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_kw_shengchanrenwu.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.744Z"
+    },
+    "t697ac1b0ff50db0007ad5cce": {
+      "type": "form",
+      "name": "物料清单",
+      "formCode": "MES_wuliaoqingdan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_wuliaoqingdan.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.766Z"
+    },
+    "t697ac1b0ff50db0007ad5ccf": {
+      "type": "form",
+      "name": "物料清单组成",
+      "formCode": "MES_wuliaoqingdanzucheng",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_wuliaoqingdanzucheng.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.791Z"
+    },
+    "t697ac1b0ff50db0007ad5cd3": {
+      "type": "form",
+      "name": "出库申请流程",
+      "formCode": "MES_outStockShenqingliucheng",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_outStockShenqingliucheng.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.813Z"
+    },
+    "t697ac1b0ff50db0007ad5cd4": {
+      "type": "form",
+      "name": "入库申请流程",
+      "formCode": "MES_rukushenqingliucheng",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_rukushenqingliucheng.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.828Z"
+    },
+    "t697ac1b0ff50db0007ad5cc9": {
+      "type": "form",
+      "name": "出入库流程状态",
+      "formCode": "MES_churukuliuchengzhuangtai",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_churukuliuchengzhuangtai.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.849Z"
+    },
+    "t697ac1b0ff50db0007ad5cc8": {
+      "type": "form",
+      "name": "生产库存",
+      "formCode": "MES_shengchankucun",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_shengchankucun.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.862Z"
+    },
+    "t697ac1b0ff50db0007ad5cc6": {
+      "type": "form",
+      "name": "报工数据",
+      "formCode": "MES_kw_baogongshuju",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_kw_baogongshuju.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.883Z"
+    },
+    "t697ac1b0ff50db0007ad5cd7": {
+      "type": "form",
+      "name": "产品码记录表",
+      "formCode": "MES_kw_product_code",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_kw_product_code.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.930Z"
+    },
+    "t697ac1b0ff50db0007ad5cd2": {
+      "type": "form",
+      "name": "生产执行记录",
+      "formCode": "MES_kw_shengchanzhixingjilu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_kw_shengchanzhixingjilu.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.957Z"
+    },
+    "t697ac1b0ff50db0007ad5ccd": {
+      "type": "form",
+      "name": "SOP方案",
+      "formCode": "MES_SOPfangan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_SOPfangan.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:12.989Z"
+    },
+    "t697ac1b0ff50db0007ad5cbc": {
+      "type": "form",
+      "name": "上料记录清单",
+      "formCode": "MES_shangliaojiluqingdan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_shangliaojiluqingdan.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.012Z"
+    },
+    "t697ac1b0ff50db0007ad5cd1": {
+      "type": "form",
+      "name": "单件进度",
+      "formCode": "MES_kw_chengpinbiaoqian",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_kw_chengpinbiaoqian.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.039Z"
+    },
+    "t697ac1b0ff50db0007ad5cae": {
+      "type": "form",
+      "name": "生产品质报表",
+      "formCode": "ProductionQualityReport",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/ProductionQualityReport.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.075Z"
+    },
+    "t697ac1b0ff50db0007ad5caf": {
+      "type": "form",
+      "name": "物料生产报表",
+      "formCode": "MaterialProductionReport",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MaterialProductionReport.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.126Z"
+    },
+    "t697ac1b0ff50db0007ad5c85": {
+      "type": "form",
+      "name": "箱单编码",
+      "formCode": "MES_xiangdancode",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_xiangdancode.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.155Z"
+    },
+    "t697ac1b0ff50db0007ad5c86": {
+      "type": "form",
+      "name": "箱单编码产品绑定SN",
+      "formCode": "MES_xiangdan_sn",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_xiangdan_sn.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.185Z"
+    },
+    "t697ac1b0ff50db0007ad5c87": {
+      "type": "form",
+      "name": "副产品入库记录",
+      "formCode": "MES_byproduct_instack_records",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_byproduct_instack_records.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.211Z"
+    },
+    "t697ac1b0ff50db0007ad5c75": {
+      "type": "form",
+      "name": "生产订单",
+      "formCode": "MES_production_order",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_production_order.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.239Z"
+    },
+    "t697ac1b0ff50db0007ad5c51": {
+      "type": "form",
+      "name": "生产订单核销",
+      "formCode": "MES_production_order_fulfill",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_production_order_fulfill.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.267Z"
+    },
+    "t697ac1b0ff50db0007ad5cd8": {
+      "type": "form",
+      "name": "生产订单物料清单组成",
+      "formCode": "MES_order_bom",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_order_bom.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.288Z"
+    },
+    "t697ac1b0ff50db0007ad5c71": {
+      "type": "form",
+      "name": "产线建模",
+      "formCode": "hangyuzhizaoMESxitong_chanxianjianmo",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/hangyuzhizaoMESxitong_chanxianjianmo.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.316Z"
+    },
+    "t697ac1b0ff50db0007ad5c70": {
+      "type": "form",
+      "name": "工单执行SN码",
+      "formCode": "hangyuzhizaoMESxitong_gongdanzhixingSNma",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/hangyuzhizaoMESxitong_gongdanzhixingSNma.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.350Z"
+    },
+    "t697ac1b0ff50db0007ad5c6e": {
+      "type": "form",
+      "name": "不良品上报(外观)",
+      "formCode": "hangyuzhizaoMESxitong_buliangpingshangbao",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/hangyuzhizaoMESxitong_buliangpingshangbao.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.457Z"
+    },
+    "t697ac1b0ff50db0007ad5c6f": {
+      "type": "form",
+      "name": "不良品维修",
+      "formCode": "hangyuzhizaoMESxitong_buliangpinweixiu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/hangyuzhizaoMESxitong_buliangpinweixiu.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.494Z"
+    },
+    "t697ac1b0ff50db0007ad5c6a": {
+      "type": "form",
+      "name": "生产订单物料需求计划",
+      "formCode": "MES_production_order_demand_plan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_production_order_demand_plan.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.516Z"
+    },
+    "t697ac1b0ff50db0007ad5c68": {
+      "type": "form",
+      "name": "生产订单物料需求组成",
+      "formCode": "MES_production_order_demand_compose",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_production_order_demand_compose.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.556Z"
+    },
+    "t697ac1b0ff50db0007ad5c69": {
+      "type": "form",
+      "name": "生产订单物料需求结果",
+      "formCode": "MES_production_order_demand_result",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/MES_production_order_demand_result.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.579Z"
+    },
+    "t697ac1b0ff50db0007ad5c61": {
+      "type": "form",
+      "name": "箱单码打印",
+      "formCode": "hangyuzhizaoMESxitong_xiangdanmadayin",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/hangyuzhizaoMESxitong_xiangdanmadayin.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.610Z"
+    },
+    "t697ac1b0ff50db0007ad5c54": {
+      "type": "form",
+      "name": "委外收发货单",
+      "formCode": "hangyuzhizaoMESxitong_weiwaichurukugongdan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/hangyuzhizaoMESxitong_weiwaichurukugongdan.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.638Z"
+    },
+    "t697ac1b0ff50db0007ad5c55": {
+      "type": "form",
+      "name": "委外退库单",
+      "formCode": "hangyuzhizaoMESxitong_weiwaituikudan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/hangyuzhizaoMESxitong_weiwaituikudan.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.662Z"
+    },
+    "t697ac1b0ff50db0007ad5c56": {
+      "type": "form",
+      "name": "委外退货单",
+      "formCode": "hangyuzhizaoMESxitong_weiwaituihuodan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/生产数据库/hangyuzhizaoMESxitong_weiwaituihuodan.json",
+      "groupNames": [
+        "系统数据库",
+        "生产数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.685Z"
+    },
+    "t697ac1b0ff50db0007ad5c66": {
+      "type": "form",
+      "name": "不良品锁定",
+      "formCode": "MES_buliangpinsuoding",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_buliangpinsuoding.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.790Z"
+    },
+    "t697ac1b0ff50db0007ad5c64": {
+      "type": "form",
+      "name": "不合格品处理",
+      "formCode": "MES_buhegepinchuli",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_buhegepinchuli.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.817Z"
+    },
+    "t697ac1b0ff50db0007ad5c60": {
+      "type": "form",
+      "name": "产品报废",
+      "formCode": "MES_chanpinbaofei",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_chanpinbaofei.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.865Z"
+    },
+    "t697ac1b0ff50db0007ad5c8b": {
+      "type": "form",
+      "name": "不良原因",
+      "formCode": "MES_kw_buliangyuanyin",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_kw_buliangyuanyin.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.888Z"
+    },
+    "t697ac1b0ff50db0007ad5c8c": {
+      "type": "form",
+      "name": "质检类型维护",
+      "formCode": "MES_zhijianleixing",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_zhijianleixing.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.911Z"
+    },
+    "t697ac1b0ff50db0007ad5cbd": {
+      "type": "form",
+      "name": "巡检时间段配置",
+      "formCode": "MES_xunjianshijianduanpeizhi",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_xunjianshijianduanpeizhi.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:13.937Z"
+    },
+    "t697ac1b0ff50db0007ad5cb7": {
+      "type": "form",
+      "name": "采购质检任务",
+      "formCode": "MES_zhijianrenwu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_zhijianrenwu.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.084Z"
+    },
+    "t697ac1b0ff50db0007ad5c92": {
+      "type": "form",
+      "name": "质检任务明细",
+      "formCode": "MES_shengchanzhijianrenwumingxi",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_shengchanzhijianrenwumingxi.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.153Z"
+    },
+    "t697ac1b0ff50db0007ad5cb6": {
+      "type": "form",
+      "name": "质检任务拆分表",
+      "formCode": "MES_zhijianrenwuchaifenbiao",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_zhijianrenwuchaifenbiao.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.191Z"
+    },
+    "t697ac1b0ff50db0007ad5cb5": {
+      "type": "form",
+      "name": "质检任务表",
+      "formCode": "MES_zhijianrenwubiao",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_zhijianrenwubiao.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.221Z"
+    },
+    "t697ac1b0ff50db0007ad5caa": {
+      "type": "form",
+      "name": "巡检计划",
+      "formCode": "MES_kw_xunjianjihua",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_kw_xunjianjihua.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.261Z"
+    },
+    "t697ac1b0ff50db0007ad5ca9": {
+      "type": "form",
+      "name": "巡检计划明细",
+      "formCode": "MES_kw_xunjianjihuamingxi",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_kw_xunjianjihuamingxi.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.296Z"
+    },
+    "t697ac1b0ff50db0007ad5cc0": {
+      "type": "form",
+      "name": "采购质检明细表",
+      "formCode": "MES_caigouzhijianmingxi",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_caigouzhijianmingxi.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.328Z"
+    },
+    "t697ac1b0ff50db0007ad5c9b": {
+      "type": "form",
+      "name": "外部质检申请",
+      "formCode": "MES_waibuzhijianhetongshenqing",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_waibuzhijianhetongshenqing.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.354Z"
+    },
+    "t697ac1b0ff50db0007ad5c96": {
+      "type": "form",
+      "name": "质检项维护",
+      "formCode": "MES_zhijianxiang",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_zhijianxiang.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.386Z"
+    },
+    "t697ac1b0ff50db0007ad5c97": {
+      "type": "form",
+      "name": "委外送检申请",
+      "formCode": "MES_weiwaisongjianhetongshenqing",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_weiwaisongjianhetongshenqing.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.408Z"
+    },
+    "t697ac1b0ff50db0007ad5c82": {
+      "type": "form",
+      "name": "生产巡检",
+      "formCode": "MES_productionInspection",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_productionInspection.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.430Z"
+    },
+    "t697ac1b0ff50db0007ad5c83": {
+      "type": "form",
+      "name": "成品检验",
+      "formCode": "MES_productTest",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_productTest.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.458Z"
+    },
+    "t697ac1b0ff50db0007ad5c84": {
+      "type": "form",
+      "name": "来料检验",
+      "formCode": "MES_materialTest",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_materialTest.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.488Z"
+    },
+    "t697ac1b0ff50db0007ad5c65": {
+      "type": "form",
+      "name": "不良品来源",
+      "formCode": "hangyuzhizaoMESxitong_buliangpinlaiyuan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/hangyuzhizaoMESxitong_buliangpinlaiyuan.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.508Z"
+    },
+    "t697ac1b0ff50db0007ad5c8e": {
+      "type": "form",
+      "name": "质检方案",
+      "formCode": "MES_zhijianfangan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/质量数据库/MES_zhijianfangan.json",
+      "groupNames": [
+        "系统数据库",
+        "质量数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.539Z"
+    },
+    "t697ac1b0ff50db0007ad5c88": {
+      "type": "form",
+      "name": "仓库标签维护",
+      "formCode": "MES_cangkufenlei",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_cangkufenlei.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.560Z"
+    },
+    "t697ac1b0ff50db0007ad5cbf": {
+      "type": "form",
+      "name": "备货通知",
+      "formCode": "MES_beihuotongzhi",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_beihuotongzhi.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.583Z"
+    },
+    "t697ac1b0ff50db0007ad5cb4": {
+      "type": "form",
+      "name": "库存盘点",
+      "formCode": "MES_pandian",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_pandian.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.610Z"
+    },
+    "t697ac1b0ff50db0007ad5cab": {
+      "type": "form",
+      "name": "收货记录表",
+      "formCode": "MES_shouhuojilubiao",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_shouhuojilubiao.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.633Z"
+    },
+    "t697ac1b0ff50db0007ad5cb1": {
+      "type": "form",
+      "name": "出库单",
+      "formCode": "MES_chukudan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_chukudan.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.664Z"
+    },
+    "t697ac1b0ff50db0007ad5cac": {
+      "type": "form",
+      "name": "备货记录表",
+      "formCode": "MES_beihuojilubiao",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_beihuojilubiao.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.689Z"
+    },
+    "t697ac1b0ff50db0007ad5c8d": {
+      "type": "form",
+      "name": "调拨流程",
+      "formCode": "MES_cannibalize_process",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_cannibalize_process.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.713Z"
+    },
+    "t697ac1b0ff50db0007ad5c8a": {
+      "type": "form",
+      "name": "盘点流程",
+      "formCode": "MES_pandianliucheng",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_pandianliucheng.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.741Z"
+    },
+    "t697ac1b0ff50db0007ad5c99": {
+      "type": "form",
+      "name": "入库记录",
+      "formCode": "MES_rukujilu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_rukujilu.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.764Z"
+    },
+    "t697ac1b0ff50db0007ad5c9f": {
+      "type": "form",
+      "name": "出库记录",
+      "formCode": "MES_chukujilu",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_chukujilu.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.791Z"
+    },
+    "t697ac1b0ff50db0007ad5cb8": {
+      "type": "form",
+      "name": "入库单",
+      "formCode": "MES_rukudan",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_rukudan.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.819Z"
+    },
+    "t697ac1b0ff50db0007ad5cba": {
+      "type": "form",
+      "name": "领用管理",
+      "formCode": "MES_lingyong",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_lingyong.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.843Z"
+    },
+    "t697ac1b0ff50db0007ad5cb9": {
+      "type": "form",
+      "name": "调拨出库管理",
+      "formCode": "MES_tiaobo",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_tiaobo.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.875Z"
+    },
+    "t697ac1b0ff50db0007ad5cc5": {
+      "type": "form",
+      "name": "调拨入库管理",
+      "formCode": "MES_tiaoboruku",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_tiaoboruku.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.899Z"
+    },
+    "t697ac1b0ff50db0007ad5c98": {
+      "type": "form",
+      "name": "出入库异动记录",
+      "formCode": "MES_kucunbiandong01",
+      "path": "kaiwu-forms/智慧工厂管控平台/系统数据库/仓库数据库/MES_kucunbiandong01.json",
+      "groupNames": [
+        "系统数据库",
+        "仓库数据库"
+      ],
+      "appName": "智慧工厂管控平台",
+      "lastPull": "2026-01-29T02:26:14.930Z"
+    },
+    "t697aeac326052e00072e56b0": {
+      "type": "form",
+      "name": "单位维护_copy",
+      "formCode": "MES_danweiweihu_copy",
+      "path": "kaiwu-forms/教师端/MES_danweiweihu_copy.json",
+      "groupNames": [],
+      "appName": "教师端",
+      "lastPull": "2026-01-29T05:06:46.740Z"
+    },
+    "local_lowcode_1769663561062_4u338qfda": {
+      "type": "lowcode",
+      "name": "视频教材管理",
+      "code": "视频教材管理",
+      "formCode": "t_video_teaching_material",
+      "path": "kaiwu-app/智慧工厂管控平台/教学资源/视频教材管理",
+      "groupNames": [
+        "智慧工厂管控平台",
+        "教学资源"
+      ],
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "appName": "智慧工厂管控平台",
+      "isNew": true
+    },
+    "local_lowcode_1769939100000_grade_manage": {
+      "type": "lowcode",
+      "name": "年级管理",
+      "code": "年级管理",
+      "formCode": "EDU_GradeConfig",
+      "path": "kaiwu-app/教师端/基础配置/年级管理",
+      "groupNames": [
+        "教师端",
+        "基础配置"
+      ],
+      "files": [
+        "index.jsx",
+        "index.css",
+        "schema.json",
+        "assets.json"
+      ],
+      "appName": "教师端",
+      "isNew": true
+    },
+    "local_form_1770302688160_f2rnqr62r": {
+      "type": "form",
+      "name": "辅材教材管理",
+      "code": "auxiliary_teaching_material",
+      "formCode": "auxiliary_teaching_material",
+      "path": "kaiwu-forms/auxiliary_teaching_material",
+      "groupNames": [],
+      "family": "baseform",
+      "isNew": true
+    },
+    "local_form_1770302688161_vpfb8dzsa": {
+      "type": "form",
+      "name": "视频教材管理",
+      "code": "video_teaching_material",
+      "formCode": "video_teaching_material",
+      "path": "kaiwu-forms/video_teaching_material",
+      "groupNames": [],
+      "family": "baseform",
+      "isNew": true
+    },
+    "local_lowcode_1770302688161_ebn2hjhuq": {
+      "type": "lowcode",
+      "name": "/",
+      "code": "质检项维护",
+      "formCode": "质检项维护",
+      "path": "kaiwu-app/基础资料维护/质量基础数据/质检项维护",
+      "groupNames": [
+        "基础资料维护",
+        "质量基础数据"
+      ],
+      "isNew": true
+    },
+    "local_lowcode_1770302688173_uw2qtiqd3": {
+      "type": "lowcode",
+      "name": "我的班级",
+      "code": "我的班级",
+      "formCode": "我的班级",
+      "path": "kaiwu-app/班级管理/我的班级",
+      "groupNames": [
+        "班级管理"
+      ],
+      "isNew": true
+    },
+    "local_api_1770302688174_hcqvlnrz3": {
+      "type": "api",
+      "name": "服务商端首页企业总数和设备总数",
+      "code": "da1afde8ac2c4837a65d458ae768fe74",
+      "formCode": "da1afde8ac2c4837a65d458ae768fe74",
+      "path": "kaiwu-api/物联网应用/服务商端首页企业总数和设备总数",
+      "groupNames": [
+        "物联网应用"
+      ],
+      "isNew": true
+    },
+    "local_api_1770302688175_6jp4ev23e": {
+      "type": "api",
+      "name": "服务商端查看设备列表",
+      "code": "copy1735972573629d39465",
+      "formCode": "copy1735972573629d39465",
+      "path": "kaiwu-api/物联网应用/服务商端查看设备列表",
+      "groupNames": [
+        "物联网应用"
+      ],
+      "isNew": true
+    },
+    "local_api_1770302688175_a5xa7typ6": {
+      "type": "api",
+      "name": "配置聚合加载",
+      "code": "copy1769423270269d5568",
+      "formCode": "copy1769423270269d5568",
+      "path": "kaiwu-api/配置管理/配置聚合加载",
+      "groupNames": [
+        "配置管理"
+      ],
+      "isNew": true
+    },
+    "local_api_1770302688175_fpd8on12x": {
+      "type": "api",
+      "name": "单页面配置加载",
+      "code": "copy1769481644036d4192",
+      "formCode": "copy1769481644036d4192",
+      "path": "kaiwu-api/配置管理/单页面配置加载",
+      "groupNames": [
+        "配置管理"
+      ],
+      "isNew": true
+    },
+    "local_api_1770302688176_e34o4yqlj": {
+      "type": "api",
+      "name": "功能配置检查",
+      "code": "copy1769492398895d77923",
+      "formCode": "copy1769492398895d77923",
+      "path": "kaiwu-api/配置管理/功能配置检查",
+      "groupNames": [
+        "配置管理"
+      ],
+      "isNew": true
+    },
+    "local_api_1770302688176_85lwm4gid": {
+      "type": "api",
+      "name": "字典数据查询",
+      "code": "copy1769492461747d42295",
+      "formCode": "copy1769492461747d42295",
+      "path": "kaiwu-api/配置管理/字典数据查询",
+      "groupNames": [
+        "配置管理"
+      ],
+      "isNew": true
+    },
+    "local_api_1770302688176_o5tp6uc6m": {
+      "type": "api",
+      "name": "服务商物连设备",
+      "code": "b4c577ba85ad475da1de3b4bace6b377",
+      "formCode": "b4c577ba85ad475da1de3b4bace6b377",
+      "path": "kaiwu-api/服务商物连设备",
+      "groupNames": [],
+      "isNew": true
+    }
+  },
+  "aliases": {},
+  "appName": "教师端"
+}

@@ -1,0 +1,201 @@
+{
+  "version": "1.0.0",
+  "componentsMap": [
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuJsx",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuJsx"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexDialog2",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexDialog2"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexTable2",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexTable2"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexLayout",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexLayout"
+    },
+    {
+      "devMode": "lowCode",
+      "componentName": "Page"
+    }
+  ],
+  "componentsTree": [
+    {
+      "componentName": "Page",
+      "id": "node_page_root",
+      "props": {
+        "ref": "outerView",
+        "style": {
+          "width": "100%",
+          "height": "100%"
+        }
+      },
+      "dataSource": {
+        "list": [
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "POST",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8"
+              },
+              "uri": "/mainApi/formEngine/formData/query"
+            },
+            "id": "queryFormData"
+          },
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "POST",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8"
+              },
+              "uri": "/mainApi/formEngine/formData/save"
+            },
+            "id": "saveFormData"
+          },
+          {
+            "type": "fetch",
+            "isInit": true,
+            "options": {
+              "params": {},
+              "method": "GET",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {},
+              "uri": "/mainApi/auth/currentUser"
+            },
+            "id": "getCurrentUser"
+          }
+        ]
+      },
+      "children": [
+        {
+          "componentName": "KaiwuFlexLayout",
+          "id": "node_layout_main",
+          "props": {
+            "style": {
+              "padding": "16px"
+            }
+          },
+          "children": [
+            {
+              "componentName": "KaiwuJsx",
+              "id": "node_search_form",
+              "props": {
+                "render": {
+                  "type": "JSFunction",
+                  "value": "function() { return <div>搜索区域占位 (请在 index.jsx 中实现具体的搜索表单)</div> }"
+                }
+              }
+            },
+            {
+              "componentName": "KaiwuFlexTable2",
+              "id": "node_data_table",
+              "props": {
+                "dataSource": {
+                  "type": "JSExpression",
+                  "value": "this.state.tableList"
+                },
+                "loading": {
+                  "type": "JSExpression",
+                  "value": "this.state.loading"
+                },
+                "columns": [
+                  {
+                    "title": "示例列",
+                    "dataIndex": "exampleField"
+                  },
+                  {
+                    "title": "操作",
+                    "dataIndex": "operation",
+                    "render": {
+                      "type": "JSFunction",
+                      "value": "function(value, index, record) { return <button onClick={() => this.showDialog(record)}>编辑</button> }"
+                    }
+                  }
+                ],
+                "pagination": {
+                  "current": {
+                    "type": "JSExpression",
+                    "value": "this.state.page.current"
+                  },
+                  "pageSize": {
+                    "type": "JSExpression",
+                    "value": "this.state.page.size"
+                  },
+                  "total": {
+                    "type": "JSExpression",
+                    "value": "this.state.page.total"
+                  },
+                  "onChange": {
+                    "type": "JSFunction",
+                    "value": "function(current) { this.currentOrSizeChange(current, this.state.page.size) }"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          "componentName": "KaiwuFlexDialog2",
+          "id": "node_edit_dialog",
+          "props": {
+            "visible": {
+              "type": "JSExpression",
+              "value": "this.state.isShowDialog"
+            },
+            "onClose": {
+              "type": "JSFunction",
+              "value": "function() { this.closeDialog() }"
+            },
+            "title": "编辑详情"
+          },
+          "children": [
+            {
+              "componentName": "KaiwuJsx",
+              "id": "node_dialog_content",
+              "props": {
+                "render": {
+                  "type": "JSFunction",
+                  "value": "function() { return <div>弹窗内容占位</div> }"
+                }
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

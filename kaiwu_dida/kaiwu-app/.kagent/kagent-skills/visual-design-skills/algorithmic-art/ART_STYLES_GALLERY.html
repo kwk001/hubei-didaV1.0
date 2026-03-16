@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithmic Art Styles Gallery</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        /* Anthropic Brand Colors */
+        :root {
+            --anthropic-dark: #141413;
+            --anthropic-light: #faf9f5;
+            --anthropic-mid-gray: #b0aea5;
+            --anthropic-light-gray: #e8e6dc;
+            --anthropic-orange: #d97757;
+            --anthropic-blue: #6a9bcc;
+            --anthropic-green: #788c5d;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--anthropic-light) 0%, #f5f3ee 100%);
+            min-height: 100vh;
+            color: var(--anthropic-dark);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding: 20px;
+        }
+
+        h1 {
+            font-family: 'Lora', serif;
+            font-size: 36px;
+            font-weight: 500;
+            color: var(--anthropic-dark);
+            margin-bottom: 12px;
+        }
+
+        .subtitle {
+            color: var(--anthropic-mid-gray);
+            font-size: 18px;
+            max-width: 800px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .styles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .style-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 24px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(20, 20, 19, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .style-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(20, 20, 19, 0.15);
+        }
+
+        .style-card h3 {
+            font-family: 'Lora', serif;
+            font-size: 22px;
+            font-weight: 500;
+            color: var(--anthropic-dark);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .style-card h3::before {
+            content: '•';
+            color: var(--anthropic-orange);
+            font-weight: bold;
+        }
+
+        .style-description {
+            color: var(--anthropic-mid-gray);
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .computational-aspect {
+            background: var(--anthropic-light);
+            padding: 12px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: var(--anthropic-dark);
+            margin-bottom: 15px;
+        }
+
+        .computational-aspect strong {
+            color: var(--anthropic-orange);
+        }
+
+        .visual-characteristics {
+            font-size: 14px;
+            color: var(--anthropic-mid-gray);
+            line-height: 1.5;
+        }
+
+        .visual-characteristics strong {
+            color: var(--anthropic-blue);
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: var(--anthropic-mid-gray);
+            font-size: 14px;
+            border-top: 1px solid var(--anthropic-light-gray);
+            margin-top: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .styles-grid {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .subtitle {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Algorithmic Art Styles</h1>
+            <p class="subtitle">A gallery of computational aesthetic movements that can be created using the algorithmic art skill. Each style represents a unique philosophical approach to generative art.</p>
+        </header>
+
+        <div class="styles-grid">
+            <!-- Style 1 -->
+            <div class="style-card">
+                <h3>Organic Turbulence</h3>
+                <p class="style-description">Chaos constrained by natural law, order emerging from disorder.</p>
+                <div class="computational-aspect">
+                    <strong>Computational Expression:</strong> Flow fields driven by layered Perlin noise with thousands of particles following vector forces.
+                </div>
+                <p class="visual-characteristics">
+                    <strong>Visual Characteristics:</strong> Organic density maps, turbulent regions and calm zones, velocity-based coloring.
+                </p>
+            </div>
+
+            <!-- Style 2 -->
+            <div class="style-card">
+                <h3>Quantum Harmonics</h3>
+                <p class="style-description">Discrete entities exhibiting wave-like interference patterns.</p>
+                <div class="computational-aspect">
+                    <strong>Computational Expression:</strong> Particles with phase values evolving through sine waves with interference patterns.
+                </div>
+                <p class="visual-characteristics">
+                    <strong>Visual Characteristics:</strong> Constructive/destructive interference creating bright nodes and voids, emergent mandalas.
+                </p>
+            </div>
+
+            <!-- Style 3 -->
+            <div class="style-card">
+                <h3>Recursive Whispers</h3>
+                <p class="style-description">Self-similarity across scales, infinite depth in finite space.</p>
+                <div class="computational-aspect">
+                    <strong>Computational Expression:</strong> Branching structures with recursive subdivision and L-systems.
+                </div>
+                <p class="visual-characteristics">
+                    <strong>Visual Characteristics:</strong> Mathematical tree-like forms, symmetry-breaking with noise, diminishing line weights.
+                </p>
+            </div>
+
+            <!-- Style 4 -->
+            <div class="style-card">
+                <h3>Field Dynamics</h3>
+                <p class="style-description">Invisible forces made visible through their effects on matter.</p>
+                <div class="computational-aspect">
+                    <strong>Computational Expression:</strong> Vector fields from mathematical functions, particle flows along field lines.
+                </div>
+                <p class="visual-characteristics">
+                    <strong>Visual Characteristics:</strong> Traces showing force interactions, ghost-like evidence of invisible forces.
+                </p>
+            </div>
+
+            <!-- Style 5 -->
+            <div class="style-card">
+                <h3>Stochastic Crystallization</h3>
+                <p class="style-description">Random processes crystallizing into ordered structures.</p>
+                <div class="computational-aspect">
+                    <strong>Computational Expression:</strong> Circle packing or Voronoi tessellation with relaxation algorithms.
+                </div>
+                <p class="visual-characteristics">
+                    <strong>Visual Characteristics:</strong> Organic tiling, equilibrium-based cell structures, size/proximity-based coloring.
+                </p>
+            </div>
+
+            <!-- Style 6 -->
+            <div class="style-card">
+                <h3>Emergent Stillness</h3>
+                <p class="style-description">Motion freezing into moments of perfect balance.</p>
+                <div class="computational-aspect">
+                    <strong>Computational Expression:</strong> Particle systems reaching equilibrium states, force-based positioning.
+                </div>
+                <p class="visual-characteristics">
+                    <strong>Visual Characteristics:</strong> Balanced compositions, minimal movement, harmonic arrangements.
+                </p>
+            </div>
+
+            <!-- Style 7 -->
+            <div class="style-card">
+                <h3>Chaotic Attractors</h3>
+                <p class="style-description">Deterministic chaos with bounded unpredictability.</p>
+                <div class="computational-aspect">
+                    <strong>Computational Expression:</strong> Mathematical attractor equations (Lorenz, Rössler), iterative systems.
+                </div>
+                <p class="visual-characteristics">
+                    <strong>Visual Characteristics:</strong> Complex trajectories, bounded regions, sensitive dependence on initial conditions.
+                </p>
+            </div>
+
+            <!-- Style 8 -->
+            <div class="style-card">
+                <h3>Fractal Landscapes</h3>
+                <p class="style-description">Infinite complexity emerging from simple recursive rules.</p>
+                <div class="computational-aspect">
+                    <strong>Computational Expression:</strong> Heightmap generation with fractional Brownian motion, diamond-square algorithm.
+                </div>
+                <p class="visual-characteristics">
+                    <strong>Visual Characteristics:</strong> Mountain ranges, coastlines, realistic terrain with self-similar features.
+                </p>
+            </div>
+        </div>
+
+        <footer>
+            <p>These algorithmic art styles can be implemented using the p5.js framework with seeded randomness for reproducibility.</p>
+            <p>Each style represents a unique computational aesthetic movement that can be explored through parameter variation.</p>
+        </footer>
+    </div>
+</body>
+</html>

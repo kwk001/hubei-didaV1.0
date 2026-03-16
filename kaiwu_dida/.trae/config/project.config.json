@@ -1,0 +1,66 @@
+{
+  "project": {
+    "name": "软件项目自动化开发",
+    "description": "使用Trae CN主导自动化完成软件项目的需求设计、研发、测试",
+    "version": "1.0.0",
+    "role": "product_manager"
+  },
+  "workflow": {
+    "current_phase": "requirement",
+    "phases": [
+      {
+        "name": "需求设计阶段",
+        "tasks": [
+          "功能清单整理",
+          "代码分析",
+          "业务流程图设计",
+          "蓝图原型设计",
+          "PRD需求文档编写"
+        ],
+        "output": ["功能清单.xlsx", "代码分析报告.md", "业务流程图.md", "原型文件", "PRD文档.md"],
+        "mcp_tools": ["kaiwu_form", "chrome_devtools", "web_search", "searchcodebase", "grep", "read", "write"]
+      }
+    ]
+  },
+  "quality_standards": {
+    "requirement": {
+      "functional_list_required": true,
+      "functional_list_fields": ["功能ID", "功能名称", "功能描述", "优先级", "复杂度", "依赖关系", "验收标准"],
+      "flowchart_required": true,
+      "flowchart_syntax": "mermaid",
+      "prototype_required": true,
+      "prd_required": true,
+      "prd_sections": ["项目背景", "功能概述", "详细功能描述", "非功能需求", "验收标准"],
+      "prd_formats": ["markdown"],
+      "code_analysis_required": true,
+      "function_type_distinction_required": true,
+      "prototype_use_real_code": true
+    }
+  },
+  "human_review_points": [
+    "需求设计完成后"
+  ],
+  "output_paths": {
+    "functional_list": "./docs/功能清单.xlsx",
+    "code_analysis_report": "./docs/代码分析报告.md",
+    "flowchart": "./docs/业务流程图.md",
+    "prototype": "./docs/原型/",
+    "prd_markdown": "./docs/PRD文档.md",
+    "directory_structure_match_code": true
+  },
+  "code_analysis": {
+    "search_scope": ["src/", "models/", "controllers/", "views/"],
+    "search_targets": ["表结构", "业务逻辑", "接口定义"],
+    "analysis_output": "./docs/代码分析报告.md"
+  },
+  "function_types": {
+    "iteration": {
+      "description": "功能变更迭代",
+      "prototype_approach": "基于现有代码修改"
+    },
+    "new_module": {
+      "description": "新增功能模块",
+      "prototype_approach": "全新开发"
+    }
+  }
+}

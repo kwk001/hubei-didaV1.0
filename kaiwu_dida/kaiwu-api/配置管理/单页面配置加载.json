@@ -1,0 +1,40 @@
+{
+  "properties": {
+    "RESOURCE_CODE": "97ca96f5aa974f7fbe29e8f5687d9fe0",
+    "CUSTOMER_ID": "2c6fa439968277bb923f61d114cecc7f",
+    "IS_COMMON": true
+  },
+  "id": "copy1769481644036d4192",
+  "groupId": "c6192b14a953416ea6ba6455d47dac9f",
+  "name": "单页面配置加载",
+  "createTime": null,
+  "updateTime": 1769496322963,
+  "lock": null,
+  "createBy": "hanyulaozhang",
+  "updateBy": "admin",
+  "path": "page/load",
+  "method": "POST",
+  "parameters": [],
+  "options": [],
+  "requestBody": "{\r\n  \r\n    \"pageCode\": \"ruku_8cx571\"\r\n}",
+  "headers": [
+    {
+      "name": "authorization",
+      "value": "Bearer 3f45d402-39dc-4412-a633-984645bc1357",
+      "description": null,
+      "required": false,
+      "dataType": "String",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    }
+  ],
+  "paths": [],
+  "responseBody": "{\n    \"code\": 400,\n    \"message\": \"400 : \\\"{\\\"error_description\\\":\\\"无效的令牌！\\\"}\\\"\",\n    \"data\": null,\n    \"timestamp\": 1769492352024,\n    \"executeTime\": null\n}",
+  "description": null,
+  "requestBodyDefinition": null,
+  "responseBodyDefinition": null
+}

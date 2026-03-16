@@ -1,0 +1,105 @@
+body {
+  font-size: 14px;
+}
+
+html {
+  padding: 0 !important;
+}
+
+.lce-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 5px;
+  box-sizing: border-box;
+}
+
+.table-wrapper {
+  flex: 1;
+}
+
+/* 标题样式 */
+.titleName {
+  padding: 6px 0;
+  margin-bottom: 5px;
+  color: #000;
+  font-weight: 550;
+  position: relative;
+  padding-left: 7px;
+  background: #eaeaea6b;
+  font-size: 15px;
+}
+
+.titleName::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 50%;
+  background: #1877ff;
+}
+
+/* 表单样式微调 */
+.customStyle.ant-form-item {
+  margin-bottom: 0 !important;
+}
+
+.formItemStyle .ant-input-number {
+  width: 100%;
+}
+
+/* 基础信息展示区 */
+.baseInfo {
+  display: flex;
+  flex-wrap: wrap;
+  line-height: 1.8;
+  margin-bottom: 10px;
+}
+
+.baseInfo .infoItem {
+  display: flex;
+  align-items: flex-start;
+}
+
+.infoItem .label {
+  width: 74px;
+  text-align: right;
+  margin-right: 5px;
+}
+
+.infoItem .value {
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+/* 按钮样式 */
+.viewBtn {
+  padding: 2px 6px;
+  font-size: 12px;
+  border-width: 1px;
+  border-style: solid;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* 分页布局 */
+.kaiwuLayout .layoutPaging {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+}
+
+.card-container2 .card-content2 {
+  line-height: 1.8;
+}
+
+.searchSelect .ant-select-selector {
+  height: 32px !important;
+}
+
+/* 去除a标签的默认下划线 */
+a {
+  text-decoration: none;
+}

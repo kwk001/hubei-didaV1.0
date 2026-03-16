@@ -1,0 +1,81 @@
+{
+  "name": "kagent-skills",
+  "owner": {
+    "name": "KaiWu",
+    "email": "dev@kaiwu.com"
+  },
+  "metadata": {
+    "description": "KaiWu Agent Skills Collection",
+    "version": "1.0.0"
+  },
+  "plugins": [
+    {
+      "name": "document-skills",
+      "description": "Collection of document processing suite including Excel, Word, PowerPoint, and PDF capabilities",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./document-skills/xlsx",
+        "./document-skills/docx",
+        "./document-skills/pptx",
+        "./document-skills/pdf"
+      ]
+    },
+    {
+      "name": "development-skills",
+      "description": "Development tools for artifacts building, MCP servers, lowcode generation, requirement preprocessing, and requirement analysis",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./development-skills/artifacts-builder",
+        "./development-skills/mcp-builder",
+        "./development-skills/requirement-preprocessor",
+        "./development-skills/requirement-analyzer",
+        "./development-skills/schema-generator",
+        "./development-skills/lowcode-generator"
+      ]
+    },
+    {
+      "name": "visual-design-skills",
+      "description": "Visual design and styling capabilities for creating graphics, themes, algorithmic art, and brand guidelines",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./visual-design-skills/canvas-design",
+        "./visual-design-skills/theme-factory",
+        "./visual-design-skills/algorithmic-art",
+        "./visual-design-skills/brand-guidelines"
+      ]
+    },
+    {
+      "name": "communication-skills",
+      "description": "Internal communication and messaging tools for team collaboration",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./communication-skills/internal-comms",
+        "./communication-skills/slack-gif-creator"
+      ]
+    },
+    {
+      "name": "testing-skills",
+      "description": "Web application testing and quality assurance capabilities",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./testing-skills/webapp-testing"
+      ]
+    },
+    {
+      "name": "skill-management",
+      "description": "Skill creation and template management tools for extending the platform",
+      "source": "./",
+      "strict": false,
+      "skills": [
+        "./skill-management/skill-creator",
+        "./skill-management/template-skill",
+        "./skill-management/marketplace-generator"
+      ]
+    }
+  ]
+}

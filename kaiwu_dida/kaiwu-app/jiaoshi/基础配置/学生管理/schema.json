@@ -1,0 +1,554 @@
+{
+  "version": "1.0.0",
+  "componentsMap": [
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexLayout",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexLayout"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexDrawer",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexDrawer"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexForm",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexForm"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexTable2",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexTable2"
+    },
+    {
+      "devMode": "lowCode",
+      "componentName": "Page"
+    }
+  ],
+  "componentsTree": [
+    {
+      "componentName": "Page",
+      "id": "node_dockcviv8fo1",
+      "props": {
+        "ref": "outerView",
+        "style": {}
+      },
+      "docId": "doclaqkk3b9",
+      "fileName": "/",
+      "dataSource": {
+        "list": [
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "POST",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8"
+              },
+              "uri": "/mainApi/formEngine/formData/query"
+            },
+            "id": "queryFormData",
+            "shouldFetch": {
+              "type": "JSFunction",
+              "value": "function() { \n  return true; \n}"
+            }
+          },
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "PUT",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8"
+              },
+              "uri": "/mainApi/processengine/app/formData/update"
+            },
+            "id": "updateFormData",
+            "shouldFetch": {
+              "type": "JSFunction",
+              "value": "function() { \n  return true; \n}"
+            }
+          },
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "POST",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8"
+              },
+              "uri": "/mainApi/processengine/app/formData/add"
+            },
+            "id": "addFormData",
+            "shouldFetch": {
+              "type": "JSFunction",
+              "value": "function() { \n  return true; \n}"
+            }
+          },
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "DELETE",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8"
+              },
+              "uri": "/mainApi/processengine/app/formData/delete"
+            },
+            "id": "deleteFormData",
+            "shouldFetch": {
+              "type": "JSFunction",
+              "value": "function() { \n  return true; \n}"
+            }
+          }
+        ]
+      },
+      "hidden": false,
+      "title": "",
+      "isLocked": false,
+      "condition": true,
+      "conditionGroup": "",
+      "children": [
+        {
+          "componentName": "KaiwuFlexDrawer",
+          "id": "node_drawer_create",
+          "props": {
+            "title": {
+              "type": "JSExpression",
+              "value": "this.state.drawerTitle || '新增学生'"
+            },
+            "visible": {
+              "type": "JSExpression",
+              "value": "this.state.isShowAddDrawer",
+              "mock": false
+            },
+            "placement": "right",
+            "operations": [
+              {
+                "content": "取消",
+                "type": "default-carved",
+                "action": "cancel",
+                "disabled": false,
+                "hidden": false,
+                "onClick": {
+                  "type": "JSFunction",
+                  "value": "function(){ return this.closeDrawer.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                }
+              },
+              {
+                "content": "确认",
+                "type": "primary",
+                "action": "submit",
+                "disabled": false,
+                "hidden": false,
+                "onClick": {
+                  "type": "JSFunction",
+                  "value": "function(){ return this.submitDrawer.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                }
+              }
+            ],
+            "width": "600px"
+          },
+          "hidden": false,
+          "title": "新增/编辑抽屉",
+          "isLocked": false,
+          "condition": true,
+          "conditionGroup": "",
+          "children": [
+            {
+              "componentName": "KaiwuFlexForm",
+              "id": "node_form_create",
+              "props": {
+                "ref": "createForm",
+                "globalDisabled": "no",
+                "layout": "vertical",
+                "fieldList": [
+                  {
+                    "label": "学号",
+                    "prop": "studentNo",
+                    "type": "input",
+                    "span": 24,
+                    "placeholder": "请输入学号",
+                    "isShowFormItem": true,
+                    "rules": [{ "required": true, "message": "请输入学号" }]
+                  },
+                  {
+                    "label": "姓名",
+                    "prop": "studentName",
+                    "type": "input",
+                    "span": 24,
+                    "placeholder": "请输入学生姓名",
+                    "isShowFormItem": true,
+                    "rules": [{ "required": true, "message": "请输入学生姓名" }]
+                  },
+                  {
+                    "label": "性别",
+                    "prop": "gender",
+                    "type": "radio",
+                    "span": 24,
+                    "placeholder": "请选择性别",
+                    "isShowFormItem": true,
+                    "rules": [{ "required": true, "message": "请选择性别" }],
+                    "options": [
+                      { "label": "男", "value": "male" },
+                      { "label": "女", "value": "female" }
+                    ]
+                  },
+                  {
+                    "label": "年级",
+                    "prop": "gradeName",
+                    "type": "select",
+                    "span": 24,
+                    "placeholder": "请选择年级",
+                    "isShowFormItem": true,
+                    "rules": [{ "required": true, "message": "请选择年级" }],
+                    "options": [
+                        { "label": "2026级", "value": "2026级" },
+                        { "label": "2025级", "value": "2025级" },
+                        { "label": "2024级", "value": "2024级" }
+                    ]
+                  },
+                  {
+                    "label": "班级",
+                    "prop": "className",
+                    "type": "select",
+                    "span": 24,
+                    "placeholder": "请选择班级",
+                    "isShowFormItem": true,
+                    "rules": [{ "required": true, "message": "请选择班级" }],
+                    "options": [
+                        { "label": "一班", "value": "一班" },
+                        { "label": "二班", "value": "二班" },
+                        { "label": "三班", "value": "三班" }
+                    ]
+                  },
+                  {
+                    "label": "手机号",
+                    "prop": "phone",
+                    "type": "input",
+                    "span": 24,
+                    "placeholder": "请输入手机号",
+                    "isShowFormItem": true,
+                    "rules": [{ "required": false, "pattern": "^1[3-9]\\d{9}$", "message": "手机号格式不正确" }]
+                  },
+                  {
+                    "label": "状态",
+                    "prop": "status",
+                    "type": "select",
+                    "span": 24,
+                    "placeholder": "请选择状态",
+                    "isShowFormItem": true,
+                    "rules": [{ "required": true, "message": "请选择状态" }],
+                    "options": [
+                      { "label": "启用", "value": "enable" },
+                      { "label": "停用", "value": "disable" }
+                    ]
+                  },
+                  {
+                    "label": "备注",
+                    "prop": "remark",
+                    "type": "textArea",
+                    "span": 24,
+                    "placeholder": "请输入备注信息",
+                    "isShowFormItem": true
+                  }
+                ],
+                "labelColSpan": 4,
+                "wrapperColSpan": 24
+              },
+              "hidden": false,
+              "title": "",
+              "isLocked": false,
+              "condition": true,
+              "conditionGroup": ""
+            }
+          ]
+        },
+        {
+          "componentName": "KaiwuFlexLayout",
+          "id": "node_layout_search",
+          "props": {
+            "globalDisabled": "no",
+            "layout": "horizontal",
+            "fieldList": [
+              {
+                "label": "学号",
+                "prop": "studentNo",
+                "type": "input",
+                "span": 6,
+                "placeholder": "请输入学号",
+                "isShowFormItem": true,
+                "listType": "text"
+              },
+              {
+                "label": "姓名",
+                "prop": "studentName",
+                "type": "input",
+                "span": 6,
+                "placeholder": "请输入姓名",
+                "isShowFormItem": true,
+                "listType": "text"
+              },
+              {
+                "label": "状态",
+                "prop": "status",
+                "type": "select",
+                "span": 6,
+                "placeholder": "请选择状态",
+                "showSearch": true,
+                "allowClear": true,
+                "isShowFormItem": true,
+                "options": [
+                  { "label": "启用", "value": "enable" },
+                  { "label": "停用", "value": "disable" }
+                ],
+                "listType": "text"
+              }
+            ],
+            "labelColSpan": 6,
+            "wrapperColSpan": 18,
+            "showPage": true,
+            "showLoading": {
+              "type": "JSExpression",
+              "value": "this.state.loading",
+              "mock": false
+            },
+            "loadingText": "加载中...",
+            "current": {
+              "type": "JSExpression",
+              "value": "this.state.page.current",
+              "mock": 1
+            },
+            "pageSize": {
+              "type": "JSExpression",
+              "value": "this.state.page.size",
+              "mock": 10
+            },
+            "total": {
+              "type": "JSExpression",
+              "value": "this.state.page.total",
+              "mock": 0
+            },
+            "headerBtnGroupLeft": [
+                {
+                    "btnLabel": "新增学生",
+                    "btnProp": "addStudentBtn",
+                    "btnType": "add",
+                    "btnSize": "middle",
+                    "btnClick": {
+                      "type": "JSFunction",
+                      "value": "function(){ return this.openAddDrawer.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                    }
+                }
+            ],
+            "ref": "searchLayout",
+            "__events": {
+              "eventDataList": [
+                {
+                  "type": "componentEvent",
+                  "name": "onSearch",
+                  "relatedEventName": "onSearchlHandel"
+                },
+                {
+                  "type": "componentEvent",
+                  "name": "onReset",
+                  "relatedEventName": "onSearchReset"
+                }
+              ],
+              "eventList": [
+                {
+                  "name": "onSearch",
+                  "disabled": false
+                },
+                {
+                  "name": "onReset",
+                  "disabled": false
+                }
+              ]
+            },
+            "onSearch": {
+              "type": "JSFunction",
+              "value": "function(){return this.onSearchlHandel.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+            },
+            "onReset": {
+              "type": "JSFunction",
+              "value": "function(){return this.onSearchReset.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+            },
+            "currentOrSizeChange": {
+              "type": "JSFunction",
+              "value": "function(){ return this.onCurrentOrSizeChange.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+            }
+          },
+          "hidden": false,
+          "title": "页面",
+          "isLocked": false,
+          "condition": true,
+          "conditionGroup": "",
+          "children": [
+            {
+              "componentName": "KaiwuFlexTable2",
+              "id": "node_table_list",
+              "props": {
+                "primaryKey": "id",
+                "columns": [
+                  {
+                    "title": "学号",
+                    "dataIndex": "studentNo",
+                    "key": "studentNo",
+                    "width": "120px",
+                    "align": "center"
+                  },
+                  {
+                    "title": "姓名",
+                    "dataIndex": "studentName",
+                    "key": "studentName",
+                    "width": "100px",
+                    "align": "center"
+                  },
+                  {
+                    "title": "性别",
+                    "dataIndex": "gender",
+                    "key": "gender",
+                    "width": "80px",
+                    "align": "center",
+                    "render": {
+                        "type": "JSFunction",
+                        "value": "function(){ return this.renderGender.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                    }
+                  },
+                  {
+                    "title": "年级",
+                    "dataIndex": "gradeName",
+                    "key": "gradeName",
+                    "width": "100px",
+                    "align": "center"
+                  },
+                  {
+                    "title": "班级",
+                    "dataIndex": "className",
+                    "key": "className",
+                    "width": "100px",
+                    "align": "center"
+                  },
+                  {
+                    "title": "手机号",
+                    "dataIndex": "phone",
+                    "key": "phone",
+                    "width": "120px",
+                    "align": "center"
+                  },
+                  {
+                    "title": "状态",
+                    "dataIndex": "status",
+                    "key": "status",
+                    "width": "100px",
+                    "align": "center",
+                    "render": {
+                        "type": "JSFunction",
+                        "value": "function(){ return this.renderStatus.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                    }
+                  },
+                  {
+                    "title": "创建时间",
+                    "dataIndex": "createTime",
+                    "key": "createTime",
+                    "width": "180px",
+                    "align": "center"
+                  }
+                ],
+                "dataSource": {
+                  "type": "JSExpression",
+                  "value": "this.state.tableList || []"
+                },
+                "actionColumnProps": {
+                  "title": "操作",
+                  "width": 150,
+                  "fixed": "right"
+                },
+                "actionColumnButtons": {
+                  "dataSource": [
+                    {
+                      "children": "编辑",
+                      "type": "link",
+                      "onRowClick": {
+                        "type": "JSFunction",
+                        "value": "function(){ return this.onEditClick.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                      }
+                    },
+                    {
+                      "children": "删除",
+                      "type": "link",
+                      "status": "danger",
+                      "onRowClick": {
+                        "type": "JSFunction",
+                        "value": "function(){ return this.onDeleteClick.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                      }
+                    }
+                  ]
+                },
+                "paginationProps": {
+                  "hidden": false,
+                  "total": {
+                    "type": "JSExpression",
+                    "value": "this.state.page.total"
+                  },
+                  "current": {
+                    "type": "JSExpression",
+                    "value": "this.state.page.current"
+                  },
+                  "pageSize": {
+                    "type": "JSExpression",
+                    "value": "this.state.page.size"
+                  },
+                   "onChange": {
+                    "type": "JSFunction",
+                    "value": "function(){ return this.onPageChange.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                  }
+                },
+                "bordered": true
+              },
+              "hidden": false,
+              "title": "",
+              "isLocked": false,
+              "condition": true,
+              "conditionGroup": ""
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "i18n": {
+    "zh-CN": {},
+    "en-US": {}
+  }
+}

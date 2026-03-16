@@ -1,0 +1,107 @@
+{
+  "properties": {
+    "RESOURCE_CODE": "da1afde8ac2c4837a65d458ae768fe74",
+    "IS_COMMON": true,
+    "CUSTOMER_ID": "e57e42de5824447ea7deb7138591f264"
+  },
+  "id": "copy1735972573629d39465",
+  "groupId": "7d7838094aea42ac8edd4fcab9cceb26",
+  "name": "服务商端查看设备列表",
+  "createTime": null,
+  "updateTime": 1735974905057,
+  "lock": "0",
+  "createBy": null,
+  "updateBy": "admin",
+  "path": "queryDeviceList",
+  "method": "GET",
+  "parameters": [
+    {
+      "name": "customerId",
+      "value": "8cf09c18a3d650d71d50533b3a0610a2",
+      "description": null,
+      "required": true,
+      "dataType": "String",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    },
+    {
+      "name": "customerName",
+      "value": "安徽目氪高新技术有限公司",
+      "description": null,
+      "required": false,
+      "dataType": "String",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    },
+    {
+      "name": "pageSize",
+      "value": "50",
+      "description": null,
+      "required": true,
+      "dataType": "Integer",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    },
+    {
+      "name": "page",
+      "value": "1",
+      "description": null,
+      "required": true,
+      "dataType": "Integer",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    }
+  ],
+  "options": [
+    {
+      "name": "X-API-KEY",
+      "value": "66178227cbff270007b06c72",
+      "description": null,
+      "required": false,
+      "dataType": "String",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    }
+  ],
+  "requestBody": "",
+  "headers": [
+    {
+      "name": "X-API-KEY",
+      "value": "66178227cbff270007b06c72",
+      "description": null,
+      "required": false,
+      "dataType": "String",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    }
+  ],
+  "paths": [],
+  "responseBody": "{\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"pageSize\": 50,\n        \"page\": 1,\n        \"data\": [\n            {\n                \"title\": \"安徽目氪高新技术有限公司\",\n                \"id\": \"ac1d3420-df8a-11ee-87f1-9dda14ea1b68\",\n                \"created_time\": 1710149718114,\n                \"additional_info\": \"{\\\"gateway\\\":false,\\\"overwriteActivityTime\\\":false,\\\"description\\\":\\\"\\\"}\",\n                \"customer_id\": \"13814000-1dd2-11b2-8080-808080808080\",\n                \"device_profile_id\": \"7330c140-df8a-11ee-87f1-9dda14ea1b68\",\n                \"device_data\": {\n                    \"type\": \"jsonb\",\n                    \"value\": \"{\\\"configuration\\\": {\\\"type\\\": \\\"DEFAULT\\\"}, \\\"transportConfiguration\\\": {\\\"type\\\": \\\"DEFAULT\\\"}}\",\n                    \"null\": true\n                },\n                \"type\": \"default\",\n                \"name\": \"设备 1\",\n                \"label\": \"\",\n                \"search_text\": \"设备 1\",\n                \"tenant_id\": \"732fafd0-df8a-11ee-87f1-9dda14ea1b68\",\n                \"firmware_id\": null,\n                \"software_id\": null,\n                \"onlinestatus\": null,\n                \"lastactivitytime\": null\n            },\n            {\n                \"title\": \"安徽目氪高新技术有限公司\",\n                \"id\": \"81b9ddd0-e063-11ee-87f1-9dda14ea1b68\",\n                \"created_time\": 1710242847789,\n                \"additional_info\": \"{\\\"lastConnectedGateway\\\":\\\"e03c4290-e05d-11ee-87f1-9dda14ea1b68\\\"}\",\n                \"customer_id\": \"5637a7e0-e069-11ee-87f1-9dda14ea1b68\",\n                \"device_profile_id\": \"706eae70-e063-11ee-87f1-9dda14ea1b68\",\n                \"device_data\": {\n                    \"type\": \"jsonb\",\n                    \"value\": \"{\\\"configuration\\\": {\\\"type\\\": \\\"DEFAULT\\\"}, \\\"transportConfiguration\\\": {\\\"type\\\": \\\"DEFAULT\\\"}}\",\n                    \"null\": true\n                },\n                \"type\": \"电表\",\n                \"name\": \"11\",\n                \"label\": \"二层电表\",\n                \"search_text\": \"11\",\n                \"tenant_id\": \"732fafd0-df8a-11ee-87f1-9dda14ea1b68\",\n                \"firmware_id\": null,\n                \"software_id\": null,\n                \"onlinestatus\": 1,\n                \"lastactivitytime\": 1735973803246\n            },\n            {\n                \"title\": \"安徽目氪高新技术有限公司\",\n                \"id\": \"70703510-e063-11ee-87f1-9dda14ea1b68\",\n                \"created_time\": 1710242818785,\n                \"additional_info\": \"{\\\"lastConnectedGateway\\\":\\\"e03c4290-e05d-11ee-87f1-9dda14ea1b68\\\"}\",\n                \"customer_id\": \"5637a7e0-e069-11ee-87f1-9dda14ea1b68\",\n                \"device_profile_id\": \"706eae70-e063-11ee-87f1-9dda14ea1b68\",\n                \"device_data\": {\n                    \"type\": \"jsonb\",\n                    \"value\": \"{\\\"configuration\\\": {\\\"type\\\": \\\"DEFAULT\\\"}, \\\"transportConfiguration\\\": {\\\"type\\\": \\\"DEFAULT\\\"}}\",\n                    \"null\": true\n                },\n                \"type\": \"电表\",\n                \"name\": \"22\",\n                \"label\": \"一层和三层电表\",\n                \"search_text\": \"22\",\n                \"tenant_id\": \"732fafd0-df8a-11ee-87f1-9dda14ea1b68\",\n                \"firmware_id\": null,\n                \"software_id\": null,\n                \"onlinestatus\": 1,\n                \"lastactivitytime\": 1735973840257\n            }\n        ],\n        \"total\": 3\n    },\n    \"timestamp\": 1735973849946,\n    \"requestTime\": 1735973846979,\n    \"executeTime\": 2967\n}",
+  "description": null,
+  "requestBodyDefinition": null,
+  "responseBodyDefinition": null
+}

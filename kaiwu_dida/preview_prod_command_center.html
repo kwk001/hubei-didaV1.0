@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>生产指挥中心 - 预览</title>
+    <style>
+      html, body, #root { width: 100%; height: 100%; margin: 0; padding: 0; background: #001529; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.5.0/echarts.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+    <script type="text/babel">
+      const { Component } = React;
+
+      class LowcodeComponent extends Component {
+        state = {
+          metrics: { totalOutput: 0, oee: '0.0', fpy: '0.0', activeAlerts: 0 },
+          lineData: [],
+          deviceStatus: [],
+          alerts: [],
+          trendData: { x: [], y: [] },
+          currentTime: ''
+        };
+
+        componentDidMount() {
+          this.updateTime();
+          this.timeTimer = setInterval(() => this.updateTime(), 1000);
+          this.initData();
+          this.dataTimer = setInterval(() => this.loadMockData(), 30000);
+          this.handleResize = this.handleResize.bind(this);
+          window.addEventListener('resize', this.handleResize);
+        }
+
+        componentWillUnmount() {
+          this.timeTimer && clearInterval(this.timeTimer);
+          this.dataTimer && clearInterval(this.dataTimer);
+          window.removeEventListener('resize', this.handleResize);
+          ['chart-line-rank', 'chart-device-status', 'chart-trend'].forEach((id) => {
+            const dom = document.getElementById(id);
+            const chart = dom && window.echarts && window.echarts.getInstanceByDom(dom);
+            chart && chart.dispose();
+          });
+        }
+
+        updateTime() {
+          const timeStr = window.moment ? window.moment().format('YYYY-MM-DD HH:mm:ss') : new Date().toLocaleString();
+          this.setState({ currentTime: timeStr });
+        }
+
+        initData() {
+          this.loadMockData();
+        }
+
+        loadMockData() {
+          const now = window.moment ? window.moment() : null;
+          const fmtHour = (m) => (window.moment ? m.format('HH:00') : '00:00');
+          const fmtTime = () => (window.moment ? window.moment().format('HH:mm:ss') : new Date().toLocaleTimeString());
+
+          const metrics = {
+            totalOutput: 12580 + Math.floor(Math.random() * 200),
+            oee: (85 + Math.random() * 10).toFixed(1),
+            fpy: (96 + Math.random() * 3).toFixed(1),
+            activeAlerts: Math.floor(Math.random() * 5)
+          };
+
+          const lines = ['A', 'B', 'C', 'D', 'E', 'F'];
+          const lineData = lines
+            .map((line) => ({ name: `产线 ${line}`, value: 2000 + Math.floor(Math.random() * 1000) }))
+            .sort((a, b) => b.value - a.value);
+
+          const deviceStatus = [
+            { value: 45, name: '运行中', itemStyle: { color: '#25ec25' } },
+            { value: 5, name: '待机', itemStyle: { color: '#faad14' } },
+            { value: 2, name: '故障', itemStyle: { color: '#ff3232' } }
+          ];
+
+          const hours = Array.from({ length: 8 }, (_, i) => {
+            if (!window.moment || !now) return `${String(i).padStart(2, '0')}:00`;
+            return fmtHour(window.moment().subtract(7 - i, 'hours'));
+          });
+          const trendData = { x: hours, y: hours.map(() => 1500 + Math.floor(Math.random() * 500)) };
+
+          const alertTypes = ['物料短缺', '设备过热', '人员离岗', '质量异常'];
+          const alerts = Array.from({ length: 5 }, (_, i) => ({
+            id: i,
+            time: fmtTime(),
+            msg: `产线 ${lines[i % lines.length]} 发生 ${alertTypes[i % alertTypes.length]}`
+          }));
+
+          this.setState({ metrics, lineData, deviceStatus, trendData, alerts }, () => {
+            setTimeout(() => this.renderCharts(), 80);
+          });
+        }
+
+        handleResize() {
+          ['chart-line-rank', 'chart-device-status', 'chart-trend'].forEach((id) => {
+            const dom = document.getElementById(id);
+            const chart = dom && window.echarts && window.echarts.getInstanceByDom(dom);
+            chart && chart.resize();
+          });
+        }
+
+        renderCharts() {
+          if (!window.echarts) return;
+          this.initChart('chart-line-rank', this.getLineRankOption());
+          this.initChart('chart-device-status', this.getDeviceStatusOption());
+          this.initChart('chart-trend', this.getTrendOption());
+        }
+
+        initChart(id, option) {
+          if (!window.echarts) return;
+          const dom = document.getElementById(id);
+          if (!dom) return;
+          let chart = window.echarts.getInstanceByDom(dom);
+          if (!chart) chart = window.echarts.init(dom);
+          chart.setOption(option, true);
+        }
+
+        getLineRankOption() {
+          return {
+            tooltip: { trigger: 'axis' },
+            grid: { top: 10, bottom: 20, left: 80, right: 20 },
+            xAxis: { type: 'value', show: false },
+            yAxis: {
+              type: 'category',
+              data: this.state.lineData.map((d) => d.name),
+              inverse: true,
+              axisLabel: {
+                formatter: (value, index) => {
+                  const rank = index + 1;
+                  return `{rank${rank <= 3 ? rank : 'Other'}|${rank}} ${value}`;
+                },
+                rich: {
+                  rank1: { backgroundColor: '#ff3232', color: '#fff', borderRadius: 10, width: 20, height: 20, align: 'center' },
+                  rank2: { backgroundColor: '#faad14', color: '#fff', borderRadius: 10, width: 20, height: 20, align: 'center' },
+                  rank3: { backgroundColor: '#fadb14', color: '#fff', borderRadius: 10, width: 20, height: 20, align: 'center' },
+                  rankOther: { backgroundColor: '#d9d9d9', color: '#666', borderRadius: 10, width: 20, height: 20, align: 'center' }
+                }
+              }
+            },
+            series: [
+              {
+                type: 'bar',
+                data: this.state.lineData.map((d, i) => ({
+                  value: d.value,
+                  itemStyle: {
+                    color:
+                      i === 0
+                        ? new window.echarts.graphic.LinearGradient(1, 0, 0, 0, [
+                            { offset: 0, color: '#ff4d4f' },
+                            { offset: 1, color: '#ffccc7' }
+                          ])
+                        : i === 1
+                          ? new window.echarts.graphic.LinearGradient(1, 0, 0, 0, [
+                              { offset: 0, color: '#faad14' },
+                              { offset: 1, color: '#ffe58f' }
+                            ])
+                          : i === 2
+                            ? new window.echarts.graphic.LinearGradient(1, 0, 0, 0, [
+                                { offset: 0, color: '#fadb14' },
+                                { offset: 1, color: '#ffffb8' }
+                              ])
+                            : '#1890ff'
+                  }
+                })),
+                barWidth: 15,
+                label: { show: true, position: 'right' }
+              }
+            ]
+          };
+        }
+
+        getDeviceStatusOption() {
+          return {
+            tooltip: { trigger: 'item' },
+            legend: { bottom: 0, textStyle: { color: '#fff' } },
+            series: [
+              { type: 'pie', radius: ['40%', '70%'], center: ['50%', '45%'], data: this.state.deviceStatus, label: { show: false } }
+            ]
+          };
+        }
+
+        getTrendOption() {
+          return {
+            tooltip: { trigger: 'axis' },
+            grid: { top: 30, bottom: 20, left: 40, right: 20 },
+            xAxis: { type: 'category', data: this.state.trendData.x, axisLine: { lineStyle: { color: '#aaa' } } },
+            yAxis: { type: 'value', splitLine: { lineStyle: { color: '#333' } }, axisLine: { lineStyle: { color: '#aaa' } } },
+            series: [
+              {
+                data: this.state.trendData.y,
+                type: 'line',
+                smooth: true,
+                areaStyle: {
+                  color: new window.echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    { offset: 0, color: 'rgba(24,144,255,0.5)' },
+                    { offset: 1, color: 'rgba(24,144,255,0.01)' }
+                  ])
+                },
+                itemStyle: { color: '#1890ff' }
+              }
+            ]
+          };
+        }
+
+        renderScreen() {
+          const { metrics, alerts, currentTime } = this.state;
+          return (
+            <div className="dashboard-container" style={{ width: '100%', height: '100vh', background: '#001529', color: '#fff', overflow: 'hidden', padding: '10px' }}>
+              <div className="header" style={{ height: '60px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '2px solid #1890ff', marginBottom: '10px' }}>
+                <div style={{ fontSize: '24px', fontWeight: 'bold', paddingLeft: '20px' }}>生产指挥中心</div>
+                <div style={{ fontSize: '16px', paddingRight: '20px' }}>{currentTime}</div>
+              </div>
+              <div className="content" style={{ display: 'flex', height: 'calc(100% - 80px)' }}>
+                <div className="left-panel" style={{ flex: 3, display: 'flex', flexDirection: 'column', paddingRight: '10px' }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '10px' }}>
+                    <div style={{ background: '#002140', padding: '10px', flex: 1, marginRight: '5px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '12px', color: '#aaa' }}>OEE</div>
+                      <div style={{ fontSize: '20px', color: '#25ec25', fontWeight: 'bold' }}>{metrics.oee}%</div>
+                    </div>
+                    <div style={{ background: '#002140', padding: '10px', flex: 1, marginLeft: '5px', textAlign: 'center' }}>
+                      <div style={{ fontSize: '12px', color: '#aaa' }}>FPY</div>
+                      <div style={{ fontSize: '20px', color: '#25ec25', fontWeight: 'bold' }}>{metrics.fpy}%</div>
+                    </div>
+                  </div>
+                  <div style={{ flex: 1, background: '#002140', padding: '10px', borderRadius: '4px' }}>
+                    <div style={{ borderLeft: '4px solid #1890ff', paddingLeft: '10px', marginBottom: '10px' }}>产线产量排名 (Top 6)</div>
+                    <div id="chart-line-rank" style={{ width: '100%', height: 'calc(100% - 30px)' }}></div>
+                  </div>
+                </div>
+                <div className="center-panel" style={{ flex: 5, display: 'flex', flexDirection: 'column', padding: '0 10px' }}>
+                  <div style={{ height: '100px', background: 'rgba(24,144,255,0.1)', display: 'flex', justifyContent: 'center', alignItems: 'center', marginBottom: '10px', border: '1px solid #1890ff' }}>
+                    <div style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '14px', color: '#1890ff' }}>当日总产量 (PCS)</div>
+                      <div style={{ fontSize: '48px', color: '#fff', fontWeight: 'bold', fontFamily: 'monospace' }}>{Number(metrics.totalOutput || 0).toLocaleString()}</div>
+                    </div>
+                  </div>
+                  <div style={{ flex: 1, background: '#002140', marginBottom: '10px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <div style={{ color: '#aaa' }}>[ 车间数字孪生地图占位 ]</div>
+                  </div>
+                  <div style={{ height: '150px', background: '#2a1215', border: '1px solid #ff4d4f', padding: '10px', overflow: 'hidden' }}>
+                    <div style={{ color: '#ff4d4f', fontWeight: 'bold', marginBottom: '5px' }}>实时生产异常 ({metrics.activeAlerts})</div>
+                    <div style={{ height: '110px', overflowY: 'auto' }}>
+                      {alerts.map((alert) => (
+                        <div key={alert.id} style={{ fontSize: '12px', color: '#ffccc7', padding: '4px 0', borderBottom: '1px dashed rgba(255,77,79,0.3)' }}>
+                          <span style={{ marginRight: '10px' }}>[{alert.time}]</span>
+                          {alert.msg}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+                <div className="right-panel" style={{ flex: 3, display: 'flex', flexDirection: 'column', paddingLeft: '10px' }}>
+                  <div style={{ flex: 1, background: '#002140', padding: '10px', borderRadius: '4px', marginBottom: '10px' }}>
+                    <div style={{ borderLeft: '4px solid #1890ff', paddingLeft: '10px', marginBottom: '10px' }}>设备运行状态</div>
+                    <div id="chart-device-status" style={{ width: '100%', height: 'calc(100% - 30px)' }}></div>
+                  </div>
+                  <div style={{ flex: 1, background: '#002140', padding: '10px', borderRadius: '4px' }}>
+                    <div style={{ borderLeft: '4px solid #1890ff', paddingLeft: '10px', marginBottom: '10px' }}>每小时产量趋势</div>
+                    <div id="chart-trend" style={{ width: '100%', height: 'calc(100% - 30px)' }}></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        render() {
+          return this.renderScreen();
+        }
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(<LowcodeComponent />);
+    </script>
+  </body>
+</html>

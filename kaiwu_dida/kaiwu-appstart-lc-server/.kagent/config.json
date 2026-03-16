@@ -1,0 +1,28 @@
+{
+  "version": "1.0.0",
+  "createdAt": "2026-01-30T12:16:43.652Z",
+  "projectName": "kaiwu-appstart-lc-server",
+  "projectDir": "/Users/apple/Desktop/文件/kaiwu_dida/kaiwu-appstart-lc-server",
+  "skills": {
+    "system": {
+      "path": "skills/system",
+      "readonly": true,
+      "description": "Built-in system skills"
+    },
+    "project": {
+      "path": "skills/project",
+      "readonly": false,
+      "description": "Project-specific skills"
+    },
+    "user": {
+      "path": "skills/user",
+      "readonly": false,
+      "description": "User custom skills"
+    }
+  },
+  "workspace": {
+    "maxSessions": 100,
+    "sessionTTL": 3600,
+    "cleanupInterval": 600
+  }
+}

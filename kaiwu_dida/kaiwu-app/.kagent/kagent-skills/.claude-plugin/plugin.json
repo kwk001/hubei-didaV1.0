@@ -1,0 +1,11 @@
+{
+  "name": "kagent-skills",
+  "version": "1.0.0",
+  "description": "Kagent official skills collection for lowcode development with AI-powered capabilities",
+  "author": {
+    "name": "Kaiwu Cloud",
+    "email": "dev@kaiwu.com"
+  },
+  "license": "MIT",
+  "keywords": ["lowcode", "ai", "skills", "development"]
+}

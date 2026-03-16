@@ -1,0 +1,804 @@
+{
+  "version": "1.0.0",
+  "componentsMap": [
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuJsx2",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuJsx2"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexLayout",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexLayout"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexDialog2",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexDialog2"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexForm",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexForm"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexDrawer",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexDrawer"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuFlexTable2",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuFlexTable2"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.1.0",
+      "exportName": "KaiwuJsx",
+      "main": "src/index.tsx",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "KaiwuJsx"
+    },
+    {
+      "devMode": "lowCode",
+      "componentName": "Page"
+    },
+    {
+      "package": "@alifd/next",
+      "version": "1.25.23",
+      "exportName": "Tab",
+      "main": "",
+      "destructuring": true,
+      "subName": "",
+      "componentName": "Tab"
+    },
+    {
+      "package": "@alifd/fusion-ui",
+      "version": "2.0.1",
+      "exportName": "TabContainer",
+      "main": "lib/index.js",
+      "destructuring": true,
+      "subName": "Item",
+      "componentName": "Tab.Item"
+    }
+  ],
+  "componentsTree": [
+    {
+      "componentName": "Page",
+      "id": "node_dockcviv8fo1",
+      "props": {
+        "ref": "outerView",
+        "style": {}
+      },
+      "docId": "doclaqkk3b9",
+      "fileName": "/",
+      "dataSource": {
+        "list": [
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "POST",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8"
+              },
+              "uri": "/mainApi/formEngine/formData/query"
+            },
+            "id": "queryFormData",
+            "shouldFetch": {
+              "type": "JSFunction",
+              "value": "function() { \n  return true; \n}"
+            }
+          },
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "PUT",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8"
+              },
+              "uri": "/mainApi/processengine/app/formData/update"
+            },
+            "id": "updateFormData",
+            "shouldFetch": {
+              "type": "JSFunction",
+              "value": "function() { \n  return true; \n}"
+            }
+          },
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "POST",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8"
+              },
+              "uri": "/mainApi/processengine/app/formData/add"
+            },
+            "id": "addFormData",
+            "shouldFetch": {
+              "type": "JSFunction",
+              "value": "function() { \n  return true; \n}"
+            }
+          },
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "DELETE",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json; charset=UTF-8"
+              },
+              "uri": "/mainApi/processengine/app/formData/delete"
+            },
+            "id": "deleteFormData",
+            "shouldFetch": {
+              "type": "JSFunction",
+              "value": "function() { \n  return true; \n}"
+            }
+          },
+          {
+            "type": "fetch",
+            "isInit": false,
+            "options": {
+              "params": {},
+              "method": "POST",
+              "isCors": true,
+              "timeout": 5000,
+              "headers": {
+                "content-type": "application/json"
+              },
+              "uri": "/mainApi/processengine/app/application/getFileUrls"
+            },
+            "id": "getFileUrls"
+          }
+        ]
+      },
+      "hidden": false,
+      "title": "",
+      "isLocked": false,
+      "condition": true,
+      "conditionGroup": "",
+      "children": [
+        {
+          "componentName": "KaiwuFlexDrawer",
+          "id": "node_drawer_create",
+          "props": {
+            "title": {
+              "type": "JSExpression",
+              "value": "this.state.drawerTitle || '新增辅材'"
+            },
+            "visible": {
+              "type": "JSExpression",
+              "value": "this.state.isShowAddDrawer",
+              "mock": false
+            },
+            "placement": "right",
+            "operations": [
+              {
+                "content": "取消",
+                "type": "default-carved",
+                "action": "cancel",
+                "disabled": false,
+                "hidden": false,
+                "onClick": {
+                  "type": "JSFunction",
+                  "value": "function(){ return this.closeDrawer.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                }
+              },
+              {
+                "content": "确认",
+                "type": "primary",
+                "action": "submit",
+                "disabled": false,
+                "hidden": false,
+                "onClick": {
+                  "type": "JSFunction",
+                  "value": "function(){ return this.submitDrawer.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                }
+              }
+            ],
+            "width": "600px"
+          },
+          "hidden": false,
+          "title": "新增/编辑抽屉",
+          "isLocked": false,
+          "condition": true,
+          "conditionGroup": "",
+          "children": [
+            {
+              "componentName": "KaiwuFlexForm",
+              "id": "node_form_create",
+              "props": {
+                "ref": "createForm",
+                "globalDisabled": "no",
+                "layout": "vertical",
+                "fieldList": [
+                  {
+                    "label": "年级",
+                    "prop": "grade",
+                    "type": "select",
+                    "span": 24,
+                    "placeholder": "请选择年级",
+                    "showSearch": true,
+                    "allowClear": true,
+                    "isShowFormItem": true,
+                    "rules": [{ "required": true, "message": "请选择年级" }],
+                    "options": [
+                      { "label": "一年级", "value": "一年级" },
+                      { "label": "二年级", "value": "二年级" },
+                      { "label": "三年级", "value": "三年级" },
+                      { "label": "四年级", "value": "四年级" },
+                      { "label": "五年级", "value": "五年级" },
+                      { "label": "六年级", "value": "六年级" }
+                    ]
+                  },
+                  {
+                    "label": "辅材名称",
+                    "prop": "materialName",
+                    "type": "input",
+                    "span": 24,
+                    "placeholder": "请输入辅材名称",
+                    "isShowFormItem": true,
+                    "rules": [{ "required": true, "message": "请输入辅材名称" }]
+                  },
+                  {
+                    "label": "附件",
+                    "prop": "attachment",
+                    "type": "upload",
+                    "span": 24,
+                    "placeholder": "请上传附件",
+                    "isShowFormItem": true,
+                    "action": "/mainApi/processengine/app/application/upload",
+                    "limit": 1
+                  },
+                  {
+                    "label": "备注",
+                    "prop": "remark",
+                    "type": "textArea",
+                    "span": 24,
+                    "placeholder": "请输入备注信息",
+                    "isShowFormItem": true
+                  }
+                ],
+                "labelColSpan": 4,
+                "wrapperColSpan": 24
+              },
+              "hidden": false,
+              "title": "",
+              "isLocked": false,
+              "condition": true,
+              "conditionGroup": ""
+            }
+          ]
+        },
+        {
+          "componentName": "Tab",
+          "id": "node_tab_main",
+          "props": {
+            "shape": "pure",
+            "size": "medium",
+            "unmountInactiveTabs": true,
+            "activeKey": {
+                "type": "JSExpression",
+                "value": "this.state.activeTab"
+            },
+            "onChange": {
+              "type": "JSFunction",
+              "value": "function(){ return this.onTabChange.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+            }
+          },
+          "hidden": false,
+          "title": "Tabs",
+          "isLocked": false,
+          "condition": true,
+          "conditionGroup": "",
+          "children": [
+            {
+              "componentName": "Tab.Item",
+              "id": "node_tab_item_my",
+              "props": {
+                "key": "my",
+                "title": "我的辅材教材"
+              },
+              "hidden": false,
+              "title": "",
+              "isLocked": false,
+              "condition": true,
+              "conditionGroup": "",
+              "children": [
+                {
+                  "componentName": "KaiwuFlexLayout",
+                  "id": "node_layout_search_my",
+                  "props": {
+                    "globalDisabled": "no",
+                    "layout": "horizontal",
+                    "fieldList": [
+                      {
+                        "label": "年级",
+                        "prop": "grade",
+                        "type": "select",
+                        "span": 8,
+                        "placeholder": "请选择年级",
+                        "showSearch": true,
+                        "allowClear": true,
+                        "isShowFormItem": true,
+                        "options": [
+                          { "label": "一年级", "value": "一年级" },
+                          { "label": "二年级", "value": "二年级" },
+                          { "label": "三年级", "value": "三年级" },
+                          { "label": "四年级", "value": "四年级" },
+                          { "label": "五年级", "value": "五年级" },
+                          { "label": "六年级", "value": "六年级" }
+                        ],
+                        "listType": "text"
+                      },
+                      {
+                        "label": "辅材名称",
+                        "prop": "materialName",
+                        "type": "input",
+                        "span": 8,
+                        "placeholder": "请输入辅材名称",
+                        "isShowFormItem": true,
+                        "listType": "text"
+                      }
+                    ],
+                    "labelColSpan": 6,
+                    "wrapperColSpan": 18,
+                    "showPage": true,
+                    "showLoading": {
+                      "type": "JSExpression",
+                      "value": "this.state.loading",
+                      "mock": false
+                    },
+                    "loadingText": "加载中...",
+                    "current": {
+                      "type": "JSExpression",
+                      "value": "this.state.page.current",
+                      "mock": 1
+                    },
+                    "pageSize": {
+                      "type": "JSExpression",
+                      "value": "this.state.page.size",
+                      "mock": 10
+                    },
+                    "total": {
+                      "type": "JSExpression",
+                      "value": "this.state.page.total",
+                      "mock": 0
+                    },
+                    "headerBtnGroupLeft": [
+                        {
+                            "btnLabel": "新增辅材",
+                            "btnProp": "addMaterialBtn",
+                            "btnType": "add",
+                            "btnSize": "middle",
+                            "btnClick": {
+                              "type": "JSFunction",
+                              "value": "function(){ return this.addInStockOrder.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                            }
+                        }
+                    ],
+                    "ref": "searchLayoutMy",
+                    "__events": {
+                      "eventDataList": [
+                        {
+                          "type": "componentEvent",
+                          "name": "onSearch",
+                          "relatedEventName": "onSearchlHandel"
+                        },
+                        {
+                          "type": "componentEvent",
+                          "name": "onReset",
+                          "relatedEventName": "onSearchReset"
+                        }
+                      ],
+                      "eventList": [
+                        {
+                          "name": "onSearch",
+                          "disabled": false
+                        },
+                        {
+                          "name": "onReset",
+                          "disabled": false
+                        }
+                      ]
+                    },
+                    "onSearch": {
+                      "type": "JSFunction",
+                      "value": "function(){return this.onSearchlHandel.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                    },
+                    "onReset": {
+                      "type": "JSFunction",
+                      "value": "function(){return this.onSearchReset.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                    },
+                    "currentOrSizeChange": {
+                      "type": "JSFunction",
+                      "value": "function(){ return this.onCurrentOrSizeChange.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                    }
+                  },
+                  "hidden": false,
+                  "title": "页面",
+                  "isLocked": false,
+                  "condition": true,
+                  "conditionGroup": "",
+                  "children": [
+                    {
+                      "componentName": "KaiwuFlexTable2",
+                      "id": "node_table_list_my",
+                      "props": {
+                        "primaryKey": "id",
+                        "columns": [
+                          {
+                            "title": "年级",
+                            "dataIndex": "grade",
+                            "key": "grade",
+                            "width": "120px",
+                            "align": "center"
+                          },
+                          {
+                            "title": "辅材名称",
+                            "dataIndex": "materialName",
+                            "key": "materialName",
+                            "width": "200px",
+                            "align": "left"
+                          },
+                          {
+                            "title": "附件",
+                            "dataIndex": "attachment",
+                            "key": "attachment",
+                            "width": "150px",
+                            "align": "center",
+                            "render": {
+                              "type": "JSFunction",
+                              "value": "function(){ return this.renderAttachment.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                            }
+                          },
+                          {
+                            "title": "备注",
+                            "dataIndex": "remark",
+                            "key": "remark",
+                            "width": "200px",
+                            "align": "left"
+                          },
+                          {
+                            "title": "更新时间",
+                            "dataIndex": "updateTime",
+                            "key": "updateTime",
+                            "width": "180px",
+                            "align": "center"
+                          }
+                        ],
+                        "dataSource": {
+                          "type": "JSExpression",
+                          "value": "this.state.tableList || []"
+                        },
+                        "actionColumnProps": {
+                          "title": "操作",
+                          "width": 150,
+                          "fixed": "right"
+                        },
+                        "actionColumnButtons": {
+                          "dataSource": [
+                            {
+                              "children": "编辑",
+                              "type": "link",
+                              "onRowClick": {
+                                "type": "JSFunction",
+                                "value": "function(){ return this.onEditClick.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                              }
+                            },
+                            {
+                              "children": "删除",
+                              "type": "link",
+                              "status": "danger",
+                              "onRowClick": {
+                                "type": "JSFunction",
+                                "value": "function(){ return this.onDeleteClick.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                              }
+                            }
+                          ]
+                        },
+                        "paginationProps": {
+                          "hidden": false,
+                          "total": {
+                            "type": "JSExpression",
+                            "value": "this.state.page.total"
+                          },
+                          "current": {
+                            "type": "JSExpression",
+                            "value": "this.state.page.current"
+                          },
+                          "pageSize": {
+                            "type": "JSExpression",
+                            "value": "this.state.page.size"
+                          },
+                           "onChange": {
+                            "type": "JSFunction",
+                            "value": "function(){ return this.onPageChange.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                          }
+                        },
+                        "bordered": true
+                      },
+                      "hidden": false,
+                      "title": "",
+                      "isLocked": false,
+                      "condition": true,
+                      "conditionGroup": ""
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "componentName": "Tab.Item",
+              "id": "node_tab_item_public",
+              "props": {
+                "key": "public",
+                "title": "公用辅材教材"
+              },
+              "hidden": false,
+              "title": "",
+              "isLocked": false,
+              "condition": true,
+              "conditionGroup": "",
+              "children": [
+                {
+                  "componentName": "KaiwuFlexLayout",
+                  "id": "node_layout_search_public",
+                  "props": {
+                    "globalDisabled": "no",
+                    "layout": "horizontal",
+                    "fieldList": [
+                      {
+                        "label": "年级",
+                        "prop": "grade",
+                        "type": "select",
+                        "span": 8,
+                        "placeholder": "请选择年级",
+                        "showSearch": true,
+                        "allowClear": true,
+                        "isShowFormItem": true,
+                        "options": [
+                          { "label": "一年级", "value": "一年级" },
+                          { "label": "二年级", "value": "二年级" },
+                          { "label": "三年级", "value": "三年级" },
+                          { "label": "四年级", "value": "四年级" },
+                          { "label": "五年级", "value": "五年级" },
+                          { "label": "六年级", "value": "六年级" }
+                        ],
+                        "listType": "text"
+                      },
+                      {
+                        "label": "辅材名称",
+                        "prop": "materialName",
+                        "type": "input",
+                        "span": 8,
+                        "placeholder": "请输入辅材名称",
+                        "isShowFormItem": true,
+                        "listType": "text"
+                      }
+                    ],
+                    "labelColSpan": 6,
+                    "wrapperColSpan": 18,
+                    "showPage": true,
+                    "showLoading": {
+                      "type": "JSExpression",
+                      "value": "this.state.loading",
+                      "mock": false
+                    },
+                    "loadingText": "加载中...",
+                    "current": {
+                      "type": "JSExpression",
+                      "value": "this.state.page.current",
+                      "mock": 1
+                    },
+                    "pageSize": {
+                      "type": "JSExpression",
+                      "value": "this.state.page.size",
+                      "mock": 10
+                    },
+                    "total": {
+                      "type": "JSExpression",
+                      "value": "this.state.page.total",
+                      "mock": 0
+                    },
+                    "headerBtnGroupLeft": [],
+                    "ref": "searchLayoutPublic",
+                    "__events": {
+                      "eventDataList": [
+                        {
+                          "type": "componentEvent",
+                          "name": "onSearch",
+                          "relatedEventName": "onSearchlHandel"
+                        },
+                        {
+                          "type": "componentEvent",
+                          "name": "onReset",
+                          "relatedEventName": "onSearchReset"
+                        }
+                      ],
+                      "eventList": [
+                        {
+                          "name": "onSearch",
+                          "disabled": false
+                        },
+                        {
+                          "name": "onReset",
+                          "disabled": false
+                        }
+                      ]
+                    },
+                    "onSearch": {
+                      "type": "JSFunction",
+                      "value": "function(){return this.onSearchlHandel.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                    },
+                    "onReset": {
+                      "type": "JSFunction",
+                      "value": "function(){return this.onSearchReset.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                    },
+                    "currentOrSizeChange": {
+                      "type": "JSFunction",
+                      "value": "function(){ return this.onCurrentOrSizeChange.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                    }
+                  },
+                  "hidden": false,
+                  "title": "页面",
+                  "isLocked": false,
+                  "condition": true,
+                  "conditionGroup": "",
+                  "children": [
+                    {
+                      "componentName": "KaiwuFlexTable2",
+                      "id": "node_table_list_public",
+                      "props": {
+                        "primaryKey": "id",
+                        "columns": [
+                          {
+                            "title": "年级",
+                            "dataIndex": "grade",
+                            "key": "grade",
+                            "width": "120px",
+                            "align": "center"
+                          },
+                          {
+                            "title": "辅材名称",
+                            "dataIndex": "materialName",
+                            "key": "materialName",
+                            "width": "200px",
+                            "align": "left"
+                          },
+                          {
+                            "title": "附件",
+                            "dataIndex": "attachment",
+                            "key": "attachment",
+                            "width": "150px",
+                            "align": "center",
+                            "render": {
+                              "type": "JSFunction",
+                              "value": "function(){ return this.renderAttachment.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                            }
+                          },
+                          {
+                            "title": "备注",
+                            "dataIndex": "remark",
+                            "key": "remark",
+                            "width": "200px",
+                            "align": "left"
+                          },
+                          {
+                            "title": "更新时间",
+                            "dataIndex": "updateTime",
+                            "key": "updateTime",
+                            "width": "180px",
+                            "align": "center"
+                          }
+                        ],
+                        "dataSource": {
+                          "type": "JSExpression",
+                          "value": "this.state.tableList || []"
+                        },
+                        "actionColumnProps": {
+                          "title": "操作",
+                          "width": 150,
+                          "fixed": "right",
+                          "hidden": true
+                        },
+                        "actionColumnButtons": {
+                          "dataSource": []
+                        },
+                        "paginationProps": {
+                          "hidden": false,
+                          "total": {
+                            "type": "JSExpression",
+                            "value": "this.state.page.total"
+                          },
+                          "current": {
+                            "type": "JSExpression",
+                            "value": "this.state.page.current"
+                          },
+                          "pageSize": {
+                            "type": "JSExpression",
+                            "value": "this.state.page.size"
+                          },
+                           "onChange": {
+                            "type": "JSFunction",
+                            "value": "function(){ return this.onPageChange.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+                          }
+                        },
+                        "bordered": true
+                      },
+                      "hidden": false,
+                      "title": "",
+                      "isLocked": false,
+                      "condition": true,
+                      "conditionGroup": ""
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "componentName": "KaiwuJsx",
+          "id": "node_preview_jsx",
+          "props": {
+            "content": {
+              "type": "JSFunction",
+              "value": "function(){ return this.renderPreview.apply(this,Array.prototype.slice.call(arguments).concat([])) }"
+            },
+            "style": {}
+          },
+          "hidden": false,
+          "title": "",
+          "isLocked": false,
+          "condition": true,
+          "conditionGroup": ""
+        }
+      ]
+    }
+  ],
+  "i18n": {
+    "zh-CN": {},
+    "en-US": {}
+  }
+}

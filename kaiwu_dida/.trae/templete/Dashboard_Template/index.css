@@ -1,0 +1,101 @@
+body {
+  font-size: 14px;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+.lce-page {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 0px;
+  box-sizing: border-box;
+}
+
+.table-wrapper {
+  flex: 1;
+}
+
+/* 自定义整个滚动条 */
+::-webkit-scrollbar {
+  position: absolute;
+  width: 0px;
+  height: 0px;
+}
+
+/* 自定义滚动条轨道 */
+::-webkit-scrollbar-track {
+  background: #363f52;
+  border-radius: 4px;
+}
+
+/* 自定义滚动条的滑块（thumb） */
+::-webkit-scrollbar-thumb {
+  background: #5584ff;
+  border-radius: 4px;
+}
+
+/* 当hover或active状态时，自定义滑块的颜色 */
+::-webkit-scrollbar-thumb:hover {
+  background: #5584ff;
+}
+
+/* 看板内容容器 - 建议根据实际情况替换背景图片 */
+.rendercontent {
+  position: fixed;
+  inset: 0;
+  background-color: #0b1a2f; /* 默认深色背景 */
+  /* background-image: url(http://your-server/background.jpg); */
+  background-size: cover;
+  padding: 0px 5px 5px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: #fff;
+}
+
+/* 顶部Header样式 */
+.header {
+  width: 100%;
+  height: 80px;
+  display: flex;
+  align-items: center;
+  border-bottom: 1px solid #006291;
+  padding: 16px 10px 0px;
+  box-sizing: border-box;
+}
+
+.header img {
+  width: 65px;
+  margin: 0px 16px 0 0px;
+}
+
+.header h1 {
+  font-size: 36px;
+}
+
+.header h2 {
+  font-size: 15px;
+}
+
+.header .date {
+  font-size: 18px;
+  text-align: right;
+  margin-bottom: 6px;
+}
+
+.header .time {
+  font-size: 28px;
+  color: #00CCFF;
+  text-align: right;
+}
+
+/* 车间选择器样式 */
+.workshop-selector {
+  display: flex;
+  align-items: center;
+}

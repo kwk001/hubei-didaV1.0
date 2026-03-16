@@ -1,0 +1,107 @@
+{
+  "properties": {
+    "RESOURCE_CODE": "da1afde8ac2c4837a65d458ae768fe74",
+    "IS_COMMON": true,
+    "CUSTOMER_ID": "e57e42de5824447ea7deb7138591f264"
+  },
+  "id": "da1afde8ac2c4837a65d458ae768fe74",
+  "groupId": "7d7838094aea42ac8edd4fcab9cceb26",
+  "name": "服务商端首页企业总数和设备总数",
+  "createTime": null,
+  "updateTime": 1735975804897,
+  "lock": "0",
+  "createBy": null,
+  "updateBy": "admin",
+  "path": "queryDeviceTotal",
+  "method": "GET",
+  "parameters": [
+    {
+      "name": "customerId",
+      "value": "8cf09c18a3d650d71d50533b3a0610a2",
+      "description": null,
+      "required": true,
+      "dataType": "String",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    },
+    {
+      "name": "pageSize",
+      "value": "5",
+      "description": null,
+      "required": false,
+      "dataType": "Integer",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    },
+    {
+      "name": "page",
+      "value": "1",
+      "description": null,
+      "required": false,
+      "dataType": "Integer",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    },
+    {
+      "name": "customerName",
+      "value": "",
+      "description": null,
+      "required": false,
+      "dataType": "String",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    }
+  ],
+  "options": [
+    {
+      "name": "X-API-KEY",
+      "value": "66178227cbff270007b06c72",
+      "description": null,
+      "required": false,
+      "dataType": "String",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    }
+  ],
+  "requestBody": "",
+  "headers": [
+    {
+      "name": "X-API-KEY",
+      "value": "66178227cbff270007b06c72",
+      "description": null,
+      "required": false,
+      "dataType": "String",
+      "type": null,
+      "defaultValue": null,
+      "validateType": null,
+      "error": null,
+      "expression": null,
+      "children": null
+    }
+  ],
+  "paths": [],
+  "responseBody": "{\n    \"code\": 1,\n    \"message\": \"success\",\n    \"data\": {\n        \"deviceCount\": 49,\n        \"entcount\": 8,\n        \"activedevicecount\": 8,\n        \"customerDeviceArr\": [\n            {\n                \"tenant_id\": \"750903b0-df8a-11ee-87f1-9dda14ea1b68\",\n                \"title\": \"安徽徽一通讯科技有限公司\",\n                \"devicecount\": 13,\n                \"activedevicecount\": 2\n            },\n            {\n                \"tenant_id\": \"aca5c350-d05b-11ee-87f1-9dda14ea1b68\",\n                \"title\": \"冠泓\",\n                \"devicecount\": 8,\n                \"activedevicecount\": 0\n            },\n            {\n                \"tenant_id\": \"31cf1c60-e818-11ee-b38d-f7739d940c53\",\n                \"title\": \"中惠创智\",\n                \"devicecount\": 8,\n                \"activedevicecount\": 4\n            },\n            {\n                \"tenant_id\": \"1afce980-29fa-11ef-b38d-f7739d940c53\",\n                \"title\": \"颍泉展示展示\",\n                \"devicecount\": 8,\n                \"activedevicecount\": 0\n            },\n            {\n                \"tenant_id\": \"df11b0b0-4d47-11ef-9011-4377fe922b6e\",\n                \"title\": \"生宸源\",\n                \"devicecount\": 6,\n                \"activedevicecount\": 0\n            },\n            {\n                \"tenant_id\": \"732fafd0-df8a-11ee-87f1-9dda14ea1b68\",\n                \"title\": \"安徽目氪高新技术有限公司\",\n                \"devicecount\": 3,\n                \"activedevicecount\": 2\n            },\n            {\n                \"tenant_id\": \"5e441700-e020-11ee-87f1-9dda14ea1b68\",\n                \"title\": \"安徽智磁新材料科技有限公司\",\n                \"devicecount\": 2,\n                \"activedevicecount\": 0\n            },\n            {\n                \"tenant_id\": \"718470d0-df8a-11ee-87f1-9dda14ea1b68\",\n                \"title\": \"沂普光电(阜阳)有限公司\",\n                \"devicecount\": 1,\n                \"activedevicecount\": 0\n            }\n        ],\n        \"districtDeviceArr\": []\n    },\n    \"timestamp\": 1735975573673,\n    \"requestTime\": 1735975572148,\n    \"executeTime\": 1525\n}",
+  "description": null,
+  "requestBodyDefinition": null,
+  "responseBodyDefinition": null
+}

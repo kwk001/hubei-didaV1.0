@@ -1,0 +1,71 @@
+{
+  "packages": [
+    {
+      "package": "moment",
+      "version": "2.24.0",
+      "urls": [
+        "https://cdn.kaiwu.cloud/cdn/alicdn/mylib/moment/2.24.0/min/moment.min.js"
+      ],
+      "library": "moment"
+    },
+    {
+      "package": "lodash",
+      "library": "_",
+      "urls": [
+        "https://cdn.kaiwu.cloud/cdn/alicdn/platform/c/lodash/4.6.1/lodash.min.js"
+      ]
+    },
+    {
+      "title": "fusion组件库",
+      "package": "@alifd/next",
+      "version": "1.26.4",
+      "urls": [
+        "https://cdn.kaiwu.cloud/cdn/alicdn/code/lib/alifd__next/1.26.4/next.min.css",
+        "https://cdn.kaiwu.cloud/cdn/alicdn/code/lib/alifd__next/1.26.4/next-with-locales.min.js"
+      ],
+      "library": "Next"
+    },
+    {
+      "package": "@kaiwu-cloud/lowcode-engine-driver",
+      "library": "KaiwuLowcodeDriver",
+      "urls": [
+        "https://cdn.kaiwu.cloud/cdn/lib/lowcode-engine-driver.js"
+      ]
+    },
+    {
+      "urls": [
+        "https://cdn.kaiwu.cloud/cdn/@kaiwu-cloud/lowcode-engine-component/3.2.0/dist/KaiwuLowcodeComponent.css",
+        "https://cdn.kaiwu.cloud/cdn/@kaiwu-cloud/lowcode-engine-component/3.2.0/dist/KaiwuLowcodeComponent.js"
+      ],
+      "library": "KaiwuLowcodeComponent",
+      "package": "@kaiwu-cloud/lowcode-engine-component",
+      "version": "3.2.0"
+    },
+    {
+      "package": "@alifd/layout",
+      "version": "2.4.1",
+      "library": "AlifdLayout",
+      "urls": [
+        "https://cdn.kaiwu.cloud/cdn/@kaiwu-cloud/layout/2.4.1/build/lowcode/render/default/view.js",
+        "https://cdn.kaiwu.cloud/cdn/@kaiwu-cloud/layout/2.4.1/build/lowcode/render/default/view.css"
+      ],
+      "editUrls": [
+        "https://cdn.kaiwu.cloud/cdn/@kaiwu-cloud/layout/2.4.1/build/lowcode/view.js",
+        "https://cdn.kaiwu.cloud/cdn/@kaiwu-cloud/layout/2.4.1/build/lowcode/view.css"
+      ]
+    },
+    {
+      "package": "@alilc/lowcode-materials",
+      "version": "1.2.0",
+      "library": "AlilcLowcodeMaterials",
+      "urls": [
+        "https://cdn.kaiwu.cloud/cdn/@kaiwu-cloud/lowcode-materials/1.2.0/dist/AlilcLowcodeMaterials.js",
+        "https://cdn.kaiwu.cloud/cdn/@kaiwu-cloud/lowcode-materials/1.2.0/dist/AlilcLowcodeMaterials.css"
+      ],
+      "editUrls": [
+        "https://cdn.kaiwu.cloud/cdn/@kaiwu-cloud/lowcode-materials/1.2.0/build/lowcode/view.js",
+        "https://cdn.kaiwu.cloud/cdn/@kaiwu-cloud/lowcode-materials/1.2.0/build/lowcode/view.css"
+      ]
+    }
+  ]
+}

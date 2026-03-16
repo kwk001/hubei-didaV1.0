@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频教材管理 - 原型预览</title>
+    <!-- 引入 Ant Design 样式 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.14/antd.min.css" />
+    <style>
+        body { background: #fff; padding: 20px; }
+        .mock-modal {
+            position: fixed;
+            top: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 500px;
+            background: white;
+            border: 1px solid #ccc;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 1000;
+            border-radius: 4px;
+        }
+        .modal-mask {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.45);
+            z-index: 999;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- 引入 React 和 Ant Design -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.development.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/antd/4.24.14/antd.min.js"></script>
+    <!-- 引入 Babel 用于解析 JSX -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.5/babel.min.js"></script>
+
+    <script type="text/babel">
+        const { Component, useState } = React;
+        const { Table, Button, Modal, Tabs, Input, Select, Checkbox, Upload, message, Popconfirm } = antd;
+        const { Option } = Select;
+        const { TextArea } = Input;
+
+        class VideoTextbookManager extends Component {
+          constructor(props) {
+            super(props);
+            
+            this.state = {
+              activeTab: 'my', // my: 我的视频教材, public: 公用视频教材
+              searchForm: {
+                materialName: '',
+                grade: ''
+              },
+              tableList: [
+                {
+                  id: '1',
+                  materialName: '语文第一课',
+                  grade: '一年级',
+                  isPublic: false,
+                  createTime: '2023-10-01 10:00:00',
+                  createBy: '张三',
+                  remark: '这是备注',
+                  files: ['video1.mp4']
+                },
+                {
+                  id: '2',
+                  materialName: '数学几何基础',
+                  grade: '二年级',
+                  isPublic: true,
+                  createTime: '2023-09-20 14:30:00',
+                  createBy: '李四',
+                  remark: '公用教材',
+                  files: ['math.mp4']
+                }
+              ],
+              page: {
+                current: 1,
+                size: 10,
+                total: 2
+              },
+              visibleDialog: false,
+              currentRow: {},
+              dialogType: 'add', // add, edit, view
+              grades: [
+                { label: '一年级', value: '一年级' },
+                { label: '二年级', value: '二年级' },
+                { label: '三年级', value: '三年级' }
+              ]
+            };
+          }
+
+          componentDidMount() {
+            this.queryList();
+          }
+
+          // 切换Tab
+          onTabChange = (key) => {
+            this.setState({
+              activeTab: key,
+              page: { ...this.state.page, current: 1 },
+              searchForm: {} // 切换Tab清空筛选
+            }, () => {
+              this.queryList();
+            });
+          }
+
+          // 查询列表（模拟）
+          queryList = () => {
+            console.log(`查询列表: Tab=${this.state.activeTab}, Page=${this.state.page.current}`);
+            // 实际项目中这里会调用API
+          }
+
+          // 打开弹窗
+          openDialog = (type, row = {}) => {
+            this.setState({
+              visibleDialog: true,
+              dialogType: type,
+              currentRow: { ...row, isPublic: row.isPublic || false }
+            });
+          }
+
+          // 关闭弹窗
+          closeDialog = () => {
+            this.setState({
+              visibleDialog: false,
+              currentRow: {}
+            });
+          }
+
+          // 保存操作
+          handleSave = () => {
+            const { currentRow, dialogType, tableList } = this.state;
+            if (!currentRow.materialName || !currentRow.grade) {
+                message.error('请填写必填项');
+                return;
+            }
+            
+            console.log(`保存操作: Type=${dialogType}, Data=`, currentRow);
+            
+            let newList = [...tableList];
+            if (dialogType === 'add') {
+                newList.unshift({
+                    ...currentRow,
+                    id: Date.now().toString(),
+                    createTime: new Date().toLocaleString(),
+                    createBy: '当前用户',
+                    files: currentRow.files || []
+                });
+            } else {
+                newList = newList.map(item => item.id === currentRow.id ? currentRow : item);
+            }
+
+            this.setState({ tableList: newList });
+            message.success('保存成功');
+            this.closeDialog();
+            this.queryList();
+          }
+
+          // 删除操作
+          handleDelete = (row) => {
+            // 使用 Antd 的 Modal.confirm
+            Modal.confirm({
+              title: '确认删除',
+              content: `确定要删除教材“${row.materialName}”吗？`,
+              onOk: () => {
+                const newList = this.state.tableList.filter(item => item.id !== row.id);
+                this.setState({ tableList: newList });
+                message.success('删除成功');
+              }
+            });
+          }
+
+          // 渲染搜索栏
+          renderSearch() {
+            const { searchForm, grades } = this.state;
+            
+            return (
+              <div className="search-bar" style={{ marginBottom: 16, padding: 16, background: '#f5f5f5', borderRadius: 4 }}>
+                <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ marginRight: 8 }}>教材名称:</span>
+                    <Input 
+                      style={{ width: 200 }} 
+                      value={searchForm.materialName}
+                      onChange={(e) => this.setState({ searchForm: { ...searchForm, materialName: e.target.value } })}
+                      placeholder="请输入教材名称" 
+                    />
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ marginRight: 8 }}>年级:</span>
+                    <Select 
+                      style={{ width: 150 }} 
+                      value={searchForm.grade}
+                      onChange={(val) => this.setState({ searchForm: { ...searchForm, grade: val } })}
+                      placeholder="请选择"
+                    >
+                      <Option value="">全部</Option>
+                      {grades.map(g => <Option key={g.value} value={g.value}>{g.label}</Option>)}
+                    </Select>
+                  </div>
+                  <Button type="primary" onClick={this.queryList}>查询</Button>
+                  <Button onClick={() => this.setState({ searchForm: {} }, this.queryList)}>重置</Button>
+                </div>
+              </div>
+            );
+          }
+
+          // 渲染列表
+          renderTable() {
+            const { tableList, activeTab } = this.state;
+
+            const columns = [
+              { title: '教材名称', dataIndex: 'materialName', key: 'materialName' },
+              { title: '年级', dataIndex: 'grade', key: 'grade' },
+              { 
+                title: '附件', 
+                dataIndex: 'files', 
+                key: 'files',
+                render: (files) => files ? `${files.length} 个文件` : '无'
+              },
+              { title: '备注', dataIndex: 'remark', key: 'remark' },
+              { title: '创建时间', dataIndex: 'createTime', key: 'createTime' },
+              {
+                title: '操作',
+                key: 'action',
+                render: (_, record) => (
+                  <div style={{ display: 'flex', gap: 8 }}>
+                    <a onClick={() => this.openDialog('view', record)}>查看</a>
+                    {activeTab === 'my' && (
+                      <>
+                        <a onClick={() => this.openDialog('edit', record)}>编辑</a>
+                        <a onClick={() => this.handleDelete(record)} style={{ color: 'red' }}>删除</a>
+                      </>
+                    )}
+                  </div>
+                )
+              }
+            ];
+
+            // 根据Tab过滤显示数据
+            const dataSource = activeTab === 'my' 
+              ? tableList // 假设所有都是我的（简化逻辑）
+              : tableList.filter(item => item.isPublic);
+
+            return (
+              <Table 
+                dataSource={dataSource} 
+                columns={columns} 
+                rowKey="id"
+                pagination={{
+                  ...this.state.page,
+                  onChange: (page, size) => this.setState({ page: { ...this.state.page, current: page, size } }, this.queryList)
+                }}
+              />
+            );
+          }
+
+          // 渲染弹窗
+          renderDialog() {
+            const { visibleDialog, dialogType, currentRow, grades } = this.state;
+            
+            const isView = dialogType === 'view';
+            const titleMap = { add: '新增教材', edit: '编辑教材', view: '查看教材' };
+
+            if (!visibleDialog) return null;
+
+            return (
+              <>
+              <div className="modal-mask" onClick={this.closeDialog}></div>
+              <div className="mock-modal">
+                  <h3>{titleMap[dialogType]}</h3>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: 16, marginTop: 20 }}>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: 80, flexShrink: 0 }}>年级<span style={{color:'red'}}>*</span>:</span>
+                      <Select 
+                        disabled={isView}
+                        value={currentRow.grade}
+                        onChange={(val) => this.setState({ currentRow: { ...currentRow, grade: val } })}
+                        style={{ width: '100%' }}
+                      >
+                        {grades.map(g => <Option key={g.value} value={g.value}>{g.label}</Option>)}
+                      </Select>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: 80, flexShrink: 0 }}>教材名称<span style={{color:'red'}}>*</span>:</span>
+                      <Input 
+                        disabled={isView}
+                        value={currentRow.materialName} 
+                        onChange={(e) => this.setState({ currentRow: { ...currentRow, materialName: e.target.value } })}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <span style={{ width: 80, flexShrink: 0 }}>是否公用:</span>
+                      <Checkbox
+                        disabled={isView}
+                        checked={currentRow.isPublic}
+                        onChange={(e) => this.setState({ currentRow: { ...currentRow, isPublic: e.target.checked } })}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                      <span style={{ width: 80, flexShrink: 0 }}>备注:</span>
+                      <TextArea 
+                        disabled={isView}
+                        value={currentRow.remark}
+                        onChange={(e) => this.setState({ currentRow: { ...currentRow, remark: e.target.value } })}
+                        style={{ width: '100%', height: 60 }}
+                      />
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'flex-start' }}>
+                      <span style={{ width: 80, flexShrink: 0 }}>附件:</span>
+                      <div>
+                        {currentRow.files && currentRow.files.map((f, i) => <div key={i} style={{marginBottom: 4}}>{f}</div>)}
+                        {!isView && <Button icon={<span role="img" aria-label="upload" className="anticon anticon-upload"><svg viewBox="64 64 896 896" focusable="false" data-icon="upload" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M400 317.7h73.9V656c0 4.4 3.6 8 8 8h60c4.4 0 8-3.6 8-8V317.7h73.9c4.4 0 8-3.6 8-8v-27.5c0-4.4-3.6-8-8-8L538 110.2a7.9 7.9 0 00-11.2 0L268.2 274.2c-4.4 4.4-4.4 11.2 0 15.6l19.8 19.8c2.2 2.2 5.8 2.2 8 0zM880 760H144c-17.7 0-32 14.3-32 32v120c0 17.7 14.3 32 32 32h736c17.7 0 32-14.3 32-32V792c0-17.7-14.3-32-32-32z"></path></svg></span>}>上传视频</Button>}
+                      </div>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: 24, textAlign: 'right', borderTop: '1px solid #eee', paddingTop: 16 }}>
+                    <Button onClick={this.closeDialog} style={{ marginRight: 8 }}>取消</Button>
+                    {!isView && <Button type="primary" onClick={this.handleSave}>保存</Button>}
+                  </div>
+              </div>
+              </>
+            );
+          }
+
+          render() {
+            const { activeTab } = this.state;
+            const { Tabs } = antd;
+            const { TabPane } = Tabs;
+
+            return (
+              <div className="video-textbook-manager">
+                <div className="page-header" style={{ marginBottom: 20, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <h2 style={{margin: 0}}>视频教材管理</h2>
+                  {activeTab === 'my' && (
+                    <Button type="primary" onClick={() => this.openDialog('add')}>新增教材</Button>
+                  )}
+                </div>
+
+                <Tabs activeKey={activeTab} onChange={this.onTabChange}>
+                    <TabPane tab="我的视频教材" key="my" />
+                    <TabPane tab="公用视频教材" key="public" />
+                </Tabs>
+
+                {this.renderSearch()}
+                {this.renderTable()}
+                {this.renderDialog()}
+              </div>
+            );
+          }
+        }
+
+        ReactDOM.render(<VideoTextbookManager />, document.getElementById('root'));
+    </script>
+</body>
+</html>
