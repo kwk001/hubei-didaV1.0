@@ -1,0 +1,1906 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程排课管理 - 教务管理端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        :root {
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --secondary-gradient: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --accent-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.5);
+            --shadow-soft: 0 8px 32px rgba(31, 38, 135, 0.15);
+            --shadow-hover: 0 20px 60px rgba(31, 38, 135, 0.25);
+            --text-primary: #2d3748;
+            --text-secondary: #718096;
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        body { 
+            font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            background: linear-gradient(135deg, #e0e7ff 0%, #d1e0ff 50%, #e8d5f2 100%);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            margin-left: 220px;
+            padding-top: 64px;
+            min-height: 100vh;
+            flex: 1;
+            min-width: 0;
+            box-sizing: border-box;
+        }
+
+        /* 内容主体 */
+        .content-body {
+            padding: 10px;
+        }
+
+        /* 页面标题区 */
+        .page-header-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .page-title-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .page-title-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--primary-gradient);
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 28px;
+            box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .page-title-text h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .page-title-text p {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* 操作按钮 */
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-glass {
+            padding: 12px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary-glass {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-primary-glass:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+        }
+
+        .btn-secondary-glass {
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--text-primary);
+            border: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-secondary-glass:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn-danger-glass {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(245, 87, 108, 0.4);
+        }
+
+        .btn-danger-glass:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(245, 87, 108, 0.5);
+        }
+
+        /* 编辑模式样式 */
+        .form-input.edit-mode {
+            background: rgba(255, 255, 255, 0.95);
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.15);
+        }
+
+        .form-input.edit-mode:focus {
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.2);
+        }
+
+        /* 主布局 */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 10px;
+            height: calc(100vh - 220px);
+        }
+
+        /* 左侧边栏 - 树状图 */
+        .sidebar-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            box-shadow: var(--shadow-soft);
+            overflow-y: auto;
+        }
+
+        .sidebar-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid rgba(102, 126, 234, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-title::before {
+            content: '';
+            width: 4px;
+            height: 20px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
+        /* 树状图头部 */
+        .tree-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+        }
+
+        .tree-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .tree-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
+        .tree-actions {
+            display: flex;
+            gap: 6px;
+        }
+
+        .tree-btn {
+            padding: 6px 14px;
+            border: none;
+            background: rgba(102, 126, 234, 0.08);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            color: #667eea;
+            letter-spacing: 0.3px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tree-btn:hover {
+            background: var(--primary-gradient);
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 搜索框 */
+        .tree-search {
+            margin-bottom: 16px;
+        }
+
+        .tree-search input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border: 1px solid rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
+            font-size: 13px;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 14px center;
+            transition: all 0.25s ease;
+            color: #333;
+        }
+
+        .tree-search input::placeholder {
+            color: #999;
+        }
+
+        .tree-search input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* 树状图内容区 */
+        .tree-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        /* 树状图样式 */
+        .tree-node {
+            user-select: none;
+            margin-bottom: 4px;
+        }
+
+        .tree-node-content {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border-radius: 10px;
+            margin: 0 4px;
+        }
+
+        .tree-node-content::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: var(--primary-gradient);
+            border-radius: 0 2px 2px 0;
+            transition: height 0.25s ease;
+        }
+
+        .tree-node-content:hover {
+            background: rgba(102, 126, 234, 0.04);
+        }
+
+        .tree-node-content:hover::before {
+            height: 60%;
+        }
+
+        .tree-node-content.active {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.08) 0%, rgba(102, 126, 234, 0.02) 100%);
+            color: #667eea;
+        }
+
+        .tree-node-content.active::before {
+            height: 70%;
+        }
+
+        /* 展开/收起指示器 */
+        .tree-toggle {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 10px;
+            color: #9ca3af;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+        }
+
+        .tree-toggle:hover {
+            background: rgba(0, 0, 0, 0.04);
+            color: #667eea;
+        }
+
+        .tree-toggle.expanded {
+            transform: rotate(90deg);
+            color: #667eea;
+        }
+
+        /* 图标样式 */
+        .tree-icon {
+            margin-right: 10px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.03);
+            transition: all 0.2s ease;
+        }
+
+        .tree-node-content:hover .tree-icon {
+            background: rgba(102, 126, 234, 0.1);
+            transform: scale(1.05);
+        }
+
+        .tree-node-content.active .tree-icon {
+            background: var(--primary-gradient);
+            color: #fff;
+        }
+
+        /* 标签文字 */
+        .tree-label {
+            font-size: 13px;
+            font-weight: 500;
+            flex: 1;
+            color: #374151;
+            letter-spacing: -0.2px;
+        }
+
+        .tree-node-content.active .tree-label {
+            color: #667eea;
+            font-weight: 600;
+        }
+
+        /* 计数徽章 */
+        .tree-count {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            background: rgba(0, 0, 0, 0.04);
+            padding: 4px 10px;
+            border-radius: 20px;
+            min-width: 28px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+
+        .tree-node-content:hover .tree-count {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+        }
+
+        .tree-node-content.active .tree-count {
+            background: var(--primary-gradient);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 子节点容器 - 流畅展开动画 */
+        .tree-children {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.25s ease,
+                        transform 0.3s ease;
+        }
+
+        .tree-children.expanded {
+            max-height: 1000px;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 层级缩进 */
+        .tree-level-1 > .tree-node-content { padding-left: 16px; }
+        .tree-level-2 > .tree-node-content { padding-left: 44px; }
+        .tree-level-3 > .tree-node-content { padding-left: 72px; }
+
+        /* 子节点连接线 */
+        .tree-level-2 .tree-node-content::after,
+        .tree-level-3 .tree-node-content::after {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.06) 0%, rgba(0, 0, 0, 0.02) 100%);
+        }
+
+        /* 树状图滚动条美化 */
+        .tree-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .tree-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .tree-content::-webkit-scrollbar-thumb {
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 3px;
+        }
+
+        .tree-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(0, 0, 0, 0.15);
+        }
+
+        /* 日历区域 */
+        .calendar-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-soft);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 日历头部 */
+        .calendar-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .calendar-nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .calendar-nav-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: white;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition);
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        .calendar-nav-btn:hover {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            transform: scale(1.05);
+        }
+
+        .calendar-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .calendar-filters {
+            display: flex;
+            gap: 12px;
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            background: white;
+            font-size: 13px;
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: var(--transition);
+            min-width: 120px;
+        }
+
+        .filter-select:hover {
+            border-color: #667eea;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        /* 日历网格 */
+        .calendar-body {
+            flex: 1;
+            overflow: auto;
+            padding: 0 24px 24px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 70px repeat(5, 1fr);
+            gap: 1px;
+            background: rgba(0, 0, 0, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+            width: 100%;
+        }
+
+        .calendar-day-header {
+            background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+            padding: 16px 12px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-primary);
+        }
+
+        .calendar-day-header .day-name {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .calendar-day-header .day-number {
+            font-size: 18px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .calendar-time-slot {
+            background: linear-gradient(135deg, #f8faff 0%, #f0f4ff 100%);
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .calendar-cell {
+            background: white;
+            min-height: 100px;
+            padding: 8px;
+            position: relative;
+            transition: var(--transition);
+        }
+
+        .calendar-cell:hover {
+            background: rgba(102, 126, 234, 0.03);
+        }
+
+        /* 课程卡片 */
+        .course-card {
+            background: white;
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: var(--transition);
+            border-left: 3px solid;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.4) 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .course-card:hover::before {
+            opacity: 1;
+        }
+
+        .course-card:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .course-card.type-theory {
+            border-left-color: #667eea;
+            background: linear-gradient(135deg, #f0f4ff 0%, #e8eeff 100%);
+        }
+
+        .course-card.type-practice {
+            border-left-color: #f5576c;
+            background: linear-gradient(135deg, #fff0f3 0%, #ffe8ec 100%);
+        }
+
+        .course-card.type-experiment {
+            border-left-color: #4facfe;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e8f4ff 100%);
+        }
+
+        .course-card-title {
+            font-weight: 700;
+            font-size: 12px;
+            color: var(--text-primary);
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .course-card-info {
+            font-size: 11px;
+            color: var(--text-secondary);
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .course-card-info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .course-card-info-label {
+            color: #999;
+            font-size: 10px;
+        }
+
+        .course-card-info-value {
+            color: var(--text-secondary);
+            font-size: 11px;
+        }
+
+        .course-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin-top: 6px;
+        }
+
+        .course-card-badge {
+            display: inline-block;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+
+        .course-card-badge.theory {
+            background: rgba(102, 126, 234, 0.15);
+            color: #667eea;
+        }
+
+        .course-card-badge.practice {
+            background: rgba(245, 87, 108, 0.15);
+            color: #f5576c;
+        }
+
+        .course-card-badge.experiment {
+            background: rgba(79, 172, 254, 0.15);
+            color: #4facfe;
+        }
+
+        .course-card-badge.paper {
+            background: rgba(16, 185, 129, 0.15);
+            color: #10b981;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: var(--text-secondary);
+            padding: 40px;
+        }
+
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* 课程详情弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-glass {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: var(--border-radius);
+            padding: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: var(--shadow-hover);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-glass {
+            transform: scale(1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(0, 0, 0, 0.05);
+            cursor: pointer;
+            font-size: 18px;
+            color: var(--text-secondary);
+            transition: var(--transition);
+        }
+
+        .modal-close:hover {
+            background: rgba(0, 0, 0, 0.1);
+            color: var(--text-primary);
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid rgba(0, 0, 0, 0.1);
+            font-size: 14px;
+            transition: var(--transition);
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 10px;
+        }
+
+        /* 统计卡片 */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .stat-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-soft);
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.purple {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .stat-icon.pink {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            color: white;
+        }
+
+        .stat-icon.blue {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .stat-icon.green {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+            color: white;
+        }
+
+        .stat-info h4 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-info p {
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        /* 图例 */
+        .legend-bar {
+            display: flex;
+            gap: 20px;
+            padding: 10px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            margin-top: 16px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+        }
+
+        .legend-dot.theory {
+            background: #667eea;
+        }
+
+        .legend-dot.practice {
+            background: #f5576c;
+        }
+
+        .legend-dot.experiment {
+            background: #4facfe;
+        }
+
+        /* 滚动条美化 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.03);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(102, 126, 234, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(102, 126, 234, 0.5);
+        }
+
+        /* 用户信息区域 - 参考学生管理页 */
+        .user-avatar svg {
+            width: 18px;
+            height: 18px;
+            fill: white;
+        }
+
+        .user-greeting {
+            color: #4b5563;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .user-greeting span {
+            color: #6366f1;
+            font-weight: 600;
+        }
+
+        .dropdown-arrow {
+            width: 16px;
+            height: 16px;
+            color: #9ca3af;
+            transition: transform 0.3s;
+        }
+
+        .user-menu:hover .dropdown-arrow {
+            transform: rotate(180deg);
+            color: #6366f1;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏导航 -->
+    <div id="nav-container"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <nav class="breadcrumb">
+                    <a href="./教学实训平台_教务管理端.html">教务管理</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>课程排课管理</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div id="user-menu-container"></div>
+            </div>
+        </div>
+
+        <div class="content-body">
+            <!-- 页面标题 - 已隐藏 -->
+            <div class="page-header-glass" style="display: none;">
+                <div class="page-title-wrapper">
+                    <div class="page-title-icon">📅</div>
+                    <div class="page-title-text">
+                        <h1>课程排课管理</h1>
+                        <p>管理各年级专业的课程安排，支持周视图查看和编辑</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn-glass btn-secondary-glass" onclick="importSchedule()">
+                        <span>📥</span> 批量导入
+                    </button>
+                    <button class="btn-glass btn-primary-glass" onclick="openAddModal()">
+                        <span>+</span> 新增排课
+                    </button>
+                </div>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon purple">📚</div>
+                    <div class="stat-info">
+                        <h4>36</h4>
+                        <p>本周课程总数</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon pink">👨‍🏫</div>
+                    <div class="stat-info">
+                        <h4>12</h4>
+                        <p>任课教师</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">🏫</div>
+                    <div class="stat-info">
+                        <h4>8</h4>
+                        <p>使用教室</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">👥</div>
+                    <div class="stat-info">
+                        <h4>15</h4>
+                        <p>本周排课班级数</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 主布局 -->
+            <div class="main-layout">
+                <!-- 右侧日历 -->
+                <div class="calendar-glass">
+                    <div class="calendar-header">
+                        <div class="calendar-nav">
+                            <button class="calendar-nav-btn" onclick="changeWeek(-1)">‹</button>
+                            <h2 class="calendar-title">2025年1月 第3周</h2>
+                            <button class="calendar-nav-btn" onclick="changeWeek(1)">›</button>
+                        </div>
+                        <div class="calendar-filters">
+                            <select class="filter-select" id="filterYear" onchange="applyFilters()">
+                                <option value="">全部学年</option>
+                                <option value="2023-2024">2023年</option>
+                    <option value="2024-2025">2024年</option>
+                    <option value="2025-2026">2025年</option>
+                            </select>
+                            <select class="filter-select" id="filterTeacher2" onchange="applyFilters()">
+                                <option value="">全部教师</option>
+                                <option value="王老师">王老师</option>
+                                <option value="张老师">张老师</option>
+                                <option value="李老师">李老师</option>
+                                <option value="刘老师">刘老师</option>
+                                <option value="陈老师">陈老师</option>
+                                <option value="赵老师">赵老师</option>
+                                <option value="孙老师">孙老师</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="calendar-body">
+                        <div class="calendar-grid">
+                            <!-- 表头 -->
+                            <div class="calendar-day-header" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;">
+                                时间
+                            </div>
+                            <div class="calendar-day-header">
+                                <div class="day-name">周一</div>
+                                <div class="day-number">01/13</div>
+                            </div>
+                            <div class="calendar-day-header">
+                                <div class="day-name">周二</div>
+                                <div class="day-number">01/14</div>
+                            </div>
+                            <div class="calendar-day-header">
+                                <div class="day-name">周三</div>
+                                <div class="day-number">01/15</div>
+                            </div>
+                            <div class="calendar-day-header">
+                                <div class="day-name">周四</div>
+                                <div class="day-number">01/16</div>
+                            </div>
+                            <div class="calendar-day-header">
+                                <div class="day-name">周五</div>
+                                <div class="day-number">01/17</div>
+                            </div>
+
+                            <!-- 第1-2节 -->
+                            <div class="calendar-time-slot">08:00<br>09:40</div>
+                            <div class="calendar-cell">
+                                <div class="course-card type-theory" onclick="showCourseDetail('机械制图', '王老师', 'A101', '2024-2025', '机械工程', '23机械1班', '2025-01-13', '第1-2节')">
+                                    <div class="course-card-title">机械制图</div>
+                                    <div class="course-card-info">
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">任课教师:</span>
+                                            <span class="course-card-info-value">王老师</span>
+                                        </div>
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">上课教室:</span>
+                                            <span class="course-card-info-value">A101</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-card-tags">
+                                        <span class="course-card-badge theory">普通任务</span>
+                                        <span class="course-card-badge paper">机械制图试卷A</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="calendar-cell">
+                                <div class="course-card type-practice" onclick="showCourseDetail('CAD制图', '张老师', 'C301', '2024-2025', '机械工程', '23机械1班', '2025-01-14', '第1-2节')">
+                                    <div class="course-card-title">CAD制图</div>
+                                    <div class="course-card-info">
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">任课教师:</span>
+                                            <span class="course-card-info-value">张老师</span>
+                                        </div>
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">上课教室:</span>
+                                            <span class="course-card-info-value">C301</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-card-tags">
+                                        <span class="course-card-badge practice">实训</span>
+                                        <span class="course-card-badge paper">CAD制图试卷B</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="calendar-cell">
+                                <div class="course-card type-theory" onclick="showCourseDetail('工程力学', '陈老师', 'A102', '2024-2025', '机械工程', '23机械1班', '2025-01-15', '第1-2节')">
+                                    <div class="course-card-title">工程力学</div>
+                                    <div class="course-card-info">
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">任课教师:</span>
+                                            <span class="course-card-info-value">陈老师</span>
+                                        </div>
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">上课教室:</span>
+                                            <span class="course-card-info-value">A102</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-card-tags">
+                                        <span class="course-card-badge theory">普通任务</span>
+                                        <span class="course-card-badge paper">工程力学试卷A</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="calendar-cell"></div>
+                            <div class="calendar-cell">
+                                <div class="course-card type-experiment" onclick="showCourseDetail('机器人概论', '赵老师', 'E501', '2024-2025', '工业机器人技术', '23机器人1班', '2025-01-17', '第1-2节')">
+                                    <div class="course-card-title">机器人概论</div>
+                                    <div class="course-card-info">
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">任课教师:</span>
+                                            <span class="course-card-info-value">赵老师</span>
+                                        </div>
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">上课教室:</span>
+                                            <span class="course-card-info-value">E501</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-card-tags">
+                                        <span class="course-card-badge experiment">普通任务</span>
+                                        <span class="course-card-badge paper">机器人概论试卷A</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 第3-4节 -->
+                            <div class="calendar-time-slot">10:00<br>11:40</div>
+                            <div class="calendar-cell"></div>
+                            <div class="calendar-cell">
+                                <div class="course-card type-theory" onclick="showCourseDetail('机械制图', 'ME101', '王老师', 'A101', '理论')">
+                                    <div class="course-card-title">机械制图</div>
+                                    <div class="course-card-info">
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">任课教师:</span>
+                                            <span class="course-card-info-value">王老师</span>
+                                        </div>
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">上课教室:</span>
+                                            <span class="course-card-info-value">A101</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-card-tags">
+                                        <span class="course-card-badge theory">普通任务</span>
+                                        <span class="course-card-badge paper">机械制图试卷A</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="calendar-cell"></div>
+                            <div class="calendar-cell">
+                                <div class="course-card type-practice" onclick="showCourseDetail('数控编程', '李老师', 'B201', '2024-2025', '数控技术', '23数控1班', '2025-01-16', '第3-4节')">
+                                    <div class="course-card-title">数控编程</div>
+                                    <div class="course-card-info">
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">任课教师:</span>
+                                            <span class="course-card-info-value">李老师</span>
+                                        </div>
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">上课教室:</span>
+                                            <span class="course-card-info-value">B201</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-card-tags">
+                                        <span class="course-card-badge practice">实训</span>
+                                        <span class="course-card-badge paper">数控编程试卷A</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="calendar-cell"></div>
+
+                            <!-- 第5-6节 -->
+                            <div class="calendar-time-slot">14:00<br>15:40</div>
+                            <div class="calendar-cell">
+                                <div class="course-card type-experiment" onclick="showCourseDetail('电气控制', '孙老师', 'F601', '2024-2025', '机电一体化技术', '23机电1班', '2025-01-13', '第5-6节')">
+                                    <div class="course-card-title">电气控制</div>
+                                    <div class="course-card-info">
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">任课教师:</span>
+                                            <span class="course-card-info-value">孙老师</span>
+                                        </div>
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">上课教室:</span>
+                                            <span class="course-card-info-value">F601</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-card-tags">
+                                        <span class="course-card-badge experiment">普通任务</span>
+                                        <span class="course-card-badge paper">电气控制试卷A</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="calendar-cell"></div>
+                            <div class="calendar-cell">
+                                <div class="course-card type-practice" onclick="showCourseDetail('模具设计', '刘老师', 'D401', '2024-2025', '模具设计与制造', '23模具1班', '2025-01-15', '第5-6节')">
+                                    <div class="course-card-title">模具设计</div>
+                                    <div class="course-card-info">
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">任课教师:</span>
+                                            <span class="course-card-info-value">刘老师</span>
+                                        </div>
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">上课教室:</span>
+                                            <span class="course-card-info-value">D401</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-card-tags">
+                                        <span class="course-card-badge practice">实训</span>
+                                        <span class="course-card-badge paper">模具设计试卷A</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="calendar-cell"></div>
+                            <div class="calendar-cell">
+                                <div class="course-card type-theory" onclick="showCourseDetail('机械制图', 'ME101', '王老师', 'A101', '理论')">
+                                    <div class="course-card-title">机械制图</div>
+                                    <div class="course-card-info">
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">任课教师:</span>
+                                            <span class="course-card-info-value">王老师</span>
+                                        </div>
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">上课教室:</span>
+                                            <span class="course-card-info-value">A101</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-card-tags">
+                                        <span class="course-card-badge theory">普通任务</span>
+                                        <span class="course-card-badge paper">机械制图试卷B</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 第7-8节 -->
+                            <div class="calendar-time-slot">16:00<br>17:40</div>
+                            <div class="calendar-cell"></div>
+                            <div class="calendar-cell"></div>
+                            <div class="calendar-cell"></div>
+                            <div class="calendar-cell">
+                                <div class="course-card type-practice" onclick="showCourseDetail('CAD制图', 'ME102', '张老师', 'C301', '实训')">
+                                    <div class="course-card-title">CAD制图</div>
+                                    <div class="course-card-info">
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">任课教师:</span>
+                                            <span class="course-card-info-value">张老师</span>
+                                        </div>
+                                        <div class="course-card-info-item">
+                                            <span class="course-card-info-label">上课教室:</span>
+                                            <span class="course-card-info-value">C301</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-card-tags">
+                                        <span class="course-card-badge practice">实训</span>
+                                        <span class="course-card-badge paper">CAD制图试卷C</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="calendar-cell"></div>
+                        </div>
+
+                        <!-- 图例 -->
+                        <div class="legend-bar">
+                            <div class="legend-item">
+                                <div class="legend-dot theory"></div>
+                                <span>普通任务</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot practice"></div>
+                                <span>实训任务</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot experiment"></div>
+                                <span>考试</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增排课弹窗 -->
+    <div class="modal-overlay" id="addModal">
+        <div class="modal-glass">
+            <div class="modal-header">
+                <h3 class="modal-title">新增排课</h3>
+                <button class="modal-close" onclick="closeAddModal()">×</button>
+            </div>
+            <form id="addScheduleForm">
+                <div class="form-group">
+                    <label class="form-label">学年</label>
+                    <select class="form-input" required>
+                        <option value="">请选择学年</option>
+                        <option value="2023-2024">2023年</option>
+                        <option value="2024-2025">2024年</option>
+                        <option value="2025-2026">2025年</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">专业名称</label>
+                    <select class="form-input" required>
+                        <option value="">请选择专业</option>
+                        <option value="机械工程">机械工程</option>
+                        <option value="数控技术">数控技术</option>
+                        <option value="工业机器人技术">工业机器人技术</option>
+                        <option value="机电一体化技术">机电一体化技术</option>
+                        <option value="模具设计与制造">模具设计与制造</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">课程名称</label>
+                    <select class="form-input" required>
+                        <option value="">请选择课程</option>
+                        <option value="机械制图">机械制图</option>
+                        <option value="CAD制图">CAD制图</option>
+                        <option value="工程力学">工程力学</option>
+                        <option value="机器人概论">机器人概论</option>
+                        <option value="数控编程">数控编程</option>
+                        <option value="电气控制">电气控制</option>
+                        <option value="模具设计">模具设计</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">班级名称</label>
+                    <select class="form-input" required>
+                        <option value="">请选择班级</option>
+                        <option value="23机械1班">23机械1班</option>
+                        <option value="23机械2班">23机械2班</option>
+                        <option value="23数控1班">23数控1班</option>
+                        <option value="23数控2班">23数控2班</option>
+                        <option value="23机器人1班">23机器人1班</option>
+                        <option value="23机电1班">23机电1班</option>
+                        <option value="23模具1班">23模具1班</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">任课教师</label>
+                    <select class="form-input" required>
+                        <option value="">请选择教师</option>
+                        <option value="王老师">王老师</option>
+                        <option value="张老师">张老师</option>
+                        <option value="李老师">李老师</option>
+                        <option value="刘老师">刘老师</option>
+                        <option value="陈老师">陈老师</option>
+                        <option value="赵老师">赵老师</option>
+                        <option value="孙老师">孙老师</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">上课日期</label>
+                    <input type="date" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">上课时间段</label>
+                    <select class="form-input" required>
+                        <option value="">请选择时间段</option>
+                        <option value="第1-2节">第1-2节 (08:00-09:40)</option>
+                        <option value="第3-4节">第3-4节 (10:00-11:40)</option>
+                        <option value="第5-6节">第5-6节 (14:00-15:40)</option>
+                        <option value="第7-8节">第7-8节 (16:00-17:40)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">上课教室</label>
+                    <select class="form-input" required>
+                        <option value="">请选择教室</option>
+                        <option value="A101">A101</option>
+                        <option value="A102">A102</option>
+                        <option value="B201">B201</option>
+                        <option value="C301">C301</option>
+                        <option value="D401">D401</option>
+                        <option value="E501">E501</option>
+                        <option value="F601">F601</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn-glass btn-secondary-glass" onclick="closeAddModal()">取消</button>
+                    <button type="submit" class="btn-glass btn-primary-glass">确认添加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 课程详情弹窗 -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-glass">
+            <div class="modal-header">
+                <h3 class="modal-title" id="detailTitle">课程详情</h3>
+                <button class="modal-close" onclick="closeDetailModal()">×</button>
+            </div>
+            <div id="detailContent">
+                <div class="form-group">
+                    <label class="form-label">学年</label>
+                    <select class="form-input" id="detailYear" disabled>
+                        <option value="">请选择学年</option>
+                        <option value="2023-2024">2023年</option>
+                        <option value="2024-2025">2024年</option>
+                        <option value="2025-2026">2025年</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">专业名称</label>
+                    <select class="form-input" id="detailMajor" disabled>
+                        <option value="">请选择专业</option>
+                        <option value="机械工程">机械工程</option>
+                        <option value="数控技术">数控技术</option>
+                        <option value="工业机器人技术">工业机器人技术</option>
+                        <option value="机电一体化技术">机电一体化技术</option>
+                        <option value="模具设计与制造">模具设计与制造</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">课程名称</label>
+                    <select class="form-input" id="detailName" disabled>
+                        <option value="">请选择课程</option>
+                        <option value="机械制图">机械制图</option>
+                        <option value="CAD制图">CAD制图</option>
+                        <option value="工程力学">工程力学</option>
+                        <option value="机器人概论">机器人概论</option>
+                        <option value="数控编程">数控编程</option>
+                        <option value="电气控制">电气控制</option>
+                        <option value="模具设计">模具设计</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">班级名称</label>
+                    <select class="form-input" id="detailClass" disabled>
+                        <option value="">请选择班级</option>
+                        <option value="23机械1班">23机械1班</option>
+                        <option value="23机械2班">23机械2班</option>
+                        <option value="23数控1班">23数控1班</option>
+                        <option value="23数控2班">23数控2班</option>
+                        <option value="23机器人1班">23机器人1班</option>
+                        <option value="23机电1班">23机电1班</option>
+                        <option value="23模具1班">23模具1班</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">任课教师</label>
+                    <select class="form-input" id="detailTeacher" disabled>
+                        <option value="">请选择教师</option>
+                        <option value="王老师">王老师</option>
+                        <option value="张老师">张老师</option>
+                        <option value="李老师">李老师</option>
+                        <option value="刘老师">刘老师</option>
+                        <option value="陈老师">陈老师</option>
+                        <option value="赵老师">赵老师</option>
+                        <option value="孙老师">孙老师</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">上课日期</label>
+                    <input type="date" class="form-input" id="detailDate" readonly>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">上课时间段</label>
+                    <select class="form-input" id="detailTimeSlot" disabled>
+                        <option value="">请选择时间段</option>
+                        <option value="第1-2节">第1-2节 (08:00-09:40)</option>
+                        <option value="第3-4节">第3-4节 (10:00-11:40)</option>
+                        <option value="第5-6节">第5-6节 (14:00-15:40)</option>
+                        <option value="第7-8节">第7-8节 (16:00-17:40)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">上课教室</label>
+                    <select class="form-input" id="detailClassroom" disabled>
+                        <option value="">请选择教室</option>
+                        <option value="A101">A101</option>
+                        <option value="A102">A102</option>
+                        <option value="B201">B201</option>
+                        <option value="C301">C301</option>
+                        <option value="D401">D401</option>
+                        <option value="E501">E501</option>
+                        <option value="F601">F601</option>
+                    </select>
+                </div>
+                <div class="form-actions" id="detailActions">
+                    <!-- <button type="button" class="btn-glass btn-danger-glass" onclick="deleteCourse()">删除</button> -->
+                    <button type="button" class="btn-glass btn-secondary-glass" onclick="closeDetailModal()">关闭</button>
+                    <!-- <button type="button" class="btn-glass btn-primary-glass" onclick="enableEditMode()">编辑</button> -->
+                </div>
+                <div class="form-actions" id="editActions" style="display: none;">
+                    <button type="button" class="btn-glass btn-secondary-glass" onclick="cancelEdit()">取消</button>
+                    <button type="button" class="btn-glass btn-primary-glass" onclick="saveCourse()">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./nav-loader-new.js"></script>
+    <script>
+        // 树状图展开/收起
+        function toggleNode(element) {
+            element.classList.toggle('expanded');
+            const toggle = element.querySelector('.tree-toggle');
+            const children = element.nextElementSibling;
+            if (toggle) toggle.classList.toggle('expanded');
+            if (children) children.classList.toggle('expanded');
+        }
+
+        // 选择树节点
+        function selectNode(element, grade, major) {
+            document.querySelectorAll('.tree-node-content').forEach(el => {
+                el.classList.remove('active');
+            });
+            element.classList.add('active');
+            console.log('选择节点:', grade, major);
+        }
+
+        // 全部展开
+        function expandAll() {
+            document.querySelectorAll('.tree-node.tree-level-1').forEach(node => {
+                const content = node.querySelector('.tree-node-content');
+                const children = node.querySelector('.tree-children');
+                const toggle = content.querySelector('.tree-toggle');
+                if (children && toggle) {
+                    content.classList.add('expanded');
+                    toggle.classList.add('expanded');
+                    children.classList.add('expanded');
+                }
+            });
+        }
+
+        // 全部收起
+        function collapseAll() {
+            document.querySelectorAll('.tree-node.tree-level-1').forEach(node => {
+                const content = node.querySelector('.tree-node-content');
+                const children = node.querySelector('.tree-children');
+                const toggle = content.querySelector('.tree-toggle');
+                if (children && toggle) {
+                    content.classList.remove('expanded');
+                    toggle.classList.remove('expanded');
+                    children.classList.remove('expanded');
+                }
+            });
+        }
+
+        // 搜索过滤树状图
+        function filterTree(keyword) {
+            const treeNodes = document.querySelectorAll('.tree-node');
+            const lowerKeyword = keyword.toLowerCase().trim();
+            
+            if (!lowerKeyword) {
+                // 清空搜索时显示所有节点
+                treeNodes.forEach(node => {
+                    node.style.display = '';
+                });
+                return;
+            }
+            
+            // 先隐藏所有节点
+            treeNodes.forEach(node => {
+                node.style.display = 'none';
+            });
+            
+            // 查找匹配的节点
+            const matchedNodes = [];
+            treeNodes.forEach(node => {
+                const label = node.getAttribute('data-label');
+                if (label && label.toLowerCase().includes(lowerKeyword)) {
+                    matchedNodes.push(node);
+                    node.style.display = '';
+                    
+                    // 如果是子节点，显示其父节点
+                    if (node.classList.contains('tree-level-2')) {
+                        const parentNode = node.closest('.tree-level-1');
+                        if (parentNode) {
+                            parentNode.style.display = '';
+                            // 展开父节点
+                            const parentContent = parentNode.querySelector('.tree-node-content');
+                            const parentChildren = parentNode.querySelector('.tree-children');
+                            const parentToggle = parentContent.querySelector('.tree-toggle');
+                            if (parentChildren && parentToggle) {
+                                parentContent.classList.add('expanded');
+                                parentToggle.classList.add('expanded');
+                                parentChildren.classList.add('expanded');
+                            }
+                        }
+                    }
+                    
+                    // 如果是父节点，显示其所有子节点
+                    if (node.classList.contains('tree-level-1')) {
+                        const children = node.querySelectorAll('.tree-level-2');
+                        children.forEach(child => {
+                            child.style.display = '';
+                        });
+                        // 展开当前节点
+                        const content = node.querySelector('.tree-node-content');
+                        const childrenContainer = node.querySelector('.tree-children');
+                        const toggle = content.querySelector('.tree-toggle');
+                        if (childrenContainer && toggle) {
+                            content.classList.add('expanded');
+                            toggle.classList.add('expanded');
+                            childrenContainer.classList.add('expanded');
+                        }
+                    }
+                }
+            });
+        }
+
+        // 打开新增弹窗
+        function openAddModal() {
+            document.getElementById('addModal').classList.add('active');
+        }
+
+        // 关闭新增弹窗
+        function closeAddModal() {
+            document.getElementById('addModal').classList.remove('active');
+        }
+
+        // 用户下拉菜单操作
+        const UserDropdown = {
+            // 切换主题风格
+            switchTheme() {
+                // 主题切换功能实现
+                const themes = ['default', 'dark', 'blue'];
+                const currentTheme = document.body.getAttribute('data-theme') || 'default';
+                const currentIndex = themes.indexOf(currentTheme);
+                const nextTheme = themes[(currentIndex + 1) % themes.length];
+                document.body.setAttribute('data-theme', nextTheme);
+                localStorage.setItem('theme', nextTheme);
+                alert('主题切换功能开发中...');
+            },
+            
+            // 退出登录
+            logout() {
+                if (confirm('确定要退出登录吗？')) {
+                    // 清除登录状态
+                    localStorage.removeItem('userToken');
+                    localStorage.removeItem('userInfo');
+                    sessionStorage.clear();
+                    
+                    // 跳转到登录页
+                    window.location.href = './教学实训平台_登录.html';
+                }
+            }
+        };
+
+        // 当前编辑的课程数据
+        let currentCourseData = null;
+        let isEditMode = false;
+
+        // 显示课程详情
+        function showCourseDetail(name, teacher, classroom, year, major, className, date, timeSlot) {
+            currentCourseData = { name, teacher, classroom, year, major, className, date, timeSlot };
+            isEditMode = false;
+            
+            document.getElementById('detailTitle').textContent = name;
+            document.getElementById('detailName').value = name;
+            document.getElementById('detailTeacher').value = teacher || '';
+            document.getElementById('detailClassroom').value = classroom || '';
+            document.getElementById('detailYear').value = year || '';
+            document.getElementById('detailMajor').value = major || '';
+            document.getElementById('detailClass').value = className || '';
+            document.getElementById('detailDate').value = date || '';
+            document.getElementById('detailTimeSlot').value = timeSlot || '';
+            
+            // 重置为查看模式
+            resetDetailView();
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        // 关闭详情弹窗
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+            currentCourseData = null;
+            isEditMode = false;
+        }
+
+        // 重置详情视图（查看模式）
+        function resetDetailView() {
+            document.getElementById('detailName').disabled = true;
+            document.getElementById('detailTeacher').disabled = true;
+            document.getElementById('detailClassroom').disabled = true;
+            document.getElementById('detailYear').disabled = true;
+            document.getElementById('detailMajor').disabled = true;
+            document.getElementById('detailClass').disabled = true;
+            document.getElementById('detailDate').disabled = true;
+            document.getElementById('detailTimeSlot').disabled = true;
+            
+            document.getElementById('detailActions').style.display = 'flex';
+            document.getElementById('editActions').style.display = 'none';
+            
+            // 移除编辑样式
+            document.querySelectorAll('#detailContent .form-input').forEach(input => {
+                input.classList.remove('edit-mode');
+            });
+        }
+
+        // 启用编辑模式
+        function enableEditMode() {
+            isEditMode = true;
+            
+            document.getElementById('detailName').disabled = false;
+            document.getElementById('detailTeacher').disabled = false;
+            document.getElementById('detailClassroom').disabled = false;
+            document.getElementById('detailYear').disabled = false;
+            document.getElementById('detailMajor').disabled = false;
+            document.getElementById('detailClass').disabled = false;
+            document.getElementById('detailDate').disabled = false;
+            document.getElementById('detailTimeSlot').disabled = false;
+            
+            document.getElementById('detailActions').style.display = 'none';
+            document.getElementById('editActions').style.display = 'flex';
+            
+            // 添加编辑样式
+            document.querySelectorAll('#detailContent .form-input').forEach(input => {
+                if (!input.disabled) {
+                    input.classList.add('edit-mode');
+                }
+            });
+            
+            document.getElementById('detailTitle').textContent = '编辑课程';
+        }
+
+        // 取消编辑
+        function cancelEdit() {
+            if (currentCourseData) {
+                // 恢复原始数据
+                document.getElementById('detailName').value = currentCourseData.name;
+                document.getElementById('detailTeacher').value = currentCourseData.teacher || '';
+                document.getElementById('detailClassroom').value = currentCourseData.classroom || '';
+                document.getElementById('detailYear').value = currentCourseData.year || '';
+                document.getElementById('detailMajor').value = currentCourseData.major || '';
+                document.getElementById('detailClass').value = currentCourseData.className || '';
+                document.getElementById('detailDate').value = currentCourseData.date || '';
+                document.getElementById('detailTimeSlot').value = currentCourseData.timeSlot || '';
+            }
+            
+            resetDetailView();
+            document.getElementById('detailTitle').textContent = currentCourseData ? currentCourseData.name : '课程详情';
+            isEditMode = false;
+        }
+
+        // 保存课程
+        function saveCourse() {
+            const name = document.getElementById('detailName').value;
+            const teacher = document.getElementById('detailTeacher').value;
+            const classroom = document.getElementById('detailClassroom').value;
+            const year = document.getElementById('detailYear').value;
+            const major = document.getElementById('detailMajor').value;
+            const className = document.getElementById('detailClass').value;
+            const date = document.getElementById('detailDate').value;
+            const timeSlot = document.getElementById('detailTimeSlot').value;
+            
+            if (!name || !teacher || !classroom || !year || !major || !className || !date || !timeSlot) {
+                alert('请填写完整的课程信息！');
+                return;
+            }
+            
+            // 更新当前数据
+            currentCourseData = { ...currentCourseData, name, teacher, classroom, year, major, className, date, timeSlot };
+            
+            alert('课程信息保存成功！');
+            resetDetailView();
+            document.getElementById('detailTitle').textContent = name;
+            isEditMode = false;
+            
+            // 这里可以添加刷新日历视图的逻辑
+            console.log('更新后的课程数据:', currentCourseData);
+        }
+
+        // 删除课程
+        function deleteCourse() {
+            if (!currentCourseData) return;
+            
+            if (confirm(`确定要删除课程 "${currentCourseData.name}" 吗？此操作不可恢复。`)) {
+                alert('课程删除成功！');
+                closeDetailModal();
+                // 这里可以添加从日历视图中移除该课程的逻辑
+                console.log('删除课程:', currentCourseData);
+            }
+        }
+
+        // 切换周次
+        function changeWeek(direction) {
+            // 这里可以实现周次切换逻辑
+            console.log('切换周次:', direction);
+        }
+
+        // 应用筛选
+        function applyFilters() {
+            const teacher = document.getElementById('filterTeacher').value;
+            const type = document.getElementById('filterType').value;
+            console.log('筛选条件:', { teacher, type });
+        }
+
+        // 批量导入
+        function importSchedule() {
+            alert('批量导入功能开发中...');
+        }
+
+        // 点击弹窗外部关闭
+        document.querySelectorAll('.modal-overlay').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+
+        // 表单提交
+        document.getElementById('addScheduleForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            alert('排课添加成功！');
+            closeAddModal();
+        });
+    </script>
+    <script src="./user-menu-component.js"></script>
+</body>
+</html>

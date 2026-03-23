@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学生任务总览 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .user-info { display: flex; align-items: center; gap: 20px; }
+        .user-info span { color: #666; font-size: 14px; }
+
+        /* 统计卡片 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-icon.blue { background: #E6F7FF; }
+        .stat-icon.green { background: #E6F7FF; }
+        .stat-icon.orange { background: #FFF7E6; }
+        .stat-icon.purple { background: #F9F0FF; }
+        .stat-info h3 { font-size: 14px; color: #666; font-weight: normal; margin-bottom: 4px; }
+        .stat-info .number { font-size: 28px; font-weight: bold; color: #333; }
+        
+        /* 搜索区域 */
+        .search-area {
+            background: #fff;
+            padding: 20px 24px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .search-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+        .form-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-item label { color: #666; font-size: 14px; white-space: nowrap; }
+        .form-item input, .form-item select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 180px;
+        }
+        .form-item input:focus, .form-item select:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        .search-btn, .reset-btn, .export-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .search-btn { background: #1890FF; color: #fff; }
+        .search-btn:hover { background: #40A9FF; }
+        .reset-btn { background: #F5F5F5; color: #666; border: 1px solid #D9D9D9; }
+        .reset-btn:hover { border-color: #1890FF; color: #1890FF; }
+        .export-btn { background: #1890FF; color: #fff; }
+        .export-btn:hover { background: #40A9FF; }
+        
+        /* 表格区域 */
+        .table-container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+            padding: 16px;
+        }
+        .table-container table {
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .table-container .pagination {
+            border-top: 1px solid #F0F0F0;
+            background: transparent;
+            padding: 16px 0 0 0;
+            margin-top: 16px;
+        }
+        .table-header {
+            padding: 0 0 16px 0;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table-title { font-size: 16px; font-weight: 600; color: #333; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+        }
+        th {
+            background: #FAFAFA;
+            font-weight: 600;
+            color: #333;
+        }
+        td { color: #666; }
+        tr:hover { background: #F5F7FA; }
+        
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #1890FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        .student-detail h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .student-detail p {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .tag-green { background: #E6F7FF; color: #1890FF; border: 1px solid #91D5FF; }
+        .tag-blue { background: #E6F7FF; color: #1890FF; border: 1px solid #91D5FF; }
+        .tag-orange { background: #FFF7E6; color: #FA8C16; border: 1px solid #FFD591; }
+        .tag-red { background: #FFF1F0; color: #FF4D4F; border: 1px solid #FFA39E; }
+        
+        .action-btns { display: flex; gap: 8px; }
+        .action-btn {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .action-btn.primary { background: #1890FF; color: #fff; }
+        .action-btn.primary:hover { background: #40A9FF; }
+        .action-btn.link { background: transparent; color: #1890FF; }
+        .action-btn.link:hover { color: #40A9FF; }
+        
+        /* 分页 */
+        .pagination {
+            padding: 16px 0;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid #F0F0F0;
+        }
+        .page-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+        }
+        .page-btn:hover:not(:disabled) { border-color: #1890FF; color: #1890FF; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-btn.active { background: #1890FF; color: #fff; border-color: #1890FF; }
+        .page-info { color: #666; font-size: 13px; }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+
+        /* 页面样式覆盖 - 统一间距和布局 */
+        .content-body {
+            padding: 16px !important;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">首页 <span>/</span> 报表中心 <span>/</span> 学生任务总览</div>
+            <div class="user-info">
+                <span>👨‍🏫 教师：张三</span>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+
+        <div class="content-body">
+            <!-- 统计卡片 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon blue">👨‍🎓</div>
+                    <div class="stat-info">
+                        <h3>授课学生</h3>
+                        <div class="number">186</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">✅</div>
+                    <div class="stat-info">
+                        <h3>任务完成率</h3>
+                        <div class="number">87%</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📝</div>
+                    <div class="stat-info">
+                        <h3>待完成任务</h3>
+                        <div class="number">342</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">⏱️</div>
+                    <div class="stat-info">
+                        <h3>平均学习时长</h3>
+                        <div class="number">24h</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 搜索区域 -->
+            <div class="search-area">
+                <div class="search-form">
+                    <div class="form-item">
+                        <label>学生姓名：</label>
+                        <input type="text" placeholder="请输入学生姓名" id="studentName">
+                    </div>
+                    <div class="form-item">
+                        <label>学号：</label>
+                        <input type="text" placeholder="请输入学号" id="studentNo">
+                    </div>
+                    <div class="form-item">
+                        <label>所属班级：</label>
+                        <select id="className">
+                            <option value="">全部班级</option>
+                            <option value="2026级计算机1班">2026级计算机1班</option>
+                            <option value="2026级计算机2班">2026级计算机2班</option>
+                            <option value="2025级计算机1班">2025级计算机1班</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>任务状态：</label>
+                        <select id="taskStatus">
+                            <option value="">全部状态</option>
+                            <option value="completed">已完成</option>
+                            <option value="inProgress">进行中</option>
+                            <option value="notStarted">未开始</option>
+                        </select>
+                    </div>
+                    <button class="search-btn" onclick="search()">🔍 查询</button>
+                    <button class="reset-btn" onclick="reset()">重置</button>
+                    <button class="export-btn" onclick="exportData()">📥 导出</button>
+                </div>
+            </div>
+
+            <!-- 表格区域 -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">学生任务列表</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">序号</th>
+                            <th>学生信息</th>
+                            <th>班级</th>
+                            <th>考试任务</th>
+                            <th>实训任务</th>
+                            <th>学习时长</th>
+                            <th>完成率</th>
+                            <th>状态</th>
+                            <th style="width: 150px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <span class="page-info">共 <span id="totalCount">0</span> 条记录</span>
+                    <button class="page-btn" onclick="prevPage()" id="prevBtn">上一页</button>
+                    <button class="page-btn active" id="page1">1</button>
+                    <button class="page-btn" id="page2">2</button>
+                    <button class="page-btn" id="page3">3</button>
+                    <button class="page-btn" onclick="nextPage()" id="nextBtn">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockData = [
+            { id: 1, name: '李明', studentNo: '2026010101', className: '2026级计算机1班', examTasks: 8, trainingTasks: 6, studyHours: 32, completionRate: 92 },
+            { id: 2, name: '王芳', studentNo: '2026010102', className: '2026级计算机1班', examTasks: 8, trainingTasks: 5, studyHours: 28, completionRate: 85 },
+            { id: 3, name: '张伟', studentNo: '2026010103', className: '2026级计算机1班', examTasks: 7, trainingTasks: 6, studyHours: 35, completionRate: 95 },
+            { id: 4, name: '刘洋', studentNo: '2026010104', className: '2026级计算机1班', examTasks: 6, trainingTasks: 4, studyHours: 20, completionRate: 68 },
+            { id: 5, name: '陈静', studentNo: '2026010201', className: '2026级计算机2班', examTasks: 8, trainingTasks: 6, studyHours: 30, completionRate: 90 },
+            { id: 6, name: '杨磊', studentNo: '2026010202', className: '2026级计算机2班', examTasks: 7, trainingTasks: 5, studyHours: 25, completionRate: 78 },
+            { id: 7, name: '赵敏', studentNo: '2025010101', className: '2025级计算机1班', examTasks: 10, trainingTasks: 8, studyHours: 42, completionRate: 98 },
+            { id: 8, name: '周杰', studentNo: '2025010102', className: '2025级计算机1班', examTasks: 9, trainingTasks: 7, studyHours: 38, completionRate: 92 },
+        ];
+
+        let currentPage = 1;
+        const pageSize = 10;
+        let filteredData = [...mockData];
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredData.slice(start, end);
+
+            tbody.innerHTML = pageData.map((item, index) => `
+                <tr>
+                    <td>${start + index + 1}</td>
+                    <td>
+                        <div class="student-info">
+                            <div class="student-avatar">${item.name.charAt(0)}</div>
+                            <div class="student-detail">
+                                <h4>${item.name}</h4>
+                                <p>${item.studentNo}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td>${item.className}</td>
+                    <td>${item.examTasks}个</td>
+                    <td>${item.trainingTasks}个</td>
+                    <td>${item.studyHours}小时</td>
+                    <td>${item.completionRate}%</td>
+                    <td>${renderStatus(item.completionRate)}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button class="action-btn primary" onclick="viewDetail(${item.id})">详情</button>
+                            <button class="action-btn link" onclick="viewTasks(${item.id})">任务</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('totalCount').textContent = filteredData.length;
+            updatePagination();
+        }
+
+        function renderStatus(rate) {
+            if (rate >= 90) return '<span class="tag tag-green">优秀</span>';
+            if (rate >= 75) return '<span class="tag tag-blue">良好</span>';
+            if (rate >= 60) return '<span class="tag tag-orange">及格</span>';
+            return '<span class="tag tag-red">需努力</span>';
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
+        }
+
+        function search() {
+            const studentName = document.getElementById('studentName').value.toLowerCase();
+            const studentNo = document.getElementById('studentNo').value.toLowerCase();
+            const className = document.getElementById('className').value;
+            const taskStatus = document.getElementById('taskStatus').value;
+
+            filteredData = mockData.filter(item => {
+                let statusMatch = true;
+                if (taskStatus === 'completed') statusMatch = item.completionRate >= 90;
+                else if (taskStatus === 'inProgress') statusMatch = item.completionRate >= 60 && item.completionRate < 90;
+                else if (taskStatus === 'notStarted') statusMatch = item.completionRate < 60;
+
+                return (!studentName || item.name.toLowerCase().includes(studentName)) &&
+                       (!studentNo || item.studentNo.toLowerCase().includes(studentNo)) &&
+                       (!className || item.className === className) &&
+                       statusMatch;
+            });
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        function reset() {
+            document.getElementById('studentName').value = '';
+            document.getElementById('studentNo').value = '';
+            document.getElementById('className').value = '';
+            document.getElementById('taskStatus').value = '';
+            filteredData = [...mockData];
+            currentPage = 1;
+            renderTable();
+        }
+
+        function exportData() {
+            alert('正在导出学生任务数据...');
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        function viewDetail(id) {
+            const student = mockData.find(item => item.id === id);
+            alert(`查看学生详情：${student.name}`);
+        }
+
+        function viewTasks(id) {
+            const student = mockData.find(item => item.id === id);
+            alert(`查看学生任务：${student.name}`);
+        }
+
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 初始化
+        renderTable();
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

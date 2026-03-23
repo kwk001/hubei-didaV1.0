@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加工类实训题 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #F5F7FA; display: flex; height: 100vh; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
+        .page-title { font-size: 20px; font-weight: 600; color: #333; }
+        .page-title::before { content: '🔧 '; }
+        .btn-group { display: flex; gap: 12px; }
+        .btn-primary { padding: 10px 24px; background: #1890FF; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-secondary { padding: 10px 24px; border: 1px solid #D9D9D9; background: #fff; border-radius: 4px; cursor: pointer; font-size: 14px; color: #666; }
+        .btn-secondary:hover { border-color: #1890FF; color: #1890FF; }
+        .form-container { background: #fff; border-radius: 8px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .form-section { margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid #F0F0F0; }
+        .form-section:last-child { margin-bottom: 0; padding-bottom: 0; border-bottom: none; }
+        .section-title { font-size: 16px; font-weight: 600; color: #333; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .section-title::before { content: ''; width: 4px; height: 16px; background: #1890FF; border-radius: 2px; }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 20px; }
+        .form-item { margin-bottom: 20px; }
+        .form-item label { display: block; margin-bottom: 8px; font-size: 14px; color: #333; }
+        .form-item label .required { color: #FF4D4F; }
+        .form-item input, .form-item select, .form-item textarea { width: 100%; padding: 10px 12px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px; transition: all 0.3s; }
+        .form-item input:focus, .form-item select:focus, .form-item textarea:focus { outline: none; border-color: #1890FF; box-shadow: 0 0 0 2px rgba(24,144,255,0.2); }
+        .form-item textarea { resize: vertical; min-height: 120px; }
+        .checkbox-wrapper { display: flex; align-items: center; gap: 8px; }
+        .checkbox-wrapper input[type="checkbox"] { width: auto; }
+        .tool-table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        .tool-table th, .tool-table td { padding: 12px; border: 1px solid #E8E8E8; text-align: left; }
+        .tool-table th { background: #FAFAFA; font-weight: 600; }
+        .tool-table input, .tool-table select { width: 100%; padding: 6px 10px; border: 1px solid #D9D9D9; border-radius: 4px; }
+        .add-row-btn { margin-top: 12px; padding: 8px 16px; border: 1px dashed #1890FF; background: #fff; color: #1890FF; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .add-row-btn:hover { background: #E6F7FF; }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+    </style>
+</head>
+<body>
+        <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="logo"><i class="iconfont icon-gongzuotai"></i> 教学实训平台</div>
+                <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shouye"></i>工作台</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教学实训平台_教师端.html'">
+                    <span><i class="iconfont icon-shouye"></i></span><span>首页概览</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-kechengguanli"></i>我的教学</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_我的课程.html'">
+                    <span><i class="iconfont icon-kechengguanli"></i></span><span>我的课程</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_专业教学课程.html'">
+                    <span><i class="iconfont icon-zhuanyeguanli"></i></span><span>专业教学课程</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shijuan"></i>考试管理</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷管理.html'">
+                    <span><i class="iconfont icon-shijuan"></i></span><span>试卷管理</span>
+                </div>
+                <div class="menu-item active" onclick="window.location.href='./教师端_实训题库_列表.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷批阅.html'">
+                    <span><i class="iconfont icon-shijuan"></i></span><span>试卷批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训批阅.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_错题集库.html'">
+                    <span><i class="iconfont icon-cuowu"></i></span><span>错题集</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-p008zhishiku"></i>知识库</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_视频教材.html'">
+                    <span><i class="iconfont icon-shipin"></i></span><span>视频教材</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_辅导教材.html'">
+                    <span><i class="iconfont icon-jiaocai"></i></span><span>辅导教材</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_题库.html'">
+                    <span><i class="iconfont icon-tiku"></i></span><span>普通题库</span>
+                </div>
+                <div class="menu-item active" onclick="window.location.href='./教师端_实训题库_列表.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训题库</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shengchanguanli"></i>生产管理</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_生产工单管理_V2.html'">
+                    <span><i class="iconfont icon-gongdan"></i></span><span>生产工单</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_排产策略管理.html'">
+                    <span><i class="iconfont icon-celve"></i></span><span>排产策略</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目模板管理.html'">
+                    <span><i class="iconfont icon-moban"></i></span><span>项目模版</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目甘特图.html'">
+                    <span><i class="iconfont icon-gantetu"></i></span><span>项目甘特图</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目看板.html'">
+                    <span><i class="iconfont icon-kanban"></i></span><span>项目看板</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-baobiao"></i>报表</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_实训任务管理.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训任务管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./图表_成绩分析.html'">
+                    <span><i class="iconfont icon-baobiao"></i></span><span>成绩分析</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_学生任务总览.html'">
+                    <span><i class="iconfont icon-renwu"></i></span><span>学生任务总览</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function addToolRow() { const tbody = document.getElementById('toolTableBody'); const row = document.createElement('tr'); row.innerHTML = '<td><input type="text" placeholder="刀号"></td><td><input type="text" placeholder="刀具名称"></td><td><input type="text" placeholder="规格"></td><td><input type="text" placeholder="加工内容"></td>'; tbody.appendChild(row); }
+        function goBack() { window.location.href = './教师端_实训题库.html'; }
+        function saveQuestion() { alert('保存成功！'); goBack(); }
+        function toggleMenu(element) { element.classList.toggle('collapsed'); const menuItems = element.nextElementSibling; if (menuItems && menuItems.classList.contains('menu-items')) { menuItems.classList.toggle('collapsed'); } }
+        function logout() { localStorage.removeItem('iBodaoUser'); window.location.href = './教学实训平台_登录.html'; }
+    </script>

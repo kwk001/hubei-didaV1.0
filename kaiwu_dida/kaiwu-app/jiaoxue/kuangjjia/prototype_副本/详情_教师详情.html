@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教师详情 - 教务管理端</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+        .sidebar {
+            width: 220px;
+            background: #001529;
+            display: flex;
+            flex-direction: column;
+        }
+        .logo {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .menu-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.65);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: #1890FF;
+            color: #fff;
+        }
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .header {
+            height: 64px;
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+        .content-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .detail-container {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .detail-header {
+            background: #fff;
+            border-radius: 8px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 24px;
+        }
+        .avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: #1890FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #fff;
+        }
+        .header-info h1 {
+            font-size: 24px;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .header-info p {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 12px;
+        }
+        .status-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            background: #F6FFED;
+            color: #52C41A;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .action-btns {
+            margin-left: auto;
+            display: flex;
+            gap: 12px;
+        }
+        .btn-edit {
+            padding: 8px 20px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .detail-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-left: 12px;
+            border-left: 4px solid #1890FF;
+        }
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .info-item.full-width {
+            grid-column: 1 / -1;
+        }
+        .info-label {
+            font-size: 13px;
+            color: #999;
+        }
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .stat-box {
+            background: #FAFAFA;
+            padding: 20px;
+            border-radius: 6px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #1890FF;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+        .course-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .course-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            background: #FAFAFA;
+            border-radius: 6px;
+        }
+        .course-name {
+            font-weight: 500;
+            color: #333;
+        }
+        .course-class {
+            font-size: 13px;
+            color: #999;
+            margin-top: 4px;
+        }
+        .course-status {
+            padding: 4px 10px;
+            background: #E6F7FF;
+            color: #1890FF;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo">📚 教学实训平台</div>
+        <div class="menu-item">🏠 首页概览</div>
+        <div class="menu-item">🎥 视频教材库</div>
+        <div class="menu-item">📄 辅导教材库</div>
+        <div class="menu-item">❓ 题库</div>
+        <div class="menu-item">📝 试卷库</div>
+        <div class="menu-item">🔧 实训试卷库</div>
+        <div class="menu-item">📅 学年管理</div>
+        <div class="menu-item">📆 学期管理</div>
+        <div class="menu-item">🎓 年级管理</div>
+        <div class="menu-item active">👨‍🏫 教师管理</div>
+        <div class="menu-item">👨‍🎓 学生管理</div>
+        <div class="menu-item">📖 专业管理</div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div>首页 / 教务管理 / 教师管理 / 教师详情</div>
+            <div>👤 教务管理员：admin | <button style="padding: 6px 16px; background: #FF4D4F; color: #fff; border: none; border-radius: 4px; cursor: pointer;">退出</button></div>
+        </div>
+
+        <div class="content-body">
+            <div class="detail-container">
+                <!-- 头部信息 -->
+                <div class="detail-header">
+                    <div class="avatar">张</div>
+                    <div class="header-info">
+                        <h1>张三</h1>
+                        <p>工号：T2021001 | 教授 | 机械工程学院</p>
+                        <span class="status-tag">在职</span>
+                    </div>
+                    <div class="action-btns">
+                        <button class="btn-edit">编辑信息</button>
+                    </div>
+                </div>
+
+                <!-- 基本信息 -->
+                <div class="detail-card">
+                    <div class="card-title">基本信息</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">姓名</span>
+                            <span class="info-value">张三</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">工号</span>
+                            <span class="info-value">T2021001</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">性别</span>
+                            <span class="info-value">男</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">出生日期</span>
+                            <span class="info-value">1980-05-15</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">联系方式</span>
+                            <span class="info-value">13800138001</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">邮箱</span>
+                            <span class="info-value">zhangsan@school.edu.cn</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 工作信息 -->
+                <div class="detail-card">
+                    <div class="card-title">工作信息</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="info-label">所属部门</span>
+                            <span class="info-value">机械工程学院</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">职称</span>
+                            <span class="info-value">教授</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">入职日期</span>
+                            <span class="info-value">2010-09-01</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">状态</span>
+                            <span class="info-value">在职</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 教学统计 -->
+                <div class="detail-card">
+                    <div class="card-title">教学统计</div>
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <div class="stat-number">6</div>
+                            <div class="stat-label">授课课程</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">186</div>
+                            <div class="stat-label">授课学生</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">24</div>
+                            <div class="stat-label">发布考试</div>
+                        </div>
+                        <div class="stat-box">
+                            <div class="stat-number">18</div>
+                            <div class="stat-label">发布实训</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 授课课程 -->
+                <div class="detail-card">
+                    <div class="card-title">授课课程</div>
+                    <div class="course-list">
+                        <div class="course-item">
+                            <div>
+                                <div class="course-name">机械制图</div>
+                                <div class="course-class">2023级机械工程1班、2班</div>
+                            </div>
+                            <span class="course-status">进行中</span>
+                        </div>
+                        <div class="course-item">
+                            <div>
+                                <div class="course-name">数控加工技术</div>
+                                <div class="course-class">2023级数控技术1班</div>
+                            </div>
+                            <span class="course-status">进行中</span>
+                        </div>
+                        <div class="course-item">
+                            <div>
+                                <div class="course-name">CAD/CAM技术</div>
+                                <div class="course-class">2024级机械工程1班</div>
+                            </div>
+                            <span class="course-status">未开始</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增实训试卷 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb span {
+            color: #1890FF;
+            cursor: pointer;
+        }
+
+        .breadcrumb span:hover {
+            text-decoration: underline;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        .btn-back {
+            padding: 10px 20px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .btn-back:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .form-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .form-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: #FF4D4F;
+            margin-left: 4px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* 总分显示 */
+        .score-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #E6F7FF 0%, #F0F7FF 100%);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .score-summary-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .score-summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1890FF;
+        }
+
+        /* 题目列表 */
+        .question-list {
+            margin-top: 20px;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: #FAFAFA;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #F0F0F0;
+        }
+
+        .question-number {
+            width: 32px;
+            height: 32px;
+            background: #1890FF;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .question-content {
+            flex: 1;
+        }
+
+        .question-title {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .question-meta {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .question-score-input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .question-delete {
+            color: #FF4D4F;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .question-delete:hover {
+            text-decoration: underline;
+        }
+
+        /* 题目统计 */
+        .question-stats {
+            display: flex;
+            gap: 16px;
+            padding: 16px 20px;
+            background: #F6FFED;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #B7EB8F;
+        }
+
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            background: #fff;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .stat-label {
+            color: #666;
+        }
+
+        .stat-value {
+            font-weight: 600;
+            color: #52C41A;
+        }
+
+        /* 批量操作栏 */
+        .batch-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 16px;
+            background: #FAFAFA;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #F0F0F0;
+        }
+
+        .batch-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .batch-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .batch-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .batch-right {
+            display: flex;
+            gap: 12px;
+        }
+
+        .batch-btn {
+            padding: 6px 16px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .batch-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .batch-btn.danger:hover {
+            border-color: #FF4D4F;
+            color: #FF4D4F;
+        }
+
+        .batch-score-input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        /* 优化题目项 */
+        .question-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #E8E8E8;
+            transition: all 0.3s;
+        }
+
+        .question-item:hover {
+            border-color: #1890FF;
+            box-shadow: 0 2px 8px rgba(24,144,255,0.1);
+        }
+
+        .question-checkbox {
+            display: flex;
+            align-items: center;
+        }
+
+        .question-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .question-number {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
+
+        .question-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .question-score-input {
+            width: 70px;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .question-score-input:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+
+        .question-delete {
+            color: #FF4D4F;
+            cursor: pointer;
+            font-size: 14px;
+            padding: 6px 12px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .question-delete:hover {
+            background: #FFF2F0;
+        }
+
+        /* 空提示 */
+        .empty-tip {
+            text-align: center;
+            padding: 80px 20px;
+            color: #999;
+            background: #FAFAFA;
+            border-radius: 8px;
+            border: 2px dashed #E8E8E8;
+        }
+
+        .empty-tip-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            opacity: 0.6;
+        }
+
+        .empty-tip-text {
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .empty-tip-subtext {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* 添加题目按钮 */
+        .add-question-btn {
+            width: 100%;
+            padding: 16px;
+            border: 2px dashed #D9D9D9;
+            background: #FAFAFA;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+            margin-top: 16px;
+        }
+
+        .add-question-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .btn-success {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #52C41A 0%, #389E0D 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 800px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #F5F7FA;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: #E8E8E8;
+            color: #666;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+        }
+
+        .modal-search {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .modal-search-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .modal-search-select {
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            min-width: 120px;
+        }
+
+        .modal-search-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .bank-question-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .bank-question-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+
+        .bank-question-item:hover {
+            border-color: #1890FF;
+            background: #F5F7FA;
+        }
+
+        .bank-question-checkbox {
+            padding-top: 2px;
+        }
+
+        .bank-question-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .bank-question-info {
+            flex: 1;
+        }
+
+        .bank-question-content {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .bank-question-meta {
+            display: flex;
+            gap: 12px;
+        }
+
+        .bank-question-type {
+            padding: 2px 8px;
+            background: #E6F7FF;
+            color: #1890FF;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .bank-question-difficulty {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .bank-question-difficulty.easy {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        .bank-question-difficulty.medium {
+            background: #FFF7E6;
+            color: #FA8C16;
+        }
+
+        .bank-question-difficulty.hard {
+            background: #FFF2F0;
+            color: #FF4D4F;
+        }
+
+        .bank-question-course {
+            padding: 2px 8px;
+            background: #F5F5F5;
+            color: #666;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-top: 1px solid #F0F0F0;
+            background: #FAFAFA;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .modal-selected-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .modal-selected-info span {
+            color: #1890FF;
+            font-weight: 600;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* 题型标签 */
+        .type-tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .type-tag.process { background: #F6FFED; color: #52C41A; }
+        .type-tag.programming { background: #FFF7E6; color: #FA8C16; }
+        .type-tag.design { background: #E6F7FF; color: #1890FF; }
+        .type-tag.machining { background: #FFF2F0; color: #FF4D4F; }
+        .type-tag.inspection { background: #F9F0FF; color: #722ED1; }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">
+                <span onclick="goBack()">实训试卷</span> / 新增试卷
+            </div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <div class="content-body">
+            <button class="btn-back" onclick="goBack()">
+                ← 返回列表
+            </button>
+
+            <!-- 基本信息 -->
+            <div class="form-card">
+                <div class="form-card-title">基本信息</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">试卷名称 <span class="required">*</span></label>
+                        <input type="text" class="form-input" id="paperName" placeholder="请输入试卷名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">所属专业 <span class="required">*</span></label>
+                        <select class="form-select" id="majorSelect">
+                            <option value="">请选择专业</option>
+                            <option value="数控技术">数控技术</option>
+                            <option value="机械设计">机械设计</option>
+                            <option value="模具设计">模具设计</option>
+                            <option value="机电一体化">机电一体化</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">所属课程 <span class="required">*</span></label>
+                        <select class="form-select" id="courseSelect">
+                            <option value="">请选择课程</option>
+                            <option value="数控车床">数控车床</option>
+                            <option value="数控铣床">数控铣床</option>
+                            <option value="数控编程">数控编程</option>
+                            <option value="机械制图">机械制图</option>
+                            <option value="模具设计">模具设计</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">物料名称 <span class="required">*</span></label>
+                        <select class="form-select" id="materialName" onchange="updateSpecifications()">
+                            <option value="">请选择物料</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">规格型号 <span class="required">*</span></label>
+                        <select class="form-select" id="specificationModel">
+                            <option value="">请先选择物料</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">BOM <span class="required">*</span></label>
+                        <select class="form-select" id="bomCode">
+                            <option value="">请选择BOM</option>
+                            <option value="BOM-2024-001">BOM-2024-001</option>
+                            <option value="BOM-2024-002">BOM-2024-002</option>
+                            <option value="BOM-2024-003">BOM-2024-003</option>
+                            <option value="BOM-2024-004">BOM-2024-004</option>
+                            <option value="BOM-2024-005">BOM-2024-005</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">工艺 <span class="required">*</span></label>
+                        <select class="form-select" id="processCode">
+                            <option value="">请选择工艺</option>
+                            <option value="车削加工">车削加工</option>
+                            <option value="铣削加工">铣削加工</option>
+                            <option value="钻削加工">钻削加工</option>
+                            <option value="磨削加工">磨削加工</option>
+                            <option value="数控加工">数控加工</option>
+                            <option value="焊接工艺">焊接工艺</option>
+                            <option value="装配工艺">装配工艺</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">考试时长（分钟）</label>
+                        <input type="number" class="form-input" id="examDuration" placeholder="请输入考试时长" value="120">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">总分</label>
+                        <input type="number" class="form-input" id="totalScore" placeholder="自动计算" readonly style="background-color: #F5F5F5; cursor: not-allowed;">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">试卷说明</label>
+                        <textarea class="form-textarea" id="paperDescription" placeholder="请输入试卷说明（选填）"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 题目设置 -->
+            <div class="form-card">
+                <div class="form-card-title">题目设置</div>
+                
+                <!-- 总分显示 -->
+                <div class="score-summary">
+                    <span class="score-summary-label">当前总分</span>
+                    <span class="score-summary-value" id="currentTotalScore">0 分</span>
+                </div>
+
+                <!-- 题目统计 -->
+                <div class="question-stats" id="questionStats" style="display: none;">
+                    <div class="stat-item">
+                        <span class="stat-label">题目总数</span>
+                        <span class="stat-value" id="statTotal">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">工艺类</span>
+                        <span class="stat-value" id="statProcess">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">编程类</span>
+                        <span class="stat-value" id="statProgramming">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">设计类</span>
+                        <span class="stat-value" id="statDesign">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">加工类</span>
+                        <span class="stat-value" id="statMachining">0</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">检测类</span>
+                        <span class="stat-value" id="statInspection">0</span>
+                    </div>
+                </div>
+
+                <!-- 批量操作栏 -->
+                <div class="batch-actions" id="batchActions" style="display: none;">
+                    <div class="batch-left">
+                        <label class="batch-checkbox">
+                            <input type="checkbox" id="selectAllQuestions" onchange="toggleSelectAllQuestions()">
+                            <span>全选</span>
+                        </label>
+                        <span style="color: #999; font-size: 14px;">已选 <strong id="selectedCount" style="color: #1890FF;">0</strong> 题</span>
+                    </div>
+                    <div class="batch-right">
+                        <button class="batch-btn danger" onclick="batchDelete()">批量删除</button>
+                    </div>
+                </div>
+
+                <!-- 题目列表 -->
+                <div class="question-list" id="questionList">
+                    <!-- 动态生成 -->
+                </div>
+
+                <!-- 空提示 -->
+                <div class="empty-tip" id="emptyTip">
+                    <div class="empty-tip-icon">📋</div>
+                    <div class="empty-tip-text">暂无题目</div>
+                    <div class="empty-tip-subtext">点击下方按钮从实训题库添加题目</div>
+                </div>
+
+                <!-- 添加题目按钮 -->
+                <button class="add-question-btn" onclick="openQuestionBank()">
+                    <i class="iconfont icon-tianjia" style="margin-right: 8px;"></i>从实训题库选择题目
+                </button>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="goBack()">取消</button>
+                <button class="btn-primary" onclick="saveDraft()">保存草稿</button>
+                <button class="btn-success" onclick="savePaper()">保存试卷</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let questionCount = 0;
+        let questions = [];
+
+        // 物料数据
+        const materialData = {
+            '钢材': ['Q235', '45#钢', '40Cr', '不锈钢304', '不锈钢316'],
+            '铝材': ['6061-T6', '6063-T5', '7075-T6', '5052-H32'],
+            '铜材': ['T2紫铜', 'H62黄铜', 'QSn6.5-0.1磷青铜'],
+            '塑料': ['ABS', 'PP', 'PE', 'PVC', '尼龙66', '聚甲醛'],
+            '刀具': ['硬质合金铣刀', '高速钢钻头', '陶瓷刀片', 'CBN刀片'],
+            '夹具': ['三爪卡盘', '四爪卡盘', '平口钳', 'V型块', '分度头']
+        };
+
+        // 初始化
+        function init() {
+            updateTotalScore();
+            initMaterialSelect();
+        }
+
+        // 初始化物料选择器
+        function initMaterialSelect() {
+            const materialSelect = document.getElementById('materialName');
+            const materials = Object.keys(materialData);
+            
+            materials.forEach(material => {
+                const option = document.createElement('option');
+                option.value = material;
+                option.textContent = material;
+                materialSelect.appendChild(option);
+            });
+        }
+
+        // 更新规格型号选择器
+        function updateSpecifications() {
+            const materialSelect = document.getElementById('materialName');
+            const specSelect = document.getElementById('specificationModel');
+            const selectedMaterial = materialSelect.value;
+            
+            // 清空现有选项
+            specSelect.innerHTML = '';
+            
+            if (!selectedMaterial) {
+                // 未选择物料时
+                const option = document.createElement('option');
+                option.value = '';
+                option.textContent = '请先选择物料';
+                specSelect.appendChild(option);
+                return;
+            }
+            
+            // 添加默认选项
+            const defaultOption = document.createElement('option');
+            defaultOption.value = '';
+            defaultOption.textContent = '请选择规格型号';
+            specSelect.appendChild(defaultOption);
+            
+            // 添加该物料的所有规格型号
+            const specifications = materialData[selectedMaterial] || [];
+            specifications.forEach(spec => {
+                const option = document.createElement('option');
+                option.value = spec;
+                option.textContent = spec;
+                specSelect.appendChild(option);
+            });
+        }
+
+        // 返回
+        function goBack() {
+            window.location.href = './教师端_实训试卷库.html';
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 菜单折叠
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 渲染题目列表
+        function renderQuestions() {
+            const list = document.getElementById('questionList');
+            const emptyTip = document.getElementById('emptyTip');
+            const questionStats = document.getElementById('questionStats');
+            const batchActions = document.getElementById('batchActions');
+
+            if (questions.length === 0) {
+                list.innerHTML = '';
+                emptyTip.style.display = 'block';
+                questionStats.style.display = 'none';
+                batchActions.style.display = 'none';
+                return;
+            }
+
+            emptyTip.style.display = 'none';
+            questionStats.style.display = 'flex';
+            batchActions.style.display = 'flex';
+            
+            updateQuestionStats();
+            
+            const typeMap = {
+                'process': { label: '工艺类', class: 'process' },
+                'programming': { label: '编程类', class: 'programming' },
+                'design': { label: '设计类', class: 'design' },
+                'machining': { label: '加工类', class: 'machining' },
+                'inspection': { label: '检测类', class: 'inspection' }
+            };
+
+            list.innerHTML = questions.map((q, index) => `
+                <div class="question-item" data-id="${q.id}">
+                    <div class="question-checkbox">
+                        <input type="checkbox" class="question-select" data-id="${q.id}" onchange="updateSelectedCount()">
+                    </div>
+                    <div class="question-number">${index + 1}</div>
+                    <div class="question-content">
+                        <div class="question-title">${q.title}</div>
+                        <div class="question-meta">
+                            <span class="type-tag ${typeMap[q.type]?.class || 'process'}">${typeMap[q.type]?.label || q.type}</span>
+                            ${q.source ? ' | 来源：' + q.source : ''}
+                        </div>
+                    </div>
+                    <div class="question-actions">
+                        <input type="number" class="question-score-input" value="${q.score}" 
+                               onchange="updateQuestionScore(${q.id}, this.value)" min="1">
+                        <div class="question-delete" onclick="deleteQuestion(${q.id})">删除</div>
+                    </div>
+                </div>
+            `).join('');
+            
+            updateSelectedCount();
+        }
+
+        // 更新题目统计
+        function updateQuestionStats() {
+            const stats = {
+                total: questions.length,
+                process: 0,
+                programming: 0,
+                design: 0,
+                machining: 0,
+                inspection: 0
+            };
+            
+            questions.forEach(q => {
+                if (stats[q.type] !== undefined) {
+                    stats[q.type]++;
+                }
+            });
+            
+            document.getElementById('statTotal').textContent = stats.total;
+            document.getElementById('statProcess').textContent = stats.process;
+            document.getElementById('statProgramming').textContent = stats.programming;
+            document.getElementById('statDesign').textContent = stats.design;
+            document.getElementById('statMachining').textContent = stats.machining;
+            document.getElementById('statInspection').textContent = stats.inspection;
+        }
+
+        // 全选/取消全选
+        function toggleSelectAllQuestions() {
+            const selectAllCheckbox = document.getElementById('selectAllQuestions');
+            const checkboxes = document.querySelectorAll('.question-select');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = selectAllCheckbox.checked;
+            });
+            
+            updateSelectedCount();
+        }
+
+        // 更新已选数量
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.question-select:checked');
+            document.getElementById('selectedCount').textContent = checkboxes.length;
+            
+            // 同步全选框状态
+            const allCheckboxes = document.querySelectorAll('.question-select');
+            const selectAllCheckbox = document.getElementById('selectAllQuestions');
+            if (allCheckboxes.length > 0) {
+                selectAllCheckbox.checked = checkboxes.length === allCheckboxes.length;
+            }
+        }
+
+        // 批量设置分值
+        function batchSetScore() {
+            const scoreInput = document.getElementById('batchScoreInput');
+            const score = parseInt(scoreInput.value);
+            
+            if (!score || score < 1) {
+                alert('请输入有效的分值');
+                return;
+            }
+            
+            const checkboxes = document.querySelectorAll('.question-select:checked');
+            if (checkboxes.length === 0) {
+                alert('请先选择题目');
+                return;
+            }
+            
+            checkboxes.forEach(checkbox => {
+                const questionId = parseInt(checkbox.dataset.id);
+                const question = questions.find(q => q.id === questionId);
+                if (question) {
+                    question.score = score;
+                }
+            });
+            
+            renderQuestions();
+            updateTotalScore();
+            scoreInput.value = '';
+            alert(`已为 ${checkboxes.length} 道题目设置分值为 ${score} 分`);
+        }
+
+        // 批量删除
+        function batchDelete() {
+            const checkboxes = document.querySelectorAll('.question-select:checked');
+            if (checkboxes.length === 0) {
+                alert('请先选择题目');
+                return;
+            }
+            
+            if (!confirm(`确定要删除选中的 ${checkboxes.length} 道题目吗？`)) {
+                return;
+            }
+            
+            const idsToDelete = Array.from(checkboxes).map(cb => parseInt(cb.dataset.id));
+            questions = questions.filter(q => !idsToDelete.includes(q.id));
+            
+            renderQuestions();
+            updateTotalScore();
+        }
+
+        // 更新题目分数
+        function updateQuestionScore(id, score) {
+            const question = questions.find(q => q.id === id);
+            if (question) {
+                question.score = parseInt(score) || 0;
+                updateTotalScore();
+            }
+        }
+
+        // 删除题目
+        function deleteQuestion(id) {
+            if (!confirm('确定要删除这道题目吗？')) return;
+            questions = questions.filter(q => q.id !== id);
+            renderQuestions();
+            updateTotalScore();
+        }
+
+        // 更新总分
+        function updateTotalScore() {
+            const total = questions.reduce((sum, q) => sum + q.score, 0);
+            document.getElementById('currentTotalScore').textContent = total + ' 分';
+            document.getElementById('totalScore').value = total;
+        }
+
+        // 保存草稿
+        function saveDraft() {
+            const name = document.getElementById('paperName').value;
+            if (!name) {
+                alert('请输入试卷名称');
+                return;
+            }
+            alert('草稿保存成功！');
+        }
+
+        // 保存试卷
+        function savePaper() {
+            const name = document.getElementById('paperName').value;
+            if (!name) {
+                alert('请输入试卷名称');
+                return;
+            }
+            
+            // 验证工艺字段
+            const processCode = document.getElementById('processCode').value;
+            if (!processCode) {
+                alert('请选择工艺');
+                return;
+            }
+            
+            if (questions.length === 0) {
+                alert('请至少添加一道题目');
+                return;
+            }
+            alert('试卷保存成功！');
+            goBack();
+        }
+
+        // 打开实训题库选择弹窗
+        function openQuestionBank() {
+            // 创建弹窗
+            const modal = document.createElement('div');
+            modal.id = 'questionBankModal';
+            modal.innerHTML = `
+                <div class="modal-overlay" onclick="closeQuestionBank(event)">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <div class="modal-header">
+                            <h3 class="modal-title">📚 从实训题库选择题目</h3>
+                            <button class="modal-close" onclick="closeQuestionBank()">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- 搜索筛选 -->
+                            <div class="modal-search">
+                                <input type="text" class="modal-search-input" id="bankSearchInput" placeholder="搜索题目内容...">
+                                <select class="modal-search-select" id="bankTypeFilter">
+                                    <option value="">全部题型</option>
+                                    <option value="process">工艺类</option>
+                                    <option value="programming">编程类</option>
+                                    <option value="design">设计类</option>
+                                    <option value="machining">加工类</option>
+                                    <option value="inspection">检测类</option>
+                                </select>
+                                <select class="modal-search-select" id="bankDifficultyFilter">
+                                    <option value="">全部难度</option>
+                                    <option value="easy">简单</option>
+                                    <option value="medium">中等</option>
+                                    <option value="hard">困难</option>
+                                </select>
+                                <button class="modal-search-btn" onclick="searchBankQuestions()">🔍 搜索</button>
+                            </div>
+                            <!-- 题目列表 -->
+                            <div class="bank-question-list" id="bankQuestionList">
+                                <!-- 动态生成 -->
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="modal-selected-info">
+                                已选择 <span id="selectedCount">0</span> 道题目
+                            </div>
+                            <div class="modal-actions">
+                                <button class="btn-secondary" onclick="closeQuestionBank()">取消</button>
+                                <button class="btn-primary" onclick="confirmSelectQuestions()">确定添加</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // 加载题库数据
+            loadBankQuestions();
+        }
+
+        // 关闭题库选择弹窗
+        function closeQuestionBank(event) {
+            if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('modal-close')) {
+                const modal = document.getElementById('questionBankModal');
+                if (modal) {
+                    modal.remove();
+                }
+            }
+        }
+
+        // 实训题库数据（模拟从实训题库获取）
+        const bankQuestions = [
+            { id: 101, content: '数控车床对刀操作中，X轴对刀的步骤和注意事项是什么？', type: 'process', difficulty: 'easy', course: '数控车床' },
+            { id: 102, content: '编写数控车床加工程序，完成外圆粗加工和精加工。', type: 'programming', difficulty: 'medium', course: '数控编程' },
+            { id: 103, content: '根据零件图纸，分析加工工艺路线，确定装夹方案。', type: 'design', difficulty: 'medium', course: '机械制图' },
+            { id: 104, content: '描述轴类零件的外圆车削加工步骤和参数设置。', type: 'machining', difficulty: 'hard', course: '数控车床' },
+            { id: 105, content: '使用千分尺测量工件外径，说明测量步骤和注意事项。', type: 'inspection', difficulty: 'easy', course: '数控车床' },
+            { id: 201, content: '数控铣床加工中心对刀操作步骤详解。', type: 'process', difficulty: 'medium', course: '数控铣床' },
+            { id: 202, content: '编写G代码程序，完成轮廓铣削加工。', type: 'programming', difficulty: 'hard', course: '数控编程' },
+            { id: 203, content: '模具型腔加工工艺设计与刀具选择。', type: 'design', difficulty: 'hard', course: '模具设计' },
+            { id: 301, content: '加工中心换刀操作流程及注意事项。', type: 'machining', difficulty: 'medium', course: '数控铣床' },
+            { id: 302, content: '三坐标测量机的基本操作和测量方法。', type: 'inspection', difficulty: 'hard', course: '数控铣床' }
+        ];
+
+        let selectedBankQuestions = [];
+
+        // 加载题库题目
+        function loadBankQuestions() {
+            const container = document.getElementById('bankQuestionList');
+            const typeMap = {
+                'process': { label: '工艺类', class: 'process' },
+                'programming': { label: '编程类', class: 'programming' },
+                'design': { label: '设计类', class: 'design' },
+                'machining': { label: '加工类', class: 'machining' },
+                'inspection': { label: '检测类', class: 'inspection' }
+            };
+            const difficultyMap = {
+                'easy': { label: '简单', class: 'easy' },
+                'medium': { label: '中等', class: 'medium' },
+                'hard': { label: '困难', class: 'hard' }
+            };
+            
+            container.innerHTML = bankQuestions.map(q => `
+                <div class="bank-question-item" data-id="${q.id}">
+                    <div class="bank-question-checkbox">
+                        <input type="checkbox" id="bq${q.id}" value="${q.id}" onchange="toggleSelectQuestion(${q.id})">
+                    </div>
+                    <div class="bank-question-info">
+                        <div class="bank-question-content">${q.content}</div>
+                        <div class="bank-question-meta">
+                            <span class="bank-question-type ${typeMap[q.type].class}">${typeMap[q.type].label}</span>
+                            <span class="bank-question-difficulty ${difficultyMap[q.difficulty].class}">${difficultyMap[q.difficulty].label}</span>
+                            <span class="bank-question-course">${q.course}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 搜索题库题目
+        function searchBankQuestions() {
+            const keyword = document.getElementById('bankSearchInput').value.toLowerCase();
+            const type = document.getElementById('bankTypeFilter').value;
+            const difficulty = document.getElementById('bankDifficultyFilter').value;
+            
+            const filtered = bankQuestions.filter(q => {
+                const matchKeyword = !keyword || q.content.toLowerCase().includes(keyword);
+                const matchType = !type || q.type === type;
+                const matchDifficulty = !difficulty || q.difficulty === difficulty;
+                return matchKeyword && matchType && matchDifficulty;
+            });
+            
+            // 重新渲染
+            const container = document.getElementById('bankQuestionList');
+            const typeMap = {
+                'process': { label: '工艺类', class: 'process' },
+                'programming': { label: '编程类', class: 'programming' },
+                'design': { label: '设计类', class: 'design' },
+                'machining': { label: '加工类', class: 'machining' },
+                'inspection': { label: '检测类', class: 'inspection' }
+            };
+            const difficultyMap = {
+                'easy': { label: '简单', class: 'easy' },
+                'medium': { label: '中等', class: 'medium' },
+                'hard': { label: '困难', class: 'hard' }
+            };
+            
+            container.innerHTML = filtered.map(q => `
+                <div class="bank-question-item" data-id="${q.id}">
+                    <div class="bank-question-checkbox">
+                        <input type="checkbox" id="bq${q.id}" value="${q.id}" onchange="toggleSelectQuestion(${q.id})" ${selectedBankQuestions.includes(q.id) ? 'checked' : ''}>
+                    </div>
+                    <div class="bank-question-info">
+                        <div class="bank-question-content">${q.content}</div>
+                        <div class="bank-question-meta">
+                            <span class="bank-question-type ${typeMap[q.type].class}">${typeMap[q.type].label}</span>
+                            <span class="bank-question-difficulty ${difficultyMap[q.difficulty].class}">${difficultyMap[q.difficulty].label}</span>
+                            <span class="bank-question-course">${q.course}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 切换题目选择
+        function toggleSelectQuestion(id) {
+            const index = selectedBankQuestions.indexOf(id);
+            if (index > -1) {
+                selectedBankQuestions.splice(index, 1);
+            } else {
+                selectedBankQuestions.push(id);
+            }
+            document.getElementById('selectedCount').textContent = selectedBankQuestions.length;
+        }
+
+        // 确认选择题目
+        function confirmSelectQuestions() {
+            if (selectedBankQuestions.length === 0) {
+                alert('请至少选择一道题目');
+                return;
+            }
+            
+            // 将选中的题目添加到试卷
+            selectedBankQuestions.forEach(id => {
+                const bankQ = bankQuestions.find(q => q.id === id);
+                if (bankQ) {
+                    questionCount++;
+                    questions.push({
+                        id: questionCount,
+                        title: bankQ.content.substring(0, 30) + (bankQ.content.length > 30 ? '...' : ''),
+                        type: bankQ.type,
+                        score: 20,
+                        source: '实训题库'
+                    });
+                }
+            });
+            
+            renderQuestions();
+            updateTotalScore();
+            closeQuestionBank();
+            selectedBankQuestions = [];
+            alert('题目添加成功！');
+        }
+
+        // 页面加载时初始化
+        window.onload = init;
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备刀具库 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .page-header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .page-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: #1890FF;
+            border-radius: 2px;
+        }
+        
+        .toolbar {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-item label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .filter-item input,
+        .filter-item select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 140px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: #1890FF; color: #fff; }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success { background: #52C41A; color: #fff; }
+        .btn-success:hover { background: #73D13D; }
+        .btn-default { background: #fff; color: #666; border: 1px solid #D9D9D9; }
+        .btn-default:hover { border-color: #1890FF; color: #1890FF; }
+        .btn-sm { padding: 4px 12px; font-size: 12px; }
+        
+        .content-body {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+        }
+        
+        .view-toggle {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 6px;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            width: fit-content;
+        }
+        .view-btn {
+            padding: 8px 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #666;
+            transition: all 0.3s;
+            border: none;
+            background: transparent;
+        }
+        .view-btn:hover { color: #1890FF; }
+        .view-btn.active {
+            background: #1890FF;
+            color: #fff;
+        }
+        
+        /* 矩阵视图 */
+        .matrix-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .machine-card {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            padding: 20px;
+            transition: all 0.3s;
+        }
+        .machine-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            border-color: #1890FF;
+        }
+        .machine-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .machine-info h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .machine-info p {
+            font-size: 12px;
+            color: #999;
+        }
+        .machine-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-running { background: #F6FFED; color: #52C41A; border: 1px solid #B7EB8F; }
+        .status-idle { background: #E6F7FF; color: #1890FF; border: 1px solid #91D5FF; }
+        .status-offline { background: #F5F5F5; color: #999; border: 1px solid #D9D9D9; }
+        
+        .machine-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .stat-item {
+            text-align: center;
+            padding: 12px;
+            background: #FAFAFA;
+            border-radius: 6px;
+        }
+        .stat-value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        .tool-preview {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .tool-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px;
+            background: #F0F5FF;
+            border: 1px solid #D6E4FF;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1890FF;
+        }
+        .tool-tag.warning {
+            background: #FFF2F0;
+            border-color: #FFCCC7;
+            color: #FF4D4F;
+        }
+        
+        /* 列表视图 */
+        .list-view {
+            display: none;
+        }
+        .list-view.show {
+            display: block;
+        }
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            overflow: hidden;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .data-table tbody tr:hover { background: #F6FFFE; }
+        
+        .action-group { display: flex; gap: 8px; }
+        
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 20px;
+            gap: 8px;
+            background: #fff;
+            border-top: 1px solid #E8E8E8;
+        }
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .pagination-btn:hover { border-color: #1890FF; color: #1890FF; }
+        .pagination-btn.active { background: #1890FF; color: #fff; border-color: #1890FF; }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">设备刀具库</div>
+        </div>
+        
+        <div class="toolbar">
+            <div class="filter-group">
+                <div class="filter-item">
+                    <label>设备编号</label>
+                    <input type="text" placeholder="请输入设备编号">
+                </div>
+                <div class="filter-item">
+                    <label>设备名称</label>
+                    <input type="text" placeholder="请输入设备名称">
+                </div>
+                <div class="filter-item">
+                    <label>设备类型</label>
+                    <select>
+                        <option value="">全部</option>
+                        <option value="mc">加工中心</option>
+                        <option value="cnc">数控车床</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary">
+                    <i class="iconfont icon-sousuo"></i> 查询
+                </button>
+                <button class="btn btn-default">重置</button>
+            </div>
+        </div>
+        
+        <div class="content-body">
+            <!-- 视图切换 -->
+            <div class="view-toggle">
+                <button class="view-btn active" onclick="switchView('matrix')">矩阵视图</button>
+                <button class="view-btn" onclick="switchView('list')">列表视图</button>
+            </div>
+            
+            <!-- 矩阵视图 -->
+            <div class="matrix-view" id="matrixView">
+                <div class="machine-card">
+                    <div class="machine-header">
+                        <div class="machine-info">
+                            <h3>M001 加工中心-1</h3>
+                            <p>刀库容量: 24 | 已配刀: 18</p>
+                        </div>
+                        <span class="machine-status status-running">运行中</span>
+                    </div>
+                    <div class="machine-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">18</div>
+                            <div class="stat-label">已配刀</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">空闲</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">75%</div>
+                            <div class="stat-label">使用率</div>
+                        </div>
+                    </div>
+                    <div class="tool-preview">
+                        <span class="tool-tag">T001 立铣刀</span>
+                        <span class="tool-tag">T003 面铣刀</span>
+                        <span class="tool-tag warning">T006 寿命不足</span>
+                    </div>
+                </div>
+                
+                <div class="machine-card">
+                    <div class="machine-header">
+                        <div class="machine-info">
+                            <h3>M002 加工中心-2</h3>
+                            <p>刀库容量: 24 | 已配刀: 20</p>
+                        </div>
+                        <span class="machine-status status-idle">空闲</span>
+                    </div>
+                    <div class="machine-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">20</div>
+                            <div class="stat-label">已配刀</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">空闲</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">83%</div>
+                            <div class="stat-label">使用率</div>
+                        </div>
+                    </div>
+                    <div class="tool-preview">
+                        <span class="tool-tag">T002 钻头</span>
+                        <span class="tool-tag">T004 球头刀</span>
+                    </div>
+                </div>
+                
+                <div class="machine-card">
+                    <div class="machine-header">
+                        <div class="machine-info">
+                            <h3>C001 数控车床-1</h3>
+                            <p>刀库容量: 12 | 已配刀: 8</p>
+                        </div>
+                        <span class="machine-status status-running">运行中</span>
+                    </div>
+                    <div class="machine-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">8</div>
+                            <div class="stat-label">已配刀</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">4</div>
+                            <div class="stat-label">空闲</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">67%</div>
+                            <div class="stat-label">使用率</div>
+                        </div>
+                    </div>
+                    <div class="tool-preview">
+                        <span class="tool-tag">T010 外圆车刀</span>
+                        <span class="tool-tag">T011 切槽刀</span>
+                    </div>
+                </div>
+                
+                <div class="machine-card">
+                    <div class="machine-header">
+                        <div class="machine-info">
+                            <h3>C002 数控车床-2</h3>
+                            <p>刀库容量: 12 | 已配刀: 6</p>
+                        </div>
+                        <span class="machine-status status-offline">离线</span>
+                    </div>
+                    <div class="machine-stats">
+                        <div class="stat-item">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">已配刀</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">6</div>
+                            <div class="stat-label">空闲</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-value">50%</div>
+                            <div class="stat-label">使用率</div>
+                        </div>
+                    </div>
+                    <div class="tool-preview">
+                        <span class="tool-tag">T012 精车刀</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 列表视图 -->
+            <div class="list-view" id="listView">
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>设备编号</th>
+                                <th>设备名称</th>
+                                <th>设备类型</th>
+                                <th>刀库容量</th>
+                                <th>已配刀</th>
+                                <th>空闲</th>
+                                <th>使用率</th>
+                                <th>状态</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>M001</strong></td>
+                                <td>加工中心-1</td>
+                                <td>加工中心</td>
+                                <td>24</td>
+                                <td>18</td>
+                                <td>6</td>
+                                <td>75%</td>
+                                <td><span class="machine-status status-running">运行中</span></td>
+                                <td>
+                                    <div class="action-group">
+                                        <button class="btn btn-primary btn-sm">查看详情</button>
+                                        <button class="btn btn-default btn-sm">配刀</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>M002</strong></td>
+                                <td>加工中心-2</td>
+                                <td>加工中心</td>
+                                <td>24</td>
+                                <td>20</td>
+                                <td>4</td>
+                                <td>83%</td>
+                                <td><span class="machine-status status-idle">空闲</span></td>
+                                <td>
+                                    <div class="action-group">
+                                        <button class="btn btn-primary btn-sm">查看详情</button>
+                                        <button class="btn btn-default btn-sm">配刀</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>C001</strong></td>
+                                <td>数控车床-1</td>
+                                <td>数控车床</td>
+                                <td>12</td>
+                                <td>8</td>
+                                <td>4</td>
+                                <td>67%</td>
+                                <td><span class="machine-status status-running">运行中</span></td>
+                                <td>
+                                    <div class="action-group">
+                                        <button class="btn btn-primary btn-sm">查看详情</button>
+                                        <button class="btn btn-default btn-sm">配刀</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><strong>C002</strong></td>
+                                <td>数控车床-2</td>
+                                <td>数控车床</td>
+                                <td>12</td>
+                                <td>6</td>
+                                <td>6</td>
+                                <td>50%</td>
+                                <td><span class="machine-status status-offline">离线</span></td>
+                                <td>
+                                    <div class="action-group">
+                                        <button class="btn btn-primary btn-sm">查看详情</button>
+                                        <button class="btn btn-default btn-sm">配刀</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <div class="pagination">
+                        <span style="font-size: 13px; color: #666; margin-right: 16px;">共 8 条记录</span>
+                        <button class="pagination-btn">上一页</button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.classList.remove('collapsed');
+                    }
+                }
+            }
+        });
+
+        function switchView(view) {
+            document.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            if (view === 'matrix') {
+                document.getElementById('matrixView').style.display = 'grid';
+                document.getElementById('listView').classList.remove('show');
+            } else {
+                document.getElementById('matrixView').style.display = 'none';
+                document.getElementById('listView').classList.add('show');
+            }
+        }
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

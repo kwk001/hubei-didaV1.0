@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频学习 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./nav-styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+                /* 有导航栏时的布局 */
+        body.has-nav-sidebar {
+            display: flex;
+        }
+
+        body.has-nav-sidebar .main-content {
+            flex: 1;
+            margin-left: 260px; /* 导航栏宽度 */
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-left: 0;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .logo {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .menu-group {
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .menu-title {
+            padding: 12px 24px;
+            color: rgba(255,255,255,0.65);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item {
+            padding: 12px 24px 12px 48px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.65);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: #1890FF;
+            color: #fff;
+        }
+
+        .header {
+            height: 64px;
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: #595959;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-text:hover {
+            color: #1890ff;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin: 0;
+        }
+
+        .page-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #40a9ff;
+        }
+
+        .btn-default {
+            background: #fff;
+            color: #595959;
+            border: 1px solid #d9d9d9;
+        }
+
+        .btn-default:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+        }
+
+        .learning-container {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 200px);
+        }
+
+        .video-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .video-player {
+            background: #000;
+            border-radius: 12px;
+            overflow: hidden;
+            position: relative;
+            aspect-ratio: 16/9;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            gap: 16px;
+        }
+
+        .video-placeholder i {
+            font-size: 64px;
+            cursor: pointer;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .control-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 20px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+            cursor: pointer;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #1890ff;
+            border-radius: 2px;
+        }
+
+        .time-display {
+            color: #fff;
+            font-size: 12px;
+        }
+
+        .video-info {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .video-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin: 0 0 8px 0;
+        }
+
+        .video-desc {
+            font-size: 14px;
+            color: #8c8c8c;
+            margin: 0;
+        }
+
+        .learning-sidebar {
+            width: 320px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .sidebar-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin-bottom: 16px;
+        }
+
+        .chapter-menu {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .chapter-menu-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .chapter-menu-item:hover {
+            background: #f5f5f5;
+        }
+
+        .chapter-menu-item.completed {
+            color: #52c41a;
+        }
+
+        .chapter-menu-item.current {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .chapter-menu-item.pending {
+            color: #8c8c8c;
+        }
+
+        .note-input {
+            width: 100%;
+            height: 120px;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            padding: 12px;
+            font-size: 14px;
+            resize: none;
+            margin-bottom: 12px;
+        }
+
+        .note-input:focus {
+            outline: none;
+            border-color: #1890ff;
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .practice-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .practice-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 12px;
+            background: #f5f5f5;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .practice-status {
+            color: #8c8c8c;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="header">
+            <div>首页 / 我的学习 / 视频学习</div>
+            <div><i class="iconfont icon-xueshengguanli"></i> 学生：李明 | <button onclick="logout()" style="padding: 6px 16px; background: #FF4D4F; color: #fff; border: none; border-radius: 4px; cursor: pointer;">退出</button></div>
+        </div>
+
+        <div class="content-body">
+            <div class="page-header">
+                <div class="header-left">
+                    <button class="btn btn-text" onclick="goBack()">
+                        <i class="iconfont icon-fanhui"></i> 返回课程
+                    </button>
+                    <h1 class="page-title" id="lessonTitle">课时学习</h1>
+                </div>
+                <div class="page-actions">
+                    <button class="btn btn-default" onclick="toggleNote()">
+                        <i class="iconfont icon-biji"></i> 笔记
+                    </button>
+                    <button class="btn btn-primary" onclick="markComplete()">
+                        <i class="iconfont icon-wancheng"></i> 标记完成
+                    </button>
+                </div>
+            </div>
+
+            <div class="learning-container">
+                <div class="video-section">
+                    <div class="video-player">
+                        <div class="video-placeholder">
+                            <i class="iconfont icon-bofang" onclick="togglePlay()"></i>
+                            <span>视频播放区域</span>
+                        </div>
+                        <div class="video-controls">
+                            <button class="control-btn" onclick="togglePlay()">
+                                <i class="iconfont icon-bofang"></i>
+                            </button>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="time-display">00:00 / 45:00</span>
+                            <button class="control-btn" onclick="toggleFullscreen()">
+                                <i class="iconfont icon-quanping"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="video-info">
+                        <h3 id="videoTitle">课时标题</h3>
+                        <p class="video-desc">本课时主要讲解相关知识点，请认真观看视频并完成课后练习。</p>
+                    </div>
+                </div>
+
+                <div class="learning-sidebar">
+                    <div class="sidebar-section">
+                        <div class="section-title">课程目录</div>
+                        <div class="chapter-menu">
+                            <div class="chapter-menu-item completed">
+                                <i class="iconfont icon-wancheng"></i>
+                                <span>1.1 制图国家标准</span>
+                            </div>
+                            <div class="chapter-menu-item completed">
+                                <i class="iconfont icon-wancheng"></i>
+                                <span>1.2 绘图工具及使用</span>
+                            </div>
+                            <div class="chapter-menu-item current">
+                                <i class="iconfont icon-jinhangzhong"></i>
+                                <span>1.3 几何作图</span>
+                            </div>
+                            <div class="chapter-menu-item pending">
+                                <i class="iconfont icon-shijian"></i>
+                                <span>1.4 平面图形的画法</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="sidebar-section" id="noteSection" style="display: none;">
+                        <div class="section-title">学习笔记</div>
+                        <textarea class="note-input" placeholder="记录学习心得..."></textarea>
+                        <button class="btn btn-primary btn-block" onclick="saveNote()">保存笔记</button>
+                    </div>
+
+                    <div class="sidebar-section">
+                        <div class="section-title">课后练习</div>
+                        <div class="practice-list">
+                            <div class="practice-item">
+                                <span>练习题 1</span>
+                                <span class="practice-status">待完成</span>
+                            </div>
+                            <div class="practice-item">
+                                <span>练习题 2</span>
+                                <span class="practice-status">待完成</span>
+                            </div>
+                        </div>
+                        <button class="btn btn-default btn-block" onclick="startPractice()">开始练习</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        window.onload = function() {
+            const lessonName = getUrlParam('lessonName');
+            if (lessonName) {
+                document.getElementById('lessonTitle').textContent = lessonName;
+                document.getElementById('videoTitle').textContent = lessonName;
+            }
+        };
+
+        function goBack() {
+            window.location.href = './学生端_课程详情.html';
+        }
+
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        function toggleNote() {
+            const noteSection = document.getElementById('noteSection');
+            noteSection.style.display = noteSection.style.display === 'none' ? 'block' : 'none';
+        }
+
+        function saveNote() {
+            alert('笔记已保存！');
+        }
+
+        function markComplete() {
+            alert('课时已完成！');
+            goBack();
+        }
+
+        function togglePlay() {
+            alert('播放/暂停视频');
+        }
+
+        function toggleFullscreen() {
+            alert('全屏播放');
+        }
+
+        function startPractice() {
+            alert('开始课后练习');
+        }
+    </script>
+    <!-- 学生端导航组件加载器 -->
+    <script src="./nav-loader-student.js"></script>
+</body>
+</html>

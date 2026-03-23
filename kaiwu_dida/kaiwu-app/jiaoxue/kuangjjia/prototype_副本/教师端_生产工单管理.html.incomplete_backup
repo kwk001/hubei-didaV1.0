@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产工单管理 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background: #F5F7FA; 
+            display: flex; 
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 主内容区 */
+
+        .content {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+        
+        /* 筛选栏 */
+        .filter-bar {
+            background: #fff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-item label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .filter-item input,
+        .filter-item select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 140px;
+        }
+        .filter-btns {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: #1890FF;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success {
+            background: #52C41A;
+            color: #fff;
+        }
+        .btn-success:hover { background: #73D13D; }
+        .btn-warning {
+            background: #FA8C16;
+            color: #fff;
+        }
+        .btn-warning:hover { background: #FFA940; }
+        .btn-danger {
+            background: #FF4D4F;
+            color: #fff;
+        }
+        .btn-danger:hover { background: #FF7875; }
+        .btn-default {
+            background: #fff;
+            color: #666;
+            border: 1px solid #D9D9D9;
+        }
+        .btn-default:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 工具栏 */
+        .toolbar {
+            background: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .toolbar-left {
+            display: flex;
+            gap: 8px;
+        }
+        .toolbar-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        /* 表格 */
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .data-table tbody tr:hover {
+            background: #F6FFFE;
+        }
+        .data-table tbody tr.selected {
+            background: #E6F7FF;
+        }
+        
+        /* 复选框 */
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        /* 状态标签 */
+        .status-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-pending {
+            background: #FFF7E6;
+            color: #FA8C16;
+            border: 1px solid #FFD591;
+        }
+        .status-scheduled {
+            background: #E6F7FF;
+            color: #1890FF;
+            border: 1px solid #91D5FF;
+        }
+        .status-processing {
+            background: #F6FFED;
+            color: #52C41A;
+            border: 1px solid #B7EB8F;
+        }
+        .status-paused {
+            background: #FFF2F0;
+            color: #FF4D4F;
+            border: 1px solid #FFA39E;
+        }
+        .status-completed {
+            background: #F9F0FF;
+            color: #722ED1;
+            border: 1px solid #D3ADF7;
+        }
+        
+        /* 优先级 */
+        .priority {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .priority-high { color: #FF4D4F; }
+        .priority-medium { color: #FA8C16; }
+        .priority-low { color: #52C41A; }
+        
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 20px;
+            gap: 8px;
+        }
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .pagination-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .modal-close {
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .modal-close:hover {
+            color: #666;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        
+        /* 表单 */
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .form-item {
+            flex: 1;
+        }
+        .form-item label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .form-item input,
+        .form-item select,
+        .form-item textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .form-item input:focus,
+        .form-item select:focus,
+        .form-item textarea:focus {
+            border-color: #1890FF;
+            outline: none;
+        }
+        
+        /* 设备状态 */
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+        .device-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .device-normal::before { background: #52C41A; }
+        .device-busy::before { background: #FA8C16; }
+        .device-fault::before { background: #FF4D4F; }
+        .device-offline::before { background: #999; }
+        
+        /* 排产甘特图 */
+        .gantt-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .gantt-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .gantt-label {
+            width: 120px;
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+        }
+        .gantt-bar-container {
+            flex: 1;
+            height: 32px;
+            background: #F5F5F5;
+            border-radius: 4px;
+            position: relative;
+        }
+        .gantt-bar {
+            position: absolute;
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            font-size: 11px;
+            color: #fff;
+            white-space: nowrap;
+        }
+        
+        /* 工序流程 */
+        .process-flow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .process-step {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #F0F5FF;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #1890FF;
+        }
+        .process-arrow {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        /* 统计卡片 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+        .stat-card.primary .stat-value { color: #1890FF; }
+        .stat-card.success .stat-value { color: #52C41A; }
+        .stat-card.warning .stat-value { color: #FA8C16; }
+        .stat-card.danger .stat-value { color: #FF4D4F; }
+        .stat-card.purple .stat-value { color: #722ED1; }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="logo">🏭 教学实训平台</div>
+                <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shouye"></i>工作台</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教学实训平台_教师端.html'">
+                    <span><i class="iconfont icon-shouye"></i></span><span>首页概览</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-kechengguanli"></i>我的教学</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_我的课程.html'">
+                    <span><i class="iconfont icon-kechengguanli"></i></span><span>我的课程</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_专业教学课程.html'">
+                    <span><i class="iconfont icon-zhuanyeguanli"></i></span><span>专业教学课程</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shijuan"></i>考试管理</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷管理.html'">
+                    <span><i class="iconfont icon-shijuan"></i></span><span>试卷管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_列表.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷批阅.html'">
+                    <span><i class="iconfont icon-shijuan"></i></span><span>试卷批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训批阅.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_错题集库.html'">
+                    <span><i class="iconfont icon-cuowu"></i></span><span>错题集</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-p008zhishiku"></i>知识库</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_视频教材.html'">
+                    <span><i class="iconfont icon-shipin"></i></span><span>视频教材</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_辅导教材.html'">
+                    <span><i class="iconfont icon-jiaocai"></i></span><span>辅导教材</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_题库.html'">
+                    <span><i class="iconfont icon-tiku"></i></span><span>普通题库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_列表.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训题库</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shengchanguanli"></i>生产管理</div>
+            <div class="menu-items">
+                <div class="menu-item active" onclick="window.location.href='./教师端_生产工单管理_V2.html'">
+                    <span><i class="iconfont icon-gongdan"></i></span><span>生产工单</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_排产策略管理.html'">
+                    <span><i class="iconfont icon-celve"></i></span><span>排产策略</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目模板管理.html'">
+                    <span><i class="iconfont icon-moban"></i></span><span>项目模版</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目甘特图.html'">
+                    <span><i class="iconfont icon-gantetu"></i></span><span>项目甘特图</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目看板.html'">
+                    <span><i class="iconfont icon-kanban"></i></span><span>项目看板</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-baobiao"></i>报表</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_实训任务管理.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训任务管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./图表_成绩分析.html'">
+                    <span><i class="iconfont icon-baobiao"></i></span><span>成绩分析</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_学生任务总览.html'">
+                    <span><i class="iconfont icon-renwu"></i></span><span>学生任务总览</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div>首页 / 生产管理 / 生产工单管理</div>
+            <div>👤 教师：张老师 | <button class="btn btn-danger" onclick="logout()">退出</button></div>
+        </div>
+        
+        <div class="content">
+            <!-- 统计卡片 -->
+            <div class="stats-row">
+                <div class="stat-card primary">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">总工单数</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value" id="pendingCount">0</div>
+                    <div class="stat-label">待排产</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="processingCount">0</div>
+                    <div class="stat-label">进行中</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-value" id="pausedCount">0</div>
+                    <div class="stat-label">已暂停</div>
+                </div>
+                <div class="stat-card purple">
+                    <div class="stat-value" id="completedCount">0</div>
+                    <div class="stat-label">已完成</div>
+                </div>
+            </div>
+            
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <div class="filter-row">
+                    <div class="filter-item">
+                        <label>生产工单号</label>
+                        <input type="text" id="filterOrderNo" placeholder="请输入工单号">
+                    </div>
+                    <div class="filter-item">
+                        <label>产品名称</label>
+                        <input type="text" id="filterProduct" placeholder="请输入产品名称">
+                    </div>
+                    <div class="filter-item">
+                        <label>排产状态</label>
+                        <select id="filterStatus">
+                            <option value="">全部</option>
+                            <option value="pending">待排产</option>
+                            <option value="scheduled">已排产</option>
+                            <option value="processing">进行中</option>
+                            <option value="paused">已暂停</option>
+                            <option value="completed">已完成</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>优先级</label>
+                        <select id="filterPriority">
+                            <option value="">全部</option>
+                            <option value="high">高</option>
+                            <option value="medium">中</option>
+                            <option value="low">低</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>所属专业</label>
+                        <select id="filterMajor">
+                            <option value="">全部</option>
+                            <option value="机械工程">机械工程</option>
+                            <option value="数控技术">数控技术</option>
+                            <option value="模具设计">模具设计</option>
+                            <option value="机电一体化">机电一体化</option>
+                        </select>
+                    </div>
+                    <div class="filter-btns">
+                        <button class="btn btn-primary" onclick="searchOrders()">🔍 查询</button>
+                        <button class="btn btn-default" onclick="resetFilter()">重置</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 工具栏 -->
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn btn-success" onclick="showAddModal()">➕ 新增工单</button>
+                    <button class="btn btn-primary" onclick="showSmartScheduleModal()">🤖 智能排产</button>
+                    <button class="btn btn-warning" onclick="batchSchedule()">📋 批量排产</button>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-default" onclick="batchPause()" id="btnBatchPause">⏸️ 批量暂停</button>
+                    <button class="btn btn-default" onclick="batchResume()" id="btnBatchResume">▶️ 批量继续</button>
+                    <button class="btn btn-danger" onclick="batchComplete()" id="btnBatchComplete">✅ 批量结束</button>
+                </div>
+            </div>
+            
+            <!-- 数据表格 -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"><input type="checkbox" class="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                            <th>生产工单号</th>
+                            <th>实训试卷编号</th>
+                            <th>产品名称</th>
+                            <th>规格型号</th>
+                            <th>数量</th>
+                            <th>需求时间</th>
+                            <th>优先级</th>
+                            <th>所属专业</th>
+                            <th>所属课程</th>
+                            <th>学年学期</th>
+                            <th>排产状态</th>
+                            <th>工序流程</th>
+                            <th style="width: 200px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderTableBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+                
+                <!-- 分页 -->
+                <div class="pagination">
+                    <span style="font-size: 13px; color: #666;">共 <span id="totalRecords">0</span> 条记录</span>
+                    <button class="pagination-btn" onclick="changePage(-1)">上一页</button>
+                    <div id="pageNumbers"></div>
+                    <button class="pagination-btn" onclick="changePage(1)">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新增/编辑工单弹窗 -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="modalTitle">新增生产工单</span>
+                <button class="modal-close" onclick="closeModal('orderModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>实训试卷编号 <span style="color: #FF4D4F;">*</span></label>
+                        <select id="examSelect">
+                            <option value="">请选择实训试卷</option>
+                            <option value="SX2024001">SX2024001 - 数控车削加工</option>
+                            <option value="SX2024002">SX2024002 - 铣削工艺实训</option>
+                            <option value="SX2024003">SX2024003 - 模具拆装实训</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>产品名称 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" id="productName" placeholder="请输入产品名称">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>规格型号</label>
+                        <input type="text" id="productSpec" placeholder="请输入规格型号">
+                    </div>
+                    <div class="form-item">
+                        <label>数量 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="number" id="productQty" value="1" min="1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>需求时间 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="datetime-local" id="requireTime">
+                    </div>
+                    <div class="form-item">
+                        <label>优先级</label>
+                        <select id="priority">
+                            <option value="high">高</option>
+                            <option value="medium" selected>中</option>
+                            <option value="low">低</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>所属专业</label>
+                        <select id="major">
+                            <option value="机械工程">机械工程</option>
+                            <option value="数控技术">数控技术</option>
+                            <option value="模具设计">模具设计</option>
+                            <option value="机电一体化">机电一体化</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>所属课程</label>
+                        <select id="course">
+                            <option value="数控加工技术">数控加工技术</option>
+                            <option value="机械制图">机械制图</option>
+                            <option value="模具设计基础">模具设计基础</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>学年学期</label>
+                        <select id="semester">
+                            <option value="2025-2026-1">2025-2026学年 第一学期</option>
+                            <option value="2025-2026-2">2025-2026学年 第二学期</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>加工工艺</label>
+                        <select id="process" onchange="updateProcessFlow()">
+                            <option value="">请选择工艺</option>
+                            <option value="process1">车削-铣削-钻孔</option>
+                            <option value="process2">铣削-磨削-检测</option>
+                            <option value="process3">切割-折弯-焊接</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="processFlowPreview" style="margin-top: 16px;">
+                    <label>工序流程预览</label>
+                    <div class="process-flow" id="processFlowDisplay">
+                        <span style="color: #999; font-size: 12px;">请选择加工工艺查看流程</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('orderModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveOrder()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 智能排产弹窗 -->
+    <div class="modal" id="smartScheduleModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <span class="modal-title">🤖 智能APS排产</span>
+                <button class="modal-close" onclick="closeModal('smartScheduleModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="background: #F6FFED; padding: 12px 16px; border-radius: 4px; margin-bottom: 16px;">
+                    <span style="font-size: 13px; color: #389E0D;">💡 智能排产将综合考虑设备状态、故障情况、物料库存等因素，自动优化排产方案</span>
+                </div>
+                
+                <h4 style="font-size: 14px; margin-bottom: 12px;">待排产工单</h4>
+                <table class="data-table" style="margin-bottom: 20px;">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="checkbox" id="scheduleSelectAll" onchange="toggleScheduleSelectAll()"></th>
+                            <th>工单号</th>
+                            <th>产品名称</th>
+                            <th>数量</th>
+                            <th>需求时间</th>
+                            <th>优先级</th>
+                            <th>工艺路线</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+                
+                <h4 style="font-size: 14px; margin-bottom: 12px;">设备状态概览</h4>
+                <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+                    <div style="background: #F6FFED; padding: 12px; border-radius: 4px; border: 1px solid #B7EB8F;">
+                        <div class="device-status device-normal">数控车床-01</div>
+                        <div style="font-size: 11px; color: #666; margin-top: 4px;">空闲 | 利用率 65%</div>
+                    </div>
+                    <div style="background: #FFF7E6; padding: 12px; border-radius: 4px; border: 1px solid #FFD591;">
+                        <div class="device-status device-busy">数控铣床-02</div>
+                        <div style="font-size: 11px; color: #666; margin-top: 4px;">运行中 | 利用率 85%</div>
+                    </div>
+                    <div style="background: #FFF2F0; padding: 12px; border-radius: 4px; border: 1px solid #FFA39E;">
+                        <div class="device-status device-fault">加工中心-03</div>
+                        <div style="font-size: 11px; color: #666; margin-top: 4px;">故障维修中</div>
+                    </div>
+                    <div style="background: #F9F0FF; padding: 12px; border-radius: 4px; border: 1px solid #D3ADF7;">
+                        <div class="device-status device-offline">磨床-04</div>
+                        <div style="font-size: 11px; color: #666; margin-top: 4px;">离线保养</div>
+                    </div>
+                </div>
+                
+                <h4 style="font-size: 14px; margin-bottom: 12px;">排产结果预览</h4>
+                <div id="scheduleResult" style="background: #FAFAFA; padding: 20px; border-radius: 4px; min-height: 100px;">
+                    <div style="text-align: center; color: #999; font-size: 13px;">点击"开始智能排产"生成排产方案</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('smartScheduleModal')">取消</button>
+                <button class="btn btn-primary" onclick="startSmartSchedule()">🤖 开始智能排产</button>
+                <button class="btn btn-success" onclick="confirmSchedule()" id="btnConfirmSchedule" style="display: none;">确认排产</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 排产详情弹窗 -->
+    <div class="modal" id="scheduleDetailModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <span class="modal-title">📋 排产详情</span>
+                <button class="modal-close" onclick="closeModal

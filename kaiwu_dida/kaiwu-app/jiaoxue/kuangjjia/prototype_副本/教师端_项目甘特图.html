@@ -1,0 +1,1846 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目甘特图 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background: #F5F7FA; 
+            display: flex; 
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 统计卡片 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* 筛选栏 */
+        .filter-bar {
+            background: #fff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-item label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .filter-item select,
+        .filter-item input {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 140px;
+        }
+
+        /* 甘特图容器 */
+        .gantt-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 280px);
+        }
+
+        /* 甘特图头部 */
+        .gantt-header {
+            display: flex;
+            border-bottom: 1px solid #E8E8E8;
+            background: #FAFAFA;
+            position: sticky;
+            top: 0;
+            z-index: 30;
+        }
+        .gantt-task-header {
+            width: 280px;
+            padding: 12px 16px;
+            font-weight: 600;
+            font-size: 13px;
+            color: #333;
+            border-right: 1px solid #E8E8E8;
+            background: #FAFAFA;
+            position: sticky;
+            left: 0;
+            z-index: 31;
+        }
+        .gantt-timeline-header {
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        .timeline-scale {
+            display: flex;
+            height: 40px;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        .timeline-scale-item {
+            flex: 1;
+            text-align: center;
+            line-height: 40px;
+            font-size: 12px;
+            color: #666;
+            border-right: 1px solid #E8E8E8;
+            min-width: 60px;
+        }
+
+        /* 甘特图主体 */
+        .gantt-body {
+            flex: 1;
+            overflow: auto;
+            display: flex;
+            position: relative;
+        }
+        .gantt-task-list {
+            width: 280px;
+            border-right: 1px solid #E8E8E8;
+            background: #fff;
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+        }
+        .gantt-task-item {
+            padding: 12px 16px;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 13px;
+            color: #333;
+            height: 48px;
+            display: flex;
+            align-items: center;
+        }
+        .gantt-task-item:hover {
+            background: #F6FFFE;
+        }
+        .toggle-icon {
+            font-size: 10px;
+            color: #666;
+            margin-right: 8px;
+            width: 12px;
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        .level-1 .toggle-icon {
+            color: #1890FF;
+            font-weight: bold;
+        }
+        .level-2 .toggle-icon {
+            color: #52C41A;
+            font-weight: bold;
+        }
+        .task-name {
+            font-weight: 500;
+        }
+        .task-info {
+            font-size: 11px;
+            color: #999;
+            margin-left: auto;
+        }
+
+        /* 甘特图时间轴 */
+        .gantt-timeline {
+            flex: 1;
+            position: relative;
+            background: #FAFAFA;
+        }
+        .timeline-grid {
+            display: flex;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+        }
+        .timeline-grid-item {
+            flex: 1;
+            border-right: 1px dashed #E8E8E8;
+            min-width: 60px;
+        }
+
+        /* 甘特图条 */
+        .gantt-bars {
+            position: relative;
+            height: 100%;
+        }
+        .gantt-bar {
+            position: absolute;
+            height: 32px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-size: 12px;
+            color: #fff;
+            font-weight: 500;
+            cursor: move;
+            transition: all 0.3s;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            user-select: none;
+        }
+        .gantt-bar:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        .gantt-bar.dragging {
+            opacity: 0.8;
+            z-index: 1000;
+            cursor: grabbing;
+        }
+        .gantt-bar.resizing {
+            cursor: col-resize;
+        }
+
+        /* 拖拽调整手柄 */
+        .resize-handle {
+            position: absolute;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            width: 8px;
+            cursor: col-resize;
+            background: rgba(255,255,255,0.3);
+            border-radius: 0 4px 4px 0;
+        }
+        .resize-handle:hover {
+            background: rgba(255,255,255,0.5);
+        }
+
+        /* 快速编辑面板 */
+        .quick-edit-panel {
+            position: fixed;
+            right: 20px;
+            top: 100px;
+            width: 300px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            padding: 16px;
+            z-index: 100;
+        }
+        .quick-edit-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        .quick-edit-item {
+            margin-bottom: 12px;
+        }
+        .quick-edit-item label {
+            display: block;
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .quick-edit-item input,
+        .quick-edit-item select {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        /* 添加快捷按钮 */
+        .quick-actions {
+            position: fixed;
+            right: 20px;
+            bottom: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+        .quick-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+        }
+        .quick-btn:hover {
+            transform: scale(1.1);
+        }
+        .quick-btn.primary {
+            background: #1890FF;
+            color: #fff;
+        }
+        .quick-btn.success {
+            background: #52C41A;
+            color: #fff;
+        }
+        /* 普通考试 */
+        .gantt-bar.normal {
+            background: linear-gradient(90deg, #1890FF, #40A9FF);
+        }
+        .gantt-bar.normal.completed {
+            background: linear-gradient(90deg, #52C41A, #73D13D);
+        }
+        .gantt-bar.normal.pending {
+            background: linear-gradient(90deg, #FA8C16, #FFA940);
+        }
+
+        /* 实训考试 */
+        .gantt-bar.practical {
+            background: linear-gradient(90deg, #722ED1, #9254DE);
+        }
+        .gantt-bar.practical.completed {
+            background: linear-gradient(90deg, #52C41A, #73D13D);
+        }
+        .gantt-bar.practical.pending {
+            background: linear-gradient(90deg, #FA8C16, #FFA940);
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,79,0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(255,77,79,0); }
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 0 0 4px 4px;
+        }
+        .progress-fill {
+            height: 100%;
+            background: rgba(255,255,255,0.9);
+            border-radius: 0 0 4px 4px;
+            transition: width 0.3s;
+        }
+
+        /* 里程碑 */
+        .milestone {
+            position: absolute;
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-bottom: 16px solid #722ED1;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .milestone:hover {
+            transform: scale(1.2);
+        }
+
+        /* 今日线 */
+        .today-line {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #FF4D4F;
+            z-index: 10;
+        }
+        .today-label {
+            position: absolute;
+            top: -24px;
+            left: -20px;
+            background: #FF4D4F;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* 视图切换按钮样式 */
+        .view-switcher {
+            display: flex;
+            gap: 8px;
+        }
+        .view-btn {
+            padding: 8px 16px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .view-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .view-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+        }
+
+        /* 周视图样式 */
+        .week-view .timeline-scale-item {
+            min-width: 120px;
+        }
+        .week-view .timeline-grid-item {
+            min-width: 120px;
+        }
+
+        /* 视图切换动画 */
+        .gantt-container {
+            transition: opacity 0.3s ease;
+        }
+        .gantt-container.switching {
+            opacity: 0.5;
+        }
+
+        /* 图例 */
+        .legend {
+            display: flex;
+            gap: 20px;
+            padding: 12px 20px;
+            background: #FAFAFA;
+            border-top: 1px solid #E8E8E8;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: #1890FF;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-default {
+            background: #fff;
+            color: #666;
+            border: 1px solid #D9D9D9;
+        }
+        .btn-default:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        /* 弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .modal-close {
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* 详情信息 */
+        .detail-row {
+            display: flex;
+            margin-bottom: 12px;
+        }
+        .detail-label {
+            width: 100px;
+            font-size: 13px;
+            color: #666;
+        }
+        .detail-value {
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">首页 / 生产管理 / 项目甘特图</div>
+            <div class="user-info">
+                <span>👤 教师：张老师</span>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">项目甘特图</h1>
+                <div class="view-switcher">
+                    <button class="view-btn active" id="dayViewBtn" onclick="changeView('day')">📅 日视图</button>
+                    <button class="view-btn" id="weekViewBtn" onclick="changeView('week')">📆 周视图</button>
+                    <button class="btn btn-primary" onclick="exportGantt()">📊 导出报表</button>
+                </div>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalProjects">0</div>
+                    <div class="stat-label">课程总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTasks">0</div>
+                    <div class="stat-label">学生考试任务</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="normalExams">0</div>
+                    <div class="stat-label">普通考试场次</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="practicalExams">0</div>
+                    <div class="stat-label">实训考试场次</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completedTasks">0</div>
+                    <div class="stat-label">已完成任务</div>
+                </div>
+            </div>
+
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <label>年级</label>
+                    <select id="gradeFilter" onchange="filterGantt()">
+                        <option value="">全部年级</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>专业名称</label>
+                    <select id="majorFilter" onchange="filterGantt()">
+                        <option value="">全部专业</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>课程名称</label>
+                    <select id="courseFilter" onchange="filterGantt()">
+                        <option value="">全部课程</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>考试类型</label>
+                    <select id="examTypeFilter" onchange="filterGantt()">
+                        <option value="">全部类型</option>
+                        <option value="normal">普通试卷</option>
+                        <option value="practical">实训试卷</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>任务状态</label>
+                    <select id="statusFilter" onchange="filterGantt()">
+                        <option value="">全部状态</option>
+                        <option value="completed">已完成</option>
+                        <option value="in-progress">进行中</option>
+                        <option value="delayed">已延期</option>
+                        <option value="pending">待开始</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>姓名</label>
+                    <input type="text" id="studentNameFilter" placeholder="输入学生姓名" oninput="filterGantt()" style="width: 120px; padding: 6px 10px; border: 1px solid #D9D9D9; border-radius: 4px;">
+                </div>
+                <div class="filter-item">
+                    <label>时间范围</label>
+                    <input type="date" id="startDate" onchange="filterGantt()">
+                    <span>至</span>
+                    <input type="date" id="endDate" onchange="filterGantt()">
+                </div>
+            </div>
+
+            <!-- 甘特图容器 -->
+            <div class="gantt-container">
+                <!-- 甘特图头部 -->
+                <div class="gantt-header">
+                    <div class="gantt-task-header">课程 / 考试</div>
+                    <div class="gantt-timeline-header">
+                        <div class="timeline-scale" id="timelineScale">
+                            <!-- 动态生成时间刻度 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 甘特图主体 -->
+                <div class="gantt-body">
+                    <!-- 任务列表 -->
+                    <div class="gantt-task-list" id="taskList">
+                        <!-- 动态生成 -->
+                    </div>
+
+                    <!-- 时间轴 -->
+                    <div class="gantt-timeline" id="timeline">
+                        <!-- 网格背景 -->
+                        <div class="timeline-grid" id="timelineGrid">
+                            <!-- 动态生成 -->
+                        </div>
+
+                        <!-- 今日线 -->
+                        <div class="today-line" id="todayLine" style="left: 30%;">
+                            <div class="today-label">今天</div>
+                        </div>
+
+                        <!-- 甘特图条 -->
+                        <div class="gantt-bars" id="ganttBars">
+                            <!-- 动态生成 -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 图例 -->
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(90deg, #52C41A, #73D13D);"></div>
+                        <span>已完成</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(90deg, #1890FF, #40A9FF);"></div>
+                        <span>进行中</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(90deg, #FF4D4F, #FF7875);"></div>
+                        <span>已延期</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: linear-gradient(90deg, #FA8C16, #FFA940);"></div>
+                        <span>待开始</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #722ED1; clip-path: polygon(50% 0%, 0% 100%, 100% 100%);"></div>
+                        <span>里程碑</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快速编辑面板 -->
+    <div class="quick-edit-panel" id="quickEditPanel" style="display: none;">
+        <div class="quick-edit-title">⚡ 快速编辑</div>
+        <div class="quick-edit-item">
+            <label>任务名称</label>
+            <input type="text" id="quickTaskName" placeholder="输入任务名称">
+        </div>
+        <div class="quick-edit-item">
+            <label>开始日期</label>
+            <input type="date" id="quickStartDate">
+        </div>
+        <div class="quick-edit-item">
+            <label>结束日期</label>
+            <input type="date" id="quickEndDate">
+        </div>
+        <div class="quick-edit-item">
+            <label>进度 (%)</label>
+            <input type="range" id="quickProgress" min="0" max="100" value="0">
+            <span id="quickProgressValue">0%</span>
+        </div>
+        <div class="quick-edit-item">
+            <label>状态</label>
+            <select id="quickStatus">
+                <option value="pending">待开始</option>
+                <option value="in-progress">进行中</option>
+                <option value="completed">已完成</option>
+                <option value="delayed">已延期</option>
+            </select>
+        </div>
+        <div class="quick-edit-item">
+            <label>考试类型</label>
+            <select id="quickExamType">
+                <option value="normal">普通考试</option>
+                <option value="practical">实训考试</option>
+            </select>
+        </div>
+        <div style="display: flex; gap: 8px; margin-top: 16px;">
+            <button class="btn btn-primary" style="flex: 1;" onclick="saveQuickEdit()">保存</button>
+            <button class="btn btn-default" style="flex: 1;" onclick="closeQuickEdit()">取消</button>
+        </div>
+    </div>
+
+    <!-- 快捷操作按钮 -->
+    <div class="quick-actions">
+        <button class="quick-btn primary" onclick="showAddTaskModal()" title="添加任务">➕</button>
+        <button class="quick-btn success" onclick="saveAllChanges()" title="保存所有更改">💾</button>
+    </div>
+
+    <!-- 任务详情弹窗 -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">任务详情</span>
+                <button class="modal-close" onclick="closeModal('taskModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="taskDetailBody">
+                <!-- 动态生成 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('taskModal')">关闭</button>
+                <button class="btn btn-primary" onclick="enableQuickEdit()">快速编辑</button>
+                <button class="btn btn-warning" onclick="editTask()">详细编辑</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 添加任务弹窗 -->
+    <div class="modal" id="addTaskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">添加新考试</span>
+                <button class="modal-close" onclick="closeModal('addTaskModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>所属课程 <span style="color: #FF4D4F;">*</span></label>
+                        <select id="newTaskProject">
+                            <option value="">请选择课程</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>考试名称 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" id="newTaskName" placeholder="输入考试名称">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>考试类型 <span style="color: #FF4D4F;">*</span></label>
+                        <select id="newTaskType">
+                            <option value="normal">普通考试</option>
+                            <option value="practical">实训考试</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>重要标记</label>
+                        <select id="newTaskMilestone">
+                            <option value="">普通考试</option>
+                            <option value="true">关键考核</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>开始日期 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="date" id="newTaskStart">
+                    </div>
+                    <div class="form-item">
+                        <label>结束日期 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="date" id="newTaskEnd">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('addTaskModal')">取消</button>
+                <button class="btn btn-primary" onclick="addNewTask()">添加考试</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 课程项目数据 - 三级结构：年级+专业+课程 -> 试卷+类型 -> 学生
+        let projects = [
+            // ========== 2023级 机械工程 ==========
+            {
+                id: 1,
+                grade: '2023级',
+                major: '机械工程',
+                name: '机械设计基础',
+                exams: [
+                    { id: 101, name: '机械制图期中考试', type: 'normal', paperType: '普通试卷', start: '2024-03-01', end: '2024-03-02' },
+                    { id: 102, name: '零件测绘实训考试', type: 'practical', paperType: '实训试卷', start: '2024-03-05', end: '2024-03-08' },
+                    { id: 103, name: 'CAD制图期末考试', type: 'normal', paperType: '普通试卷', start: '2024-03-15', end: '2024-03-16' },
+                    { id: 104, name: '装配体设计实训', type: 'practical', paperType: '实训试卷', start: '2024-03-20', end: '2024-03-23' }
+                ],
+                tasks: [
+                    // 机械制图期中考试 - 8位学生
+                    { id: 1, examId: 101, examName: '机械制图期中考试', paperType: '普通试卷', studentName: '张伟', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 85 },
+                    { id: 2, examId: 101, examName: '机械制图期中考试', paperType: '普通试卷', studentName: '李娜', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 92 },
+                    { id: 3, examId: 101, examName: '机械制图期中考试', paperType: '普通试卷', studentName: '王强', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 78 },
+                    { id: 4, examId: 101, examName: '机械制图期中考试', paperType: '普通试卷', studentName: '刘洋', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 88 },
+                    { id: 5, examId: 101, examName: '机械制图期中考试', paperType: '普通试卷', studentName: '陈静', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 95 },
+                    { id: 6, examId: 101, examName: '机械制图期中考试', paperType: '普通试卷', studentName: '杨帆', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 82 },
+                    { id: 7, examId: 101, examName: '机械制图期中考试', paperType: '普通试卷', studentName: '赵敏', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 90 },
+                    { id: 8, examId: 101, examName: '机械制图期中考试', paperType: '普通试卷', studentName: '黄磊', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 87 },
+                    // 零件测绘实训考试 - 8位学生
+                    { id: 9, examId: 102, examName: '零件测绘实训考试', paperType: '实训试卷', studentName: '张伟', type: 'practical', start: '2024-03-05', end: '2024-03-08', progress: 100, status: 'completed', score: 88 },
+                    { id: 10, examId: 102, examName: '零件测绘实训考试', paperType: '实训试卷', studentName: '李娜', type: 'practical', start: '2024-03-05', end: '2024-03-08', progress: 100, status: 'completed', score: 95 },
+                    { id: 11, examId: 102, examName: '零件测绘实训考试', paperType: '实训试卷', studentName: '王强', type: 'practical', start: '2024-03-05', end: '2024-03-08', progress: 90, status: 'in-progress', score: null },
+                    { id: 12, examId: 102, examName: '零件测绘实训考试', paperType: '实训试卷', studentName: '刘洋', type: 'practical', start: '2024-03-05', end: '2024-03-08', progress: 100, status: 'completed', score: 91 },
+                    { id: 13, examId: 102, examName: '零件测绘实训考试', paperType: '实训试卷', studentName: '陈静', type: 'practical', start: '2024-03-05', end: '2024-03-08', progress: 100, status: 'completed', score: 93 },
+                    { id: 14, examId: 102, examName: '零件测绘实训考试', paperType: '实训试卷', studentName: '杨帆', type: 'practical', start: '2024-03-05', end: '2024-03-08', progress: 85, status: 'in-progress', score: null },
+                    { id: 15, examId: 102, examName: '零件测绘实训考试', paperType: '实训试卷', studentName: '赵敏', type: 'practical', start: '2024-03-05', end: '2024-03-08', progress: 100, status: 'completed', score: 89 },
+                    { id: 16, examId: 102, examName: '零件测绘实训考试', paperType: '实训试卷', studentName: '黄磊', type: 'practical', start: '2024-03-05', end: '2024-03-08', progress: 100, status: 'completed', score: 86 },
+                    // CAD制图期末考试 - 8位学生
+                    { id: 17, examId: 103, examName: 'CAD制图期末考试', paperType: '普通试卷', studentName: '张伟', type: 'normal', start: '2024-03-15', end: '2024-03-16', progress: 60, status: 'in-progress', score: null },
+                    { id: 18, examId: 103, examName: 'CAD制图期末考试', paperType: '普通试卷', studentName: '李娜', type: 'normal', start: '2024-03-15', end: '2024-03-16', progress: 0, status: 'pending', score: null },
+                    { id: 19, examId: 103, examName: 'CAD制图期末考试', paperType: '普通试卷', studentName: '王强', type: 'normal', start: '2024-03-15', end: '2024-03-16', progress: 0, status: 'pending', score: null },
+                    { id: 20, examId: 103, examName: 'CAD制图期末考试', paperType: '普通试卷', studentName: '刘洋', type: 'normal', start: '2024-03-15', end: '2024-03-16', progress: 30, status: 'in-progress', score: null },
+                    { id: 21, examId: 103, examName: 'CAD制图期末考试', paperType: '普通试卷', studentName: '陈静', type: 'normal', start: '2024-03-15', end: '2024-03-16', progress: 0, status: 'pending', score: null },
+                    { id: 22, examId: 103, examName: 'CAD制图期末考试', paperType: '普通试卷', studentName: '杨帆', type: 'normal', start: '2024-03-15', end: '2024-03-16', progress: 0, status: 'pending', score: null },
+                    { id: 23, examId: 103, examName: 'CAD制图期末考试', paperType: '普通试卷', studentName: '赵敏', type: 'normal', start: '2024-03-15', end: '2024-03-16', progress: 0, status: 'pending', score: null },
+                    { id: 24, examId: 103, examName: 'CAD制图期末考试', paperType: '普通试卷', studentName: '黄磊', type: 'normal', start: '2024-03-15', end: '2024-03-16', progress: 0, status: 'pending', score: null },
+                    // 装配体设计实训 - 8位学生
+                    { id: 25, examId: 104, examName: '装配体设计实训', paperType: '实训试卷', studentName: '张伟', type: 'practical', start: '2024-03-20', end: '2024-03-23', progress: 0, status: 'pending', score: null },
+                    { id: 26, examId: 104, examName: '装配体设计实训', paperType: '实训试卷', studentName: '李娜', type: 'practical', start: '2024-03-20', end: '2024-03-23', progress: 0, status: 'pending', score: null },
+                    { id: 27, examId: 104, examName: '装配体设计实训', paperType: '实训试卷', studentName: '王强', type: 'practical', start: '2024-03-20', end: '2024-03-23', progress: 0, status: 'pending', score: null },
+                    { id: 28, examId: 104, examName: '装配体设计实训', paperType: '实训试卷', studentName: '刘洋', type: 'practical', start: '2024-03-20', end: '2024-03-23', progress: 0, status: 'pending', score: null },
+                    { id: 29, examId: 104, examName: '装配体设计实训', paperType: '实训试卷', studentName: '陈静', type: 'practical', start: '2024-03-20', end: '2024-03-23', progress: 0, status: 'pending', score: null },
+                    { id: 30, examId: 104, examName: '装配体设计实训', paperType: '实训试卷', studentName: '杨帆', type: 'practical', start: '2024-03-20', end: '2024-03-23', progress: 0, status: 'pending', score: null },
+                    { id: 31, examId: 104, examName: '装配体设计实训', paperType: '实训试卷', studentName: '赵敏', type: 'practical', start: '2024-03-20', end: '2024-03-23', progress: 0, status: 'pending', score: null },
+                    { id: 32, examId: 104, examName: '装配体设计实训', paperType: '实训试卷', studentName: '黄磊', type: 'practical', start: '2024-03-20', end: '2024-03-23', progress: 0, status: 'pending', score: null }
+                ]
+            },
+            {
+                id: 2,
+                grade: '2023级',
+                major: '机械工程',
+                name: '数控加工技术',
+                exams: [
+                    { id: 201, name: '数控编程理论考试', type: 'normal', paperType: '普通试卷', start: '2024-03-03', end: '2024-03-04' },
+                    { id: 202, name: '数控车床操作实训', type: 'practical', paperType: '实训试卷', start: '2024-03-08', end: '2024-03-12' },
+                    { id: 203, name: '数控铣削加工实训', type: 'practical', paperType: '实训试卷', start: '2024-03-18', end: '2024-03-22' },
+                    { id: 204, name: '综合技能考核', type: 'practical', paperType: '实训试卷', start: '2024-03-25', end: '2024-03-28' }
+                ],
+                tasks: [
+                    // 数控编程理论考试 - 6位学生
+                    { id: 33, examId: 201, examName: '数控编程理论考试', paperType: '普通试卷', studentName: '周杰', type: 'normal', start: '2024-03-03', end: '2024-03-04', progress: 100, status: 'completed', score: 90 },
+                    { id: 34, examId: 201, examName: '数控编程理论考试', paperType: '普通试卷', studentName: '吴倩', type: 'normal', start: '2024-03-03', end: '2024-03-04', progress: 100, status: 'completed', score: 85 },
+                    { id: 35, examId: 201, examName: '数控编程理论考试', paperType: '普通试卷', studentName: '郑凯', type: 'normal', start: '2024-03-03', end: '2024-03-04', progress: 100, status: 'completed', score: 88 },
+                    { id: 36, examId: 201, examName: '数控编程理论考试', paperType: '普通试卷', studentName: '孙丽', type: 'normal', start: '2024-03-03', end: '2024-03-04', progress: 100, status: 'completed', score: 92 },
+                    { id: 37, examId: 201, examName: '数控编程理论考试', paperType: '普通试卷', studentName: '朱明', type: 'normal', start: '2024-03-03', end: '2024-03-04', progress: 100, status: 'completed', score: 87 },
+                    { id: 38, examId: 201, examName: '数控编程理论考试', paperType: '普通试卷', studentName: '徐婷', type: 'normal', start: '2024-03-03', end: '2024-03-04', progress: 100, status: 'completed', score: 91 },
+                    // 数控车床操作实训 - 6位学生
+                    { id: 39, examId: 202, examName: '数控车床操作实训', paperType: '实训试卷', studentName: '周杰', type: 'practical', start: '2024-03-08', end: '2024-03-12', progress: 80, status: 'in-progress', score: null },
+                    { id: 40, examId: 202, examName: '数控车床操作实训', paperType: '实训试卷', studentName: '吴倩', type: 'practical', start: '2024-03-08', end: '2024-03-12', progress: 0, status: 'pending', score: null },
+                    { id: 41, examId: 202, examName: '数控车床操作实训', paperType: '实训试卷', studentName: '郑凯', type: 'practical', start: '2024-03-08', end: '2024-03-12', progress: 0, status: 'pending', score: null },
+                    { id: 42, examId: 202, examName: '数控车床操作实训', paperType: '实训试卷', studentName: '孙丽', type: 'practical', start: '2024-03-08', end: '2024-03-12', progress: 0, status: 'pending', score: null },
+                    { id: 43, examId: 202, examName: '数控车床操作实训', paperType: '实训试卷', studentName: '朱明', type: 'practical', start: '2024-03-08', end: '2024-03-12', progress: 0, status: 'pending', score: null },
+                    { id: 44, examId: 202, examName: '数控车床操作实训', paperType: '实训试卷', studentName: '徐婷', type: 'practical', start: '2024-03-08', end: '2024-03-12', progress: 0, status: 'pending', score: null }
+                ]
+            },
+            // ========== 2023级 电气工程 ==========
+            {
+                id: 3,
+                grade: '2023级',
+                major: '电气工程',
+                name: '电气控制技术',
+                exams: [
+                    { id: 301, name: '电路原理期中考试', type: 'normal', paperType: '普通试卷', start: '2024-03-05', end: '2024-03-06' },
+                    { id: 302, name: 'PLC编程实训考试', type: 'practical', paperType: '实训试卷', start: '2024-03-10', end: '2024-03-14' },
+                    { id: 303, name: '电机控制实训', type: 'practical', paperType: '实训试卷', start: '2024-03-18', end: '2024-03-21' },
+                    { id: 304, name: '电气故障诊断实训', type: 'practical', paperType: '实训试卷', start: '2024-03-25', end: '2024-03-28' }
+                ],
+                tasks: [
+                    // 电路原理期中考试 - 7位学生
+                    { id: 45, examId: 301, examName: '电路原理期中考试', paperType: '普通试卷', studentName: '马云', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 88 },
+                    { id: 46, examId: 301, examName: '电路原理期中考试', paperType: '普通试卷', studentName: '林峰', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 92 },
+                    { id: 47, examId: 301, examName: '电路原理期中考试', paperType: '普通试卷', studentName: '何静', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 85 },
+                    { id: 48, examId: 301, examName: '电路原理期中考试', paperType: '普通试卷', studentName: '罗丹', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 90 },
+                    { id: 49, examId: 301, examName: '电路原理期中考试', paperType: '普通试卷', studentName: '高翔', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 87 },
+                    { id: 50, examId: 301, examName: '电路原理期中考试', paperType: '普通试卷', studentName: '梁雨', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 93 },
+                    { id: 51, examId: 301, examName: '电路原理期中考试', paperType: '普通试卷', studentName: '宋阳', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 89 },
+                    // PLC编程实训考试 - 7位学生
+                    { id: 52, examId: 302, examName: 'PLC编程实训考试', paperType: '实训试卷', studentName: '马云', type: 'practical', start: '2024-03-10', end: '2024-03-14', progress: 50, status: 'in-progress', score: null },
+                    { id: 53, examId: 302, examName: 'PLC编程实训考试', paperType: '实训试卷', studentName: '林峰', type: 'practical', start: '2024-03-10', end: '2024-03-14', progress: 0, status: 'pending', score: null },
+                    { id: 54, examId: 302, examName: 'PLC编程实训考试', paperType: '实训试卷', studentName: '何静', type: 'practical', start: '2024-03-10', end: '2024-03-14', progress: 0, status: 'pending', score: null },
+                    { id: 55, examId: 302, examName: 'PLC编程实训考试', paperType: '实训试卷', studentName: '罗丹', type: 'practical', start: '2024-03-10', end: '2024-03-14', progress: 0, status: 'pending', score: null },
+                    { id: 56, examId: 302, examName: 'PLC编程实训考试', paperType: '实训试卷', studentName: '高翔', type: 'practical', start: '2024-03-10', end: '2024-03-14', progress: 0, status: 'pending', score: null },
+                    { id: 57, examId: 302, examName: 'PLC编程实训考试', paperType: '实训试卷', studentName: '梁雨', type: 'practical', start: '2024-03-10', end: '2024-03-14', progress: 0, status: 'pending', score: null },
+                    { id: 58, examId: 302, examName: 'PLC编程实训考试', paperType: '实训试卷', studentName: '宋阳', type: 'practical', start: '2024-03-10', end: '2024-03-14', progress: 0, status: 'pending', score: null }
+                ]
+            },
+            // ========== 2022级 计算机科学 ==========
+            {
+                id: 4,
+                grade: '2022级',
+                major: '计算机科学',
+                name: 'Java程序设计',
+                exams: [
+                    { id: 401, name: 'Java基础理论考试', type: 'normal', paperType: '普通试卷', start: '2024-03-02', end: '2024-03-03' },
+                    { id: 402, name: '面向对象编程实训', type: 'practical', paperType: '实训试卷', start: '2024-03-08', end: '2024-03-10' },
+                    { id: 403, name: '数据库连接实训', type: 'practical', paperType: '实训试卷', start: '2024-03-15', end: '2024-03-18' },
+                    { id: 404, name: 'Web应用开发考核', type: 'practical', paperType: '实训试卷', start: '2024-03-22', end: '2024-03-25' }
+                ],
+                tasks: [
+                    // Java基础理论考试 - 10位学生
+                    { id: 59, examId: 401, examName: 'Java基础理论考试', paperType: '普通试卷', studentName: '唐磊', type: 'normal', start: '2024-03-02', end: '2024-03-03', progress: 100, status: 'completed', score: 94 },
+                    { id: 60, examId: 401, examName: 'Java基础理论考试', paperType: '普通试卷', studentName: '韩雪', type: 'normal', start: '2024-03-02', end: '2024-03-03', progress: 100, status: 'completed', score: 91 },
+                    { id: 61, examId: 401, examName: 'Java基础理论考试', paperType: '普通试卷', studentName: '冯刚', type: 'normal', start: '2024-03-02', end: '2024-03-03', progress: 100, status: 'completed', score: 88 },
+                    { id: 62, examId: 401, examName: 'Java基础理论考试', paperType: '普通试卷', studentName: '董洁', type: 'normal', start: '2024-03-02', end: '2024-03-03', progress: 100, status: 'completed', score: 96 },
+                    { id: 63, examId: 401, examName: 'Java基础理论考试', paperType: '普通试卷', studentName: '许强', type: 'normal', start: '2024-03-02', end: '2024-03-03', progress: 100, status: 'completed', score: 85 },
+                    { id: 64, examId: 401, examName: 'Java基础理论考试', paperType: '普通试卷', studentName: '邓芳', type: 'normal', start: '2024-03-02', end: '2024-03-03', progress: 100, status: 'completed', score: 92 },
+                    { id: 65, examId: 401, examName: 'Java基础理论考试', paperType: '普通试卷', studentName: '曹军', type: 'normal', start: '2024-03-02', end: '2024-03-03', progress: 100, status: 'completed', score: 89 },
+                    { id: 66, examId: 401, examName: 'Java基础理论考试', paperType: '普通试卷', studentName: '彭丽', type: 'normal', start: '2024-03-02', end: '2024-03-03', progress: 100, status: 'completed', score: 93 },
+                    { id: 67, examId: 401, examName: 'Java基础理论考试', paperType: '普通试卷', studentName: '曾伟', type: 'normal', start: '2024-03-02', end: '2024-03-03', progress: 100, status: 'completed', score: 87 },
+                    { id: 68, examId: 401, examName: 'Java基础理论考试', paperType: '普通试卷', studentName: '蔡敏', type: 'normal', start: '2024-03-02', end: '2024-03-03', progress: 100, status: 'completed', score: 90 }
+                ]
+            },
+            {
+                id: 5,
+                grade: '2022级',
+                major: '计算机科学',
+                name: '数据库原理',
+                exams: [
+                    { id: 501, name: 'SQL语句理论考试', type: 'normal', paperType: '普通试卷', start: '2024-03-05', end: '2024-03-06' },
+                    { id: 502, name: '数据库设计实训', type: 'practical', paperType: '实训试卷', start: '2024-03-12', end: '2024-03-15' }
+                ],
+                tasks: [
+                    // SQL语句理论考试 - 8位学生
+                    { id: 69, examId: 501, examName: 'SQL语句理论考试', paperType: '普通试卷', studentName: '田华', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 91 },
+                    { id: 70, examId: 501, examName: 'SQL语句理论考试', paperType: '普通试卷', studentName: '于洋', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 88 },
+                    { id: 71, examId: 501, examName: 'SQL语句理论考试', paperType: '普通试卷', studentName: '董明', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 95 },
+                    { id: 72, examId: 501, examName: 'SQL语句理论考试', paperType: '普通试卷', studentName: '袁莉', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 92 },
+                    { id: 73, examId: 501, examName: 'SQL语句理论考试', paperType: '普通试卷', studentName: '蒋文', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 86 },
+                    { id: 74, examId: 501, examName: 'SQL语句理论考试', paperType: '普通试卷', studentName: '魏娟', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 89 },
+                    { id: 75, examId: 501, examName: 'SQL语句理论考试', paperType: '普通试卷', studentName: '薛峰', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 93 },
+                    { id: 76, examId: 501, examName: 'SQL语句理论考试', paperType: '普通试卷', studentName: '阎红', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 87 }
+                ]
+            },
+            // ========== 2024级 土木工程 ==========
+            {
+                id: 6,
+                grade: '2024级',
+                major: '土木工程',
+                name: '工程力学',
+                exams: [
+                    { id: 601, name: '静力学基础考试', type: 'normal', paperType: '普通试卷', start: '2024-03-01', end: '2024-03-02' },
+                    { id: 602, name: '材料力学实训', type: 'practical', paperType: '实训试卷', start: '2024-03-08', end: '2024-03-12' },
+                    { id: 603, name: '结构力学分析', type: 'normal', paperType: '普通试卷', start: '2024-03-18', end: '2024-03-19' }
+                ],
+                tasks: [
+                    // 静力学基础考试 - 9位学生
+                    { id: 77, examId: 601, examName: '静力学基础考试', paperType: '普通试卷', studentName: '潘军', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 84 },
+                    { id: 78, examId: 601, examName: '静力学基础考试', paperType: '普通试卷', studentName: '汪玲', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 91 },
+                    { id: 79, examId: 601, examName: '静力学基础考试', paperType: '普通试卷', studentName: '丁伟', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 88 },
+                    { id: 80, examId: 601, examName: '静力学基础考试', paperType: '普通试卷', studentName: '夏雨', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 86 },
+                    { id: 81, examId: 601, examName: '静力学基础考试', paperType: '普通试卷', studentName: '贾芳', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 93 },
+                    { id: 82, examId: 601, examName: '静力学基础考试', paperType: '普通试卷', studentName: '钱坤', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 89 },
+                    { id: 83, examId: 601, examName: '静力学基础考试', paperType: '普通试卷', studentName: '孔敏', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 85 },
+                    { id: 84, examId: 601, examName: '静力学基础考试', paperType: '普通试卷', studentName: '白杨', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 92 },
+                    { id: 85, examId: 601, examName: '静力学基础考试', paperType: '普通试卷', studentName: '崔磊', type: 'normal', start: '2024-03-01', end: '2024-03-02', progress: 100, status: 'completed', score: 87 }
+                ]
+            },
+            // ========== 2021级 工商管理 ==========
+            {
+                id: 7,
+                grade: '2021级',
+                major: '工商管理',
+                name: '市场营销',
+                exams: [
+                    { id: 701, name: '营销理论考试', type: 'normal', paperType: '普通试卷', start: '2024-03-05', end: '2024-03-06' },
+                    { id: 702, name: '案例分析实训', type: 'practical', paperType: '实训试卷', start: '2024-03-12', end: '2024-03-15' }
+                ],
+                tasks: [
+                    // 营销理论考试 - 6位学生
+                    { id: 86, examId: 701, examName: '营销理论考试', paperType: '普通试卷', studentName: '龙飞', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 90 },
+                    { id: 87, examId: 701, examName: '营销理论考试', paperType: '普通试卷', studentName: '万莉', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 88 },
+                    { id: 88, examId: 701, examName: '营销理论考试', paperType: '普通试卷', studentName: '段鹏', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 92 },
+                    { id: 89, examId: 701, examName: '营销理论考试', paperType: '普通试卷', studentName: '雷静', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 85 },
+                    { id: 90, examId: 701, examName: '营销理论考试', paperType: '普通试卷', studentName: '贺刚', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 89 },
+                    { id: 91, examId: 701, examName: '营销理论考试', paperType: '普通试卷', studentName: '文婷', type: 'normal', start: '2024-03-05', end: '2024-03-06', progress: 100, status: 'completed', score: 94 }
+                ]
+            }
+        ];
+
+        let currentView = 'day';
+        let filteredProjects = [...projects];
+        let currentEditingTask = null;
+        let isDragging = false;
+        let isResizing = false;
+        let dragStartX = 0;
+        let dragStartLeft = 0;
+        let dragStartWidth = 0;
+        let dragBar = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initProjectFilter();
+            initNewTaskProjectFilter();
+            initDateRange();
+            renderGantt();
+            updateStats();
+            initDragAndDrop();
+            initProgressSlider();
+        });
+
+        // 初始化新项目筛选
+        function initNewTaskProjectFilter() {
+            const select = document.getElementById('newTaskProject');
+            projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project.id;
+                option.textContent = project.name;
+                select.appendChild(option);
+            });
+        }
+
+        // 初始化进度滑块
+        function initProgressSlider() {
+            const slider = document.getElementById('quickProgress');
+            const value = document.getElementById('quickProgressValue');
+            slider.addEventListener('input', function() {
+                value.textContent = this.value + '%';
+            });
+        }
+
+        // 初始化拖拽功能
+        function initDragAndDrop() {
+            const timeline = document.getElementById('timeline');
+            
+            timeline.addEventListener('mousedown', function(e) {
+                const bar = e.target.closest('.gantt-bar');
+                const handle = e.target.closest('.resize-handle');
+                
+                if (handle) {
+                    // 调整大小
+                    isResizing = true;
+                    dragBar = bar;
+                    dragStartX = e.clientX;
+                    dragStartWidth = parseFloat(bar.style.width);
+                    bar.classList.add('resizing');
+                    e.preventDefault();
+                } else if (bar) {
+                    // 拖拽移动
+                    isDragging = true;
+                    dragBar = bar;
+                    dragStartX = e.clientX;
+                    dragStartLeft = parseFloat(bar.style.left);
+                    bar.classList.add('dragging');
+                    
+                    // 显示快速编辑面板
+                    const projectId = parseInt(bar.dataset.projectId);
+                    const taskId = parseInt(bar.dataset.taskId);
+                    showQuickEditPanel(projectId, taskId);
+                    e.preventDefault();
+                }
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!dragBar) return;
+                
+                const timeline = document.getElementById('timeline');
+                const timelineRect = timeline.getBoundingClientRect();
+                const deltaX = e.clientX - dragStartX;
+                const deltaPercent = (deltaX / timelineRect.width) * 100;
+                
+                if (isDragging) {
+                    // 移动任务条
+                    let newLeft = dragStartLeft + deltaPercent;
+                    newLeft = Math.max(0, Math.min(95, newLeft));
+                    dragBar.style.left = newLeft + '%';
+                    
+                    // 实时更新日期
+                    updateTaskDatesFromBar(dragBar, newLeft, parseFloat(dragBar.style.width));
+                } else if (isResizing) {
+                    // 调整任务条大小
+                    let newWidth = dragStartWidth + deltaPercent;
+                    newWidth = Math.max(5, Math.min(95 - parseFloat(dragBar.style.left), newWidth));
+                    dragBar.style.width = newWidth + '%';
+                    
+                    // 实时更新日期
+                    updateTaskDatesFromBar(dragBar, parseFloat(dragBar.style.left), newWidth);
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (dragBar) {
+                    dragBar.classList.remove('dragging', 'resizing');
+                    dragBar = null;
+                }
+                isDragging = false;
+                isResizing = false;
+            });
+        }
+
+        // 根据任务条位置更新日期
+        function updateTaskDatesFromBar(bar, left, width) {
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+            
+            const startOffset = Math.round((left / 100) * totalDays);
+            const duration = Math.round((width / 100) * totalDays);
+            
+            const newStart = new Date(startDate);
+            newStart.setDate(newStart.getDate() + startOffset);
+            
+            const newEnd = new Date(newStart);
+            newEnd.setDate(newEnd.getDate() + duration - 1);
+            
+            // 更新快速编辑面板的日期
+            document.getElementById('quickStartDate').value = formatDate(newStart);
+            document.getElementById('quickEndDate').value = formatDate(newEnd);
+        }
+
+        // 显示快速编辑面板
+        function showQuickEditPanel(projectId, taskId) {
+            const project = projects.find(p => p.id === projectId);
+            const task = project.tasks.find(t => t.id === taskId);
+            
+            currentEditingTask = { projectId, taskId };
+            
+            document.getElementById('quickTaskName').value = task.name;
+            document.getElementById('quickStartDate').value = task.start;
+            document.getElementById('quickEndDate').value = task.end;
+            document.getElementById('quickProgress').value = task.progress;
+            document.getElementById('quickProgressValue').textContent = task.progress + '%';
+            document.getElementById('quickStatus').value = task.status;
+            document.getElementById('quickExamType').value = task.type;
+            
+            document.getElementById('quickEditPanel').style.display = 'block';
+        }
+
+        // 关闭快速编辑面板
+        function closeQuickEdit() {
+            document.getElementById('quickEditPanel').style.display = 'none';
+            currentEditingTask = null;
+        }
+
+        // 保存快速编辑
+        function saveQuickEdit() {
+            if (!currentEditingTask) return;
+            
+            const project = projects.find(p => p.id === currentEditingTask.projectId);
+            const task = project.tasks.find(t => t.id === currentEditingTask.taskId);
+            
+            task.name = document.getElementById('quickTaskName').value;
+            task.start = document.getElementById('quickStartDate').value;
+            task.end = document.getElementById('quickEndDate').value;
+            task.progress = parseInt(document.getElementById('quickProgress').value);
+            task.status = document.getElementById('quickStatus').value;
+            task.type = document.getElementById('quickExamType').value;
+            task.examType = task.type === 'normal' ? '普通考试' : '实训考试';
+            
+            renderGantt();
+            updateStats();
+            closeQuickEdit();
+            
+            // 显示保存成功提示
+            showNotification('任务已更新', 'success');
+        }
+
+        // 启用快速编辑
+        function enableQuickEdit() {
+            closeModal('taskModal');
+            if (currentEditingTask) {
+                showQuickEditPanel(currentEditingTask.projectId, currentEditingTask.taskId);
+            }
+        }
+
+        // 显示添加任务弹窗
+        function showAddTaskModal() {
+            document.getElementById('newTaskProject').value = '';
+            document.getElementById('newTaskName').value = '';
+            document.getElementById('newTaskStart').value = formatDate(new Date());
+            document.getElementById('newTaskEnd').value = formatDate(new Date());
+            document.getElementById('newTaskType').value = 'normal';
+            document.getElementById('newTaskMilestone').value = '';
+            openModal('addTaskModal');
+        }
+
+        // 添加新任务
+        function addNewTask() {
+            const projectId = parseInt(document.getElementById('newTaskProject').value);
+            const name = document.getElementById('newTaskName').value;
+            const start = document.getElementById('newTaskStart').value;
+            const end = document.getElementById('newTaskEnd').value;
+            const type = document.getElementById('newTaskType').value;
+            const isMilestone = document.getElementById('newTaskMilestone').value === 'true';
+            
+            if (!projectId || !name || !start || !end) {
+                alert('请填写必填项！');
+                return;
+            }
+            
+            const project = projects.find(p => p.id === projectId);
+            const newTask = {
+                id: Date.now(),
+                name: name,
+                type: type,
+                start: start,
+                end: end,
+                progress: 0,
+                status: 'pending',
+                examType: type === 'normal' ? '普通考试' : '实训考试',
+                isMilestone: isMilestone
+            };
+            
+            project.tasks.push(newTask);
+            filteredProjects = [...projects];
+            
+            renderGantt();
+            updateStats();
+            closeModal('addTaskModal');
+            showNotification('新任务已添加', 'success');
+        }
+
+        // 保存所有更改
+        function saveAllChanges() {
+            // 这里可以实现保存到服务器的逻辑
+            showNotification('所有更改已保存', 'success');
+        }
+
+        // 显示通知
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 4px;
+                color: #fff;
+                font-size: 13px;
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.style.background = type === 'success' ? '#52C41A' : '#1890FF';
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // 初始化筛选器 - 6个维度
+        function initProjectFilter() {
+            // 初始化年级筛选
+            const gradeSelect = document.getElementById('gradeFilter');
+            const grades = [...new Set(projects.map(p => p.grade))];
+            grades.forEach(grade => {
+                const option = document.createElement('option');
+                option.value = grade;
+                option.textContent = grade;
+                gradeSelect.appendChild(option);
+            });
+
+            // 初始化专业筛选
+            const majorSelect = document.getElementById('majorFilter');
+            const majors = [...new Set(projects.map(p => p.major))];
+            majors.forEach(major => {
+                const option = document.createElement('option');
+                option.value = major;
+                option.textContent = major;
+                majorSelect.appendChild(option);
+            });
+
+            // 初始化课程筛选
+            const courseSelect = document.getElementById('courseFilter');
+            const courses = [...new Set(projects.map(p => p.name))];
+            courses.forEach(course => {
+                const option = document.createElement('option');
+                option.value = course;
+                option.textContent = course;
+                majorSelect.appendChild(option);
+            });
+        }
+
+        // 初始化日期范围
+        function initDateRange() {
+            const today = new Date();
+            const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+            const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+            
+            document.getElementById('startDate').value = formatDate(startDate);
+            document.getElementById('endDate').value = formatDate(endDate);
+        }
+
+        // 格式化日期
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        // 更新统计
+        function updateStats() {
+            document.getElementById('totalProjects').textContent = filteredProjects.length;
+            
+            let totalTasks = 0; // 学生考试任务总数
+            let completedTasks = 0;
+            let normalExams = 0; // 普通考试场次数
+            let practicalExams = 0; // 实训考试场次数
+
+            filteredProjects.forEach(project => {
+                // 统计考试场次（从exams数组）
+                if (project.exams) {
+                    project.exams.forEach(exam => {
+                        if (exam.type === 'normal') normalExams++;
+                        else if (exam.type === 'practical') practicalExams++;
+                    });
+                }
+                
+                // 统计学生考试任务
+                totalTasks += project.tasks.length;
+                project.tasks.forEach(task => {
+                    if (task.status === 'completed') completedTasks++;
+                });
+            });
+
+            document.getElementById('totalTasks').textContent = totalTasks;
+            document.getElementById('completedTasks').textContent = completedTasks;
+            document.getElementById('normalExams').textContent = normalExams;
+            document.getElementById('practicalExams').textContent = practicalExams;
+        }
+
+        // 渲染甘特图
+        function renderGantt() {
+            renderTimelineScale();
+            renderTaskList();
+            renderTimelineGrid();
+            renderGanttBars();
+        }
+
+        // 渲染时间刻度
+        function renderTimelineScale() {
+            const scale = document.getElementById('timelineScale');
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            
+            let html = '';
+            
+            if (currentView === 'week') {
+                // 周视图：显示周次
+                const weeks = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24 * 7)) + 1;
+                let currentWeekStart = new Date(startDate);
+                
+                for (let i = 0; i < weeks; i++) {
+                    const weekEnd = new Date(currentWeekStart);
+                    weekEnd.setDate(weekEnd.getDate() + 6);
+                    
+                    const weekStartStr = `${currentWeekStart.getMonth() + 1}/${currentWeekStart.getDate()}`;
+                    const weekEndStr = `${weekEnd.getMonth() + 1}/${weekEnd.getDate()}`;
+                    
+                    html += `<div class="timeline-scale-item" style="min-width: 120px;">
+                        <div>第${i + 1}周</div>
+                        <div style="font-size: 10px; color: #999;">${weekStartStr} - ${weekEndStr}</div>
+                    </div>`;
+                    
+                    currentWeekStart.setDate(currentWeekStart.getDate() + 7);
+                }
+            } else {
+                // 日视图：显示日期
+                const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+                
+                for (let i = 0; i < days; i++) {
+                    const date = new Date(startDate);
+                    date.setDate(date.getDate() + i);
+                    const dayStr = `${date.getMonth() + 1}/${date.getDate()}`;
+                    const weekDay = ['日', '一', '二', '三', '四', '五', '六'][date.getDay()];
+                    const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                    
+                    html += `<div class="timeline-scale-item ${isWeekend ? 'weekend' : ''}" style="min-width: 60px;">
+                        <div>${dayStr}</div>
+                        <div style="font-size: 10px; color: ${isWeekend ? '#FF4D4F' : '#999'};">周${weekDay}</div>
+                    </div>`;
+                }
+            }
+            
+            scale.innerHTML = html;
+        }
+
+        // 渲染任务列表 - 三级结构（支持展开/收起）
+        function renderTaskList() {
+            const list = document.getElementById('taskList');
+            let html = '';
+
+            filteredProjects.forEach((project, projectIndex) => {
+                const examCount = project.exams ? project.exams.length : 0;
+                const taskCount = project.tasks.length;
+                
+                // 第一级：年级+专业+课程名称（可展开/收起）
+                html += `
+                    <div class="gantt-task-item level-1" data-project-index="${projectIndex}" onclick="toggleLevel1(${projectIndex})" style="background: #E6F7FF; font-weight: 600; border-left: 4px solid #1890FF; cursor: pointer;">
+                        <span class="toggle-icon" id="level1-icon-${projectIndex}">▼</span>
+                        <span class="task-name">📚 ${project.grade} ${project.major} ${project.name}</span>
+                        <span class="task-info">${examCount}场考试 / ${taskCount}人</span>
+                    </div>
+                `;
+                
+                // 按考试分组显示学生任务
+                const examGroups = {};
+                project.tasks.forEach(task => {
+                    if (!examGroups[task.examName]) {
+                        examGroups[task.examName] = [];
+                    }
+                    examGroups[task.examName].push(task);
+                });
+                
+                // 显示每个考试及其学生
+                const examNames = Object.keys(examGroups);
+                examNames.forEach((examName, examIndex) => {
+                    const tasks = examGroups[examName];
+                    const firstTask = tasks[0];
+                    const paperTypeLabel = firstTask.paperType || (firstTask.type === 'normal' ? '普通试卷' : '实训试卷');
+                    const studentCount = tasks.length;
+                    const level2Id = `project-${projectIndex}-exam-${examIndex}`;
+                    
+                    // 第二级：试卷名称+试卷类型（可展开/收起）
+                    html += `
+                        <div class="gantt-task-item level-2 project-${projectIndex}" data-level2-id="${level2Id}" onclick="toggleLevel2('${level2Id}', ${projectIndex})" style="background: #F6FFFE; padding-left: 24px; border-left: 3px solid #52C41A; cursor: pointer;">
+                            <span class="toggle-icon" id="level2-icon-${level2Id}">▼</span>
+                            <span class="task-name">📝 ${examName}</span>
+                            <span class="task-info" style="color: #1890FF; font-weight: 500;">${paperTypeLabel}</span>
+                        </div>
+                    `;
+                    
+                    // 第三级：学生姓名
+                    tasks.forEach(task => {
+                        const statusIcon = task.status === 'completed' ? '✅' : 
+                                          task.status === 'in-progress' ? '🔄' : '⏳';
+                        const scoreText = task.score ? `${task.score}分` : '未评分';
+                        html += `
+                            <div class="gantt-task-item level-3 ${level2Id} project-${projectIndex}" style="padding-left: 48px; border-left: 2px solid #D9D9D9;">
+                                <span class="task-name">${statusIcon} ${task.studentName}</span>
+                                <span class="task-info">${scoreText}</span>
+                            </div>
+                        `;
+                    });
+                });
+            });
+
+            list.innerHTML = html;
+        }
+
+        // 切换第一级展开/收起
+        function toggleLevel1(projectIndex) {
+            const level2Items = document.querySelectorAll(`.level-2.project-${projectIndex}, .level-3.project-${projectIndex}`);
+            const icon = document.getElementById(`level1-icon-${projectIndex}`);
+            const isExpanded = icon.textContent === '▼';
+            
+            level2Items.forEach(item => {
+                item.style.display = isExpanded ? 'none' : '';
+            });
+            icon.textContent = isExpanded ? '▶' : '▼';
+        }
+
+        // 切换第二级展开/收起
+        function toggleLevel2(level2Id, projectIndex) {
+            const level3Items = document.querySelectorAll(`.level-3.${level2Id}`);
+            const icon = document.getElementById(`level2-icon-${level2Id}`);
+            const isExpanded = icon.textContent === '▼';
+            
+            level3Items.forEach(item => {
+                item.style.display = isExpanded ? 'none' : '';
+            });
+            icon.textContent = isExpanded ? '▶' : '▼';
+        }
+
+        // 渲染时间轴网格
+        function renderTimelineGrid() {
+            const grid = document.getElementById('timelineGrid');
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            const days = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+            let html = '';
+            for (let i = 0; i < days; i++) {
+                html += `<div class="timeline-grid-item"></div>`;
+            }
+            grid.innerHTML = html;
+        }
+
+        // 渲染甘特图条
+        function renderGanttBars() {
+            const bars = document.getElementById('ganttBars');
+            const startDate = new Date(document.getElementById('startDate').value);
+            const endDate = new Date(document.getElementById('endDate').value);
+            const totalDays = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
+
+            let html = '';
+            let rowIndex = 0;
+
+            filteredProjects.forEach(project => {
+                rowIndex++; // 项目标题行
+
+                project.tasks.forEach(task => {
+                    const taskStart = new Date(task.start);
+                    const taskEnd = new Date(task.end);
+                    
+                    if (taskEnd < startDate || taskStart > endDate) {
+                        rowIndex++;
+                        return;
+                    }
+
+                    const startOffset = Math.max(0, Math.ceil((taskStart - startDate) / (1000 * 60 * 60 * 24)));
+                    const duration = Math.ceil((taskEnd - taskStart) / (1000 * 60 * 60 * 24)) + 1;
+                    const widthPercent = (duration / totalDays) * 100;
+                    const leftPercent = (startOffset / totalDays) * 100;
+
+                    if (task.isMilestone) {
+                        html += `
+                            <div class="milestone" 
+                                 style="left: calc(${leftPercent}% - 10px); top: ${rowIndex * 48 + 16}px;"
+                                 data-project-id="${project.id}" data-task-id="${task.id}"
+                                 onclick="showTaskDetail(${project.id}, ${task.id})">
+                            </div>
+                        `;
+                    } else {
+                        html += `
+                            <div class="gantt-bar ${task.type} ${task.status}" 
+                                 style="left: ${leftPercent}%; width: ${widthPercent}%; top: ${rowIndex * 48 + 8}px;"
+                                 data-project-id="${project.id}" data-task-id="${task.id}"
+                                 onclick="showTaskDetail(${project.id}, ${task.id})">
+                                ${task.name} (${task.progress}%)
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${task.progress}%;"></div>
+                                </div>
+                                <div class="resize-handle" title="拖拽调整时长"></div>
+                            </div>
+                        `;
+                    }
+
+                    rowIndex++;
+                });
+            });
+
+            bars.innerHTML = html;
+        }
+
+        // 筛选甘特图 - 6个维度：年级、专业、课程、考试类型、任务状态、姓名
+        function filterGantt() {
+            const grade = document.getElementById('gradeFilter').value;
+            const major = document.getElementById('majorFilter').value;
+            const course = document.getElementById('courseFilter').value;
+            const examType = document.getElementById('examTypeFilter').value;
+            const status = document.getElementById('statusFilter').value;
+            const studentName = document.getElementById('studentNameFilter').value.trim();
+
+            filteredProjects = projects.filter(project => {
+                // 年级筛选
+                if (grade && project.grade !== grade) return false;
+                // 专业筛选
+                if (major && project.major !== major) return false;
+                // 课程筛选
+                if (course && project.name !== course) return false;
+                
+                return true;
+            }).map(project => {
+                let filteredTasks = project.tasks;
+                
+                // 考试类型筛选
+                if (examType) {
+                    filteredTasks = filteredTasks.filter(task => task.type === examType);
+                }
+                
+                // 任务状态筛选
+                if (status) {
+                    filteredTasks = filteredTasks.filter(task => task.status === status);
+                }
+                
+                // 学生姓名筛选（模糊匹配）
+                if (studentName) {
+                    filteredTasks = filteredTasks.filter(task => 
+                        task.studentName.includes(studentName)
+                    );
+                }
+                
+                return {
+                    ...project,
+                    tasks: filteredTasks
+                };
+            }).filter(project => {
+                // 过滤掉没有任务的项目
+                return project.tasks.length > 0;
+            });
+
+            renderGantt();
+            updateStats();
+        }
+
+        // 切换视图
+        function changeView(view) {
+            if (currentView === view) return;
+            
+            currentView = view;
+            
+            // 更新按钮状态
+            document.getElementById('dayViewBtn').classList.toggle('active', view === 'day');
+            document.getElementById('weekViewBtn').classList.toggle('active', view === 'week');
+            
+            // 添加切换动画
+            const container = document.querySelector('.gantt-container');
+            container.classList.add('switching');
+            
+            // 根据视图调整时间范围
+            if (view === 'week') {
+                // 周视图：显示当前月的前后各一周
+                const today = new Date();
+                const startDate = new Date(today);
+                startDate.setDate(today.getDate() - 14); // 前2周
+                const endDate = new Date(today);
+                endDate.setDate(today.getDate() + 21); // 后3周
+                
+                document.getElementById('startDate').value = formatDate(startDate);
+                document.getElementById('endDate').value = formatDate(endDate);
+                
+                // 添加周视图样式
+                container.classList.add('week-view');
+            } else {
+                // 日视图：显示当前月
+                const today = new Date();
+                const startDate = new Date(today.getFullYear(), today.getMonth(), 1);
+                const endDate = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                
+                document.getElementById('startDate').value = formatDate(startDate);
+                document.getElementById('endDate').value = formatDate(endDate);
+                
+                // 移除周视图样式
+                container.classList.remove('week-view');
+            }
+            
+            // 延迟渲染以显示动画效果
+            setTimeout(() => {
+                renderGantt();
+                container.classList.remove('switching');
+                showNotification(`已切换到${view === 'day' ? '日' : '周'}视图`, 'info');
+            }, 200);
+        }
+
+        // 显示任务详情
+        function showTaskDetail(projectId, taskId) {
+            const project = projects.find(p => p.id === projectId);
+            const task = project.tasks.find(t => t.id === taskId);
+            
+            if (!task) return;
+
+            const statusMap = {
+                'completed': '已完成',
+                'in-progress': '进行中',
+                'delayed': '已延期',
+                'pending': '待开始'
+            };
+
+            const examTypeMap = {
+                'normal': '📝 普通考试',
+                'practical': '🔧 实训考试'
+            };
+
+            document.getElementById('taskDetailBody').innerHTML = `
+                <div class="detail-row">
+                    <div class="detail-label">所属课程</div>
+                    <div class="detail-value">${project.name}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">所属专业</div>
+                    <div class="detail-value">${project.major}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">考试名称</div>
+                    <div class="detail-value">${task.examName}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">学生姓名</div>
+                    <div class="detail-value">${task.studentName}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">考试类型</div>
+                    <div class="detail-value">${examTypeMap[task.type]}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">开始时间</div>
+                    <div class="detail-value">${task.start}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">结束时间</div>
+                    <div class="detail-value">${task.end}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">当前进度</div>
+                    <div class="detail-value">${task.progress}%</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">考试状态</div>
+                    <div class="detail-value">${statusMap[task.status]}</div>
+                </div>
+                <div class="detail-row">
+                    <div class="detail-label">考试成绩</div>
+                    <div class="detail-value">${task.score ? task.score + '分' : '未评分'}</div>
+                </div>
+            `;
+
+            openModal('taskModal');
+        }
+
+        // 编辑任务
+        function editTask() {
+            alert('编辑任务功能开发中...');
+        }
+
+        // 导出甘特图
+        function exportGantt() {
+            alert('正在导出甘特图报表...');
+        }
+
+        // 打开弹窗
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = './login.html';
+            }
+        }
+
+        // 点击弹窗外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

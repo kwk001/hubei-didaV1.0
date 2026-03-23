@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>工艺类实训 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <!-- 实训进行中页面不加载导航样式，保持沉浸式体验 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #F5F5F5;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #E8E8E8;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%);
+            border-radius: 8px;
+            color: #FA8C16;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            background: #F6FFED;
+            color: #52C41A;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .container {
+            width: calc(100% - 220px);
+            margin-left: 220px;
+            margin-right: 0;
+            padding: 24px;
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            box-sizing: border-box;
+            min-height: calc(100vh - 64px);
+        }
+
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .sidebar-panel {
+            width: 380px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .panel-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-title i {
+            color: #1890FF;
+            font-size: 18px;
+        }
+
+        /* 工艺路线区域 */
+        .process-route {
+            background: #FAFAFA;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .route-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .route-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .btn-add {
+            padding: 8px 16px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .btn-add:hover {
+            background: #40A9FF;
+        }
+
+        /* 工序表格 */
+        .process-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .process-table th {
+            background: #F5F7FA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+        }
+
+        .process-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .process-table tbody tr:hover {
+            background: #F6FFFE;
+        }
+
+        .process-table input {
+            width: 100%;
+            padding: 6px 10px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .process-table input:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+
+        .btn-delete {
+            padding: 4px 10px;
+            background: #FFF2F0;
+            color: #FF4D4F;
+            border: 1px solid #FFCCC7;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .btn-delete:hover {
+            background: #FF4D4F;
+            color: #fff;
+        }
+
+        /* 工艺卡片编辑区 */
+        .process-card-edit {
+            background: #FAFAFA;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .card-edit-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #E8E8E8;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+
+        .form-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-item label {
+            font-size: 12px;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-item input,
+        .form-item select,
+        .form-item textarea {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 13px;
+        }
+
+        .form-item input:focus,
+        .form-item select:focus,
+        .form-item textarea:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+
+        .form-item textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .form-item.full-width {
+            grid-column: 1 / -1;
+        }
+
+
+
+        /* 工单信息 */
+        .work-order-info {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .work-order-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .work-order-title i {
+            color: #1890FF;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 13px;
+        }
+
+        .info-item:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 工艺要求 */
+        .process-requirements {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .requirements-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .requirements-title i {
+            color: #FA8C16;
+        }
+
+        .requirement-item {
+            padding: 12px;
+            background: #FFF7E6;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .requirement-item:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 参考附件 */
+        .attachments {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .attachments-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .attachments-title i {
+            color: #52C41A;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #F6FFED;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attachment-item:hover {
+            background: #D9F7BE;
+        }
+
+        .attachment-item i {
+            color: #52C41A;
+            font-size: 18px;
+        }
+
+        .attachment-name {
+            flex: 1;
+            font-size: 13px;
+            color: #333;
+        }
+
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #E8E8E8;
+        }
+
+        .save-btn {
+            flex: 1;
+            padding: 12px 24px;
+            background: #fff;
+            color: #666;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .save-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .submit-btn {
+            flex: 2;
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            transition: all 0.3s;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #40A9FF 0%, #1890FF 100%);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+        }
+
+        .modal-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .modal-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            padding: 10px 24px;
+            background: #fff;
+            color: #666;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-secondary:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .btn-primary {
+            padding: 10px 24px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-primary:hover {
+            background: #40A9FF;
+        }
+
+        .btn-success {
+            padding: 10px 24px;
+            background: #52C41A;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-success:hover {
+            background: #73D13D;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="goBack()">
+                <i class="iconfont icon-fanhui"></i>
+            </button>
+            <div class="header-title">轴类零件工艺规程编制</div>
+        </div>
+        <div class="header-info">
+            <div class="timer">
+                <i class="iconfont icon-shijian"></i>
+                <span id="timer">00:00:00</span>
+            </div>
+            <div class="status-badge">实训进行中</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-panel">
+            <!-- 工艺路线区域 -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="iconfont icon-liucheng"></i>
+                    工艺路线编制
+                </div>
+                
+                <div class="process-route">
+                    <div class="route-header">
+                        <span class="route-title">工序列表</span>
+                        <button class="btn-add" onclick="addProcess()">
+                            <i class="iconfont icon-jia"></i>
+                            添加工序
+                        </button>
+                    </div>
+                    
+                    <table class="process-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">序号</th>
+                                <th>工序名称</th>
+                                <th>设备</th>
+                                <th>工装</th>
+                                <th>工时(分)</th>
+                                <th style="width: 80px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="processTableBody">
+                            <tr>
+                                <td>10</td>
+                                <td><input type="text" value="下料" placeholder="工序名称"></td>
+                                <td><input type="text" value="锯床" placeholder="设备"></td>
+                                <td><input type="text" value="-" placeholder="工装"></td>
+                                <td><input type="number" value="5" placeholder="工时"></td>
+                                <td><button class="btn-delete" onclick="deleteRow(this)">删除</button></td>
+                            </tr>
+                            <tr>
+                                <td>20</td>
+                                <td><input type="text" value="车端面、打中心孔" placeholder="工序名称"></td>
+                                <td><input type="text" value="数控车床" placeholder="设备"></td>
+                                <td><input type="text" value="三爪卡盘" placeholder="工装"></td>
+                                <td><input type="number" value="15" placeholder="工时"></td>
+                                <td><button class="btn-delete" onclick="deleteRow(this)">删除</button></td>
+                            </tr>
+                            <tr>
+                                <td>30</td>
+                                <td><input type="text" value="粗车各外圆" placeholder="工序名称"></td>
+                                <td><input type="text" value="数控车床" placeholder="设备"></td>
+                                <td><input type="text" value="三爪卡盘" placeholder="工装"></td>
+                                <td><input type="number" value="25" placeholder="工时"></td>
+                                <td><button class="btn-delete" onclick="deleteRow(this)">删除</button></td>
+                            </tr>
+                            <tr>
+                                <td>40</td>
+                                <td><input type="text" value="调质处理" placeholder="工序名称"></td>
+                                <td><input type="text" value="热处理炉" placeholder="设备"></td>
+                                <td><input type="text" value="-" placeholder="工装"></td>
+                                <td><input type="number" value="120" placeholder="工时"></td>
+                                <td><button class="btn-delete" onclick="deleteRow(this)">删除</button></td>
+                            </tr>
+                            <tr>
+                                <td>50</td>
+                                <td><input type="text" value="精车各外圆" placeholder="工序名称"></td>
+                                <td><input type="text" value="数控车床" placeholder="设备"></td>
+                                <td><input type="text" value="两顶尖" placeholder="工装"></td>
+                                <td><input type="number" value="30" placeholder="工时"></td>
+                                <td><button class="btn-delete" onclick="deleteRow(this)">删除</button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- 工艺卡片编辑区 -->
+                <div class="process-card-edit">
+                    <div class="card-edit-title">工序详情编辑（当前选中：精车各外圆）</div>
+                    <div class="form-grid">
+                        <div class="form-item">
+                            <label>工序号</label>
+                            <input type="text" value="50" readonly>
+                        </div>
+                        <div class="form-item">
+                            <label>工序名称</label>
+                            <input type="text" value="精车各外圆">
+                        </div>
+                        <div class="form-item">
+                            <label>设备型号</label>
+                            <select>
+                                <option>CK6140数控车床</option>
+                                <option>CK6150数控车床</option>
+                                <option>C6140普通车床</option>
+                            </select>
+                        </div>
+                        <div class="form-item">
+                            <label>主轴转速(r/min)</label>
+                            <input type="number" value="800">
+                        </div>
+                        <div class="form-item">
+                            <label>进给量(mm/r)</label>
+                            <input type="number" value="0.15" step="0.01">
+                        </div>
+                        <div class="form-item">
+                            <label>切削深度(mm)</label>
+                            <input type="number" value="0.5" step="0.1">
+                        </div>
+                        <div class="form-item full-width">
+                            <label>工艺内容</label>
+                            <textarea placeholder="详细描述本工序的加工内容和要求">1. 工件装夹：采用两顶尖装夹
+2. 刀具选择：93°外圆车刀
+3. 加工内容：精车各段外圆至图纸尺寸
+4. 尺寸精度：IT7
+5. 表面粗糙度：Ra1.6</textarea>
+                        </div>
+                        <div class="form-item full-width">
+                            <label>质量要求</label>
+                            <textarea placeholder="填写质量检验要求">1. 外圆尺寸公差±0.02mm
+2. 圆柱度不大于0.01mm
+3. 表面粗糙度Ra1.6</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 按钮组 -->
+                <div class="btn-group">
+                    <button class="save-btn" onclick="saveProcess()">
+                        <i class="iconfont icon-baocun"></i>
+                        保存工艺
+                    </button>
+                    <button class="submit-btn" onclick="submitProcess()">
+                        <i class="iconfont icon-shangchuan"></i>
+                        提交审核
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-panel">
+            <!-- 工单信息 -->
+            <div class="work-order-info">
+                <div class="work-order-title">
+                    <i class="iconfont icon-gongdan"></i>
+                    工单信息
+                </div>
+                <div class="info-item">
+                    <span class="info-label">工单编号</span>
+                    <span class="info-value">WO-2024-003</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">产品名称</span>
+                    <span class="info-value">传动轴</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">图号</span>
+                    <span class="info-value">TZ-2024-015</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">材料</span>
+                    <span class="info-value">45#钢</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">毛坯尺寸</span>
+                    <span class="info-value">Φ55×220</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">生产数量</span>
+                    <span class="info-value">50 件</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">工艺员</span>
+                    <span class="info-value">张工艺</span>
+                </div>
+                <div class="info-item">
+                    <span class="info-label">编制日期</span>
+                    <span class="info-value">2024-12-28</span>
+                </div>
+            </div>
+
+            <!-- 工艺要求 -->
+            <div class="process-requirements">
+                <div class="requirements-title">
+                    <i class="iconfont icon-yaoqiu"></i>
+                    工艺要求
+                </div>
+                <div class="requirement-item">
+                    <strong>技术要求：</strong>零件材料为45#钢，调质处理硬度HRC28-32，未注倒角C1
+                </div>
+                <div class="requirement-item">
+                    <strong>精度要求：</strong>关键尺寸公差±0.02mm，同轴度Φ0.03mm
+                </div>
+                <div class="requirement-item">
+                    <strong>表面质量：</strong>配合表面粗糙度Ra1.6，非配合表面Ra3.2
+                </div>
+                <div class="requirement-item">
+                    <strong>检验要求：</strong>每道工序完成后需自检，关键尺寸全检
+                </div>
+            </div>
+
+            <!-- 参考附件 -->
+            <div class="attachments">
+                <div class="attachments-title">
+                    <i class="iconfont icon-fujian"></i>
+                    参考附件
+                </div>
+                <div class="attachment-item">
+                    <i class="iconfont icon-pdf"></i>
+                    <span class="attachment-name">传动轴零件图.pdf</span>
+                </div>
+                <div class="attachment-item">
+                    <i class="iconfont icon-tupian"></i>
+                    <span class="attachment-name">三维模型.stp</span>
+                </div>
+                <div class="attachment-item">
+                    <i class="iconfont icon-wendang"></i>
+                    <span class="attachment-name">工艺设计规范.docx</span>
+                </div>
+                <div class="attachment-item">
+                    <i class="iconfont icon-biaoge"></i>
+                    <span class="attachment-name">标准工艺参数表.xlsx</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 保存成功弹窗 -->
+    <div class="modal-overlay" id="saveModal">
+        <div class="modal-content">
+            <div class="modal-icon">✅</div>
+            <div class="modal-title">保存成功</div>
+            <div class="modal-text">工艺规程已保存，您可以继续编辑或提交审核</div>
+            <div class="modal-buttons">
+                <button class="btn-primary" onclick="closeModal()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提交确认弹窗 -->
+    <div class="modal-overlay" id="submitModal">
+        <div class="modal-content">
+            <div class="modal-icon">📋</div>
+            <div class="modal-title">提交审核</div>
+            <div class="modal-text">确认提交工艺规程进行审核？提交后将不能修改</div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn-success" onclick="confirmSubmit()">确认提交</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let startTime = new Date();
+        let timerInterval;
+        let processCount = 5;
+
+        // 启动计时器
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = now - startTime;
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                
+                document.getElementById('timer').textContent = 
+                    String(hours).padStart(2, '0') + ':' +
+                    String(minutes).padStart(2, '0') + ':' +
+                    String(seconds).padStart(2, '0');
+            }, 1000);
+        }
+
+        // 返回
+        function goBack() {
+            window.location.href = './学生端_我的实训.html';
+        }
+
+        // 添加工序
+        function addProcess() {
+            processCount++;
+            const tbody = document.getElementById('processTableBody');
+            const newRow = document.createElement('tr');
+            newRow.innerHTML = `
+                <td>${processCount * 10}</td>
+                <td><input type="text" placeholder="工序名称"></td>
+                <td><input type="text" placeholder="设备"></td>
+                <td><input type="text" placeholder="工装"></td>
+                <td><input type="number" placeholder="工时"></td>
+                <td><button class="btn-delete" onclick="deleteRow(this)">删除</button></td>
+            `;
+            tbody.appendChild(newRow);
+        }
+
+        // 删除行
+        function deleteRow(btn) {
+            const row = btn.closest('tr');
+            row.remove();
+        }
+
+        // 保存工艺
+        function saveProcess() {
+            document.getElementById('saveModal').classList.add('active');
+        }
+
+        // 提交工艺
+        function submitProcess() {
+            document.getElementById('submitModal').classList.add('active');
+        }
+
+        // 确认提交
+        function confirmSubmit() {
+            closeModal();
+            alert('工艺规程已提交审核！');
+            window.location.href = './学生端_我的实训.html';
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // 页面加载完成后启动计时器
+        window.onload = function() {
+            startTimer();
+        };
+    </script>
+    <!-- 实训进行中页面不加载导航栏，保持沉浸式体验 -->
+</body>
+</html>

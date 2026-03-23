@@ -1,0 +1,2737 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>生产工单管理 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background: #F5F7FA; 
+            display: flex; 
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 主内容区 */
+
+        .content {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+        
+        /* 筛选栏 */
+        .filter-bar {
+            background: #fff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-item label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .filter-item input,
+        .filter-item select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 140px;
+        }
+        .filter-btns {
+            display: flex;
+            gap: 8px;
+            margin-left: auto;
+        }
+        
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: #1890FF;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success {
+            background: #52C41A;
+            color: #fff;
+        }
+        .btn-success:hover { background: #73D13D; }
+        .btn-warning {
+            background: #FA8C16;
+            color: #fff;
+        }
+        .btn-warning:hover { background: #FFA940; }
+        .btn-danger {
+            background: #FF4D4F;
+            color: #fff;
+        }
+        .btn-danger:hover { background: #FF7875; }
+        .btn-default {
+            background: #fff;
+            color: #666;
+            border: 1px solid #D9D9D9;
+        }
+        .btn-default:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* 操作链接样式 */
+        .action-link {
+            display: inline-block;
+            padding: 4px 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-right: 8px;
+        }
+        .action-link:last-child {
+            margin-right: 0;
+        }
+        .action-view {
+            color: #1890FF;
+        }
+        .action-view:hover {
+            color: #40A9FF;
+            text-decoration: underline;
+        }
+        .action-edit {
+            color: #FAAD14;
+        }
+        .action-edit:hover {
+            color: #FFC53D;
+            text-decoration: underline;
+        }
+        .action-delete {
+            color: #FF4D4F;
+        }
+        .action-delete:hover {
+            color: #FF7875;
+            text-decoration: underline;
+        }
+        .action-schedule {
+            color: #52C41A;
+        }
+        .action-schedule:hover {
+            color: #73D13D;
+            text-decoration: underline;
+        }
+
+        /* 操作栏容器 */
+        .action-cell {
+            position: relative;
+            display: flex;
+            align-items: center;
+            flex-wrap: nowrap;
+            white-space: nowrap;
+        }
+
+        /* 更多按钮 */
+        .action-link.action-more {
+            color: #fff !important;
+            cursor: pointer;
+            padding: 4px 6px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            background: #262626;
+            margin-right: 0;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+        }
+        .action-link.action-more:hover {
+            color: #fff !important;
+            background: #000;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+            transform: translateY(-1px);
+        }
+        .action-link.action-more.active {
+            color: #fff !important;
+            background: #000;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+        }
+        .action-link.action-more.active .arrow-down {
+            transform: rotate(180deg);
+        }
+
+        /* CSS下拉箭头 */
+        .arrow-down {
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid #fff;
+            transition: transform 0.3s;
+        }
+
+        /* 下拉菜单 */
+        .action-dropdown {
+            display: none;
+            position: fixed;
+            background: #fff;
+            border: 1px solid #E8E8E8;
+            border-radius: 4px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            padding: 8px 12px;
+            z-index: 9999;
+            min-width: 80px;
+        }
+        .action-dropdown.show {
+            display: block;
+        }
+        .action-dropdown .action-link {
+            display: block;
+            margin-right: 0;
+            margin-bottom: 4px;
+            padding: 4px 0;
+        }
+        .action-dropdown .action-link:last-child {
+            margin-bottom: 0;
+        }
+
+        /* 工具栏 */
+        .toolbar {
+            background: #fff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .toolbar-left {
+            display: flex;
+            gap: 8px;
+        }
+        .toolbar-right {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+        }
+        
+        /* 表格 */
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: auto;
+            max-height: 600px;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #F0F0F0;
+            background: #fff;
+        }
+        .data-table tbody tr:hover {
+            background: #F6FFFE;
+        }
+        .data-table tbody tr:hover td {
+            background: #F6FFFE;
+        }
+        .data-table tbody tr.selected {
+            background: #E6F7FF;
+        }
+        .data-table tbody tr.selected td {
+            background: #E6F7FF;
+        }
+
+        /* 固定列样式 */
+        .data-table th:first-child,
+        .data-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background: #FAFAFA;
+            border-right: 1px solid #E8E8E8;
+        }
+        .data-table td:first-child {
+            background: #fff;
+        }
+        .data-table tbody tr:hover td:first-child {
+            background: #F6FFFE;
+        }
+        .data-table tbody tr.selected td:first-child {
+            background: #E6F7FF;
+        }
+
+        .data-table th:last-child,
+        .data-table td:last-child {
+            position: sticky;
+            right: 0;
+            z-index: 20;
+            background: #FAFAFA;
+            border-left: 1px solid #E8E8E8;
+        }
+        .data-table td:last-child {
+            background: #fff;
+        }
+        .data-table tbody tr:hover td:last-child {
+            background: #F6FFFE;
+        }
+        .data-table tbody tr.selected td:last-child {
+            background: #E6F7FF;
+        }
+
+        /* 表头固定列z-index更高 */
+        .data-table th:first-child,
+        .data-table th:last-child {
+            z-index: 30;
+        }
+        
+        /* 复选框 */
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        /* 状态标签 */
+        .status-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-pending {
+            background: #FFF7E6;
+            color: #FA8C16;
+            border: 1px solid #FFD591;
+        }
+        .status-scheduled {
+            background: #E6F7FF;
+            color: #1890FF;
+            border: 1px solid #91D5FF;
+        }
+        .status-processing {
+            background: #F6FFED;
+            color: #52C41A;
+            border: 1px solid #B7EB8F;
+        }
+        .status-paused {
+            background: #FFF2F0;
+            color: #FF4D4F;
+            border: 1px solid #FFA39E;
+        }
+        .status-completed {
+            background: #F9F0FF;
+            color: #722ED1;
+            border: 1px solid #D3ADF7;
+        }
+        
+        /* 优先级 */
+        .priority {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .priority-high { color: #FF4D4F; }
+        .priority-medium { color: #FA8C16; }
+        .priority-low { color: #52C41A; }
+        
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 20px;
+            gap: 8px;
+        }
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .pagination-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        
+        /* 弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .modal-close {
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .modal-close:hover {
+            color: #666;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+
+        /* 详情弹窗样式 - 参考图片 */
+        .detail-modal-content {
+            max-width: 800px;
+            width: 90%;
+            max-height: 85vh;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-modal-body {
+            padding: 24px;
+            background: #fff;
+            overflow-y: auto;
+            max-height: calc(85vh - 60px);
+        }
+
+        .detail-modal-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #fff;
+        }
+
+        .detail-modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-modal-close {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 20px;
+            color: #999;
+            border-radius: 4px;
+            transition: all 0.3s;
+        }
+
+        .detail-modal-close:hover {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        /* 头部区域 - 图标 + 主信息 */
+        .detail-header-section {
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .detail-icon-box {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.25);
+        }
+
+        .detail-icon-box svg {
+            width: 32px;
+            height: 32px;
+        }
+
+        .detail-main-info {
+            flex: 1;
+        }
+
+        .detail-order-no {
+            font-size: 18px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-tags {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .detail-tag {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .detail-tag-orange {
+            background: #FFF7E6;
+            color: #FA8C16;
+            border: 1px solid #FFD591;
+        }
+
+        .detail-tag-red {
+            background: #FFF1F0;
+            color: #FF4D4F;
+            border: 1px solid #FFA39E;
+        }
+
+        .detail-tag-blue {
+            background: #E6F7FF;
+            color: #1890FF;
+            border: 1px solid #91D5FF;
+        }
+
+        .detail-tag-yellow {
+            background: #FFFBE6;
+            color: #FAAD14;
+            border: 1px solid #FFE58F;
+        }
+
+        /* 信息网格区域 */
+        .detail-info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px 16px;
+            margin-bottom: 20px;
+        }
+
+        .detail-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .detail-info-label {
+            font-size: 13px;
+            color: #999;
+            font-weight: 400;
+        }
+
+        .detail-info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 备注区域 */
+        .detail-remark-section {
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .detail-remark-label {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 6px;
+        }
+
+        .detail-remark-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            line-height: 1.6;
+        }
+
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* 详情弹窗内的模块样式 */
+        .detail-module {
+            margin-top: 20px;
+            border: 1px solid #F0F0F0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .detail-module-header {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .detail-module-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-module-content {
+            padding: 16px;
+        }
+
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .detail-table th,
+        .detail-table td {
+            padding: 10px 12px;
+            text-align: left;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .detail-table th {
+            background: #FAFAFA;
+            font-weight: 600;
+            color: #666;
+            font-size: 12px;
+        }
+
+        .detail-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .refresh-btn {
+            padding: 4px 12px;
+            font-size: 12px;
+            background: #fff;
+            border: 1px solid #1890FF;
+            color: #1890FF;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 0.3s;
+        }
+
+        .refresh-btn:hover {
+            background: #E6F7FF;
+        }
+
+        /* 设备状态颜色 */
+        .device-status-running { color: #52C41A; }
+        .device-status-stop { color: #FF4D4F; }
+        .device-status-standby { color: #FA8C16; }
+        .device-status-fault { color: #FF4D4F; font-weight: 600; }
+
+        /* 排产状态颜色 */
+        .schedule-status-scheduled { color: #52C41A; }
+        .schedule-status-noDevice { color: #FA8C16; }
+
+        /* 库存状态颜色 */
+        .stock-sufficient { color: #52C41A; }
+        .stock-insufficient { color: #FF4D4F; }
+
+        /* 表单 */
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .form-item {
+            flex: 1;
+        }
+        .form-item label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .form-item input,
+        .form-item select,
+        .form-item textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .form-item input:focus,
+        .form-item select:focus,
+        .form-item textarea:focus {
+            border-color: #1890FF;
+            outline: none;
+        }
+        
+        /* 设备状态 */
+        .device-status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+        }
+        .device-status::before {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+        }
+        .device-normal::before { background: #52C41A; }
+        .device-busy::before { background: #FA8C16; }
+        .device-fault::before { background: #FF4D4F; }
+        .device-offline::before { background: #999; }
+        
+        /* 排产甘特图 */
+        .gantt-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-top: 16px;
+        }
+        .gantt-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .gantt-label {
+            width: 120px;
+            font-size: 12px;
+            color: #666;
+            text-align: right;
+        }
+        .gantt-bar-container {
+            flex: 1;
+            height: 32px;
+            background: #F5F5F5;
+            border-radius: 4px;
+            position: relative;
+        }
+        .gantt-bar {
+            position: absolute;
+            height: 100%;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            padding: 0 8px;
+            font-size: 11px;
+            color: #fff;
+            white-space: nowrap;
+        }
+        
+        /* 工序流程 */
+        /* BOM标签样式 */
+        .bom-tag {
+            display: inline-block;
+            padding: 2px 8px;
+            background: #E6F7FF;
+            border: 1px solid #91D5FF;
+            border-radius: 4px;
+            color: #1890FF;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .bom-tag:hover {
+            background: #1890FF;
+            color: #fff;
+        }
+
+        /* 物料状态标签 */
+        .material-status {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .material-ready {
+            background: #F6FFED;
+            color: #52C41A;
+            border: 1px solid #B7EB8F;
+        }
+        .material-shortage {
+            background: #FFF2F0;
+            color: #FF4D4F;
+            border: 1px solid #FFA39E;
+        }
+
+        .process-flow {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .process-step {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 8px;
+            background: #F0F5FF;
+            border-radius: 4px;
+            font-size: 11px;
+            color: #1890FF;
+        }
+        .process-arrow {
+            color: #999;
+            font-size: 12px;
+        }
+        
+        /* 统计卡片 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+        .stat-card.primary .stat-value { color: #1890FF; }
+        .stat-card.success .stat-value { color: #52C41A; }
+        .stat-card.warning .stat-value { color: #FA8C16; }
+        .stat-card.danger .stat-value { color: #FF4D4F; }
+        .stat-card.purple .stat-value { color: #722ED1; }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+        /* 隐藏字段样式 */
+        .hidden-field {
+            display: none !important;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div>首页 / 生产管理 / 生产工单管理</div>
+            <div>👤 教师：张老师 | <button class="btn btn-danger" onclick="logout()">退出</button></div>
+        </div>
+        
+        <div class="content">
+            <!-- 统计卡片 -->
+            <div class="stats-row">
+                <div class="stat-card primary">
+                    <div class="stat-value" id="totalCount">0</div>
+                    <div class="stat-label">总工单数</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value" id="pendingCount">0</div>
+                    <div class="stat-label">待排产</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value" id="scheduledCount">0</div>
+                    <div class="stat-label">已排产</div>
+                </div>
+            </div>
+            
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <div class="filter-row">
+                    <div class="filter-item">
+                        <label>生产工单号</label>
+                        <input type="text" id="filterOrderNo" placeholder="请输入工单号">
+                    </div>
+                    <div class="filter-item">
+                        <label>实训试卷名称</label>
+                        <input type="text" id="filterExamName" placeholder="请输入实训试卷名称">
+                    </div>
+                    <div class="filter-item">
+                        <label>学生</label>
+                        <input type="text" id="filterStudent" placeholder="请输入学生姓名">
+                    </div>
+                    <div class="filter-item">
+                        <label>物料名称</label>
+                        <input type="text" id="filterMaterialName" placeholder="请输入物料名称">
+                    </div>
+                    <div class="filter-item">
+                        <label>优先级</label>
+                        <select id="filterPriority">
+                            <option value="">全部</option>
+                            <option value="high">高</option>
+                            <option value="medium">中</option>
+                            <option value="low">低</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>排产状态</label>
+                        <select id="filterStatus">
+                            <option value="">全部</option>
+                            <option value="pending">待排产</option>
+                            <option value="scheduled">已排产</option>
+                        </select>
+                    </div>
+                    <div class="filter-btns">
+                        <button class="btn btn-primary" onclick="searchOrders()">🔍 查询</button>
+                        <button class="btn btn-default" onclick="resetFilter()">重置</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 工具栏 -->
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn btn-primary" onclick="showSmartScheduleModal()">🤖 智能排产</button>
+                    <button class="btn btn-warning" onclick="showBatchPriorityModal()">🎯 批量设置优先级</button>
+                </div>
+                <div class="toolbar-right hidden-field">
+                    <button class="btn btn-default" onclick="batchPause()" id="btnBatchPause">⏸️ 批量暂停</button>
+                    <button class="btn btn-default" onclick="batchResume()" id="btnBatchResume">▶️ 批量继续</button>
+                    <button class="btn btn-danger" onclick="batchComplete()" id="btnBatchComplete">✅ 批量结束</button>
+                </div>
+            </div>
+            
+            <!-- 数据表格 -->
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"><input type="checkbox" class="checkbox" id="selectAll" onchange="toggleSelectAll()"></th>
+                            <th>生产工单号</th>
+                            <th>实训试卷名称</th>
+                            <th>学生</th>
+                            <th class="hidden-field">所属专业</th>
+                            <th class="hidden-field">所属课程</th>
+                            <th>物料名称</th>
+                            <th>规格型号</th>
+                            <th>数量</th>
+                            <th class="hidden-field">BOM</th>
+                            <th>计划起始时间段</th>
+                            <th class="hidden-field">设备名称</th>
+                            <th class="hidden-field">物料状态</th>
+                            <th>优先级</th>
+                            <th>排产状态</th>
+                            <th style="width: 180px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="orderTableBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+                
+                <!-- 分页 -->
+                <div class="pagination">
+                    <span style="font-size: 13px; color: #666;">共 <span id="totalRecords">0</span> 条记录</span>
+                    <button class="pagination-btn" onclick="changePage(-1)">上一页</button>
+                    <div id="pageNumbers"></div>
+                    <button class="pagination-btn" onclick="changePage(1)">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 新增/编辑工单弹窗 -->
+    <div class="modal" id="orderModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="modalTitle">新增生产工单</span>
+                <button class="modal-close" onclick="closeModal('orderModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>实训试卷编号 <span style="color: #FF4D4F;">*</span></label>
+                        <select id="examSelect">
+                            <option value="">请选择实训试卷</option>
+                            <option value="SX2024001">SX2024001 - 数控车削加工</option>
+                            <option value="SX2024002">SX2024002 - 铣削工艺实训</option>
+                            <option value="SX2024003">SX2024003 - 模具拆装实训</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>产品名称 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" id="productName" placeholder="请输入产品名称">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>规格型号</label>
+                        <input type="text" id="productSpec" placeholder="请输入规格型号">
+                    </div>
+                    <div class="form-item">
+                        <label>数量 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="number" id="productQty" value="1" min="1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>需求时间 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="datetime-local" id="requireTime">
+                    </div>
+                    <div class="form-item">
+                        <label>优先级</label>
+                        <select id="priority">
+                            <option value="high">高</option>
+                            <option value="medium" selected>中</option>
+                            <option value="low">低</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>所属专业</label>
+                        <select id="major">
+                            <option value="机械工程">机械工程</option>
+                            <option value="数控技术">数控技术</option>
+                            <option value="模具设计">模具设计</option>
+                            <option value="机电一体化">机电一体化</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>所属课程</label>
+                        <select id="course">
+                            <option value="数控加工技术">数控加工技术</option>
+                            <option value="机械制图">机械制图</option>
+                            <option value="模具设计基础">模具设计基础</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>学年学期</label>
+                        <select id="semester">
+                            <option value="2025-2026-1">2025-2026学年 第一学期</option>
+                            <option value="2025-2026-2">2025-2026学年 第二学期</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>加工工艺</label>
+                        <select id="process" onchange="updateProcessFlow()">
+                            <option value="">请选择工艺</option>
+                            <option value="process1">车削-铣削-钻孔</option>
+                            <option value="process2">铣削-磨削-检测</option>
+                            <option value="process3">切割-折弯-焊接</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="processFlowPreview" style="margin-top: 16px;">
+                    <label>工序流程预览</label>
+                    <div class="process-flow" id="processFlowDisplay">
+                        <span style="color: #999; font-size: 12px;">请选择加工工艺查看流程</span>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('orderModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveOrder()">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 工单详情弹窗 - 新样式 -->
+    <div class="modal" id="workOrderDetailModal">
+        <div class="modal-content detail-modal-content">
+            <div class="detail-modal-header">
+                <span class="detail-modal-title">查看详情</span>
+                <button class="detail-modal-close" onclick="closeModal('workOrderDetailModal')">&times;</button>
+            </div>
+            <div class="detail-modal-body" id="workOrderDetailBody">
+                <!-- 动态生成内容 -->
+            </div>
+        </div>
+    </div>
+
+    <!-- 智能排产弹窗 -->
+    <div class="modal" id="smartScheduleModal">
+        <div class="modal-content" style="max-width: 900px;">
+            <div class="modal-header">
+                <span class="modal-title">🤖 智能APS排产</span>
+                <button class="modal-close" onclick="closeModal('smartScheduleModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="background: #F6FFED; padding: 12px 16px; border-radius: 4px; margin-bottom: 16px;">
+                    <span style="font-size: 13px; color: #389E0D;">💡 智能排产将综合考虑设备状态、故障情况、物料库存等因素，自动优化排产方案</span>
+                </div>
+                
+                <h4 style="font-size: 14px; margin-bottom: 12px;">待排产工单</h4>
+                <table class="data-table" style="margin-bottom: 20px;">
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" class="checkbox" id="scheduleSelectAll" onchange="toggleScheduleSelectAll()"></th>
+                            <th>工单号</th>
+                            <th>物料名称</th>
+                            <th>规格型号</th>
+                            <th>数量</th>
+                            <th>起始时间段</th>
+                            <th>优先级</th>
+                        </tr>
+                    </thead>
+                    <tbody id="scheduleTableBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+                
+                <h4 style="font-size: 14px; margin-bottom: 12px;">排产结果预览</h4>
+                <div id="scheduleResult" style="background: #FAFAFA; padding: 20px; border-radius: 4px; min-height: 100px;">
+                    <div style="text-align: center; color: #999; font-size: 13px;">点击"开始智能排产"生成排产方案</div>
+                </div>
+                
+                <!-- 查看空闲设备按钮 -->
+                <div id="viewDevicesBtnContainer" style="margin-top: 16px; text-align: center; display: none;">
+                    <button class="btn btn-default" onclick="toggleDevicesView()">
+                        <span id="devicesBtnText">🔍 查看空闲设备</span>
+                    </button>
+                </div>
+                
+                <!-- 设备状态概览（可折叠） -->
+                <div id="scheduleDevicesContainer" style="display: none; margin-top: 16px;">
+                    <h4 style="font-size: 14px; margin-bottom: 12px;">📊 设备状态概览（所选时间段内空闲设备）</h4>
+                    <div id="scheduleDevicesGrid" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px;">
+                        <!-- 动态生成设备数据 -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('smartScheduleModal')">取消</button>
+                <button class="btn btn-primary" onclick="startSmartSchedule()">🤖 开始智能排产</button>
+                <button class="btn btn-success" onclick="confirmSchedule()" id="btnConfirmSchedule" style="display: none;">确认排产</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 排产详情弹窗 -->
+    <div class="modal" id="scheduleDetailModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <span class="modal-title">📋 排产详情</span>
+                <button class="modal-close" onclick="closeModal('scheduleDetailModal')">&times;</button>
+            </div>
+            <div class="modal-body" id="scheduleDetailBody">
+                <!-- 动态生成 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('scheduleDetailModal')">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 工单详情二级页面 -->
+    <div id="orderDetailPage" style="display: none; position: fixed; top: 0; left: 220px; right: 0; height: 100%; background: #fff; z-index: 2000; overflow-y: auto;">
+        <!-- 顶部导航栏 -->
+        <div class="header" style="position: sticky; top: 0; z-index: 10;">
+            <div class="breadcrumb">首页 / 生产管理 / 生产工单管理</div>
+            <div>👤 教师：张老师 | <button class="logout-btn" onclick="logout()">退出</button></div>
+        </div>
+        <!-- 页面内容 -->
+        <div id="orderDetailPageBody" style="padding: 24px; max-width: 1200px; margin: 0 auto; background: #F5F5F5; min-height: calc(100% - 64px);">
+            <!-- 动态生成 -->
+        </div>
+    </div>
+
+    <!-- 批量设置优先级弹窗 -->
+    <div class="modal" id="batchPriorityModal">
+        <div class="modal-content" style="max-width: 500px;">
+            <div class="modal-header">
+                <span class="modal-title">🎯 批量设置优先级</span>
+                <button class="modal-close" onclick="closeModal('batchPriorityModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div style="margin-bottom: 20px;">
+                    <p style="color: #666; margin-bottom: 16px;">将为 <strong id="batchPriorityCount">0</strong> 个生产工单设置优先级</p>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 8px; font-weight: 500;">选择优先级：</label>
+                        <div style="display: flex; gap: 12px; flex-wrap: wrap;">
+                            <label style="display: flex; align-items: center; cursor: pointer; padding: 8px 16px; border: 2px solid #FF4D4F; border-radius: 6px; background: #FFF1F0;">
+                                <input type="radio" name="batchPriority" value="P1" style="margin-right: 6px;">
+                                <span style="color: #FF4D4F; font-weight: 600;">P1 (最高)</span>
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer; padding: 8px 16px; border: 2px solid #FA8C16; border-radius: 6px; background: #FFF7E6;">
+                                <input type="radio" name="batchPriority" value="P2" style="margin-right: 6px;">
+                                <span style="color: #FA8C16; font-weight: 600;">P2</span>
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer; padding: 8px 16px; border: 2px solid #1890FF; border-radius: 6px; background: #E6F7FF;">
+                                <input type="radio" name="batchPriority" value="P3" style="margin-right: 6px;">
+                                <span style="color: #1890FF; font-weight: 600;">P3</span>
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer; padding: 8px 16px; border: 2px solid #52C41A; border-radius: 6px; background: #F6FFED;">
+                                <input type="radio" name="batchPriority" value="P4" style="margin-right: 6px;">
+                                <span style="color: #52C41A; font-weight: 600;">P4</span>
+                            </label>
+                            <label style="display: flex; align-items: center; cursor: pointer; padding: 8px 16px; border: 2px solid #999; border-radius: 6px; background: #F5F5F5;">
+                                <input type="radio" name="batchPriority" value="P5" style="margin-right: 6px;">
+                                <span style="color: #666; font-weight: 600;">P5 (最低)</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('batchPriorityModal')">取消</button>
+                <button class="btn btn-primary" onclick="confirmBatchPriority()">确认设置</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 生产工单mock数据
+        let orders = [
+            { id: 1, orderNo: 'GD2024001', examName: '数控车削加工', student: '张三', major: '数控技术', course: '数控加工技术', materialName: '轴类零件A', spec: 'Φ50×200', qty: 10, bom: 'BOM-001', planStartTime: '2024-03-15 08:00', planEndTime: '2024-03-15 17:00', equipment: '数控车床-01', materialStatus: '-', priority: 'high', status: 'pending' },
+            { id: 2, orderNo: 'GD2024002', examName: '铣削工艺实训', student: '李四', major: '机械工程', course: '机械制图', materialName: '法兰盘B', spec: 'Φ100×30', qty: 20, bom: 'BOM-002', planStartTime: '2024-03-16 08:00', planEndTime: '2024-03-16 17:00', equipment: '数控铣床-02', materialStatus: '充足', priority: 'medium', status: 'scheduled' },
+            { id: 3, orderNo: 'GD2024003', examName: '模具拆装实训', student: '王五', major: '模具设计', course: '模具设计基础', materialName: '齿轮C', spec: 'M2-Z30', qty: 15, bom: 'BOM-003', planStartTime: '2024-03-17 08:00', planEndTime: '2024-03-17 17:00', equipment: '加工中心-01', materialStatus: '充足', priority: 'high', status: 'scheduled' },
+            { id: 4, orderNo: 'GD2024004', examName: '数控车削加工', student: '赵六', major: '机电一体化', course: '数控加工技术', materialName: '套筒D', spec: 'Φ40×100', qty: 30, bom: 'BOM-004', planStartTime: '2024-03-18 08:00', planEndTime: '2024-03-18 17:00', equipment: '数控车床-02', materialStatus: '缺料', priority: 'low', status: 'scheduled' },
+            { id: 5, orderNo: 'GD2024005', examName: '铣削工艺实训', student: '孙七', major: '数控技术', course: '铣削工艺实训', materialName: '支架E', spec: '150×100×50', qty: 25, bom: 'BOM-005', planStartTime: '2024-03-19 08:00', planEndTime: '2024-03-19 17:00', equipment: '数控铣床-01', materialStatus: '-', priority: 'medium', status: 'pending' },
+            { id: 6, orderNo: 'GD2024006', examName: '模具拆装实训', student: '周八', major: '机械工程', course: '机械制图', materialName: '盖板F', spec: '200×150×10', qty: 50, bom: 'BOM-006', planStartTime: '2024-03-20 08:00', planEndTime: '2024-03-20 17:00', equipment: '加工中心-02', materialStatus: '-', priority: 'high', status: 'pending' },
+            { id: 7, orderNo: 'GD2024007', examName: '数控车削加工', student: '吴九', major: '模具设计', course: '模具设计基础', materialName: '轴套G', spec: 'Φ60×80', qty: 20, bom: 'BOM-007', planStartTime: '2024-03-21 08:00', planEndTime: '2024-03-21 17:00', equipment: '数控车床-03', materialStatus: '充足', priority: 'low', status: 'scheduled' },
+            { id: 8, orderNo: 'GD2024008', examName: '铣削工艺实训', student: '郑十', major: '机电一体化', course: '数控加工技术', materialName: '底座H', spec: '300×200×50', qty: 12, bom: 'BOM-008', planStartTime: '2024-03-22 08:00', planEndTime: '2024-03-22 17:00', equipment: '数控铣床-03', materialStatus: '充足', priority: 'medium', status: 'scheduled' }
+        ];
+
+        let filteredOrders = [...orders];
+        let currentPage = 1;
+        let pageSize = 5;
+        let selectedOrders = [];
+        let editingOrderId = null;
+        let successOrderIds = []; // 存储成功排产的工单ID
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderOrders();
+            updateStats();
+        });
+
+        // 渲染工单表格
+        function renderOrders() {
+            const tbody = document.getElementById('orderTableBody');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredOrders.slice(start, end);
+
+            tbody.innerHTML = pageData.map(order => `
+                <tr>
+                    <td><input type="checkbox" class="checkbox" value="${order.id}" onchange="toggleSelect(${order.id})"></td>
+                    <td>${order.orderNo}</td>
+                    <td>${order.examName}</td>
+                    <td>${order.student}</td>
+                    <td class="hidden-field">${order.major}</td>
+                    <td class="hidden-field">${order.course}</td>
+                    <td>${order.materialName}</td>
+                    <td>${order.spec}</td>
+                    <td>1</td>
+                    <td class="hidden-field"><span class="bom-tag" onclick="viewBOM('${order.bom}')">${order.bom}</span></td>
+                    <td>${formatTimeRange(order.planStartTime, order.planEndTime)}</td>
+                    <td class="hidden-field">${order.status === 'pending' ? '-' : order.equipment}</td>
+                    <td class="hidden-field">${renderMaterialStatus(order.materialStatus, order.status)}</td>
+                    <td>${renderPriority('P1')}</td>
+                    <td>${renderStatus(order.status)}</td>
+                    <td>
+                        <div class="action-cell" id="action-${order.id}">
+                            <span class="action-link action-view" onclick="viewDetail(${order.id})">查看详情</span>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+
+            document.getElementById('totalRecords').textContent = filteredOrders.length;
+            updatePagination();
+        }
+
+        // 格式化时间段
+        function formatTimeRange(startTime, endTime) {
+            if (!startTime || !endTime) return '-';
+            // 提取日期和时间
+            const startMatch = startTime.match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/);
+            const endMatch = endTime.match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/);
+            if (startMatch && endMatch) {
+                return `${startMatch[1]} ${startMatch[2]}-${endMatch[2]}`;
+            }
+            return `${startTime} - ${endTime}`;
+        }
+
+        // 渲染优先级
+        function renderPriority(priority) {
+            const map = {
+                'high': '<span class="priority priority-high">🔴 高</span>',
+                'medium': '<span class="priority priority-medium">🟡 中</span>',
+                'low': '<span class="priority priority-low">🟢 低</span>',
+                'P1': '<span class="priority" style="background: #FFF1F0; color: #FF4D4F; border: 1px solid #FF4D4F;">P1</span>',
+                'P2': '<span class="priority" style="background: #FFF7E6; color: #FA8C16; border: 1px solid #FA8C16;">P2</span>',
+                'P3': '<span class="priority" style="background: #E6F7FF; color: #1890FF; border: 1px solid #1890FF;">P3</span>',
+                'P4': '<span class="priority" style="background: #F6FFED; color: #52C41A; border: 1px solid #52C41A;">P4</span>',
+                'P5': '<span class="priority" style="background: #F5F5F5; color: #666; border: 1px solid #999;">P5</span>'
+            };
+            return map[priority] || priority;
+        }
+
+        // 渲染状态
+        function renderStatus(status) {
+            const map = {
+                'pending': '<span class="status-tag status-pending">待排产</span>',
+                'scheduled': '<span class="status-tag status-scheduled">已排产</span>'
+            };
+            return map[status] || status;
+        }
+
+        // 渲染物料状态
+        function renderMaterialStatus(materialStatus, orderStatus) {
+            // 待排产状态显示"-"
+            if (orderStatus === 'pending') {
+                return '-';
+            }
+            // 已排产状态显示物料充足或缺料
+            const map = {
+                '充足': '<span class="material-status material-ready">物料充足</span>',
+                '缺料': '<span class="material-status material-shortage">缺料</span>'
+            };
+            return map[materialStatus] || materialStatus;
+        }
+
+        // 查看BOM
+        function viewBOM(bomNo) {
+            alert('查看BOM详情：' + bomNo);
+        }
+
+        // 切换更多操作下拉菜单
+        function toggleMoreActions(orderId) {
+            const dropdown = document.getElementById('dropdown-' + orderId);
+            const moreBtn = document.querySelector('#action-' + orderId + ' .action-more');
+            if (dropdown) {
+                // 关闭其他打开的下拉菜单
+                document.querySelectorAll('.action-dropdown.show').forEach(d => {
+                    if (d.id !== 'dropdown-' + orderId) {
+                        d.classList.remove('show');
+                    }
+                });
+                // 移除其他更多按钮的active状态
+                document.querySelectorAll('.action-more.active').forEach(btn => {
+                    if (btn !== moreBtn) {
+                        btn.classList.remove('active');
+                    }
+                });
+
+                // 切换显示状态
+                const isShowing = dropdown.classList.contains('show');
+                if (!isShowing) {
+                    // 计算位置 - 在按钮上方显示
+                    const rect = moreBtn.getBoundingClientRect();
+                    const dropdownHeight = 40; // 下拉菜单大约高度
+                    dropdown.style.left = rect.left + 'px';
+                    dropdown.style.top = (rect.top - dropdownHeight - 4) + 'px';
+                    dropdown.classList.add('show');
+                    if (moreBtn) {
+                        moreBtn.classList.add('active');
+                    }
+                } else {
+                    dropdown.classList.remove('show');
+                    if (moreBtn) {
+                        moreBtn.classList.remove('active');
+                    }
+                }
+            }
+        }
+
+        // 点击页面其他地方关闭下拉菜单
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.action-cell')) {
+                document.querySelectorAll('.action-dropdown.show').forEach(d => {
+                    d.classList.remove('show');
+                });
+                document.querySelectorAll('.action-more.active').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+            }
+        });
+
+        // 更新统计
+        function updateStats() {
+            document.getElementById('totalCount').textContent = orders.length;
+            document.getElementById('pendingCount').textContent = orders.filter(o => o.status === 'pending').length;
+            document.getElementById('scheduledCount').textContent = orders.filter(o => o.status === 'scheduled').length;
+        }
+
+        // 更新分页
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredOrders.length / pageSize);
+            const pageNumbers = document.getElementById('pageNumbers');
+            let html = '';
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="pagination-btn ${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+            }
+            pageNumbers.innerHTML = html;
+        }
+
+        // 翻页
+        function changePage(delta) {
+            const totalPages = Math.ceil(filteredOrders.length / pageSize);
+            currentPage = Math.max(1, Math.min(totalPages, currentPage + delta));
+            renderOrders();
+        }
+
+        // 跳转到指定页
+        function goToPage(page) {
+            currentPage = page;
+            renderOrders();
+        }
+
+        // 搜索
+        function searchOrders() {
+            const orderNo = document.getElementById('filterOrderNo').value.toLowerCase();
+            const examName = document.getElementById('filterExamName').value.toLowerCase();
+            const student = document.getElementById('filterStudent').value.toLowerCase();
+            const materialName = document.getElementById('filterMaterialName').value.toLowerCase();
+            const priority = document.getElementById('filterPriority').value;
+            const status = document.getElementById('filterStatus').value;
+
+            filteredOrders = orders.filter(order => {
+                return (!orderNo || order.orderNo.toLowerCase().includes(orderNo)) &&
+                       (!examName || (order.examName || '').toLowerCase().includes(examName)) &&
+                       (!student || (order.student || '').toLowerCase().includes(student)) &&
+                       (!materialName || (order.materialName || '').toLowerCase().includes(materialName)) &&
+                       (!priority || order.priority === priority) &&
+                       (!status || order.status === status);
+            });
+
+            currentPage = 1;
+            renderOrders();
+        }
+
+        // 重置筛选
+        function resetFilter() {
+            document.getElementById('filterOrderNo').value = '';
+            document.getElementById('filterExamName').value = '';
+            document.getElementById('filterStudent').value = '';
+            document.getElementById('filterMaterialName').value = '';
+            document.getElementById('filterPriority').value = '';
+            document.getElementById('filterStatus').value = '';
+            filteredOrders = [...orders];
+            currentPage = 1;
+            renderOrders();
+        }
+
+        // 全选/取消全选
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll').checked;
+            const checkboxes = document.querySelectorAll('#orderTableBody .checkbox');
+            checkboxes.forEach(cb => {
+                cb.checked = selectAll;
+                const id = parseInt(cb.value);
+                if (selectAll && !selectedOrders.includes(id)) {
+                    selectedOrders.push(id);
+                } else if (!selectAll) {
+                    selectedOrders = selectedOrders.filter(o => o !== id);
+                }
+            });
+        }
+
+        // 选择单个
+        function toggleSelect(id) {
+            if (selectedOrders.includes(id)) {
+                selectedOrders = selectedOrders.filter(o => o !== id);
+            } else {
+                selectedOrders.push(id);
+            }
+        }
+
+        // 显示新增弹窗
+        function showAddModal() {
+            editingOrderId = null;
+            document.getElementById('modalTitle').textContent = '新增生产工单';
+            document.getElementById('examSelect').value = '';
+            document.getElementById('productName').value = '';
+            document.getElementById('productSpec').value = '';
+            document.getElementById('productQty').value = 1;
+            document.getElementById('requireTime').value = '';
+            document.getElementById('priority').value = 'medium';
+            document.getElementById('major').value = '机械工程';
+            document.getElementById('course').value = '数控加工技术';
+            document.getElementById('semester').value = '2025-2026-1';
+            document.getElementById('process').value = '';
+            document.getElementById('processFlowDisplay').innerHTML = '<span style="color: #999; font-size: 12px;">请选择加工工艺查看流程</span>';
+            openModal('orderModal');
+        }
+
+        // 编辑工单
+        function editOrder(id) {
+            const order = orders.find(o => o.id === id);
+            if (!order) return;
+
+            editingOrderId = id;
+            document.getElementById('modalTitle').textContent = '编辑生产工单';
+            document.getElementById('examSelect').value = order.examNo;
+            document.getElementById('productName').value = order.productName;
+            document.getElementById('productSpec').value = order.spec;
+            document.getElementById('productQty').value = order.qty;
+            document.getElementById('requireTime').value = order.requireTime;
+            document.getElementById('priority').value = order.priority;
+            document.getElementById('major').value = order.major;
+            document.getElementById('course').value = order.course;
+            document.getElementById('semester').value = order.semester;
+            openModal('orderModal');
+        }
+
+        // 保存工单
+        function saveOrder() {
+            const examNo = document.getElementById('examSelect').value;
+            const productName = document.getElementById('productName').value;
+            const qty = document.getElementById('productQty').value;
+            const requireTime = document.getElementById('requireTime').value;
+
+            if (!examNo || !productName || !qty || !requireTime) {
+                alert('请填写必填项！');
+                return;
+            }
+
+            if (editingOrderId) {
+                // 编辑
+                const order = orders.find(o => o.id === editingOrderId);
+                order.examNo = examNo;
+                order.productName = productName;
+                order.spec = document.getElementById('productSpec').value;
+                order.qty = parseInt(qty);
+                order.requireTime = requireTime;
+                order.priority = document.getElementById('priority').value;
+                order.major = document.getElementById('major').value;
+                order.course = document.getElementById('course').value;
+                order.semester = document.getElementById('semester').value;
+            } else {
+                // 新增
+                const newOrder = {
+                    id: orders.length + 1,
+                    orderNo: 'GD' + (2024000 + orders.length + 1),
+                    examNo: examNo,
+                    productName: productName,
+                    spec: document.getElementById('productSpec').value,
+                    qty: parseInt(qty),
+                    requireTime: requireTime,
+                    priority: document.getElementById('priority').value,
+                    major: document.getElementById('major').value,
+                    course: document.getElementById('course').value,
+                    semester: document.getElementById('semester').value,
+                    status: 'pending',
+                    process: '待配置'
+                };
+                orders.push(newOrder);
+            }
+
+            filteredOrders = [...orders];
+            renderOrders();
+            updateStats();
+            closeModal('orderModal');
+            alert(editingOrderId ? '编辑成功！' : '新增成功！');
+        }
+
+        // 删除工单
+        function deleteOrder(id) {
+            if (!confirm('确定要删除该工单吗？')) return;
+            orders = orders.filter(o => o.id !== id);
+            filteredOrders = [...orders];
+            renderOrders();
+            updateStats();
+            alert('删除成功！');
+        }
+
+        // 查看详情 - 使用新样式弹窗
+        function viewDetail(id) {
+            const order = orders.find(o => o.id === id);
+            if (!order) return;
+
+            // 生成状态标签
+            let statusTags = '';
+            if (order.status === 'scheduled') {
+                statusTags += `<span class="detail-tag detail-tag-blue">已排产</span>`;
+            } else {
+                statusTags += `<span class="detail-tag detail-tag-orange">待排产</span>`;
+            }
+
+            if (order.materialStatus === '缺料') {
+                statusTags += `<span class="detail-tag detail-tag-red">缺料</span>`;
+            } else if (order.materialStatus === '充足') {
+                statusTags += `<span class="detail-tag detail-tag-blue">物料充足</span>`;
+            }
+
+            if (order.priority === 'high') {
+                statusTags += `<span class="detail-tag detail-tag-red">P1</span>`;
+            } else if (order.priority === 'medium') {
+                statusTags += `<span class="detail-tag detail-tag-yellow">P2</span>`;
+            }
+
+            // 模拟设备排产数据
+            const devices = [
+                { name: '数控车床-01', spec: 'CK6140×1000', process: '粗车工序', deviceStatus: 'running', deviceStatusText: '运行', code: 'SB-2024-001', scheduleStatus: 'scheduled', scheduleStatusText: '已排产' },
+                { name: '数控铣床-02', spec: 'XK7132', process: '铣削工序', deviceStatus: 'standby', deviceStatusText: '待机', code: 'SB-2024-005', scheduleStatus: 'scheduled', scheduleStatusText: '已排产' },
+                { name: '加工中心-01', spec: 'VMC850', process: '精加工工序', deviceStatus: 'stop', deviceStatusText: '停机', code: 'SB-2024-012', scheduleStatus: 'noDevice', scheduleStatusText: '暂无设备' },
+                { name: '磨床-01', spec: 'M1432B', process: '磨削工序', deviceStatus: 'fault', deviceStatusText: '故障', code: 'SB-2024-018', scheduleStatus: 'scheduled', scheduleStatusText: '已排产' }
+            ];
+
+            // 模拟物料库存数据
+            const materials = [
+                { processName: '下料', materialName: '45#钢材', spec: 'Φ50×2000mm', unit: '根', planQty: 10, stockQty: 50 },
+                { processName: '下料', materialName: '切割液', spec: 'JL-001', unit: '升', planQty: 2, stockQty: 20 },
+                { processName: '粗车', materialName: '外圆车刀', spec: 'CNMG120408', unit: '片', planQty: 4, stockQty: 15 },
+                { processName: '粗车', materialName: '冷却液', spec: 'CL-002', unit: '升', planQty: 5, stockQty: 3 },
+                { processName: '精车', materialName: '精车刀片', spec: 'VNMG160404', unit: '片', planQty: 2, stockQty: 1 },
+                { processName: '精车', materialName: '润滑油', spec: 'L-HM46', unit: '升', planQty: 1, stockQty: 8 },
+                { processName: '铣削', materialName: '立铣刀', spec: 'Φ10×75mm', unit: '把', planQty: 3, stockQty: 12 },
+                { processName: '铣削', materialName: '铣刀柄', spec: 'BT40-ER32', unit: '个', planQty: 2, stockQty: 0 }
+            ];
+
+            // 构建二级页面内容
+            const pageContent = `
+                <!-- 工单基本信息模块（头部区域 + 信息网格） -->
+                <div style="margin-bottom: 10px; background: #fff; border-radius: 8px; overflow: hidden;">
+                    <!-- 头部区域 - 图标 + 主信息 -->
+                    <div class="detail-header-section" style="padding: 12px 16px 0 16px; margin-bottom: 8px;">
+                        <div class="detail-icon-box">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- 星球主体 -->
+                                <circle cx="12" cy="12" r="8" fill="white"/>
+                                <!-- 星球轨道环 -->
+                                <ellipse cx="12" cy="12" rx="10" ry="4" stroke="white" stroke-width="1.5" fill="none" transform="rotate(-30 12 12)"/>
+                                <!-- 星球高光 -->
+                                <ellipse cx="9" cy="9" rx="3" ry="2" fill="#E6F7FF" opacity="0.5"/>
+                            </svg>
+                        </div>
+                        <div class="detail-main-info">
+                            <div style="font-size: 12px; color: #999; margin-bottom: 4px;">生产工单</div>
+                            <div style="display: flex; align-items: center; gap: 8px;">
+                                <div class="detail-order-no">${order.orderNo}</div>
+                                ${statusTags}
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 信息网格区域 - 使用原有字段（隐藏头部已显示的字段） -->
+                    <div class="detail-info-grid" style="padding: 16px;">
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">实训试卷名称</div>
+                        <div class="detail-info-value">${order.examPaper || '轴类零件加工实训'}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">学生</div>
+                        <div class="detail-info-value">${order.student || '-'}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">物料名称</div>
+                        <div class="detail-info-value">${order.materialName || '-'}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">规格型号</div>
+                        <div class="detail-info-value">${order.spec || '-'}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">单位</div>
+                        <div class="detail-info-value">${order.unit || '件'}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">计划生产量</div>
+                        <div class="detail-info-value">${order.qty || '1'}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">所属专业</div>
+                        <div class="detail-info-value">${order.major || '-'}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">所属课程</div>
+                        <div class="detail-info-value">${order.course || '-'}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">BOM</div>
+                        <div class="detail-info-value">${order.bom || '-'}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">工艺</div>
+                        <div class="detail-info-value">${order.process || '数控车削工艺'}</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">起始时间段</div>
+                        <div class="detail-info-value">${formatTimeRange(order.planStartTime, order.planEndTime)}</div>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- 模块1：设备排产情况 -->
+                <div class="detail-module" style="margin-bottom: 10px; background: #fff; border-radius: 8px; overflow: hidden;">
+                    <div class="detail-module-header">
+                        <span class="detail-module-title">
+                            <i class="iconfont icon-shebei" style="color: #1890FF;"></i>
+                            设备排产情况
+                        </span>
+                        <button class="refresh-btn" onclick="refreshDeviceSchedule(${order.id})">
+                            <i class="iconfont icon-shuaxin"></i> 刷新
+                        </button>
+                    </div>
+                    <div class="detail-module-content">
+                        <table class="detail-table">
+                            <thead>
+                                <tr>
+                                    <th>工序名称</th>
+                                    <th>设备名称</th>
+                                    <th>规格型号</th>
+                                    <th>设备编号</th>
+                                    <th>设备状态</th>
+                                    <th>排产状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${devices.map(d => `
+                                    <tr>
+                                        <td>${d.process || '-'}</td>
+                                        <td>${d.name}</td>
+                                        <td>${d.spec}</td>
+                                        <td>${d.scheduleStatus === 'noDevice' ? '-' : (d.code || '-')}</td>
+                                        <td>${d.scheduleStatus === 'noDevice' ? '-' : `<span class="device-status-${d.deviceStatus || 'standby'}">${d.deviceStatusText || '待机'}</span>`}</td>
+                                        <td><span class="schedule-status-${d.scheduleStatus || 'scheduled'}">${d.scheduleStatusText || '已排产'}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 模块2：物料库存情况 -->
+                <div class="detail-module" style="margin-bottom: 10px; background: #fff; border-radius: 8px; overflow: hidden;">
+                    <div class="detail-module-header">
+                        <span class="detail-module-title">
+                            <i class="iconfont icon-wuliao" style="color: #52C41A;"></i>
+                            物料库存情况
+                        </span>
+                        <button class="refresh-btn" onclick="refreshMaterialStock(${order.id})">
+                            <i class="iconfont icon-shuaxin"></i> 刷新
+                        </button>
+                    </div>
+                    <div class="detail-module-content">
+                        <table class="detail-table">
+                            <thead>
+                                <tr>
+                                    <th>工序名称</th>
+                                    <th>物料名称</th>
+                                    <th>规格型号</th>
+                                    <th>单位</th>
+                                    <th>计划用量</th>
+                                    <th>库存量</th>
+                                    <th>库存状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${materials.map(m => `
+                                    <tr>
+                                        <td>${m.processName}</td>
+                                        <td>${m.materialName}</td>
+                                        <td>${m.spec || '-'}</td>
+                                        <td>${m.unit}</td>
+                                        <td>${m.planQty}</td>
+                                        <td>${m.stockQty}</td>
+                                        <td><span class="${m.stockQty >= m.planQty ? 'stock-sufficient' : 'stock-insufficient'}">${m.stockQty >= m.planQty ? '充足' : '不足'}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            
+            // 显示二级页面
+            document.getElementById('orderDetailPageBody').innerHTML = pageContent;
+            document.getElementById('orderDetailPage').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 查看工单详情（新）
+        function viewOrderDetail(id) {
+            const order = orders.find(o => o.id === id);
+            if (!order) return;
+
+            // 模拟学生数据
+            const students = [
+                { name: '张三', studentNo: '2024001', status: '已完成', score: 85 },
+                { name: '李四', studentNo: '2024002', status: '进行中', score: '-' },
+                { name: '王五', studentNo: '2024003', status: '未开始', score: '-' },
+                { name: '赵六', studentNo: '2024004', status: '已完成', score: 92 },
+                { name: '孙七', studentNo: '2024005', status: '进行中', score: '-' }
+            ];
+
+            // 模拟设备排产数据
+            const devices = [
+                { name: '数控车床-01', spec: 'CK6140×1000', process: '粗车工序', deviceStatus: 'running', deviceStatusText: '运行', code: 'SB-2024-001', scheduleStatus: 'scheduled', scheduleStatusText: '已排产' },
+                { name: '数控铣床-02', spec: 'XK7132', process: '铣削工序', deviceStatus: 'standby', deviceStatusText: '待机', code: 'SB-2024-005', scheduleStatus: 'scheduled', scheduleStatusText: '已排产' },
+                { name: '加工中心-01', spec: 'VMC850', process: '精加工工序', deviceStatus: 'stop', deviceStatusText: '停机', code: 'SB-2024-012', scheduleStatus: 'noDevice', scheduleStatusText: '暂无设备' },
+                { name: '磨床-01', spec: 'M1432B', process: '磨削工序', deviceStatus: 'fault', deviceStatusText: '故障', code: 'SB-2024-018', scheduleStatus: 'scheduled', scheduleStatusText: '已排产' }
+            ];
+
+            // 模拟物料库存数据（1道工序可能含多类物料）
+            const materials = [
+                // 下料工序物料
+                { processName: '下料', materialName: '45#钢材', spec: 'Φ50×2000mm', unit: '根', planQty: 10, stockQty: 50 },
+                { processName: '下料', materialName: '切割液', spec: 'JL-001', unit: '升', planQty: 2, stockQty: 20 },
+                // 粗车工序物料
+                { processName: '粗车', materialName: '外圆车刀', spec: 'CNMG120408', unit: '片', planQty: 4, stockQty: 15 },
+                { processName: '粗车', materialName: '冷却液', spec: 'CL-002', unit: '升', planQty: 5, stockQty: 3 },
+                // 精车工序物料
+                { processName: '精车', materialName: '精车刀片', spec: 'VNMG160404', unit: '片', planQty: 2, stockQty: 1 },
+                { processName: '精车', materialName: '润滑油', spec: 'L-HM46', unit: '升', planQty: 1, stockQty: 8 },
+                // 铣削工序物料
+                { processName: '铣削', materialName: '立铣刀', spec: 'Φ10×75mm', unit: '把', planQty: 3, stockQty: 12 },
+                { processName: '铣削', materialName: '铣刀柄', spec: 'BT40-ER32', unit: '个', planQty: 2, stockQty: 0 }
+            ];
+
+            // 模拟工序设备与物料数据
+            const processes = [
+                { seq: 1, name: '下料', device: '锯床-01', deviceStatus: '正常', material: '钢材A', materialStock: '充足', materialQty: 10 },
+                { seq: 2, name: '粗车', device: '数控车床-01', deviceStatus: '正常', material: '刀具B', materialStock: '充足', materialQty: 5 },
+                { seq: 3, name: '精车', device: '数控车床-02', deviceStatus: '维护中', material: '刀具C', materialStock: '不足', materialQty: 2 },
+                { seq: 4, name: '铣削', device: '数控铣床-01', deviceStatus: '正常', material: '铣刀D', materialStock: '充足', materialQty: 8 }
+            ];
+
+            document.getElementById('orderDetailPageBody').innerHTML = `
+                <style>
+                    .detail-section { margin-bottom: 24px; border: 1px solid #E8E8E8; border-radius: 8px; overflow: hidden; }
+                    .detail-section-title { background: #F5F5F5; padding: 12px 16px; font-weight: 600; font-size: 14px; color: #333; border-bottom: 1px solid #E8E8E8; }
+                    .detail-section-content { padding: 16px; }
+                    .info-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+                    .info-item { display: flex; flex-direction: column; }
+                    .info-label { font-size: 12px; color: #999; margin-bottom: 4px; }
+                    .info-value { font-size: 14px; color: #333; font-weight: 500; }
+                    .student-table, .process-table { width: 100%; border-collapse: collapse; }
+                    .student-table th, .student-table td, .process-table th, .process-table td { padding: 10px; text-align: left; border-bottom: 1px solid #F0F0F0; font-size: 13px; }
+                    .student-table th, .process-table th { background: #FAFAFA; font-weight: 600; color: #666; }
+                    .status-tag { padding: 2px 8px; border-radius: 4px; font-size: 12px; }
+                    .status-completed { background: #F6FFED; color: #52C41A; }
+                    .status-progress { background: #E6F7FF; color: #1890FF; }
+                    .status-pending { background: #FFF7E6; color: #FA8C16; }
+                    .stock-sufficient { color: #52C41A; }
+                    .stock-insufficient { color: #FF4D4F; }
+                    .device-normal { color: #52C41A; }
+                    .device-maintain { color: #FA8C16; }
+                    .device-status-running { color: #52C41A; }
+                    .device-status-stop { color: #FF4D4F; }
+                    .device-status-standby { color: #FA8C16; }
+                    .device-status-fault { color: #FF4D4F; font-weight: 600; }
+                    .schedule-status-scheduled { color: #52C41A; }
+                    .schedule-status-noDevice { color: #FA8C16; }
+                </style>
+
+                <!-- 模块1：实训试卷基本信息 -->
+                <div class="detail-section">
+                    <div class="detail-header" style="display: flex; align-items: center; padding: 16px; border-bottom: 1px solid #F0F0F0; background: #FAFAFA;">
+                        <div class="detail-icon" style="width: 40px; height: 40px; background: #1890FF; border-radius: 8px; display: flex; align-items: center; justify-content: center; margin-right: 12px; color: #fff; font-size: 20px;">📋</div>
+                        <div class="detail-title-info">
+                            <div style="font-size: 16px; font-weight: 600; color: #333;">${order.examName}</div>
+                            <div style="font-size: 13px; color: #666; margin-top: 4px;">${order.orderNo} <span style="margin-left: 8px; padding: 2px 8px; background: #E6F7FF; color: #1890FF; border-radius: 4px; font-size: 12px;">${order.status === 'scheduled' ? '已排产' : '待排产'}</span></div>
+                        </div>
+                    </div>
+                    <div class="detail-section-content" style="padding: 20px;">
+                        <div class="info-row" style="display: flex; margin-bottom: 20px;">
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">生产工单</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.orderNo}</div>
+                            </div>
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">物料名称</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.materialName}</div>
+                            </div>
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">物料类型</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.materialType || '实训物料'}</div>
+                            </div>
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">单位</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.unit || '件'}</div>
+                            </div>
+                        </div>
+                        <div class="info-row" style="display: flex; margin-bottom: 20px;">
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">领料量</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.qty}</div>
+                            </div>
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">领料人</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.student}</div>
+                            </div>
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">领料时间</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.planStartTime ? order.planStartTime.split(' ')[0] : '-'}</div>
+                            </div>
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">规格型号</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.spec}</div>
+                            </div>
+                        </div>
+                        <div class="info-row" style="display: flex; margin-bottom: 20px;">
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">所属专业</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.major}</div>
+                            </div>
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">所属课程</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.course}</div>
+                            </div>
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">BOM</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.bom}</div>
+                            </div>
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">工艺</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${order.process || '数控车削工艺'}</div>
+                            </div>
+                        </div>
+                        <div class="info-row" style="display: flex;">
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">优先级</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${renderPriority(order.priority)}</div>
+                            </div>
+                            <div class="info-col" style="flex: 1;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">排产状态</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${renderStatus(order.status)}</div>
+                            </div>
+                            <div class="info-col" style="flex: 2;">
+                                <div class="info-label" style="font-size: 12px; color: #999; margin-bottom: 4px;">起始时间段</div>
+                                <div class="info-value" style="font-size: 14px; color: #333; font-weight: 500;">${formatTimeRange(order.planStartTime, order.planEndTime)}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 模块2：设备排产情况 -->
+                <div class="detail-section">
+                    <div class="detail-section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>🔧 设备排产情况</span>
+                        <button class="refresh-btn" onclick="refreshDeviceSchedule(${order.id})" style="padding: 4px 12px; font-size: 12px; background: #fff; border: 1px solid #1890FF; color: #1890FF; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                            <span>🔄</span> 刷新
+                        </button>
+                    </div>
+                    <div class="detail-section-content">
+                        <table class="process-table" id="deviceScheduleTable-${order.id}">
+                            <thead>
+                                <tr>
+                                    <th>工序名称</th>
+                                    <th>设备名称</th>
+                                    <th>规格型号</th>
+                                    <th>设备编号</th>
+                                    <th>设备状态</th>
+                                    <th>排产状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${devices.map(d => `
+                                    <tr>
+                                        <td>${d.process || '-'}</td>
+                                        <td>${d.name}</td>
+                                        <td>${d.spec}</td>
+                                        <td>${d.scheduleStatus === 'noDevice' ? '-' : (d.code || '-')}</td>
+                                        <td>${d.scheduleStatus === 'noDevice' ? '-' : `<span class="device-status-${d.deviceStatus || 'standby'}">${d.deviceStatusText || '待机'}</span>`}</td>
+                                        <td><span class="schedule-status-${d.scheduleStatus || 'scheduled'}">${d.scheduleStatusText || '已排产'}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 模块2.5：物料库存情况 -->
+                <div class="detail-section">
+                    <div class="detail-section-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>📦 物料库存情况</span>
+                        <button class="refresh-btn" onclick="refreshMaterialStock(${order.id})" style="padding: 4px 12px; font-size: 12px; background: #fff; border: 1px solid #1890FF; color: #1890FF; border-radius: 4px; cursor: pointer; display: flex; align-items: center; gap: 4px;">
+                            <span>🔄</span> 刷新
+                        </button>
+                    </div>
+                    <div class="detail-section-content">
+                        <table class="process-table" id="materialStockTable-${order.id}">
+                            <thead>
+                                <tr>
+                                    <th>工序名称</th>
+                                    <th>物料名称</th>
+                                    <th>规格型号</th>
+                                    <th>单位</th>
+                                    <th>计划用量</th>
+                                    <th>库存量</th>
+                                    <th>库存状态</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${materials.map(m => `
+                                    <tr>
+                                        <td>${m.processName}</td>
+                                        <td>${m.materialName}</td>
+                                        <td>${m.spec || '-'}</td>
+                                        <td>${m.unit}</td>
+                                        <td>${m.planQty}</td>
+                                        <td>${m.stockQty}</td>
+                                        <td><span class="${m.stockQty >= m.planQty ? 'stock-sufficient' : 'stock-insufficient'}">${m.stockQty >= m.planQty ? '充足' : '不足'}</span></td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            // 显示二级页面
+            document.getElementById('orderDetailPageBody').innerHTML = document.getElementById('orderDetailPageBody').innerHTML;
+            document.getElementById('orderDetailPage').style.display = 'block';
+            document.body.style.overflow = 'hidden';
+        }
+
+        // 关闭工单详情二级页面
+        function closeOrderDetailPage() {
+            document.getElementById('orderDetailPage').style.display = 'none';
+            document.body.style.overflow = '';
+        }
+
+        // 单个排产
+        function scheduleOrder(id) {
+            selectedOrders = [id];
+            showSmartScheduleModal();
+        }
+
+        // 刷新设备排产情况
+        function refreshDeviceSchedule(orderId) {
+            const btn = document.querySelector(`#deviceScheduleTable-${orderId}`).closest('.detail-section').querySelector('.refresh-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>⏳</span> 刷新中...';
+            btn.disabled = true;
+
+            // 模拟刷新数据
+            setTimeout(() => {
+                // 随机更新设备状态
+                const statuses = [
+                    { deviceStatus: 'running', deviceStatusText: '运行' },
+                    { deviceStatus: 'standby', deviceStatusText: '待机' },
+                    { deviceStatus: 'stop', deviceStatusText: '停机' },
+                    { deviceStatus: 'fault', deviceStatusText: '故障' }
+                ];
+
+                // 重新生成随机数据
+                const newDevices = [
+                    { name: '数控车床-01', spec: 'CK6140×1000', process: '粗车工序', code: 'SB-2024-001', ...statuses[Math.floor(Math.random() * 4)], scheduleStatus: 'scheduled', scheduleStatusText: '已排产' },
+                    { name: '数控铣床-02', spec: 'XK7132', process: '铣削工序', code: 'SB-2024-005', ...statuses[Math.floor(Math.random() * 4)], scheduleStatus: 'scheduled', scheduleStatusText: '已排产' },
+                    { name: '加工中心-01', spec: 'VMC850', process: '精加工工序', code: 'SB-2024-012', ...statuses[Math.floor(Math.random() * 4)], scheduleStatus: Math.random() > 0.7 ? 'noDevice' : 'scheduled', scheduleStatusText: Math.random() > 0.7 ? '暂无设备' : '已排产' },
+                    { name: '磨床-01', spec: 'M1432B', process: '磨削工序', code: 'SB-2024-018', ...statuses[Math.floor(Math.random() * 4)], scheduleStatus: 'scheduled', scheduleStatusText: '已排产' }
+                ];
+
+                // 更新表格内容
+                const tbody = document.querySelector(`#deviceScheduleTable-${orderId} tbody`);
+                if (tbody) {
+                    tbody.innerHTML = newDevices.map(d => `
+                        <tr>
+                            <td>${d.process || '-'}</td>
+                            <td>${d.name}</td>
+                            <td>${d.spec}</td>
+                            <td>${d.scheduleStatus === 'noDevice' ? '-' : (d.code || '-')}</td>
+                            <td>${d.scheduleStatus === 'noDevice' ? '-' : `<span class="device-status-${d.deviceStatus || 'standby'}">${d.deviceStatusText || '待机'}</span>`}</td>
+                            <td><span class="schedule-status-${d.scheduleStatus || 'scheduled'}">${d.scheduleStatusText || '已排产'}</span></td>
+                        </tr>
+                    `).join('');
+                }
+
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+
+                // 显示刷新成功提示
+                showToast('设备排产情况已刷新');
+            }, 800);
+        }
+
+        // 刷新物料库存情况
+        function refreshMaterialStock(orderId) {
+            const btn = document.querySelector(`#materialStockTable-${orderId}`).closest('.detail-section').querySelector('.refresh-btn');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = '<span>⏳</span> 刷新中...';
+            btn.disabled = true;
+
+            // 模拟刷新数据
+            setTimeout(() => {
+                // 物料数据模板
+                const materialTemplates = [
+                    { materialName: '45#钢材', spec: 'Φ50×2000mm', unit: '根' },
+                    { materialName: '切割液', spec: 'JL-001', unit: '升' },
+                    { materialName: '外圆车刀', spec: 'CNMG120408', unit: '片' },
+                    { materialName: '冷却液', spec: 'CL-002', unit: '升' },
+                    { materialName: '精车刀片', spec: 'VNMG160404', unit: '片' },
+                    { materialName: '润滑油', spec: 'L-HM46', unit: '升' },
+                    { materialName: '立铣刀', spec: 'Φ10×75mm', unit: '把' },
+                    { materialName: '铣刀柄', spec: 'BT40-ER32', unit: '个' },
+                    { materialName: '钻头套装', spec: 'Φ1-13mm', unit: '套' },
+                    { materialName: '丝锥', spec: 'M6-M12', unit: '支' }
+                ];
+
+                const processes = ['下料', '粗车', '精车', '铣削', '钻孔', '攻丝'];
+
+                // 生成随机物料数据
+                const newMaterials = [];
+                processes.forEach(process => {
+                    // 每个工序随机1-3种物料
+                    const materialCount = Math.floor(Math.random() * 3) + 1;
+                    for (let i = 0; i < materialCount; i++) {
+                        const template = materialTemplates[Math.floor(Math.random() * materialTemplates.length)];
+                        const planQty = Math.floor(Math.random() * 20) + 1;
+                        const stockQty = Math.floor(Math.random() * 50);
+                        newMaterials.push({
+                            processName: process,
+                            materialName: template.materialName,
+                            spec: template.spec,
+                            unit: template.unit,
+                            planQty: planQty,
+                            stockQty: stockQty
+                        });
+                    }
+                });
+
+                // 更新表格内容
+                const tbody = document.querySelector(`#materialStockTable-${orderId} tbody`);
+                if (tbody) {
+                    tbody.innerHTML = newMaterials.map(m => `
+                        <tr>
+                            <td>${m.processName}</td>
+                            <td>${m.materialName}</td>
+                            <td>${m.spec || '-'}</td>
+                            <td>${m.unit}</td>
+                            <td>${m.planQty}</td>
+                            <td>${m.stockQty}</td>
+                            <td><span class="${m.stockQty >= m.planQty ? 'stock-sufficient' : 'stock-insufficient'}">${m.stockQty >= m.planQty ? '充足' : '不足'}</span></td>
+                        </tr>
+                    `).join('');
+                }
+
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+
+                // 显示刷新成功提示
+                showToast('物料库存情况已刷新');
+            }, 800);
+        }
+
+        // 显示提示消息
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: #52C41A;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 4px;
+                font-size: 14px;
+                z-index: 10000;
+                box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 2000);
+        }
+
+        // 显示智能排产弹窗
+        function showSmartScheduleModal() {
+            if (selectedOrders.length === 0) {
+                alert('请先选择要排产的工单！');
+                return;
+            }
+
+            const selectedData = orders.filter(o => selectedOrders.includes(o.id));
+
+            // 检查是否有未设置优先级的工单（支持P1-P5格式或high/medium/low等格式）
+            const noPriorityOrders = selectedData.filter(o => !o.priority || o.priority === '');
+            if (noPriorityOrders.length > 0) {
+                const orderNos = noPriorityOrders.map(o => o.orderNo).join('、');
+                alert(`以下生产工单尚未设置优先级，请先设置优先级：\n\n${orderNos}`);
+                return;
+            }
+
+            const scheduleTableBody = document.getElementById('scheduleTableBody');
+            scheduleTableBody.innerHTML = selectedData.map(order => {
+                // 解析起始时间段
+                let dateStr = '-';
+                let timeRangeStr = '-';
+                if (order.planStartTime && order.planEndTime) {
+                    const startMatch = order.planStartTime.match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/);
+                    const endMatch = order.planEndTime.match(/(\d{4}-\d{2}-\d{2})\s+(\d{2}:\d{2})/);
+                    if (startMatch && endMatch) {
+                        dateStr = startMatch[1];
+                        timeRangeStr = `${startMatch[2]}-${endMatch[2]}`;
+                    }
+                }
+                return `
+                <tr>
+                    <td><input type="checkbox" class="checkbox" checked value="${order.id}"></td>
+                    <td>${order.orderNo}</td>
+                    <td>${order.materialName || '-'}</td>
+                    <td>${order.spec || '-'}</td>
+                    <td>1</td>
+                    <td style="text-align: center;">
+                        <div style="color: #333; font-weight: 500;">${dateStr}</div>
+                        <div style="color: #666; font-size: 11px; margin-top: 2px;">${timeRangeStr}</div>
+                    </td>
+                    <td>P1</td>
+                </tr>
+            `}).join('');
+
+            // 生成空闲设备数据（根据所选工单的时间段）
+            const availableDevices = [
+                { name: '数控车床-01', code: 'SB-2024-001', status: '空闲', utilization: 0 },
+                { name: '数控车床-02', code: 'SB-2024-002', status: '空闲', utilization: 0 },
+                { name: '数控铣床-01', code: 'SB-2024-003', status: '空闲', utilization: 0 },
+                { name: '数控铣床-02', code: 'SB-2024-004', status: '空闲', utilization: 0 },
+                { name: '加工中心-01', code: 'SB-2024-005', status: '空闲', utilization: 0 },
+                { name: '磨床-01', code: 'SB-2024-006', status: '空闲', utilization: 0 },
+                { name: '钻床-01', code: 'SB-2024-007', status: '空闲', utilization: 0 },
+                { name: '锯床-01', code: 'SB-2024-008', status: '空闲', utilization: 0 }
+            ];
+
+            // 渲染空闲设备
+            const devicesContainer = document.getElementById('availableDevicesContainer');
+            if (devicesContainer) {
+                devicesContainer.innerHTML = availableDevices.map(device => `
+                    <div style="background: #F6FFED; padding: 12px; border-radius: 4px; border: 1px solid #B7EB8F;">
+                        <div class="device-status device-normal">${device.name}</div>
+                        <div style="font-size: 11px; color: #666; margin-top: 4px;">${device.status} | 设备编号: ${device.code}</div>
+                    </div>
+                `).join('');
+            }
+
+            document.getElementById('scheduleResult').innerHTML = '<div style="text-align: center; color: #999; font-size: 13px;">点击"开始智能排产"生成排产方案</div>';
+            document.getElementById('btnConfirmSchedule').style.display = 'none';
+            
+            // 重置设备视图状态
+            document.getElementById('viewDevicesBtnContainer').style.display = 'none';
+            document.getElementById('scheduleDevicesContainer').style.display = 'none';
+            document.getElementById('devicesBtnText').textContent = '🔍 查看空闲设备';
+            
+            openModal('smartScheduleModal');
+        }
+
+        // 显示批量设置优先级弹窗
+        function showBatchPriorityModal() {
+            // 只获取待排产的工单（已排产的禁止设置优先级）
+            const pendingOrders = orders.filter(o => o.status === 'pending');
+
+            if (pendingOrders.length === 0) {
+                alert('没有待排产的生产工单可以设置优先级！');
+                return;
+            }
+
+            selectedOrders = pendingOrders.map(o => o.id);
+
+            document.getElementById('batchPriorityCount').textContent = pendingOrders.length;
+
+            // 重置选择
+            const radios = document.getElementsByName('batchPriority');
+            radios.forEach(radio => radio.checked = false);
+
+            openModal('batchPriorityModal');
+        }
+
+        // 确认批量设置优先级
+        function confirmBatchPriority() {
+            const selectedRadio = document.querySelector('input[name="batchPriority"]:checked');
+            if (!selectedRadio) {
+                alert('请选择优先级！');
+                return;
+            }
+
+            const priority = selectedRadio.value;
+
+            // 只为待排产的工单设置优先级
+            let updatedCount = 0;
+            orders.forEach(order => {
+                if (order.status === 'pending') {
+                    order.priority = priority;
+                    updatedCount++;
+                }
+            });
+
+            // 更新过滤后的数据
+            filteredOrders = [...orders];
+
+            // 重新渲染表格
+            renderOrders();
+            updateStats();
+
+            closeModal('batchPriorityModal');
+            alert(`已成功为 ${updatedCount} 个待排产工单设置优先级为 ${priority}！\n（已排产工单未做修改）`);
+        }
+
+        // 开始智能排产
+        function startSmartSchedule() {
+            const selectedData = orders.filter(o => selectedOrders.includes(o.id));
+            
+            // 模拟排产结果：部分成功，部分失败
+            const successOrders = [];
+            const failedOrders = [];
+            successOrderIds = []; // 清空之前的数据
+            
+            selectedData.forEach((order, index) => {
+                // 模拟每第3个工单排产失败
+                if (index % 3 === 2) {
+                    const failReasons = [
+                        {
+                            type: '设备不足',
+                            detail: '所需设备类型（数控车床）在计划时间段内已全部占用，无可用设备',
+                            suggestion: '建议：调整计划时间或等待设备释放'
+                        },
+                        {
+                            type: '物料缺货',
+                            detail: 'BOM清单中【轴承座】库存不足，当前库存：5件，需求：10件',
+                            suggestion: '建议：联系采购部门补充物料或调整生产计划'
+                        },
+                        {
+                            type: '时间冲突',
+                            detail: '该工单计划时间段（03-15 08:00~03-15 17:00）与学生【张三】的考试时间冲突',
+                            suggestion: '建议：更换执行学生或调整计划时间段'
+                        },
+                        {
+                            type: '工艺不匹配',
+                            detail: '该物料【齿轮A】需要磨削工艺，但当前可用设备不支持此工艺',
+                            suggestion: '建议：联系管理员添加磨床设备或更换加工方式'
+                        },
+                        {
+                            type: '优先级冲突',
+                            detail: '存在更高优先级（P0）的工单需要优先排产，当前工单（P2）被延后',
+                            suggestion: '建议：提升工单优先级或延后处理'
+                        }
+                    ];
+                    const reason = failReasons[Math.floor(Math.random() * failReasons.length)];
+                    failedOrders.push({
+                        ...order,
+                        failReason: reason.type,
+                        failDetail: reason.detail,
+                        failSuggestion: reason.suggestion
+                    });
+                } else {
+                    successOrders.push(order);
+                    successOrderIds.push(order.id); // 保存成功排产的工单ID
+                }
+            });
+            
+            // 生成成功工单的排期数据
+            let currentTime = new Date('2024-03-10 08:00');
+            const scheduleDetails = successOrders.map((order, index) => {
+                const duration = order.qty * 30; // 假设每件30分钟
+                const startTime = new Date(currentTime);
+                const endTime = new Date(currentTime.getTime() + duration * 60000);
+                currentTime = endTime;
+                
+                return {
+                    ...order,
+                    scheduleDate: startTime.toLocaleDateString('zh-CN', { year: 'numeric', month: '2-digit', day: '2-digit' }),
+                    scheduleTimeRange: startTime.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) + '-' + endTime.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }),
+                    duration: duration,
+                    devices: [
+                        ['数控车床-01'],
+                        ['数控车床-01', '数控铣床-02'],
+                        ['加工中心-03', '磨床-04', '钻床-01'],
+                        ['数控车床-02', '加工中心-01']
+                    ][index % 4]
+                };
+            });
+
+            const totalEndTime = scheduleDetails[scheduleDetails.length - 1]?.scheduleEnd || '2024-03-12 17:00';
+
+            let resultHTML = `
+                <div style="padding: 20px;">
+                    <!-- 总体统计 -->
+                    <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px;">
+                        <div style="background: #F0F5FF; padding: 12px; border-radius: 4px;">
+                            <div style="font-size: 12px; color: #666;">预计开始</div>
+                            <div style="font-size: 14px; font-weight: 600; color: #1890FF;">03-10 08:00</div>
+                        </div>
+                        <div style="background: #F0F5FF; padding: 12px; border-radius: 4px;">
+                            <div style="font-size: 12px; color: #666;">预计完成</div>
+                            <div style="font-size: 14px; font-weight: 600; color: #1890FF;">${totalEndTime}</div>
+                        </div>
+                        <div style="background: #F0F5FF; padding: 12px; border-radius: 4px;">
+                            <div style="font-size: 12px; color: #666;">设备利用率</div>
+                            <div style="font-size: 14px; font-weight: 600; color: #1890FF;">85%</div>
+                        </div>
+                        <div style="background: #F0F5FF; padding: 12px; border-radius: 4px;">
+                            <div style="font-size: 12px; color: #666;">排产结果</div>
+                            <div style="font-size: 14px; font-weight: 600; color: ${failedOrders.length > 0 ? '#FA8C16' : '#52C41A'};">${successOrders.length}成功/${failedOrders.length}失败</div>
+                        </div>
+                    </div>
+            `;
+            
+            // 显示成功工单
+            if (successOrders.length > 0) {
+                resultHTML += `
+                    <div style="background: #F6FFED; padding: 12px; border-radius: 4px; margin-bottom: 16px;">
+                        <strong style="color: #389E0D;">✅ 排产成功 ${successOrders.length} 个工单</strong>
+                    </div>
+                    
+                    <!-- 各工单排期详情 -->
+                    <h4 style="font-size: 14px; margin-bottom: 12px; color: #333;">📋 各工单排期详情</h4>
+                    <div style="background: #fff; border: 1px solid #E8E8E8; border-radius: 4px; overflow: hidden; margin-bottom: 20px;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <thead>
+                                <tr style="background: #FAFAFA;">
+                                    <th style="padding: 10px; border-bottom: 1px solid #E8E8E8; text-align: left;">序号</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #E8E8E8; text-align: left;">工单号</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #E8E8E8; text-align: left;">物料名称</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #E8E8E8; text-align: center;">起始时间段</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #E8E8E8; text-align: left;">分配设备</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${scheduleDetails.map((item, index) => `
+                                    <tr style="border-bottom: 1px solid #F0F0F0;">
+                                        <td style="padding: 10px;">${index + 1}</td>
+                                        <td style="padding: 10px; font-weight: 500;">${item.orderNo}</td>
+                                        <td style="padding: 10px;">${item.materialName || '-'}</td>
+                                        <td style="padding: 10px; text-align: center;">
+                                            <div style="color: #333; font-weight: 500;">${item.scheduleDate}</div>
+                                            <div style="color: #666; font-size: 11px; margin-top: 2px;">${item.scheduleTimeRange}</div>
+                                        </td>
+                                        <td style="padding: 10px;">
+                                            <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                                ${item.devices.map(d => `<span style="background: #E6F7FF; color: #1890FF; padding: 2px 8px; border-radius: 4px; font-size: 11px; white-space: nowrap;">${d}</span>`).join('')}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            // 显示失败工单
+            if (failedOrders.length > 0) {
+                resultHTML += `
+                    <div style="background: #FFF2F0; padding: 12px; border-radius: 4px; margin-bottom: 16px;">
+                        <strong style="color: #FF4D4F;">❌ 排产失败 ${failedOrders.length} 个工单</strong>
+                    </div>
+                    
+                    <!-- 失败工单详情 -->
+                    <h4 style="font-size: 14px; margin-bottom: 12px; color: #333;">⚠️ 排产失败工单</h4>
+                    <div style="background: #fff; border: 1px solid #E8E8E8; border-radius: 4px; overflow: hidden;">
+                        <table style="width: 100%; border-collapse: collapse; font-size: 12px;">
+                            <thead>
+                                <tr style="background: #FFF2F0;">
+                                    <th style="padding: 10px; border-bottom: 1px solid #E8E8E8; text-align: left; width: 50px;">序号</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #E8E8E8; text-align: left; width: 120px;">工单号</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #E8E8E8; text-align: left; width: 100px;">物料名称</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #E8E8E8; text-align: center; width: 100px;">起始时间段</th>
+                                    <th style="padding: 10px; border-bottom: 1px solid #E8E8E8; text-align: left;">失败详情</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${failedOrders.map((item, index) => `
+                                    <tr style="border-bottom: 1px solid #F0F0F0;">
+                                        <td style="padding: 10px;">${index + 1}</td>
+                                        <td style="padding: 10px; font-weight: 500;">${item.orderNo}</td>
+                                        <td style="padding: 10px;">${item.materialName || '-'}</td>
+                                        <td style="padding: 10px; text-align: center;">${formatTimeRange(item.planStartTime, item.planEndTime)}</td>
+                                        <td style="padding: 10px;">
+                                            <div style="margin-bottom: 6px;">
+                                                <span style="background: #FFF2F0; color: #FF4D4F; padding: 2px 8px; border-radius: 4px; font-size: 11px; font-weight: 500;">${item.failReason}</span>
+                                            </div>
+                                            <div style="color: #666; font-size: 11px; margin-bottom: 4px; line-height: 1.5;">
+                                                ${item.failDetail}
+                                            </div>
+                                            <div style="color: #1890FF; font-size: 11px; line-height: 1.5;">
+                                                💡 ${item.failSuggestion}
+                                            </div>
+                                        </td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                `;
+            }
+            
+            resultHTML += '</div>';
+            
+            document.getElementById('scheduleResult').innerHTML = resultHTML;
+            // 只要有成功排产的工单，就显示确认排产按钮
+            document.getElementById('btnConfirmSchedule').style.display = successOrders.length > 0 ? 'inline-block' : 'none';
+            
+            // 显示查看空闲设备按钮
+            document.getElementById('viewDevicesBtnContainer').style.display = 'block';
+            
+            // 生成并保存设备数据到全局变量
+            window.scheduleDevicesData = [
+                { name: '数控车床-01', code: 'SB-2024-001', status: '空闲', type: 'normal' },
+                { name: '数控车床-02', code: 'SB-2024-002', status: '空闲', type: 'normal' },
+                { name: '数控铣床-01', code: 'SB-2024-003', status: '空闲', type: 'normal' },
+                { name: '数控铣床-02', code: 'SB-2024-004', status: '运行中', type: 'running' },
+                { name: '加工中心-01', code: 'SB-2024-005', status: '空闲', type: 'normal' },
+                { name: '磨床-01', code: 'SB-2024-006', status: '故障', type: 'fault' },
+                { name: '钻床-01', code: 'SB-2024-007', status: '空闲', type: 'normal' },
+                { name: '锯床-01', code: 'SB-2024-008', status: '离线', type: 'offline' }
+            ];
+            
+            // 渲染设备数据
+            renderScheduleDevices();
+        }
+        
+        // 切换设备视图显示/隐藏
+        function toggleDevicesView() {
+            const container = document.getElementById('scheduleDevicesContainer');
+            const btnText = document.getElementById('devicesBtnText');
+            
+            if (container.style.display === 'none') {
+                container.style.display = 'block';
+                btnText.textContent = '👁️ 隐藏空闲设备';
+            } else {
+                container.style.display = 'none';
+                btnText.textContent = '🔍 查看空闲设备';
+            }
+        }
+        
+        // 渲染排产结果中的设备列表
+        function renderScheduleDevices() {
+            const grid = document.getElementById('scheduleDevicesGrid');
+            if (!grid || !window.scheduleDevicesData) return;
+            
+            const typeColors = {
+                normal: { bg: '#F6FFED', border: '#B7EB8F', text: '#389E0D', label: '空闲' },
+                running: { bg: '#E6F7FF', border: '#91D5FF', text: '#1890FF', label: '运行中' },
+                fault: { bg: '#FFF2F0', border: '#FFA39E', text: '#FF4D4F', label: '故障' },
+                offline: { bg: '#F5F5F5', border: '#D9D9D9', text: '#999999', label: '离线' }
+            };
+            
+            grid.innerHTML = window.scheduleDevicesData.map(device => {
+                const colors = typeColors[device.type] || typeColors.normal;
+                return `
+                    <div style="background: ${colors.bg}; padding: 12px; border-radius: 4px; border: 1px solid ${colors.border};">
+                        <div style="font-weight: 500; color: #333; font-size: 13px;">${device.name}</div>
+                        <div style="font-size: 11px; color: ${colors.text}; margin-top: 4px; font-weight: 500;">${colors.label}</div>
+                        <div style="font-size: 10px; color: #999; margin-top: 2px;">${device.code}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 确认排产
+        function confirmSchedule() {
+            // 只更新成功排产的工单状态
+            successOrderIds.forEach(id => {
+                const order = orders.find(o => o.id === id);
+                if (order) order.status = 'scheduled';
+            });
+            filteredOrders = [...orders];
+            renderOrders();
+            updateStats();
+            closeModal('smartScheduleModal');
+            alert(`排产完成！成功排产 ${successOrderIds.length} 个工单`);
+            selectedOrders = [];
+            successOrderIds = []; // 清空成功工单ID列表
+        }
+
+        // 批量排产
+        function batchSchedule() {
+            showSmartScheduleModal();
+        }
+
+        // 批量暂停
+        function batchPause() {
+            if (selectedOrders.length === 0) {
+                alert('请先选择要暂停的工单！');
+                return;
+            }
+            selectedOrders.forEach(id => {
+                const order = orders.find(o => o.id === id);
+                if (order && order.status === 'processing') order.status = 'paused';
+            });
+            filteredOrders = [...orders];
+            renderOrders();
+            updateStats();
+            alert('批量暂停成功！');
+        }
+
+        // 批量继续
+        function batchResume() {
+            if (selectedOrders.length === 0) {
+                alert('请先选择要继续的工单！');
+                return;
+            }
+            selectedOrders.forEach(id => {
+                const order = orders.find(o => o.id === id);
+                if (order && order.status === 'paused') order.status = 'processing';
+            });
+            filteredOrders = [...orders];
+            renderOrders();
+            updateStats();
+            alert('批量继续成功！');
+        }
+
+        // 批量结束
+        function batchComplete() {
+            if (selectedOrders.length === 0) {
+                alert('请先选择要结束的工单！');
+                return;
+            }
+            selectedOrders.forEach(id => {
+                const order = orders.find(o => o.id === id);
+                if (order) order.status = 'completed';
+            });
+            filteredOrders = [...orders];
+            renderOrders();
+            updateStats();
+            alert('批量结束成功！');
+        }
+
+        // 打开弹窗
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // 更新工序流程预览
+        function updateProcessFlow() {
+            const process = document.getElementById('process').value;
+            const display = document.getElementById('processFlowDisplay');
+            const flows = {
+                'process1': '<span class="process-step">车削</span><span class="process-arrow">→</span><span class="process-step">铣削</span><span class="process-arrow">→</span><span class="process-step">钻孔</span>',
+                'process2': '<span class="process-step">铣削</span><span class="process-arrow">→</span><span class="process-step">磨削</span><span class="process-arrow">→</span><span class="process-step">检测</span>',
+                'process3': '<span class="process-step">切割</span><span class="process-arrow">→</span><span class="process-step">折弯</span><span class="process-arrow">→</span><span class="process-step">焊接</span>'
+            };
+            display.innerHTML = flows[process] || '<span style="color: #999; font-size: 12px;">请选择加工工艺查看流程</span>';
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = './login.html';
+            }
+        }
+
+        // 点击弹窗外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

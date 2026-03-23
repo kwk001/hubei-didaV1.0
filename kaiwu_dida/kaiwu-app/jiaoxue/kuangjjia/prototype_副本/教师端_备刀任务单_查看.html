@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>备刀任务单详情 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F5F5;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .page-header {
+            background: #fff;
+            padding: 12px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .page-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+            text-decoration: none;
+        }
+        .back-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        
+        .content-body {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #F5F5F5;
+        }
+        
+        /* 模块卡片 */
+        .module-card {
+            background: #fff;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            overflow: hidden;
+        }
+        
+        /* 头部区域 */
+        .detail-header-section {
+            padding: 16px 20px 0 20px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+        }
+        .detail-icon-box {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+        }
+        .detail-main-info {
+            flex: 1;
+        }
+        .detail-main-info .label {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+        .detail-order-no {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .detail-tags {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+        .detail-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .detail-tag-yellow {
+            background: #FFFBE6;
+            color: #FAAD14;
+            border: 1px solid #FAAD14;
+        }
+        .detail-tag-blue {
+            background: #E6F7FF;
+            color: #1890FF;
+            border: 1px solid #1890FF;
+        }
+        .detail-tag-green {
+            background: #F6FFED;
+            color: #52C41A;
+            border: 1px solid #52C41A;
+        }
+        .detail-tag-purple {
+            background: #F9F0FF;
+            color: #722ED1;
+            border: 1px solid #722ED1;
+        }
+        .detail-tag-gray {
+            background: #F5F5F5;
+            color: #666;
+            border: 1px solid #D9D9D9;
+        }
+        .detail-tag-red {
+            background: #FFF1F0;
+            color: #FF4D4F;
+            border: 1px solid #FF4D4F;
+        }
+        
+        /* 信息网格 */
+        .detail-info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px 16px;
+            padding: 0 20px 16px 20px;
+        }
+        .detail-info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .detail-info-label {
+            font-size: 12px;
+            color: #999;
+        }
+        .detail-info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        /* 模块标题 */
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 20px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .module-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .module-title::before {
+            content: '';
+            width: 3px;
+            height: 14px;
+            background: #1890FF;
+            border-radius: 2px;
+        }
+        
+        /* 表格 */
+        .table-container {
+            padding: 0 20px 16px 20px;
+            overflow-x: auto;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #F0F0F0;
+            white-space: nowrap;
+        }
+        .data-table tbody tr:hover {
+            background: #F6FFFE;
+        }
+        
+        .status-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-waiting {
+            background: #FFFBE6;
+            color: #FAAD14;
+            border: 1px solid #FAAD14;
+        }
+        .status-preparing {
+            background: #E6F7FF;
+            color: #1890FF;
+            border: 1px solid #1890FF;
+        }
+        .status-delivering {
+            background: #F6FFED;
+            color: #52C41A;
+            border: 1px solid #52C41A;
+        }
+        .status-completed {
+            background: #F5F5F5;
+            color: #666;
+            border: 1px solid #D9D9D9;
+        }
+        .status-return {
+            background: #F9F0FF;
+            color: #722ED1;
+            border: 1px solid #722ED1;
+        }
+        .status-scrap {
+            background: #FFF1F0;
+            color: #FF4D4F;
+            border: 1px solid #FF4D4F;
+        }
+        .status-ready {
+            background: #E6F7FF;
+            color: #1890FF;
+            border: 1px solid #1890FF;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: #1890FF; color: #fff; }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success { background: #52C41A; color: #fff; }
+        .btn-success:hover { background: #73D13D; }
+        .btn-warning { background: #FAAD14; color: #fff; }
+        .btn-warning:hover { background: #FFC53D; }
+        .btn-default { background: #fff; color: #666; border: 1px solid #D9D9D9; }
+        .btn-default:hover { border-color: #1890FF; color: #1890FF; }
+        .btn-sm { padding: 4px 12px; font-size: 12px; }
+        
+        .action-group {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .summary-bar {
+            display: flex;
+            gap: 24px;
+            padding: 12px 20px;
+            background: #F6FFFE;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .summary-text {
+            font-size: 13px;
+            color: #666;
+        }
+        .summary-text strong {
+            color: #1890FF;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">
+                <a href="./教师端_备刀任务单.html" class="back-btn">
+                    <i class="iconfont icon-fanhui"></i> 返回
+                </a>
+                <span>备刀任务单详情</span>
+            </div>
+            <div class="action-group">
+                <button class="btn btn-primary btn-sm" onclick="printTask()">
+                    <i class="iconfont icon-dayin"></i> 打印
+                </button>
+            </div>
+        </div>
+        
+        <div class="content-body">
+            <!-- 任务单基本信息 -->
+            <div class="module-card">
+                <div class="detail-header-section">
+                    <div class="detail-icon-box">
+                        <i class="iconfont icon-renwu"></i>
+                    </div>
+                    <div class="detail-main-info">
+                        <div class="label">备刀任务单</div>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            <div class="detail-order-no">BD20250115001</div>
+                            <span class="detail-tag detail-tag-yellow">待备刀</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="detail-info-grid">
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">任务单号</div>
+                        <div class="detail-info-value">BD20250115001</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">刀具名称</div>
+                        <div class="detail-info-value">立铣刀</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">规格型号</div>
+                        <div class="detail-info-value">Φ10mm</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">刀具数量</div>
+                        <div class="detail-info-value">5把</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">生产工单号</div>
+                        <div class="detail-info-value">WO2025011501</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">需求时间段</div>
+                        <div class="detail-info-value">2026-03-03 09:00-11:00</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">领用人</div>
+                        <div class="detail-info-value">-</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">领用时间</div>
+                        <div class="detail-info-value">-</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">目的地</div>
+                        <div class="detail-info-value">M001 加工中心-1</div>
+                    </div>
+                    <div class="detail-info-item">
+                        <div class="detail-info-label">状态</div>
+                        <div class="detail-info-value"><span class="status-tag status-waiting">待备刀</span></div>
+                    </div>
+                    <div class="detail-info-item" style="display: none;">
+                        <div class="detail-info-label">创建时间</div>
+                        <div class="detail-info-value">2026-03-02 16:30</div>
+                    </div>
+                    <div class="detail-info-item" style="display: none;">
+                        <div class="detail-info-label">备注</div>
+                        <div class="detail-info-value">-</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 刀具明细 -->
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-title">刀具明细</div>
+                </div>
+                <div class="summary-bar">
+                    <span class="summary-text">共 <strong>5</strong> 把刀具</span>
+                    <span class="summary-text">待备刀 <strong>1</strong> 把</span>
+                    <span class="summary-text">备刀完成 <strong>1</strong> 把</span>
+                    <span class="summary-text">配送中 <strong>1</strong> 把</span>
+                    <span class="summary-text">归还完成 <strong>1</strong> 把</span>
+                    <span class="summary-text">报废 <strong>1</strong> 把</span>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>序号</th>
+                                <th>刀具编码</th>
+                                <th>刀具名称</th>
+                                <th>规格型号</th>
+                                <th>库存位置</th>
+                                <th>当前状态</th>
+                                <th>备刀完成记录</th>
+                                <th>配送记录</th>
+                                <th>归还确认记录</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>T001-001</td>
+                                <td>立铣刀</td>
+                                <td>Φ10mm</td>
+                                <td>A-01-03</td>
+                                <td><span class="status-tag status-waiting">待备刀</span></td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>T001-002</td>
+                                <td>立铣刀</td>
+                                <td>Φ10mm</td>
+                                <td>A-01-04</td>
+                                <td><span class="status-tag status-preparing">备刀完成</span></td>
+                                <td>
+                                    <div style="font-size: 12px; line-height: 1.6;">
+                                        <div style="color: #1890FF; font-weight: 500;">2026-03-02 17:30</div>
+                                        <div style="color: #999;">王师傅</div>
+                                    </div>
+                                </td>
+                                <td>-</td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>T001-003</td>
+                                <td>立铣刀</td>
+                                <td>Φ10mm</td>
+                                <td>A-01-05</td>
+                                <td><span class="status-tag status-delivering">配送中</span></td>
+                                <td>
+                                    <div style="font-size: 12px; line-height: 1.6;">
+                                        <div style="color: #1890FF; font-weight: 500;">2026-03-02 17:30</div>
+                                        <div style="color: #999;">王师傅</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 12px; line-height: 1.6;">
+                                        <div style="color: #52C41A; font-weight: 500;">2026-03-03 08:15</div>
+                                        <div style="color: #999;">李师傅</div>
+                                    </div>
+                                </td>
+                                <td>-</td>
+                            </tr>
+                            <tr>
+                                <td>4</td>
+                                <td>T001-004</td>
+                                <td>立铣刀</td>
+                                <td>Φ10mm</td>
+                                <td>A-01-06</td>
+                                <td><span class="status-tag status-completed">归还完成</span></td>
+                                <td>
+                                    <div style="font-size: 12px; line-height: 1.6;">
+                                        <div style="color: #1890FF; font-weight: 500;">2026-03-02 17:30</div>
+                                        <div style="color: #999;">王师傅</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 12px; line-height: 1.6;">
+                                        <div style="color: #52C41A; font-weight: 500;">2026-03-03 08:15</div>
+                                        <div style="color: #999;">李师傅</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 12px; line-height: 1.6;">
+                                        <div style="color: #722ED1; font-weight: 500;">2026-03-03 12:00</div>
+                                        <div style="color: #999;">张师傅</div>
+                                        <div style="color: #52C41A;">正常归还</div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>5</td>
+                                <td>T001-005</td>
+                                <td>立铣刀</td>
+                                <td>Φ10mm</td>
+                                <td>A-01-07</td>
+                                <td><span class="status-tag status-scrap">报废</span></td>
+                                <td>
+                                    <div style="font-size: 12px; line-height: 1.6;">
+                                        <div style="color: #1890FF; font-weight: 500;">2026-03-02 17:30</div>
+                                        <div style="color: #999;">王师傅</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 12px; line-height: 1.6;">
+                                        <div style="color: #52C41A; font-weight: 500;">2026-03-03 08:15</div>
+                                        <div style="color: #999;">李师傅</div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 12px; line-height: 1.6;">
+                                        <div style="color: #722ED1; font-weight: 500;">2026-03-03 12:00</div>
+                                        <div style="color: #999;">张师傅</div>
+                                        <div style="color: #FF4D4F;">报废处理</div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <!-- 操作记录 -->
+            <div class="module-card">
+                <div class="module-header">
+                    <div class="module-title">操作记录</div>
+                </div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>操作时间</th>
+                                <th>操作类型</th>
+                                <th>操作人</th>
+                                <th>操作内容</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2026-03-02 16:30:15</td>
+                                <td>创建</td>
+                                <td>系统</td>
+                                <td>自动生成备刀任务单</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+        
+        function printTask() {
+            alert('打印备刀任务单');
+        }
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

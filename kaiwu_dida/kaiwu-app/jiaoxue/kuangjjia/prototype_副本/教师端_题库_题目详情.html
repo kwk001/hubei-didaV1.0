@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>题目详情 - 普通题库</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb span {
+            color: #1890FF;
+            cursor: pointer;
+        }
+
+        .breadcrumb span:hover {
+            text-decoration: underline;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        .btn-back {
+            padding: 10px 20px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .btn-back:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .info-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .info-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 16px;
+        }
+
+        .info-label {
+            width: 100px;
+            font-size: 14px;
+            color: #666;
+            flex-shrink: 0;
+        }
+
+        .info-value {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .type-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .type-tag.single { background: #E6F7FF; color: #1890FF; }
+        .type-tag.multiple { background: #F6FFED; color: #52C41A; }
+        .type-tag.judge { background: #FFF7E6; color: #FA8C16; }
+        .type-tag.fill { background: #F9F0FF; color: #722ED1; }
+        .type-tag.essay { background: #FFF2F0; color: #FF4D4F; }
+
+        .difficulty-tag {
+            display: inline-block;
+            padding: 2px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .difficulty-tag.easy { background: #F6FFED; color: #52C41A; }
+        .difficulty-tag.medium { background: #FFF7E6; color: #FA8C16; }
+        .difficulty-tag.hard { background: #FFF2F0; color: #FF4D4F; }
+
+        .question-content {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.8;
+            padding: 16px;
+            background: #FAFAFA;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .option-list {
+            margin-top: 12px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            margin-bottom: 8px;
+            background: #F5F7FA;
+            border-radius: 6px;
+            border: 1px solid transparent;
+        }
+
+        .option-item.correct {
+            background: #F6FFED;
+            border-color: #B7EB8F;
+        }
+
+        .option-letter {
+            width: 28px;
+            height: 28px;
+            background: #1890FF;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .option-item.correct .option-letter {
+            background: #52C41A;
+        }
+
+        .option-text {
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .correct-badge {
+            font-size: 12px;
+            color: #52C41A;
+            font-weight: 500;
+        }
+
+        .answer-section {
+            margin-top: 20px;
+            padding: 16px;
+            background: #F6FFED;
+            border-radius: 8px;
+            border: 1px solid #B7EB8F;
+        }
+
+        .answer-section-title {
+            font-size: 14px;
+            color: #52C41A;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .answer-content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .analysis-section {
+            margin-top: 20px;
+            padding: 16px;
+            background: #E6F7FF;
+            border-radius: 8px;
+            border: 1px solid #91D5FF;
+        }
+
+        .analysis-section-title {
+            font-size: 14px;
+            color: #1890FF;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .btn-danger {
+            padding: 12px 24px;
+            background: #fff;
+            border: 1px solid #FF4D4F;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #FF4D4F;
+        }
+
+        .btn-danger:hover {
+            background: #FFF2F0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">
+                <span onclick="goBack()">普通题库</span> / 题目详情
+            </div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <div class="content-body">
+            <button class="btn-back" onclick="goBack()">
+                ← 返回列表
+            </button>
+
+            <!-- 基本信息 -->
+            <div class="info-card">
+                <div class="info-card-title">基本信息</div>
+                <div class="info-row">
+                    <div class="info-label">题目ID</div>
+                    <div class="info-value" id="questionId">1</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">所属课程</div>
+                    <div class="info-value" id="courseName">计算机基础</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">题型</div>
+                    <div class="info-value">
+                        <span class="type-tag single" id="questionType">单选题</span>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">难度</div>
+                    <div class="info-value">
+                        <span class="difficulty-tag easy" id="difficulty">简单</span>
+                    </div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">使用次数</div>
+                    <div class="info-value" id="useCount">15次</div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">创建时间</div>
+                    <div class="info-value" id="createTime">2025-01-10</div>
+                </div>
+            </div>
+
+            <!-- 题目内容 -->
+            <div class="info-card">
+                <div class="info-card-title">题目内容</div>
+                <div class="question-content" id="questionContent">
+                    计算机的CPU主要由哪两部分组成？
+                </div>
+
+                <!-- 选项列表 -->
+                <div class="option-list" id="optionList">
+                    <div class="option-item">
+                        <div class="option-letter">A</div>
+                        <div class="option-text">运算器和控制器</div>
+                    </div>
+                    <div class="option-item correct">
+                        <div class="option-letter">B</div>
+                        <div class="option-text">存储器和运算器</div>
+                        <div class="correct-badge">✓ 正确答案</div>
+                    </div>
+                    <div class="option-item">
+                        <div class="option-letter">C</div>
+                        <div class="option-text">输入设备和输出设备</div>
+                    </div>
+                    <div class="option-item">
+                        <div class="option-letter">D</div>
+                        <div class="option-text">主板和内存</div>
+                    </div>
+                </div>
+
+                <!-- 正确答案 -->
+                <div class="answer-section">
+                    <div class="answer-section-title">正确答案</div>
+                    <div class="answer-content" id="correctAnswer">A. 运算器和控制器</div>
+                </div>
+
+                <!-- 答案解析 -->
+                <div class="analysis-section">
+                    <div class="analysis-section-title">答案解析</div>
+                    <div class="answer-content" id="answerAnalysis">
+                        CPU（中央处理器）是计算机的核心部件，主要由运算器和控制器两部分组成。运算器负责执行算术运算和逻辑运算，控制器负责控制计算机各部件协调工作。
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="btn-group">
+                <button class="btn-danger" onclick="deleteQuestion()">删除</button>
+                <button class="btn-secondary" onclick="goBack()">返回</button>
+                <button class="btn-primary" onclick="editQuestion()">编辑</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 初始化页面
+        function init() {
+            const id = getUrlParam('id');
+            if (id) {
+                document.getElementById('questionId').textContent = id;
+                // 这里可以根据ID加载题目详情
+                loadQuestionDetail(id);
+            }
+        }
+
+        // 加载题目详情
+        function loadQuestionDetail(id) {
+            // 模拟数据，实际应从后端获取
+            const mockData = {
+                1: {
+                    course: '计算机基础',
+                    type: 'single',
+                    typeLabel: '单选题',
+                    difficulty: 'easy',
+                    difficultyLabel: '简单',
+                    useCount: 15,
+                    createTime: '2025-01-10',
+                    content: '计算机的CPU主要由哪两部分组成？',
+                    options: [
+                        { letter: 'A', text: '运算器和控制器', correct: true },
+                        { letter: 'B', text: '存储器和运算器', correct: false },
+                        { letter: 'C', text: '输入设备和输出设备', correct: false },
+                        { letter: 'D', text: '主板和内存', correct: false }
+                    ],
+                    correctAnswer: 'A',
+                    analysis: 'CPU（中央处理器）是计算机的核心部件，主要由运算器和控制器两部分组成。运算器负责执行算术运算和逻辑运算，控制器负责控制计算机各部件协调工作。'
+                }
+            };
+
+            const data = mockData[id] || mockData[1];
+            
+            document.getElementById('courseName').textContent = data.course;
+            document.getElementById('questionType').textContent = data.typeLabel;
+            document.getElementById('questionType').className = 'type-tag ' + data.type;
+            document.getElementById('difficulty').textContent = data.difficultyLabel;
+            document.getElementById('difficulty').className = 'difficulty-tag ' + data.difficulty;
+            document.getElementById('useCount').textContent = data.useCount + '次';
+            document.getElementById('createTime').textContent = data.createTime;
+            document.getElementById('questionContent').textContent = data.content;
+            document.getElementById('correctAnswer').textContent = data.correctAnswer + '. ' + data.options.find(o => o.correct).text;
+            document.getElementById('answerAnalysis').textContent = data.analysis;
+
+            // 渲染选项
+            const optionList = document.getElementById('optionList');
+            optionList.innerHTML = data.options.map(opt => `
+                <div class="option-item ${opt.correct ? 'correct' : ''}">
+                    <div class="option-letter">${opt.letter}</div>
+                    <div class="option-text">${opt.text}</div>
+                    ${opt.correct ? '<div class="correct-badge">✓ 正确答案</div>' : ''}
+                </div>
+            `).join('');
+        }
+
+        // 返回
+        function goBack() {
+            window.location.href = './教师端_题库.html';
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 菜单折叠
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 编辑题目
+        function editQuestion() {
+            const id = getUrlParam('id') || 1;
+            window.location.href = `./教师端_题库_编辑题目.html?id=${id}`;
+        }
+
+        // 删除题目
+        function deleteQuestion() {
+            if (confirm('确定要删除这道题目吗？删除后不可恢复。')) {
+                alert('题目删除成功！');
+                goBack();
+            }
+        }
+
+        // 页面加载时初始化
+        window.onload = init;
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

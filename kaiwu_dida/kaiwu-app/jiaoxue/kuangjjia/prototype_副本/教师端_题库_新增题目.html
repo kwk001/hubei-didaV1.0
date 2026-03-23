@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增题目 - 普通题库</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb span {
+            color: #1890FF;
+            cursor: pointer;
+        }
+
+        .breadcrumb span:hover {
+            text-decoration: underline;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        .btn-back {
+            padding: 10px 20px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+        }
+
+        .btn-back:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .form-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .form-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .form-label .required {
+            color: #FF4D4F;
+            margin-left: 4px;
+        }
+
+        .form-input, .form-select, .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus, .form-select:focus, .form-textarea:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+
+        .form-textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .option-list {
+            margin-top: 12px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .option-item input[type="radio"], .option-item input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .option-item input[type="text"] {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .option-item .btn-delete {
+            color: #FF4D4F;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .btn-add-option {
+            padding: 10px 20px;
+            border: 1px dashed #D9D9D9;
+            background: #FAFAFA;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .btn-add-option:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .answer-section {
+            margin-top: 20px;
+            padding: 16px;
+            background: #F6FFED;
+            border-radius: 8px;
+            border: 1px solid #B7EB8F;
+        }
+
+        .answer-section label {
+            display: block;
+            font-size: 14px;
+            color: #52C41A;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .selected-answer {
+            font-size: 16px;
+            color: #333;
+            font-weight: 600;
+            padding: 8px 0;
+        }
+
+        .selected-answer.empty {
+            color: #999;
+            font-weight: normal;
+        }
+
+        /* 选项样式优化 */
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+            padding: 12px;
+            background: #FAFAFA;
+            border-radius: 8px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .option-item:has(input[type="radio"]:checked),
+        .option-item:has(input[type="checkbox"]:checked) {
+            background: #F6FFED;
+            border-color: #52C41A;
+        }
+
+        .option-item input[type="radio"],
+        .option-item input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #52C41A;
+        }
+
+        .option-label {
+            width: 28px;
+            height: 28px;
+            background: #1890FF;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .option-item:has(input:checked) .option-label {
+            background: #52C41A;
+        }
+
+        .option-item input[type="text"] {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .option-item input[type="text"]:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+
+        /* 判断题样式 */
+        .judge-options {
+            display: flex;
+            gap: 20px;
+            margin-top: 12px;
+        }
+
+        .judge-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .judge-item input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: #52C41A;
+        }
+
+        .judge-label {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .judge-label.correct {
+            background: #F6FFED;
+            color: #52C41A;
+            border-color: #B7EB8F;
+        }
+
+        .judge-label.wrong {
+            background: #FFF2F0;
+            color: #FF4D4F;
+            border-color: #FFCCC7;
+        }
+
+        .judge-item input[type="radio"]:checked + .judge-label.correct {
+            background: #52C41A;
+            color: #fff;
+            border-color: #52C41A;
+        }
+
+        .judge-item input[type="radio"]:checked + .judge-label.wrong {
+            background: #FF4D4F;
+            color: #fff;
+            border-color: #FF4D4F;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">
+                <span onclick="goBack()">普通题库</span> / 新增题目
+            </div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <div class="content-body">
+            <button class="btn-back" onclick="goBack()">
+                ← 返回列表
+            </button>
+
+            <!-- 基本信息 -->
+            <div class="form-card">
+                <div class="form-card-title">基本信息</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">所属专业 <span class="required">*</span></label>
+                        <select class="form-select" id="majorSelect">
+                            <option value="">请选择专业</option>
+                            <option value="数控技术">数控技术</option>
+                            <option value="机械设计">机械设计</option>
+                            <option value="模具设计">模具设计</option>
+                            <option value="机电一体化">机电一体化</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">所属课程 <span class="required">*</span></label>
+                        <select class="form-select" id="courseSelect">
+                            <option value="">请选择课程</option>
+                            <option value="计算机基础">计算机基础</option>
+                            <option value="Java程序设计">Java程序设计</option>
+                            <option value="Web前端开发">Web前端开发</option>
+                            <option value="数据库原理">数据库原理</option>
+                            <option value="计算机网络">计算机网络</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">题型 <span class="required">*</span></label>
+                        <select class="form-select" id="questionType" onchange="changeQuestionType()">
+                            <option value="single">单选题</option>
+                            <option value="multiple">多选题</option>
+                            <option value="judge">判断题</option>
+                            <option value="fill">填空题</option>
+                            <option value="essay">简答题</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">难度 <span class="required">*</span></label>
+                        <select class="form-select" id="difficulty">
+                            <option value="easy">简单</option>
+                            <option value="medium">中等</option>
+                            <option value="hard">困难</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">是否公用</label>
+                        <select class="form-select" id="isPublic">
+                            <option value="false">否</option>
+                            <option value="true">是</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 题目内容 -->
+            <div class="form-card">
+                <div class="form-card-title">题目内容</div>
+                <div class="form-group">
+                    <label class="form-label">题干 <span class="required">*</span></label>
+                    <textarea class="form-textarea" id="questionContent" placeholder="请输入题目内容"></textarea>
+                </div>
+
+                <!-- 选项区域（单选/多选/判断） -->
+                <div id="optionsSection">
+                    <label class="form-label">选项设置 <span class="required">*</span> <small style="color: #999; font-weight: normal;">（点击选项前的圆圈/方框设置正确答案）</small></label>
+                    <div class="option-list" id="optionList">
+                        <div class="option-item">
+                            <input type="radio" name="correctAnswer" value="A" id="optA" onchange="updateCorrectAnswer()">
+                            <label for="optA" class="option-label">A</label>
+                            <input type="text" placeholder="请输入选项内容">
+                            <span class="btn-delete" onclick="deleteOption(this)">删除</span>
+                        </div>
+                        <div class="option-item">
+                            <input type="radio" name="correctAnswer" value="B" id="optB" onchange="updateCorrectAnswer()">
+                            <label for="optB" class="option-label">B</label>
+                            <input type="text" placeholder="请输入选项内容">
+                            <span class="btn-delete" onclick="deleteOption(this)">删除</span>
+                        </div>
+                    </div>
+                    <button class="btn-add-option" onclick="addOption()">+ 添加选项</button>
+                </div>
+
+                <!-- 判断题选项 -->
+                <div id="judgeSection" style="display: none;">
+                    <label class="form-label">正确答案 <span class="required">*</span></label>
+                    <div class="judge-options">
+                        <div class="judge-item">
+                            <input type="radio" name="judgeAnswer" value="正确" id="judgeTrue" checked>
+                            <label for="judgeTrue" class="judge-label correct">✓ 正确</label>
+                        </div>
+                        <div class="judge-item">
+                            <input type="radio" name="judgeAnswer" value="错误" id="judgeFalse">
+                            <label for="judgeFalse" class="judge-label wrong">✗ 错误</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 正确答案显示（只读） -->
+                <div class="answer-section" id="answerDisplaySection">
+                    <label>已选正确答案</label>
+                    <div class="selected-answer" id="selectedAnswer">请在上方选项中选择</div>
+                </div>
+
+                <!-- 答案解析 -->
+                <div class="form-group" style="margin-top: 20px;">
+                    <label class="form-label">答案解析</label>
+                    <textarea class="form-textarea" id="answerAnalysis" placeholder="请输入答案解析（选填）"></textarea>
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="goBack()">取消</button>
+                <button class="btn-primary" onclick="saveQuestion()">保存题目</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let optionCount = 2;
+
+        // 返回
+        function goBack() {
+            window.location.href = './教师端_题库.html';
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 菜单折叠
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 切换题型
+        function changeQuestionType() {
+            const type = document.getElementById('questionType').value;
+            const optionsSection = document.getElementById('optionsSection');
+            const judgeSection = document.getElementById('judgeSection');
+            const answerDisplaySection = document.getElementById('answerDisplaySection');
+            const optionList = document.getElementById('optionList');
+
+            if (type === 'single' || type === 'multiple') {
+                optionsSection.style.display = 'block';
+                judgeSection.style.display = 'none';
+                answerDisplaySection.style.display = 'block';
+                // 更新选项类型
+                const inputs = optionList.querySelectorAll('input[type="radio"], input[type="checkbox"]');
+                inputs.forEach(input => {
+                    input.type = type === 'single' ? 'radio' : 'checkbox';
+                    input.name = type === 'single' ? 'correctAnswer' : 'correctAnswer[]';
+                });
+                updateCorrectAnswer();
+            } else if (type === 'judge') {
+                optionsSection.style.display = 'none';
+                judgeSection.style.display = 'block';
+                answerDisplaySection.style.display = 'block';
+                updateJudgeAnswer();
+            } else {
+                // 填空题、简答题
+                optionsSection.style.display = 'none';
+                judgeSection.style.display = 'none';
+                answerDisplaySection.style.display = 'none';
+            }
+        }
+
+        // 更新正确答案显示
+        function updateCorrectAnswer() {
+            const type = document.getElementById('questionType').value;
+            const selectedAnswerDiv = document.getElementById('selectedAnswer');
+
+            if (type === 'single') {
+                const selected = document.querySelector('input[name="correctAnswer"]:checked');
+                if (selected) {
+                    selectedAnswerDiv.textContent = '选项 ' + selected.value;
+                    selectedAnswerDiv.classList.remove('empty');
+                } else {
+                    selectedAnswerDiv.textContent = '请在上方选项中选择';
+                    selectedAnswerDiv.classList.add('empty');
+                }
+            } else if (type === 'multiple') {
+                const selected = document.querySelectorAll('input[name="correctAnswer[]"]:checked');
+                if (selected.length > 0) {
+                    const values = Array.from(selected).map(s => s.value).join('、');
+                    selectedAnswerDiv.textContent = '选项 ' + values;
+                    selectedAnswerDiv.classList.remove('empty');
+                } else {
+                    selectedAnswerDiv.textContent = '请在上方选项中选择（可多选）';
+                    selectedAnswerDiv.classList.add('empty');
+                }
+            }
+        }
+
+        // 更新判断题答案
+        function updateJudgeAnswer() {
+            const selectedAnswerDiv = document.getElementById('selectedAnswer');
+            const selected = document.querySelector('input[name="judgeAnswer"]:checked');
+            if (selected) {
+                selectedAnswerDiv.textContent = selected.value;
+                selectedAnswerDiv.classList.remove('empty');
+            }
+        }
+
+        // 添加选项
+        function addOption() {
+            optionCount++;
+            const type = document.getElementById('questionType').value;
+            const optionList = document.getElementById('optionList');
+            const optionLetter = String.fromCharCode(64 + optionCount);
+            const inputType = type === 'single' ? 'radio' : 'checkbox';
+            const inputName = type === 'single' ? 'correctAnswer' : 'correctAnswer[]';
+
+            const optionItem = document.createElement('div');
+            optionItem.className = 'option-item';
+            optionItem.innerHTML = `
+                <input type="${inputType}" name="${inputName}" value="${optionLetter}" id="opt${optionLetter}" onchange="updateCorrectAnswer()">
+                <label for="opt${optionLetter}" class="option-label">${optionLetter}</label>
+                <input type="text" placeholder="请输入选项内容">
+                <span class="btn-delete" onclick="deleteOption(this)">删除</span>
+            `;
+            optionList.appendChild(optionItem);
+        }
+
+        // 删除选项
+        function deleteOption(element) {
+            if (optionCount <= 2) {
+                alert('至少需要保留两个选项');
+                return;
+            }
+            element.parentElement.remove();
+            optionCount--;
+            // 重新编号
+            const options = document.querySelectorAll('.option-item');
+            options.forEach((opt, index) => {
+                const letter = String.fromCharCode(65 + index);
+                opt.querySelector('input[type="text"]').placeholder = `选项 ${letter}`;
+                opt.querySelector('input[type="radio"], input[type="checkbox"]').value = letter;
+            });
+        }
+
+        // 保存题目
+        function saveQuestion() {
+            const major = document.getElementById('majorSelect').value;
+            const course = document.getElementById('courseSelect').value;
+            const type = document.getElementById('questionType').value;
+            const difficulty = document.getElementById('difficulty').value;
+            const content = document.getElementById('questionContent').value;
+
+            if (!major) {
+                alert('请选择所属专业');
+                return;
+            }
+            if (!course) {
+                alert('请选择所属课程');
+                return;
+            }
+            if (!content) {
+                alert('请输入题目内容');
+                return;
+            }
+
+            // 获取正确答案
+            let correctAnswer = '';
+            if (type === 'single') {
+                const selected = document.querySelector('input[name="correctAnswer"]:checked');
+                if (!selected) {
+                    alert('请选择正确答案');
+                    return;
+                }
+                correctAnswer = selected.value;
+            } else if (type === 'multiple') {
+                const selected = document.querySelectorAll('input[name="correctAnswer[]"]:checked');
+                if (selected.length === 0) {
+                    alert('请选择正确答案（可多选）');
+                    return;
+                }
+                correctAnswer = Array.from(selected).map(s => s.value).join(',');
+            } else if (type === 'judge') {
+                const selected = document.querySelector('input[name="judgeAnswer"]:checked');
+                if (!selected) {
+                    alert('请选择正确答案');
+                    return;
+                }
+                correctAnswer = selected.value;
+            } else {
+                // 填空题、简答题
+                const answerInput = document.getElementById('textAnswer');
+                if (answerInput && !answerInput.value.trim()) {
+                    alert('请输入正确答案');
+                    return;
+                }
+                correctAnswer = answerInput ? answerInput.value : '';
+            }
+
+            alert('题目保存成功！\n正确答案：' + correctAnswer);
+            goBack();
+        }
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

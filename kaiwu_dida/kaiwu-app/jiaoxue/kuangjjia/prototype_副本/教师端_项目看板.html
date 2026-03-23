@@ -1,0 +1,1034 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目看板 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background: #F5F7FA; 
+            display: flex; 
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 统计卡片 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-icon.pending { background: #FFF7E6; }
+        .stat-icon.in-progress { background: #E6F7FF; }
+        .stat-icon.completed { background: #F6FFED; }
+        .stat-icon.total { background: #F0F5FF; }
+        .stat-info {
+            flex: 1;
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* 筛选栏 */
+        .filter-bar {
+            background: #fff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-item label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .filter-item input,
+        .filter-item select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 140px;
+        }
+
+        /* 看板容器 */
+        .kanban-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            height: calc(100vh - 280px);
+        }
+
+        /* 看板列 */
+        .kanban-column {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        .kanban-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .kanban-title {
+            font-size: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .kanban-count {
+            background: #F0F0F0;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+            color: #666;
+        }
+        .kanban-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+            background: #FAFAFA;
+        }
+        .kanban-column.pending .kanban-header {
+            border-left: 4px solid #FA8C16;
+        }
+        .kanban-column.in-progress .kanban-header {
+            border-left: 4px solid #1890FF;
+        }
+        .kanban-column.completed .kanban-header {
+            border-left: 4px solid #52C41A;
+        }
+
+        /* 任务卡片 */
+        .task-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.06);
+            cursor: grab;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        .task-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transform: translateY(-2px);
+        }
+        .task-card.dragging {
+            opacity: 0.8;
+            cursor: grabbing;
+            transform: rotate(2deg);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        .task-card.drag-over {
+            border-color: #1890FF;
+            background: #F0F5FF;
+        }
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .task-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            flex: 1;
+            margin-right: 8px;
+        }
+        .task-priority {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .task-priority.high {
+            background: #FFF2F0;
+            color: #FF4D4F;
+        }
+        .task-priority.medium {
+            background: #FFF7E6;
+            color: #FA8C16;
+        }
+        .task-priority.low {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+        .task-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        .task-tag {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 12px;
+            color: #666;
+            background: #F5F5F5;
+            padding: 4px 8px;
+            border-radius: 4px;
+        }
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-assignee {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #666;
+        }
+        .task-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #1890FF;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 11px;
+        }
+        .task-date {
+            font-size: 12px;
+            color: #999;
+        }
+        .task-progress {
+            margin-top: 12px;
+        }
+        .progress-bar {
+            height: 6px;
+            background: #F0F0F0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #1890FF;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .progress-text {
+            font-size: 11px;
+            color: #666;
+            margin-top: 4px;
+            text-align: right;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: #1890FF;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success {
+            background: #52C41A;
+            color: #fff;
+        }
+        .btn-success:hover { background: #73D13D; }
+
+        /* 快捷操作按钮 */
+        .quick-actions {
+            position: fixed;
+            right: 20px;
+            bottom: 100px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            z-index: 100;
+        }
+        .quick-btn {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s;
+        }
+        .quick-btn:hover {
+            transform: scale(1.1);
+        }
+        .quick-btn.primary {
+            background: #1890FF;
+            color: #fff;
+        }
+        .quick-btn.success {
+            background: #52C41A;
+            color: #fff;
+        }
+
+        /* 弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .modal-close {
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* 表单 */
+        .form-row {
+            margin-bottom: 16px;
+        }
+        .form-item label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .form-item input,
+        .form-item select,
+        .form-item textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .form-item input:focus,
+        .form-item select:focus,
+        .form-item textarea:focus {
+            border-color: #1890FF;
+            outline: none;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .empty-state-text {
+            font-size: 14px;
+        }
+
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">首页 / 生产管理 / 项目看板</div>
+            <div class="user-info">
+                <span>👤 教师：张老师</span>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">项目看板</h1>
+                <button class="btn btn-primary" onclick="showAddTaskModal()">
+                    <i class="iconfont icon-add"></i> 新建任务
+                </button>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon pending">📋</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="pendingCount">0</div>
+                        <div class="stat-label">待处理</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon in-progress">🔄</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="inProgressCount">0</div>
+                        <div class="stat-label">进行中</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon completed">✅</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="completedCount">0</div>
+                        <div class="stat-label">已完成</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon total">📊</div>
+                    <div class="stat-info">
+                        <div class="stat-value" id="totalCount">0</div>
+                        <div class="stat-label">任务总数</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <div class="filter-item">
+                    <label>项目</label>
+                    <select id="projectFilter" onchange="filterTasks()">
+                        <option value="">全部项目</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>负责人</label>
+                    <select id="assigneeFilter" onchange="filterTasks()">
+                        <option value="">全部负责人</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>优先级</label>
+                    <select id="priorityFilter" onchange="filterTasks()">
+                        <option value="">全部优先级</option>
+                        <option value="high">高</option>
+                        <option value="medium">中</option>
+                        <option value="low">低</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- 看板容器 -->
+            <div class="kanban-container">
+                <!-- 待处理列 -->
+                <div class="kanban-column pending" data-status="pending">
+                    <div class="kanban-header">
+                        <span class="kanban-title">📋 待处理</span>
+                        <span class="kanban-count" id="pendingBadge">0</span>
+                    </div>
+                    <div class="kanban-body" id="pendingColumn" ondrop="drop(event, 'pending')" ondragover="allowDrop(event)">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 进行中列 -->
+                <div class="kanban-column in-progress" data-status="in-progress">
+                    <div class="kanban-header">
+                        <span class="kanban-title">🔄 进行中</span>
+                        <span class="kanban-count" id="inProgressBadge">0</span>
+                    </div>
+                    <div class="kanban-body" id="inProgressColumn" ondrop="drop(event, 'in-progress')" ondragover="allowDrop(event)">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 已完成列 -->
+                <div class="kanban-column completed" data-status="completed">
+                    <div class="kanban-header">
+                        <span class="kanban-title">✅ 已完成</span>
+                        <span class="kanban-count" id="completedBadge">0</span>
+                    </div>
+                    <div class="kanban-body" id="completedColumn" ondrop="drop(event, 'completed')" ondragover="allowDrop(event)">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 快捷操作按钮 -->
+    <div class="quick-actions">
+        <button class="quick-btn primary" onclick="showAddTaskModal()" title="新建任务">➕</button>
+        <button class="quick-btn success" onclick="saveAllChanges()" title="保存所有更改">💾</button>
+    </div>
+
+    <!-- 添加/编辑任务弹窗 -->
+    <div class="modal" id="taskModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="modalTitle">新建任务</span>
+                <button class="modal-close" onclick="closeModal('taskModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>任务名称 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" id="taskName" placeholder="输入任务名称">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>所属项目 <span style="color: #FF4D4F;">*</span></label>
+                        <select id="taskProject">
+                            <option value="">请选择项目</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>状态 <span style="color: #FF4D4F;">*</span></label>
+                        <select id="taskStatus">
+                            <option value="pending">待处理</option>
+                            <option value="in-progress">进行中</option>
+                            <option value="completed">已完成</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>优先级</label>
+                        <select id="taskPriority">
+                            <option value="high">高</option>
+                            <option value="medium" selected>中</option>
+                            <option value="low">低</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>负责人</label>
+                        <select id="taskAssignee">
+                            <option value="张三">张三</option>
+                            <option value="李四">李四</option>
+                            <option value="王五">王五</option>
+                            <option value="赵六">赵六</option>
+                            <option value="钱七">钱七</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>截止日期</label>
+                        <input type="date" id="taskDeadline">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>进度 (%)</label>
+                        <input type="range" id="taskProgress" min="0" max="100" value="0">
+                        <span id="progressValue">0%</span>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>任务描述</label>
+                        <textarea id="taskDesc" rows="3" placeholder="输入任务描述"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('taskModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveTask()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 任务数据
+        let tasks = [
+            { id: 1, name: '下料加工', project: '轴类零件生产项目', status: 'completed', priority: 'medium', assignee: '张三', deadline: '2024-03-15', progress: 100, desc: '原材料切割下料' },
+            { id: 2, name: '粗车加工', project: '轴类零件生产项目', status: 'completed', priority: 'medium', assignee: '李四', deadline: '2024-03-18', progress: 100, desc: '粗车外形和端面' },
+            { id: 3, name: '热处理', project: '轴类零件生产项目', status: 'in-progress', priority: 'high', assignee: '王五', deadline: '2024-03-20', progress: 60, desc: '调质热处理' },
+            { id: 4, name: '精车加工', project: '轴类零件生产项目', status: 'pending', priority: 'high', assignee: '赵六', deadline: '2024-03-22', progress: 0, desc: '精车达到图纸要求' },
+            { id: 5, name: '质量检测', project: '轴类零件生产项目', status: 'pending', priority: 'medium', assignee: '钱七', deadline: '2024-03-23', progress: 0, desc: '最终质量检测' },
+            { id: 6, name: '车削加工', project: '法兰盘加工项目', status: 'in-progress', priority: 'medium', assignee: '张三', deadline: '2024-03-19', progress: 75, desc: '车削内外圆和端面' },
+            { id: 7, name: '钻孔攻丝', project: '法兰盘加工项目', status: 'pending', priority: 'low', assignee: '李四', deadline: '2024-03-21', progress: 0, desc: '加工安装孔' },
+            { id: 8, name: '滚齿加工', project: '齿轮加工项目', status: 'in-progress', priority: 'high', assignee: '王五', deadline: '2024-03-18', progress: 50, desc: '滚齿加工齿形' },
+            { id: 9, name: '热处理', project: '齿轮加工项目', status: 'pending', priority: 'high', assignee: '赵六', deadline: '2024-03-20', progress: 0, desc: '齿轮热处理' },
+            { id: 10, name: '磨齿加工', project: '齿轮加工项目', status: 'pending', priority: 'medium', assignee: '钱七', deadline: '2024-03-22', progress: 0, desc: '磨齿精加工' }
+        ];
+
+        let projects = ['轴类零件生产项目', '法兰盘加工项目', '齿轮加工项目'];
+        let assignees = ['张三', '李四', '王五', '赵六', '钱七'];
+        let currentEditingTask = null;
+        let draggedTask = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            initFilters();
+            initProgressSlider();
+            renderKanban();
+            updateStats();
+        });
+
+        // 初始化筛选器
+        function initFilters() {
+            const projectSelect = document.getElementById('projectFilter');
+            projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project;
+                option.textContent = project;
+                projectSelect.appendChild(option);
+            });
+
+            const assigneeSelect = document.getElementById('assigneeFilter');
+            assignees.forEach(assignee => {
+                const option = document.createElement('option');
+                option.value = assignee;
+                option.textContent = assignee;
+                assigneeSelect.appendChild(option);
+            });
+
+            const taskProjectSelect = document.getElementById('taskProject');
+            projects.forEach(project => {
+                const option = document.createElement('option');
+                option.value = project;
+                option.textContent = project;
+                taskProjectSelect.appendChild(option);
+            });
+        }
+
+        // 初始化进度滑块
+        function initProgressSlider() {
+            const slider = document.getElementById('taskProgress');
+            const value = document.getElementById('progressValue');
+            slider.addEventListener('input', function() {
+                value.textContent = this.value + '%';
+            });
+        }
+
+        // 更新统计
+        function updateStats() {
+            const pending = tasks.filter(t => t.status === 'pending').length;
+            const inProgress = tasks.filter(t => t.status === 'in-progress').length;
+            const completed = tasks.filter(t => t.status === 'completed').length;
+
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('inProgressCount').textContent = inProgress;
+            document.getElementById('completedCount').textContent = completed;
+            document.getElementById('totalCount').textContent = tasks.length;
+
+            document.getElementById('pendingBadge').textContent = pending;
+            document.getElementById('inProgressBadge').textContent = inProgress;
+            document.getElementById('completedBadge').textContent = completed;
+        }
+
+        // 渲染看板
+        function renderKanban() {
+            const filteredTasks = filterTasksData();
+
+            // 清空列
+            document.getElementById('pendingColumn').innerHTML = '';
+            document.getElementById('inProgressColumn').innerHTML = '';
+            document.getElementById('completedColumn').innerHTML = '';
+
+            // 按状态分组渲染
+            filteredTasks.forEach(task => {
+                const card = createTaskCard(task);
+                document.getElementById(task.status + 'Column').appendChild(card);
+            });
+
+            // 显示空状态
+            ['pending', 'in-progress', 'completed'].forEach(status => {
+                const column = document.getElementById(status + 'Column');
+                if (column.children.length === 0) {
+                    column.innerHTML = `
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📭</div>
+                            <div class="empty-state-text">暂无任务</div>
+                        </div>
+                    `;
+                }
+            });
+        }
+
+        // 筛选任务数据
+        function filterTasksData() {
+            const projectFilter = document.getElementById('projectFilter').value;
+            const assigneeFilter = document.getElementById('assigneeFilter').value;
+            const priorityFilter = document.getElementById('priorityFilter').value;
+
+            return tasks.filter(task => {
+                if (projectFilter && task.project !== projectFilter) return false;
+                if (assigneeFilter && task.assignee !== assigneeFilter) return false;
+                if (priorityFilter && task.priority !== priorityFilter) return false;
+                return true;
+            });
+        }
+
+        // 创建任务卡片
+        function createTaskCard(task) {
+            const card = document.createElement('div');
+            card.className = 'task-card';
+            card.draggable = true;
+            card.dataset.taskId = task.id;
+
+            const priorityMap = { high: '高', medium: '中', low: '低' };
+            const priorityClass = task.priority;
+
+            card.innerHTML = `
+                <div class="task-header">
+                    <span class="task-title">${task.name}</span>
+                    <span class="task-priority ${priorityClass}">${priorityMap[task.priority]}</span>
+                </div>
+                <div class="task-info">
+                    <span class="task-tag">📁 ${task.project}</span>
+                    <span class="task-tag">📅 ${task.deadline}</span>
+                </div>
+                <div class="task-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${task.progress}%; background: ${getProgressColor(task.progress)};"></div>
+                    </div>
+                    <div class="progress-text">${task.progress}%</div>
+                </div>
+                <div class="task-footer">
+                    <div class="task-assignee">
+                        <div class="task-avatar">${task.assignee.charAt(0)}</div>
+                        <span>${task.assignee}</span>
+                    </div>
+                    <span class="task-date">${task.deadline}</span>
+                </div>
+            `;
+
+            // 拖拽事件
+            card.addEventListener('dragstart', function(e) {
+                draggedTask = task;
+                card.classList.add('dragging');
+                e.dataTransfer.effectAllowed = 'move';
+            });
+
+            card.addEventListener('dragend', function() {
+                card.classList.remove('dragging');
+                draggedTask = null;
+            });
+
+            // 点击编辑
+            card.addEventListener('click', function() {
+                editTask(task.id);
+            });
+
+            return card;
+        }
+
+        // 获取进度颜色
+        function getProgressColor(progress) {
+            if (progress < 30) return '#FF4D4F';
+            if (progress < 70) return '#FA8C16';
+            return '#52C41A';
+        }
+
+        // 允许拖放
+        function allowDrop(e) {
+            e.preventDefault();
+            e.currentTarget.classList.add('drag-over');
+        }
+
+        // 拖放放下
+        function drop(e, newStatus) {
+            e.preventDefault();
+            e.currentTarget.classList.remove('drag-over');
+
+            if (!draggedTask) return;
+
+            // 更新任务状态
+            draggedTask.status = newStatus;
+
+            // 根据状态更新进度
+            if (newStatus === 'completed') {
+                draggedTask.progress = 100;
+            } else if (newStatus === 'pending') {
+                draggedTask.progress = 0;
+            }
+
+            renderKanban();
+            updateStats();
+            showNotification(`任务已移动到${getStatusName(newStatus)}`, 'success');
+        }
+
+        // 获取状态名称
+        function getStatusName(status) {
+            const map = { pending: '待处理', 'in-progress': '进行中', completed: '已完成' };
+            return map[status] || status;
+        }
+
+        // 筛选任务
+        function filterTasks() {
+            renderKanban();
+        }
+
+        // 显示添加任务弹窗
+        function showAddTaskModal() {
+            currentEditingTask = null;
+            document.getElementById('modalTitle').textContent = '新建任务';
+            document.getElementById('taskName').value = '';
+            document.getElementById('taskProject').value = '';
+            document.getElementById('taskStatus').value = 'pending';
+            document.getElementById('taskPriority').value = 'medium';
+            document.getElementById('taskAssignee').value = '张三';
+            document.getElementById('taskDeadline').value = formatDate(new Date());
+            document.getElementById('taskProgress').value = 0;
+            document.getElementById('progressValue').textContent = '0%';
+            document.getElementById('taskDesc').value = '';
+            openModal('taskModal');
+        }
+
+        // 编辑任务
+        function editTask(taskId) {
+            const task = tasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            currentEditingTask = taskId;
+            document.getElementById('modalTitle').textContent = '编辑任务';
+            document.getElementById('taskName').value = task.name;
+            document.getElementById('taskProject').value = task.project;
+            document.getElementById('taskStatus').value = task.status;
+            document.getElementById('taskPriority').value = task.priority;
+            document.getElementById('taskAssignee').value = task.assignee;
+            document.getElementById('taskDeadline').value = task.deadline;
+            document.getElementById('taskProgress').value = task.progress;
+            document.getElementById('progressValue').textContent = task.progress + '%';
+            document.getElementById('taskDesc').value = task.desc || '';
+            openModal('taskModal');
+        }
+
+        // 保存任务
+        function saveTask() {
+            const name = document.getElementById('taskName').value;
+            const project = document.getElementById('taskProject').value;
+            const status = document.getElementById('taskStatus').value;
+            const priority = document.getElementById('taskPriority').value;
+            const assignee = document.getElementById('taskAssignee').value;
+            const deadline = document.getElementById('taskDeadline').value;
+            const progress = parseInt(document.getElementById('taskProgress').value);
+            const desc = document.getElementById('taskDesc').value;
+
+            if (!name || !project) {
+                alert('请填写必填项！');
+                return;
+            }
+
+            if (currentEditingTask) {
+                // 编辑现有任务
+                const task = tasks.find(t => t.id === currentEditingTask);
+                task.name = name;
+                task.project = project;
+                task.status = status;
+                task.priority = priority;
+                task.assignee = assignee;
+                task.deadline = deadline;
+                task.progress = progress;
+                task.desc = desc;
+                showNotification('任务已更新', 'success');
+            } else {
+                // 添加新任务
+                const newTask = {
+                    id: Date.now(),
+                    name: name,
+                    project: project,
+                    status: status,
+                    priority: priority,
+                    assignee: assignee,
+                    deadline: deadline,
+                    progress: progress,
+                    desc: desc
+                };
+                tasks.push(newTask);
+                showNotification('新任务已创建', 'success');
+            }
+
+            renderKanban();
+            updateStats();
+            closeModal('taskModal');
+        }
+
+        // 保存所有更改
+        function saveAllChanges() {
+            showNotification('所有更改已保存', 'success');
+        }
+
+        // 格式化日期
+        function formatDate(date) {
+            return date.toISOString().split('T')[0];
+        }
+
+        // 打开弹窗
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = './login.html';
+            }
+        }
+
+        // 显示通知
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                padding: 12px 20px;
+                border-radius: 4px;
+                color: #fff;
+                font-size: 13px;
+                z-index: 9999;
+                animation: slideIn 0.3s ease;
+            `;
+            notification.style.background = type === 'success' ? '#52C41A' : '#1890FF';
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // 点击弹窗外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

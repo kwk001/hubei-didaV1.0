@@ -1,0 +1,1244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>项目模板管理 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; 
+            background: #F5F7FA; 
+            display: flex; 
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .content {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+
+        /* 页面标题 */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 统计卡片 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            padding: 16px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* 主布局 */
+        .main-layout {
+            display: grid;
+            grid-template-columns: 320px 1fr;
+            gap: 20px;
+            height: calc(100vh - 200px);
+        }
+
+        /* 左侧模板列表 */
+        .template-list-panel {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+        }
+        .panel-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .panel-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+        .panel-body {
+            flex: 1;
+            overflow: auto;
+            padding: 12px;
+        }
+
+        /* 模板卡片 */
+        .template-card {
+            border: 2px solid #E8E8E8;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .template-card:hover {
+            border-color: #1890FF;
+            box-shadow: 0 2px 8px rgba(24,144,255,0.15);
+        }
+        .template-card.active {
+            border-color: #1890FF;
+            background: #F0F5FF;
+        }
+        .template-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .template-info {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+        .template-tags {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            flex-wrap: wrap;
+        }
+        .template-tag {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        /* 右侧详情面板 */
+        .template-detail-panel {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .detail-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .detail-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .detail-body {
+            flex: 1;
+            overflow: auto;
+            padding: 20px;
+        }
+
+        /* 阶段时间轴 */
+        .stage-timeline {
+            position: relative;
+            padding-left: 32px;
+        }
+        .stage-timeline::before {
+            content: '';
+            position: absolute;
+            left: 11px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #E8E8E8;
+        }
+        .stage-item {
+            position: relative;
+            margin-bottom: 20px;
+            padding: 16px;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            transition: all 0.3s;
+        }
+        .stage-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        .stage-item.delayed {
+            border-color: #FF4D4F;
+            background: #FFF2F0;
+        }
+        .stage-item.delayed .stage-dot {
+            background: #FF4D4F;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255,77,79,0.4); }
+            50% { box-shadow: 0 0 0 8px rgba(255,77,79,0); }
+        }
+        .stage-dot {
+            position: absolute;
+            left: -26px;
+            top: 20px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #1890FF;
+            border: 2px solid #fff;
+            box-shadow: 0 0 0 2px #E8E8E8;
+        }
+        .stage-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+        .stage-name {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+        .stage-duration {
+            font-size: 12px;
+            color: #666;
+            background: #F5F5F5;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+        .stage-delay-badge {
+            background: #FF4D4F;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        .stage-color-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+            display: inline-block;
+            margin-right: 8px;
+        }
+
+        /* 预警配置区域 */
+        .alert-config {
+            background: #FAFAFA;
+            border-radius: 6px;
+            padding: 12px;
+            margin-top: 12px;
+        }
+        .alert-config-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .alert-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 2fr;
+            gap: 10px;
+            margin-bottom: 8px;
+            align-items: center;
+        }
+        .alert-row:last-child {
+            margin-bottom: 0;
+        }
+        .alert-label {
+            font-size: 12px;
+            color: #666;
+        }
+        .alert-input {
+            padding: 6px 10px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .alert-input:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+
+        /* 按钮样式 */
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary {
+            background: #1890FF;
+            color: #fff;
+        }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success {
+            background: #52C41A;
+            color: #fff;
+        }
+        .btn-success:hover { background: #73D13D; }
+        .btn-warning {
+            background: #FA8C16;
+            color: #fff;
+        }
+        .btn-warning:hover { background: #FFA940; }
+        .btn-danger {
+            background: #FF4D4F;
+            color: #fff;
+        }
+        .btn-danger:hover { background: #FF7875; }
+        .btn-default {
+            background: #fff;
+            color: #666;
+            border: 1px solid #D9D9D9;
+        }
+        .btn-default:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .btn-sm {
+            padding: 4px 10px;
+            font-size: 12px;
+        }
+
+        /* 弹窗 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 90vh;
+            overflow: auto;
+        }
+        .modal-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .modal-close {
+            font-size: 20px;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .modal-body {
+            padding: 20px;
+        }
+        .modal-footer {
+            padding: 16px 20px;
+            border-top: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* 表单 */
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .form-item {
+            flex: 1;
+        }
+        .form-item label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+        .form-item input,
+        .form-item select,
+        .form-item textarea {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .form-item input:focus,
+        .form-item select:focus,
+        .form-item textarea:focus {
+            border-color: #1890FF;
+            outline: none;
+        }
+
+        /* 颜色选择器 */
+        .color-picker {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+        .color-option {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s;
+        }
+        .color-option:hover {
+            transform: scale(1.1);
+        }
+        .color-option.selected {
+            border-color: #333;
+            box-shadow: 0 0 0 2px #fff, 0 0 0 4px #1890FF;
+        }
+
+        /* 空状态 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+        .empty-state-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+        .empty-state-text {
+            font-size: 14px;
+        }
+
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">首页 / 生产管理 / 项目模板管理</div>
+            <div class="user-info">
+                <span>👤 教师：张老师</span>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- 页面标题 -->
+            <div class="page-header">
+                <h1 class="page-title">项目模板管理</h1>
+                <button class="btn btn-success" onclick="showAddTemplateModal()">
+                    <i class="iconfont icon-add"></i> 新增模板
+                </button>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTemplates">0</div>
+                    <div class="stat-label">模板总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="totalStages">0</div>
+                    <div class="stat-label">阶段总数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="alertConfigs">0</div>
+                    <div class="stat-label">预警配置</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="delayedStages">0</div>
+                    <div class="stat-label">延期阶段</div>
+                </div>
+            </div>
+
+            <!-- 主布局 -->
+            <div class="main-layout">
+                <!-- 左侧模板列表 -->
+                <div class="template-list-panel">
+                    <div class="panel-header">
+                        <span class="panel-title">📋 模板列表</span>
+                    </div>
+                    <div class="panel-body" id="templateList">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 右侧详情面板 -->
+                <div class="template-detail-panel">
+                    <div class="detail-header">
+                        <span class="detail-title" id="detailTitle">阶段计划配置</span>
+                        <div class="detail-actions">
+                            <button class="btn btn-primary btn-sm" onclick="showAddStageModal()">
+                                <i class="iconfont icon-add"></i> 添加阶段
+                            </button>
+                            <button class="btn btn-warning btn-sm" onclick="editTemplate()">
+                                <i class="iconfont icon-edit"></i> 编辑
+                            </button>
+                            <button class="btn btn-danger btn-sm" onclick="deleteTemplate()">
+                                <i class="iconfont icon-delete"></i> 删除
+                            </button>
+                        </div>
+                    </div>
+                    <div class="detail-body" id="stageDetail">
+                        <div class="empty-state">
+                            <div class="empty-state-icon">📋</div>
+                            <div class="empty-state-text">请选择左侧模板查看详情</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增/编辑模板弹窗 -->
+    <div class="modal" id="templateModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="templateModalTitle">新增项目模板</span>
+                <button class="modal-close" onclick="closeModal('templateModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>模板名称 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" id="templateName" placeholder="请输入模板名称">
+                    </div>
+                    <div class="form-item">
+                        <label>适用产品类型 <span style="color: #FF4D4F;">*</span></label>
+                        <select id="productType">
+                            <option value="">请选择产品类型</option>
+                            <option value="轴类零件">轴类零件</option>
+                            <option value="盘类零件">盘类零件</option>
+                            <option value="箱体零件">箱体零件</option>
+                            <option value="异形零件">异形零件</option>
+                            <option value="装配组件">装配组件</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>模板描述</label>
+                        <textarea id="templateDesc" rows="3" placeholder="请输入模板描述"></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('templateModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveTemplate()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增/编辑阶段弹窗 -->
+    <div class="modal" id="stageModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title" id="stageModalTitle">添加阶段</span>
+                <button class="modal-close" onclick="closeModal('stageModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>阶段名称 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" id="stageName" placeholder="请输入阶段名称">
+                    </div>
+                    <div class="form-item">
+                        <label>阶段时长(天) <span style="color: #FF4D4F;">*</span></label>
+                        <input type="number" id="stageDuration" value="1" min="1">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>阶段颜色 <span style="color: #FF4D4F;">*</span></label>
+                        <div class="color-picker">
+                            <div class="color-option selected" style="background: #1890FF;" data-color="#1890FF" onclick="selectColor(this)"></div>
+                            <div class="color-option" style="background: #52C41A;" data-color="#52C41A" onclick="selectColor(this)"></div>
+                            <div class="color-option" style="background: #FA8C16;" data-color="#FA8C16" onclick="selectColor(this)"></div>
+                            <div class="color-option" style="background: #FF4D4F;" data-color="#FF4D4F" onclick="selectColor(this)"></div>
+                            <div class="color-option" style="background: #722ED1;" data-color="#722ED1" onclick="selectColor(this)"></div>
+                            <div class="color-option" style="background: #13C2C2;" data-color="#13C2C2" onclick="selectColor(this)"></div>
+                            <div class="color-option" style="background: #EB2F96;" data-color="#EB2F96" onclick="selectColor(this)"></div>
+                            <div class="color-option" style="background: #FADB14;" data-color="#FADB14" onclick="selectColor(this)"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>阶段描述</label>
+                        <textarea id="stageDesc" rows="2" placeholder="请输入阶段描述"></textarea>
+                    </div>
+                </div>
+
+                <!-- 预警配置 -->
+                <div style="background: #F6FFED; padding: 16px; border-radius: 8px; margin-top: 16px;">
+                    <div style="font-size: 14px; font-weight: 600; color: #389E0D; margin-bottom: 12px;">
+                        🔔 邮件预警配置
+                    </div>
+                    
+                    <!-- 延期预警 -->
+                    <div style="margin-bottom: 16px;">
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <input type="checkbox" id="delayAlertEnabled" style="margin-right: 8px;">
+                            <label style="margin: 0; font-weight: 500;">启用延期预警</label>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-item">
+                                <label>延期天数</label>
+                                <input type="number" id="delayDays" value="1" min="1" placeholder="延期几天后发送">
+                            </div>
+                            <div class="form-item">
+                                <label>发送时间</label>
+                                <input type="time" id="delaySendTime" value="09:00">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-item">
+                                <label>收件人邮箱</label>
+                                <input type="text" id="delayRecipients" placeholder="多个邮箱用逗号分隔">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 提前预警 -->
+                    <div>
+                        <div style="display: flex; align-items: center; margin-bottom: 8px;">
+                            <input type="checkbox" id="earlyAlertEnabled" style="margin-right: 8px;">
+                            <label style="margin: 0; font-weight: 500;">启用提前预警</label>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-item">
+                                <label>提前天数</label>
+                                <input type="number" id="earlyDays" value="3" min="1" placeholder="提前几天发送">
+                            </div>
+                            <div class="form-item">
+                                <label>发送时间</label>
+                                <input type="time" id="earlySendTime" value="09:00">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-item">
+                                <label>收件人邮箱</label>
+                                <input type="text" id="earlyRecipients" placeholder="多个邮箱用逗号分隔">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('stageModal')">取消</button>
+                <button class="btn btn-primary" onclick="saveStage()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模板数据
+        let templates = [
+            {
+                id: 1,
+                name: '标准轴类零件模板',
+                productType: '轴类零件',
+                desc: '适用于各类轴类零件的加工生产',
+                stages: [
+                    {
+                        id: 1,
+                        name: '下料',
+                        duration: 1,
+                        color: '#1890FF',
+                        desc: '原材料切割下料',
+                        isDelayed: false,
+                        alertConfig: {
+                            delayEnabled: true,
+                            delayDays: 1,
+                            delaySendTime: '09:00',
+                            delayRecipients: 'teacher@school.com',
+                            earlyEnabled: true,
+                            earlyDays: 1,
+                            earlySendTime: '09:00',
+                            earlyRecipients: 'teacher@school.com'
+                        }
+                    },
+                    {
+                        id: 2,
+                        name: '粗车加工',
+                        duration: 2,
+                        color: '#52C41A',
+                        desc: '粗车外形和端面',
+                        isDelayed: false,
+                        alertConfig: {
+                            delayEnabled: true,
+                            delayDays: 1,
+                            delaySendTime: '09:00',
+                            delayRecipients: 'teacher@school.com',
+                            earlyEnabled: true,
+                            earlyDays: 1,
+                            earlySendTime: '09:00',
+                            earlyRecipients: 'teacher@school.com'
+                        }
+                    },
+                    {
+                        id: 3,
+                        name: '热处理',
+                        duration: 3,
+                        color: '#FA8C16',
+                        desc: '调质热处理',
+                        isDelayed: true,
+                        alertConfig: {
+                            delayEnabled: true,
+                            delayDays: 1,
+                            delaySendTime: '09:00',
+                            delayRecipients: 'teacher@school.com,manager@school.com',
+                            earlyEnabled: false,
+                            earlyDays: 2,
+                            earlySendTime: '09:00',
+                            earlyRecipients: 'teacher@school.com'
+                        }
+                    },
+                    {
+                        id: 4,
+                        name: '精车加工',
+                        duration: 2,
+                        color: '#722ED1',
+                        desc: '精车达到图纸要求',
+                        isDelayed: false,
+                        alertConfig: {
+                            delayEnabled: true,
+                            delayDays: 1,
+                            delaySendTime: '09:00',
+                            delayRecipients: 'teacher@school.com',
+                            earlyEnabled: true,
+                            earlyDays: 1,
+                            earlySendTime: '09:00',
+                            earlyRecipients: 'teacher@school.com'
+                        }
+                    }
+                ]
+            },
+            {
+                id: 2,
+                name: '盘类零件模板',
+                productType: '盘类零件',
+                desc: '适用于法兰盘、齿轮等盘类零件',
+                stages: [
+                    {
+                        id: 1,
+                        name: '下料',
+                        duration: 1,
+                        color: '#1890FF',
+                        desc: '圆钢下料',
+                        isDelayed: false,
+                        alertConfig: {
+                            delayEnabled: true,
+                            delayDays: 1,
+                            delaySendTime: '09:00',
+                            delayRecipients: 'teacher@school.com',
+                            earlyEnabled: true,
+                            earlyDays: 1,
+                            earlySendTime: '09:00',
+                            earlyRecipients: 'teacher@school.com'
+                        }
+                    },
+                    {
+                        id: 2,
+                        name: '车削加工',
+                        duration: 3,
+                        color: '#52C41A',
+                        desc: '车削内外圆和端面',
+                        isDelayed: false,
+                        alertConfig: {
+                            delayEnabled: true,
+                            delayDays: 1,
+                            delaySendTime: '09:00',
+                            delayRecipients: 'teacher@school.com',
+                            earlyEnabled: true,
+                            earlyDays: 1,
+                            earlySendTime: '09:00',
+                            earlyRecipients: 'teacher@school.com'
+                        }
+                    },
+                    {
+                        id: 3,
+                        name: '钻孔攻丝',
+                        duration: 2,
+                        color: '#13C2C2',
+                        desc: '加工安装孔',
+                        isDelayed: false,
+                        alertConfig: {
+                            delayEnabled: true,
+                            delayDays: 1,
+                            delaySendTime: '09:00',
+                            delayRecipients: 'teacher@school.com',
+                            earlyEnabled: true,
+                            earlyDays: 1,
+                            earlySendTime: '09:00',
+                            earlyRecipients: 'teacher@school.com'
+                        }
+                    }
+                ]
+            },
+            {
+                id: 3,
+                name: '箱体零件模板',
+                productType: '箱体零件',
+                desc: '适用于减速器箱体、泵体等',
+                stages: [
+                    {
+                        id: 1,
+                        name: '铸造/下料',
+                        duration: 5,
+                        color: '#1890FF',
+                        desc: '毛坯准备',
+                        isDelayed: true,
+                        alertConfig: {
+                            delayEnabled: true,
+                            delayDays: 2,
+                            delaySendTime: '09:00',
+                            delayRecipients: 'teacher@school.com,manager@school.com',
+                            earlyEnabled: false,
+                            earlyDays: 3,
+                            earlySendTime: '09:00',
+                            earlyRecipients: 'teacher@school.com'
+                        }
+                    },
+                    {
+                        id: 2,
+                        name: '铣削加工',
+                        duration: 4,
+                        color: '#FA8C16',
+                        desc: '铣削各平面',
+                        isDelayed: false,
+                        alertConfig: {
+                            delayEnabled: true,
+                            delayDays: 1,
+                            delaySendTime: '09:00',
+                            delayRecipients: 'teacher@school.com',
+                            earlyEnabled: true,
+                            earlyDays: 2,
+                            earlySendTime: '09:00',
+                            earlyRecipients: 'teacher@school.com'
+                        }
+                    },
+                    {
+                        id: 3,
+                        name: '镗孔加工',
+                        duration: 3,
+                        color: '#722ED1',
+                        desc: '镗削轴承孔',
+                        isDelayed: false,
+                        alertConfig: {
+                            delayEnabled: true,
+                            delayDays: 1,
+                            delaySendTime: '09:00',
+                            delayRecipients: 'teacher@school.com',
+                            earlyEnabled: true,
+                            earlyDays: 1,
+                            earlySendTime: '09:00',
+                            earlyRecipients: 'teacher@school.com'
+                        }
+                    }
+                ]
+            }
+        ];
+
+        let currentTemplateId = null;
+        let currentStageId = null;
+        let selectedColor = '#1890FF';
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTemplateList();
+            updateStats();
+        });
+
+        // 更新统计
+        function updateStats() {
+            document.getElementById('totalTemplates').textContent = templates.length;
+            const totalStages = templates.reduce((sum, t) => sum + t.stages.length, 0);
+            document.getElementById('totalStages').textContent = totalStages;
+            
+            const alertConfigs = templates.reduce((sum, t) => {
+                return sum + t.stages.filter(s => s.alertConfig.delayEnabled || s.alertConfig.earlyEnabled).length;
+            }, 0);
+            document.getElementById('alertConfigs').textContent = alertConfigs;
+            
+            const delayedStages = templates.reduce((sum, t) => {
+                return sum + t.stages.filter(s => s.isDelayed).length;
+            }, 0);
+            document.getElementById('delayedStages').textContent = delayedStages;
+        }
+
+        // 渲染模板列表
+        function renderTemplateList() {
+            const container = document.getElementById('templateList');
+            container.innerHTML = templates.map(template => `
+                <div class="template-card ${template.id === currentTemplateId ? 'active' : ''}" onclick="selectTemplate(${template.id})">
+                    <div class="template-name">${template.name}</div>
+                    <div class="template-info">适用：${template.productType}</div>
+                    <div class="template-info">阶段数：${template.stages.length}个</div>
+                    <div class="template-tags">
+                        ${template.stages.slice(0, 3).map(stage => `
+                            <span class="template-tag" style="background: ${stage.color}20; color: ${stage.color};">${stage.name}</span>
+                        `).join('')}
+                        ${template.stages.length > 3 ? `<span class="template-tag" style="background: #F5F5F5; color: #666;">+${template.stages.length - 3}</span>` : ''}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 选择模板
+        function selectTemplate(id) {
+            currentTemplateId = id;
+            renderTemplateList();
+            renderStageDetail();
+        }
+
+        // 渲染阶段详情
+        function renderStageDetail() {
+            const container = document.getElementById('stageDetail');
+            const template = templates.find(t => t.id === currentTemplateId);
+            
+            if (!template) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📋</div>
+                        <div class="empty-state-text">请选择左侧模板查看详情</div>
+                    </div>
+                `;
+                return;
+            }
+
+            document.getElementById('detailTitle').textContent = `${template.name} - 阶段计划配置`;
+
+            container.innerHTML = `
+                <div class="stage-timeline">
+                    ${template.stages.map((stage, index) => `
+                        <div class="stage-item ${stage.isDelayed ? 'delayed' : ''}" style="border-left: 4px solid ${stage.color};">
+                            <div class="stage-dot" style="background: ${stage.color};"></div>
+                            <div class="stage-header">
+                                <div>
+                                    <span class="stage-color-indicator" style="background: ${stage.color};"></span>
+                                    <span class="stage-name">${stage.name}</span>
+                                    ${stage.isDelayed ? '<span class="stage-delay-badge">⚠️ 延期</span>' : ''}
+                                </div>
+                                <span class="stage-duration">⏱️ ${stage.duration}天</span>
+                            </div>
+                            <div style="font-size: 12px; color: #666; margin-bottom: 12px;">${stage.desc}</div>
+                            
+                            <!-- 预警配置 -->
+                            <div class="alert-config">
+                                <div class="alert-config-title">
+                                    <i class="iconfont icon-yujing"></i> 邮件预警配置
+                                    <button class="btn btn-primary btn-sm" style="margin-left: auto;" onclick="editStage(${stage.id})">编辑</button>
+                                </div>
+                                
+                                ${stage.alertConfig.delayEnabled ? `
+                                    <div style="margin-bottom: 8px; padding: 8px; background: #FFF2F0; border-radius: 4px;">
+                                        <div style="font-size: 12px; color: #FF4D4F; font-weight: 500;">🔴 延期预警</div>
+                                        <div style="font-size: 11px; color: #666; margin-top: 4px;">
+                                            延期 ${stage.alertConfig.delayDays} 天后发送 | 时间：${stage.alertConfig.delaySendTime} | 
+                                            收件人：${stage.alertConfig.delayRecipients}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${stage.alertConfig.earlyEnabled ? `
+                                    <div style="padding: 8px; background: #E6F7FF; border-radius: 4px;">
+                                        <div style="font-size: 12px; color: #1890FF; font-weight: 500;">🔵 提前预警</div>
+                                        <div style="font-size: 11px; color: #666; margin-top: 4px;">
+                                            提前 ${stage.alertConfig.earlyDays} 天发送 | 时间：${stage.alertConfig.earlySendTime} | 
+                                            收件人：${stage.alertConfig.earlyRecipients}
+                                        </div>
+                                    </div>
+                                ` : ''}
+                                
+                                ${!stage.alertConfig.delayEnabled && !stage.alertConfig.earlyEnabled ? `
+                                    <div style="font-size: 12px; color: #999;">未配置预警</div>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // 显示新增模板弹窗
+        function showAddTemplateModal() {
+            document.getElementById('templateModalTitle').textContent = '新增项目模板';
+            document.getElementById('templateName').value = '';
+            document.getElementById('productType').value = '';
+            document.getElementById('templateDesc').value = '';
+            currentTemplateId = null;
+            openModal('templateModal');
+        }
+
+        // 编辑模板
+        function editTemplate() {
+            const template = templates.find(t => t.id === currentTemplateId);
+            if (!template) {
+                alert('请先选择模板！');
+                return;
+            }
+            document.getElementById('templateModalTitle').textContent = '编辑项目模板';
+            document.getElementById('templateName').value = template.name;
+            document.getElementById('productType').value = template.productType;
+            document.getElementById('templateDesc').value = template.desc;
+            openModal('templateModal');
+        }
+
+        // 保存模板
+        function saveTemplate() {
+            const name = document.getElementById('templateName').value;
+            const productType = document.getElementById('productType').value;
+            const desc = document.getElementById('templateDesc').value;
+
+            if (!name || !productType) {
+                alert('请填写必填项！');
+                return;
+            }
+
+            if (currentTemplateId) {
+                const template = templates.find(t => t.id === currentTemplateId);
+                template.name = name;
+                template.productType = productType;
+                template.desc = desc;
+            } else {
+                const newTemplate = {
+                    id: templates.length + 1,
+                    name: name,
+                    productType: productType,
+                    desc: desc,
+                    stages: []
+                };
+                templates.push(newTemplate);
+                currentTemplateId = newTemplate.id;
+            }
+
+            renderTemplateList();
+            renderStageDetail();
+            updateStats();
+            closeModal('templateModal');
+        }
+
+        // 删除模板
+        function deleteTemplate() {
+            if (!currentTemplateId) {
+                alert('请先选择模板！');
+                return;
+            }
+            if (!confirm('确定要删除该模板吗？')) return;
+            templates = templates.filter(t => t.id !== currentTemplateId);
+            currentTemplateId = null;
+            renderTemplateList();
+            renderStageDetail();
+            updateStats();
+        }
+
+        // 显示添加阶段弹窗
+        function showAddStageModal() {
+            if (!currentTemplateId) {
+                alert('请先选择模板！');
+                return;
+            }
+            document.getElementById('stageModalTitle').textContent = '添加阶段';
+            document.getElementById('stageName').value = '';
+            document.getElementById('stageDuration').value = 1;
+            document.getElementById('stageDesc').value = '';
+            document.getElementById('delayAlertEnabled').checked = true;
+            document.getElementById('delayDays').value = 1;
+            document.getElementById('delaySendTime').value = '09:00';
+            document.getElementById('delayRecipients').value = 'teacher@school.com';
+            document.getElementById('earlyAlertEnabled').checked = true;
+            document.getElementById('earlyDays').value = 1;
+            document.getElementById('earlySendTime').value = '09:00';
+            document.getElementById('earlyRecipients').value = 'teacher@school.com';
+            currentStageId = null;
+            selectedColor = '#1890FF';
+            document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+            document.querySelector('.color-option').classList.add('selected');
+            openModal('stageModal');
+        }
+
+        // 编辑阶段
+        function editStage(stageId) {
+            const template = templates.find(t => t.id === currentTemplateId);
+            const stage = template.stages.find(s => s.id === stageId);
+            if (!stage) return;
+
+            document.getElementById('stageModalTitle').textContent = '编辑阶段';
+            document.getElementById('stageName').value = stage.name;
+            document.getElementById('stageDuration').value = stage.duration;
+            document.getElementById('stageDesc').value = stage.desc;
+            
+            const alert = stage.alertConfig;
+            document.getElementById('delayAlertEnabled').checked = alert.delayEnabled;
+            document.getElementById('delayDays').value = alert.delayDays;
+            document.getElementById('delaySendTime').value = alert.delaySendTime;
+            document.getElementById('delayRecipients').value = alert.delayRecipients;
+            document.getElementById('earlyAlertEnabled').checked = alert.earlyEnabled;
+            document.getElementById('earlyDays').value = alert.earlyDays;
+            document.getElementById('earlySendTime').value = alert.earlySendTime;
+            document.getElementById('earlyRecipients').value = alert.earlyRecipients;
+            
+            selectedColor = stage.color;
+            document.querySelectorAll('.color-option').forEach(c => {
+                c.classList.toggle('selected', c.dataset.color === stage.color);
+            });
+            
+            currentStageId = stageId;
+            openModal('stageModal');
+        }
+
+        // 选择颜色
+        function selectColor(element) {
+            document.querySelectorAll('.color-option').forEach(c => c.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedColor = element.dataset.color;
+        }
+
+        // 保存阶段
+        function saveStage() {
+            const name = document.getElementById('stageName').value;
+            const duration = parseInt(document.getElementById('stageDuration').value);
+            const desc = document.getElementById('stageDesc').value;
+
+            if (!name || !duration) {
+                alert('请填写必填项！');
+                return;
+            }
+
+            const template = templates.find(t => t.id === currentTemplateId);
+            const alertConfig = {
+                delayEnabled: document.getElementById('delayAlertEnabled').checked,
+                delayDays: parseInt(document.getElementById('delayDays').value) || 1,
+                delaySendTime: document.getElementById('delaySendTime').value || '09:00',
+                delayRecipients: document.getElementById('delayRecipients').value || '',
+                earlyEnabled: document.getElementById('earlyAlertEnabled').checked,
+                earlyDays: parseInt(document.getElementById('earlyDays').value) || 1,
+                earlySendTime: document.getElementById('earlySendTime').value || '09:00',
+                earlyRecipients: document.getElementById('earlyRecipients').value || ''
+            };
+
+            if (currentStageId) {
+                const stage = template.stages.find(s => s.id === currentStageId);
+                stage.name = name;
+                stage.duration = duration;
+                stage.color = selectedColor;
+                stage.desc = desc;
+                stage.alertConfig = alertConfig;
+            } else {
+                const newStage = {
+                    id: template.stages.length + 1,
+                    name: name,
+                    duration: duration,
+                    color: selectedColor,
+                    desc: desc,
+                    isDelayed: false,
+                    alertConfig: alertConfig
+                };
+                template.stages.push(newStage);
+            }
+
+            renderTemplateList();
+            renderStageDetail();
+            updateStats();
+            closeModal('stageModal');
+        }
+
+        // 打开弹窗
+        function openModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = './login.html';
+            }
+        }
+
+        // 点击弹窗外部关闭
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

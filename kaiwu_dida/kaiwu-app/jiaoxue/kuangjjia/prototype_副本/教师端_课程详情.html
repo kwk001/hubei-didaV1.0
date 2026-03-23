@@ -1,0 +1,1948 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程详情 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+        
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+        
+        /* 返回按钮 */
+        .btn-back {
+            padding: 8px 16px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: none;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+        
+        .btn-back:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        
+        /* 课程信息卡片 */
+        .course-info-card {
+            background: linear-gradient(135deg, #fff 0%, #f8faff 100%);
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid rgba(24,144,255,0.1);
+            margin-bottom: 20px;
+        }
+        
+        .course-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .course-icon-large {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+        
+        .course-title-section {
+            flex: 1;
+        }
+        
+        .course-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin-bottom: 6px;
+        }
+        
+        .course-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .tag-green {
+            background: linear-gradient(135deg, #F6FFED 0%, #D9F7BE 100%);
+            color: #52C41A;
+            border: 1px solid #B7EB8F;
+        }
+
+        .tag-blue {
+            background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%);
+            color: #1890FF;
+            border: 1px solid #91D5FF;
+        }
+        
+        /* 一级Tab样式 */
+        .primary-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            background: #fff;
+            padding: 6px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .primary-tab {
+            padding: 12px 28px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            color: #666;
+            border-radius: 8px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .primary-tab:hover {
+            color: #1890FF;
+            background: #F0F5FF;
+        }
+        
+        .primary-tab.active {
+            color: #fff;
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+        
+        /* 二级Tab样式 */
+        .secondary-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #F0F0F0;
+            padding-bottom: 2px;
+        }
+        
+        .secondary-tab {
+            padding: 10px 20px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -2px;
+            transition: all 0.3s;
+        }
+        
+        .secondary-tab:hover {
+            color: #1890FF;
+        }
+        
+        .secondary-tab.active {
+            color: #1890FF;
+            border-bottom-color: #1890FF;
+        }
+        
+        /* 内容区域 */
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        /* 内容卡片 */
+        .content-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .btn-primary {
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+        
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        
+        .data-table td {
+            padding: 14px 16px;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+            color: #666;
+        }
+        
+        .data-table tr:hover {
+            background: #F5F7FA;
+        }
+        
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .action-btns button {
+            padding: 4px 10px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+            transition: all 0.2s;
+        }
+        
+        .action-btns button:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        /* 资源卡片网格 */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        
+        .resource-card {
+            background: #fff;
+            border: 1px solid #F0F0F0;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .resource-card:hover {
+            border-color: #1890FF;
+            box-shadow: 0 4px 12px rgba(24,144,255,0.15);
+            transform: translateY(-2px);
+        }
+        
+        .resource-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 12px;
+        }
+        
+        .resource-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        
+        .resource-count {
+            font-size: 12px;
+            color: #999;
+        }
+        
+        /* 统计卡片 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* 链接按钮 */
+        .btn-link {
+            background: none;
+            border: none;
+            color: #1890FF;
+            cursor: pointer;
+            font-size: 14px;
+            text-decoration: underline;
+            padding: 0;
+        }
+        .btn-link:hover {
+            color: #40A9FF;
+        }
+
+        /* 发布对象弹窗 */
+        .target-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .target-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            background: #F5F7FA;
+            border-radius: 6px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .target-item:hover {
+            background: #E6F7FF;
+            border: 1px solid #1890FF;
+        }
+        .target-item::before {
+            content: '👥';
+        }
+
+        /* 表单样式 */
+        .form-item {
+            margin-bottom: 16px;
+        }
+        .form-item label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-item input[type="text"],
+        .form-item input[type="number"] {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .form-item input[type="text"]:focus,
+        .form-item input[type="number"]:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+        .form-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        /* 弹窗遮罩层 - 默认隐藏 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* 弹窗显示状态 */
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        /* 弹窗容器 */
+        .modal {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        /* 弹窗头部 */
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: #F5F5F5;
+            color: #333;
+        }
+
+        /* 弹窗内容 */
+        .modal-body {
+            padding: 24px;
+        }
+
+        /* 弹窗底部 */
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 16px 24px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .modal-footer .btn {
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-footer .btn-default {
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            color: #666;
+        }
+
+        .modal-footer .btn-default:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .modal-footer .btn-primary {
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            border: none;
+            color: #fff;
+        }
+
+        .modal-footer .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.3);
+        }
+
+        /* 班级分组样式 */
+        .class-group {
+            margin-bottom: 16px;
+            border: 1px solid #e8e8e8;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .class-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #f5f7fa;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .class-header:hover {
+            background: #e6f7ff;
+        }
+
+        .toggle-icon {
+            margin-right: 8px;
+            font-size: 12px;
+            color: #666;
+            transition: transform 0.3s;
+        }
+
+        .toggle-icon.collapsed {
+            transform: rotate(-90deg);
+        }
+
+        .class-name {
+            flex: 1;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .student-count {
+            padding: 2px 8px;
+            background: #1890ff;
+            color: #fff;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+
+        .class-content {
+            padding: 16px;
+            background: #fff;
+        }
+
+        .class-content.collapsed {
+            display: none;
+        }
+
+        .class-content .data-table {
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">首页 / 我的教学 / 我的课程 / <span id="courseName">课程详情</span></div>
+            <div>👨‍🏫 教师：张三 | <button onclick="logout()" class="logout-btn">退出登录</button></div>
+        </div>
+
+        <div class="content-body">
+            <!-- 返回按钮 -->
+            <button class="btn-back" onclick="goBack()">
+                <i class="iconfont icon-fanhui"></i> 返回课程列表
+            </button>
+
+            <!-- 课程信息 -->
+            <div class="course-info-card">
+                <div class="course-header">
+                    <div class="course-icon-large" id="courseIcon">⚙️</div>
+                    <div class="course-title-section">
+                        <div class="course-title" id="courseTitle">机械制图</div>
+                        <div class="course-meta">
+                            <span><i class="iconfont icon-jiaoshi"></i> 任课教师：张三</span>
+                            <span><i class="iconfont icon-xuesheng"></i> 参与人数：<span id="courseStudents">86</span>人</span>
+                            <span><i class="iconfont icon-shijian"></i> 上课时间：<a href="javascript:void(0)" onclick="showScheduleModal()" style="color: #1890FF; text-decoration: none;">查看</a></span>
+                            <span><i class="iconfont icon-jiaoshi"></i> 上课教室：A101</span>
+                            <span class="tag tag-green">进行中</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 一级Tab：教学内容、成员管理 -->
+            <div class="primary-tabs">
+                <button class="primary-tab active" onclick="switchPrimaryTab('teaching', this)">教学内容</button>
+                <button class="primary-tab" onclick="switchPrimaryTab('member', this)">成员管理</button>
+            </div>
+
+            <!-- 教学内容 Tab -->
+            <div id="teaching" class="tab-content active">
+                <!-- 二级Tab：视频教材、辅导教材 -->
+                <div class="secondary-tabs">
+                    <button class="secondary-tab active" onclick="switchSecondaryTab('course', this)">视频教材</button>
+                    <button class="secondary-tab" onclick="switchSecondaryTab('material', this)">辅导教材</button>
+                </div>
+
+                <!-- 课程子Tab内容 - 视频教材 -->
+                <div id="course" class="tab-content active">
+                    <div class="content-card">
+                        <div class="section-header">
+                            <div class="section-title">视频教材</div>
+                            <button class="btn-primary" onclick="addVideo()">+ 上传视频</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">序号</th>
+                                    <th style="width: 80px;">缩略图</th>
+                                    <th>视频名称</th>
+                                    <th style="width: 100px;">所属课程</th>
+                                    <th style="width: 80px;">视频格式</th>
+                                    <th style="width: 100px;">视频大小</th>
+                                    <th style="width: 80px;">视频时长</th>
+                                    <th style="width: 100px;">更新人</th>
+                                    <th style="width: 150px;">更新时间</th>
+                                    <th style="width: 150px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="videoTableBody">
+                                <!-- 动态渲染视频数据 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 资料子Tab内容 - 辅导教材 -->
+                <div id="material" class="tab-content">
+                    <div class="content-card">
+                        <div class="section-header">
+                            <div class="section-title">辅导教材</div>
+                            <button class="btn-primary" onclick="addMaterial()">+ 上传资料</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">序号</th>
+                                    <th>教材名称</th>
+                                    <th style="width: 100px;">所属课程</th>
+                                    <th style="width: 80px;">教材格式</th>
+                                    <th style="width: 100px;">教材大小</th>
+                                    <th style="width: 100px;">更新人</th>
+                                    <th style="width: 150px;">更新时间</th>
+                                    <th style="width: 150px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="materialTableBody">
+                                <!-- 动态渲染资料数据 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 普通任务子Tab内容 - 从试卷管理获取 -->
+                <div id="normal-exam" class="tab-content">
+                    <div class="content-card">
+                        <div class="section-header">
+                            <div class="section-title">普通任务</div>
+                            <button class="btn-primary" onclick="addNormalExam()">+ 添加试卷</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">序号</th>
+                                    <th>试卷名称</th>
+                                    <th style="width: 80px;">题目数</th>
+                                    <th style="width: 80px;">总分</th>
+                                    <th style="width: 100px;">考试时长</th>
+                                    <th style="width: 80px;">使用次数</th>
+                                    <th style="width: 100px;">状态</th>
+                                    <th style="width: 120px;">发布对象</th>
+                                    <th style="width: 150px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="normalExamTableBody">
+                                <!-- 动态渲染普通试卷数据 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 实训任务子Tab内容 - 从实训试卷库获取 -->
+                <div id="training-exam" class="tab-content">
+                    <div class="content-card">
+                        <div class="section-header">
+                            <div class="section-title">实训任务</div>
+                            <button class="btn-primary" onclick="addTrainingExam()">+ 添加试卷</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 60px;">序号</th>
+                                    <th>试卷名称</th>
+                                    <th style="width: 100px;">题目数量</th>
+                                    <th style="width: 80px;">总分</th>
+                                    <th style="width: 100px;">考试时长</th>
+                                    <th style="width: 80px;">使用次数</th>
+                                    <th style="width: 100px;">状态</th>
+                                    <th style="width: 120px;">发布对象</th>
+                                    <th style="width: 150px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="trainingExamTableBody">
+                                <!-- 动态渲染实训试卷数据 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 综合试卷子Tab内容 - 从综合试卷管理页获取 -->
+                <div id="comprehensive-exam" class="tab-content">
+                    <div class="content-card">
+                        <div class="section-header">
+                            <div class="section-title">综合试卷</div>
+                            <button class="btn-primary" onclick="addComprehensiveExam()">+ 添加试卷</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 50px;">序号</th>
+                                    <th>试卷名称</th>
+                                    <th style="width: 100px;">题目数量</th>
+                                    <th style="width: 100px;">总分</th>
+                                    <th style="width: 100px;">考试时长</th>
+                                    <th style="width: 120px;">发布对象</th>
+                                    <th style="width: 150px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comprehensiveExamTableBody">
+                                <!-- 动态渲染综合试卷数据 -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 成绩管理 Tab -->
+            <div id="grade" class="tab-content">
+                <!-- 二级Tab：普通任务、实训任务、试卷 -->
+                <div class="secondary-tabs">
+                    <button class="secondary-tab active" onclick="switchGradeTab('normal-grade', this)">普通任务</button>
+                    <button class="secondary-tab" onclick="switchGradeTab('training-grade', this)">实训任务</button>
+                    <button class="secondary-tab" onclick="switchGradeTab('comprehensive-grade', this)">试卷</button>
+                </div>
+
+                <!-- 普通任务成绩 -->
+                <div id="normal-grade" class="tab-content active">
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-value">85.6</div>
+                            <div class="stat-label">平均分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">92</div>
+                            <div class="stat-label">最高分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">78</div>
+                            <div class="stat-label">最低分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">96%</div>
+                            <div class="stat-label">及格率</div>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <div class="section-header">
+                            <div class="section-title">普通任务成绩 - 机械制图期中考试</div>
+                            <button class="btn-primary" onclick="exportGrades('normal')">导出成绩</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>学号</th>
+                                    <th>姓名</th>
+                                    <th>所属班级</th>
+                                    <th>题目数</th>
+                                    <th>成绩得分</th>
+                                    <th>批阅状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2024001</td>
+                                    <td>张三</td>
+                                    <td>机械2301班</td>
+                                    <td>20</td>
+                                    <td><strong style="color: #52C41A;">88</strong></td>
+                                    <td><span class="tag tag-green">已批阅</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="viewGradeDetail('张三', 'normal')">查看</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2024002</td>
+                                    <td>李四</td>
+                                    <td>机械2301班</td>
+                                    <td>20</td>
+                                    <td><strong style="color: #52C41A;">83</strong></td>
+                                    <td><span class="tag tag-green">已批阅</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="viewGradeDetail('李四', 'normal')">查看</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2024003</td>
+                                    <td>王五</td>
+                                    <td>数控2301班</td>
+                                    <td>20</td>
+                                    <td><strong style="color: #FA8C16;">38</strong></td>
+                                    <td><span class="tag tag-orange">批阅中</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="reviewExam('王五', 'normal')">批阅</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 实训任务成绩 -->
+                <div id="training-grade" class="tab-content">
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-value">82.3</div>
+                            <div class="stat-label">平均分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">95</div>
+                            <div class="stat-label">最高分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">70</div>
+                            <div class="stat-label">最低分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">100%</div>
+                            <div class="stat-label">及格率</div>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <div class="section-header">
+                            <div class="section-title">实训任务成绩 - 数控车床操作实训考核</div>
+                            <button class="btn-primary" onclick="exportGrades('training')">导出成绩</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>学号</th>
+                                    <th>姓名</th>
+                                    <th>所属班级</th>
+                                    <th>题目数</th>
+                                    <th>成绩得分</th>
+                                    <th>批阅状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2024001</td>
+                                    <td>张三</td>
+                                    <td>机械2301班</td>
+                                    <td>5</td>
+                                    <td><strong style="color: #52C41A;">90</strong></td>
+                                    <td><span class="tag tag-green">已批阅</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="viewGradeDetail('张三', 'training')">查看</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2024002</td>
+                                    <td>李四</td>
+                                    <td>机械2301班</td>
+                                    <td>5</td>
+                                    <td><strong style="color: #52C41A;">85</strong></td>
+                                    <td><span class="tag tag-green">已批阅</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="viewGradeDetail('李四', 'training')">查看</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2024003</td>
+                                    <td>王五</td>
+                                    <td>数控2301班</td>
+                                    <td>5</td>
+                                    <td><strong style="color: #999;">0</strong></td>
+                                    <td><span class="tag tag-orange">待批阅</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="reviewExam('王五', 'training')">批阅</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 试卷成绩 -->
+                <div id="comprehensive-grade" class="tab-content">
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-value">84.2</div>
+                            <div class="stat-label">平均分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">93</div>
+                            <div class="stat-label">最高分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">74</div>
+                            <div class="stat-label">最低分</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value">98%</div>
+                            <div class="stat-label">及格率</div>
+                        </div>
+                    </div>
+                    <div class="content-card">
+                        <div class="section-header">
+                            <div class="section-title">试卷成绩 - 综合技能考核</div>
+                            <button class="btn-primary" onclick="exportGrades('comprehensive')">导出成绩</button>
+                        </div>
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>学号</th>
+                                    <th>姓名</th>
+                                    <th>所属班级</th>
+                                    <th>题目数</th>
+                                    <th>成绩得分</th>
+                                    <th>批阅状态</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>2024001</td>
+                                    <td>张三</td>
+                                    <td>机械2301班</td>
+                                    <td>25</td>
+                                    <td>88</td>
+                                    <td><span class="tag tag-green">已批阅</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="viewExam('张三', 'comprehensive')">查看</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2024002</td>
+                                    <td>李四</td>
+                                    <td>机械2301班</td>
+                                    <td>25</td>
+                                    <td>92</td>
+                                    <td><span class="tag tag-green">已批阅</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="viewExam('李四', 'comprehensive')">查看</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>2024003</td>
+                                    <td>王五</td>
+                                    <td>数控2301班</td>
+                                    <td>25</td>
+                                    <td>-</td>
+                                    <td><span class="tag tag-orange">批阅中</span></td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="reviewExam('王五', 'comprehensive')">批阅</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 发布对象弹窗 -->
+            <div class="modal-overlay" id="publishTargetModal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <div class="modal-title">发布对象 - <span id="targetPaperName"></span></div>
+                        <button class="modal-close" onclick="closePublishTargetModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="target-list" id="targetList">
+                            <!-- 动态渲染 -->
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" onclick="closePublishTargetModal()">关闭</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 添加试卷弹窗 -->
+            <div class="modal-overlay" id="addPaperModal">
+                <div class="modal">
+                    <div class="modal-header">
+                        <div class="modal-title">添加试卷</div>
+                        <button class="modal-close" onclick="closeAddPaperModal()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-item">
+                            <label>试卷名称 <span style="color: #FF4D4F;">*</span></label>
+                            <input type="text" id="paperName" placeholder="请输入试卷名称">
+                        </div>
+                        <div class="form-item">
+                            <label>题目数量 <span style="color: #FF4D4F;">*</span></label>
+                            <input type="number" id="paperQuestions" placeholder="请输入题目数量">
+                        </div>
+                        <div class="form-item">
+                            <label>总分 <span style="color: #FF4D4F;">*</span></label>
+                            <input type="number" id="paperScore" placeholder="请输入总分">
+                        </div>
+                        <div class="form-item">
+                            <label>考试时长 <span style="color: #FF4D4F;">*</span></label>
+                            <input type="text" id="paperDuration" placeholder="如：90分钟">
+                        </div>
+                        <div class="form-item">
+                            <label>发布对象 <span style="color: #FF4D4F;">*</span></label>
+                            <div style="display: flex; flex-direction: column; gap: 8px;">
+                                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" value="机械2301班"> 机械2301班
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" value="机械2302班"> 机械2302班
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" value="数控2301班"> 数控2301班
+                                </label>
+                                <label style="display: flex; align-items: center; gap: 8px; font-weight: normal; cursor: pointer;">
+                                    <input type="checkbox" value="模具2301班"> 模具2301班
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-default" onclick="closeAddPaperModal()">取消</button>
+                        <button class="btn btn-primary" onclick="savePaper()">保存</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 成员管理 Tab -->
+            <div id="member" class="tab-content">
+                <div class="content-card">
+                    <div class="section-header">
+                        <div class="section-title">班级成员</div>
+                    </div>
+                    <!-- 班级分组展示 -->
+                    <div id="classGroupContainer">
+                        <!-- 机械2301班 -->
+                        <div class="class-group">
+                            <div class="class-header" onclick="toggleClass('class1')">
+                                <span class="toggle-icon">▼</span>
+                                <span class="class-name">机械2301班</span>
+                                <span class="student-count">3人</span>
+                            </div>
+                            <div class="class-content" id="class1">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>学号</th>
+                                            <th>姓名</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2024001</td>
+                                            <td>张三</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024002</td>
+                                            <td>李四</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024003</td>
+                                            <td>王五</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- 数控2301班 -->
+                        <div class="class-group">
+                            <div class="class-header" onclick="toggleClass('class2')">
+                                <span class="toggle-icon">▼</span>
+                                <span class="class-name">数控2301班</span>
+                                <span class="student-count">2人</span>
+                            </div>
+                            <div class="class-content" id="class2">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>学号</th>
+                                            <th>姓名</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>2024004</td>
+                                            <td>赵六</td>
+                                        </tr>
+                                        <tr>
+                                            <td>2024005</td>
+                                            <td>钱七</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 视频教材数据（来自教师端_视频教材.html）
+        const videoData = [
+            { id: 1, name: '机械制图基础入门', course: '机械制图', format: 'MP4', size: '256MB', duration: '15:30', updater: '张老师', updateTime: '2026-03-10 09:15:30' },
+            { id: 2, name: '三视图绘制方法', course: '机械制图', format: 'MP4', size: '189MB', duration: '12:45', updater: '李老师', updateTime: '2026-03-09 14:22:18' },
+            { id: 3, name: '零件图识读技巧', course: '机械制图', format: 'MP4', size: '312MB', duration: '20:15', updater: '王老师', updateTime: '2026-03-08 11:05:42' },
+            { id: 4, name: '装配图绘制规范', course: '机械制图', format: 'MP4', size: '278MB', duration: '18:20', updater: '张老师', updateTime: '2026-03-07 16:30:25' },
+            { id: 5, name: 'CAD制图实例讲解', course: '机械制图', format: 'MP4', size: '425MB', duration: '25:00', updater: '李老师', updateTime: '2026-03-06 10:18:55' },
+            { id: 6, name: '剖视图与断面图绘制', course: '机械制图', format: 'MP4', size: '198MB', duration: '14:20', updater: '张老师', updateTime: '2026-03-05 09:45:12' },
+            { id: 7, name: '螺纹与紧固件表示法', course: '机械制图', format: 'MP4', size: '245MB', duration: '16:45', updater: '王老师', updateTime: '2026-03-04 13:30:28' },
+            { id: 8, name: '齿轮与弹簧画法详解', course: '机械制图', format: 'MP4', size: '289MB', duration: '19:10', updater: '李老师', updateTime: '2026-03-03 15:20:15' },
+            { id: 9, name: '尺寸标注与公差配合', course: '机械制图', format: 'MP4', size: '334MB', duration: '22:30', updater: '张老师', updateTime: '2026-03-02 10:15:42' },
+            { id: 10, name: '表面粗糙度与形位公差', course: '机械制图', format: 'MP4', size: '267MB', duration: '17:25', updater: '王老师', updateTime: '2026-03-01 14:40:33' }
+        ];
+
+        // 辅导教材数据（来自教师端_辅导教材.html）
+        const materialData = [
+            { id: 1, name: '机械制图基础课件', course: '机械制图', format: 'PPTX', size: '12.5MB', updater: '张老师', updateTime: '2026-03-10 08:30:15' },
+            { id: 2, name: '三视图练习题集', course: '机械制图', format: 'DOCX', size: '3.2MB', updater: '李老师', updateTime: '2026-03-09 13:45:22' },
+            { id: 3, name: '零件图标注规范', course: '机械制图', format: 'PDF', size: '8.7MB', updater: '王老师', updateTime: '2026-03-08 15:20:38' },
+            { id: 4, name: '机械制图国家标准汇编', course: '机械制图', format: 'PDF', size: '15.2MB', updater: '张老师', updateTime: '2026-03-07 09:10:45' },
+            { id: 5, name: '常用件标准件手册', course: '机械制图', format: 'PDF', size: '22.8MB', updater: '李老师', updateTime: '2026-03-06 11:25:30' },
+            { id: 6, name: '装配图习题与解答', course: '机械制图', format: 'DOCX', size: '5.8MB', updater: '王老师', updateTime: '2026-03-05 14:15:20' },
+            { id: 7, name: '机械制图课程设计指导书', course: '机械制图', format: 'PDF', size: '18.3MB', updater: '张老师', updateTime: '2026-03-04 10:25:45' },
+            { id: 8, name: 'CAD软件操作教程', course: '机械制图', format: 'PPTX', size: '28.6MB', updater: '李老师', updateTime: '2026-03-03 16:40:12' },
+            { id: 9, name: '机械制图模拟试题集', course: '机械制图', format: 'DOCX', size: '4.5MB', updater: '王老师', updateTime: '2026-03-02 09:20:30' },
+            { id: 10, name: '工程制图测绘指导手册', course: '机械制图', format: 'PDF', size: '11.2MB', updater: '张老师', updateTime: '2026-03-01 13:50:18' }
+        ];
+
+        // 普通试卷数据（来自教师端_试卷管理.html）
+        const normalExamData = [
+            { id: 1, name: '机械制图期中考试', questions: 30, score: 100, duration: '90分钟', useCount: 3, status: '已发布', publishTarget: ['张三', '李四', '王五', '赵六', '钱七'] },
+            { id: 2, name: '数控加工技术期末考试', questions: 40, score: 100, duration: '120分钟', useCount: 2, status: '已发布', publishTarget: ['孙八', '周九'] },
+            { id: 3, name: 'CAD/CAM技术单元测试', questions: 20, score: 50, duration: '45分钟', useCount: 1, status: '已发布', publishTarget: ['吴十', '郑十一'] },
+            { id: 4, name: '模具设计综合测试', questions: 25, score: 100, duration: '90分钟', useCount: 0, status: '草稿', publishTarget: [] },
+            { id: 5, name: '数控车床编程练习', questions: 15, score: 50, duration: '30分钟', useCount: 0, status: '草稿', publishTarget: [] }
+        ];
+
+        // 实训试卷数据（来自教师端_实训试卷库.html）
+        const trainingExamData = [
+            { id: 1, name: '数控车床操作实训考核', questions: 5, score: 100, duration: '120分钟', useCount: 3, status: '已发布', publishTarget: ['张三', '李四', '王五'] },
+            { id: 2, name: '数控铣床编程实训测试', questions: 4, score: 100, duration: '90分钟', useCount: 2, status: '已发布', publishTarget: ['赵六', '钱七'] },
+            { id: 3, name: '机械制图CAD实训考核', questions: 3, score: 50, duration: '60分钟', useCount: 1, status: '已发布', publishTarget: ['孙八'] },
+            { id: 4, name: '模具设计综合实训', questions: 6, score: 100, duration: '150分钟', useCount: 0, status: '草稿', publishTarget: [] },
+            { id: 5, name: '车削加工工艺实训', questions: 4, score: 80, duration: '90分钟', useCount: 0, status: '草稿', publishTarget: [] }
+        ];
+
+        // 综合试卷数据（来自教师端_综合试卷管理.html）
+        const comprehensiveExamData = [
+            { id: 1, name: '机械制图综合测试卷A', questions: 35, score: 100, duration: '120分钟', useCount: 2, status: '已发布', publishTarget: ['张三', '李四', '王五', '赵六'] },
+            { id: 2, name: '数控加工综合考核卷B', questions: 40, score: 100, duration: '150分钟', useCount: 1, status: '已发布', publishTarget: ['钱七', '孙八'] },
+            { id: 3, name: 'CAD/CAM技术综合测评', questions: 30, score: 100, duration: '120分钟', useCount: 0, status: '草稿', publishTarget: [] },
+            { id: 4, name: '模具设计综合能力测试', questions: 45, score: 100, duration: '180分钟', useCount: 0, status: '草稿', publishTarget: [] }
+        ];
+
+        // 上课时间数据
+        const scheduleData = [
+            { date: '2026-03-10', time: '08:00-09:40' },
+            { date: '2026-03-12', time: '10:00-11:40' },
+            { date: '2026-03-14', time: '14:00-15:40' },
+            { date: '2026-03-17', time: '08:00-09:40' },
+            { date: '2026-03-19', time: '10:00-11:40' }
+        ];
+
+        // 页面加载时初始化
+        // 课程数据（与我的课程页保持一致）
+        const courseData = [
+            { id: 1, name: '机械制图', icon: '⚙️', majors: ['机械工程', '数控技术', '模具设计与制造'], students: 86, hours: 64, status: '进行中', year: '2024-2025学年', semester: '第一学期', updateTime: '2025-01-15' },
+            { id: 2, name: '数控加工技术', icon: '🔩', majors: ['数控技术'], students: 28, hours: 96, status: '进行中', year: '2024-2025学年', semester: '第一学期', updateTime: '2025-01-14' },
+            { id: 3, name: 'CAD/CAM技术', icon: '💻', majors: ['机械工程', '数控技术'], students: 63, hours: 64, status: '进行中', year: '2024-2025学年', semester: '第一学期', updateTime: '2025-01-13' },
+            { id: 4, name: '模具设计', icon: '📐', majors: ['模具设计与制造', '机械工程'], students: 56, hours: 80, status: '进行中', year: '2024-2025学年', semester: '第二学期', updateTime: '2025-01-12' },
+            { id: 5, name: '数控车床编程', icon: '🚗', majors: ['数控技术', '机械工程'], students: 58, hours: 64, status: '待开课', year: '2024-2025学年', semester: '第二学期', updateTime: '2025-01-11' },
+            { id: 6, name: '机械设计基础', icon: '📏', majors: ['机械工程', '模具设计与制造'], students: 62, hours: 48, status: '待开课', year: '2024-2025学年', semester: '第二学期', updateTime: '2025-01-10' },
+            { id: 7, name: '工程力学', icon: '⚖️', majors: ['机械工程', '数控技术', '模具设计与制造'], students: 95, hours: 56, status: '已结课', year: '2023-2024学年', semester: '第一学期', updateTime: '2024-07-15' },
+            { id: 8, name: '材料成型工艺', icon: '🔧', majors: ['模具设计与制造'], students: 22, hours: 72, status: '已结课', year: '2023-2024学年', semester: '第二学期', updateTime: '2024-07-10' }
+        ];
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const courseName = getQueryParam('name') || '机械制图';
+            const courseIcon = getQueryParam('icon') || '⚙️';
+
+            // 查找课程数据
+            const course = courseData.find(c => c.name === courseName) || courseData[0];
+
+            document.getElementById('courseName').textContent = courseName;
+            document.getElementById('courseTitle').textContent = courseName;
+            document.getElementById('courseIcon').textContent = courseIcon;
+            document.title = courseName + ' - 课程详情';
+
+            // 更新学生人数
+            document.getElementById('courseStudents').textContent = course.students;
+
+            // 渲染各表格数据
+            renderVideoTable();
+            renderMaterialTable();
+            renderNormalExamTable();
+            renderTrainingExamTable();
+            renderComprehensiveExamTable();
+        });
+
+        // 渲染视频教材表格
+        function renderVideoTable() {
+            const tbody = document.getElementById('videoTableBody');
+            tbody.innerHTML = videoData.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>
+                        <div style="width: 60px; height: 40px; background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border-radius: 6px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; cursor: pointer;" onclick="playVideo('${item.name}')">
+                            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(24,144,255,0.3) 0%, rgba(54,207,201,0.3) 100%);"></div>
+                            <div style="width: 0; height: 0; border-left: 10px solid #fff; border-top: 6px solid transparent; border-bottom: 6px solid transparent; position: relative; z-index: 1;"></div>
+                        </div>
+                    </td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.course}</td>
+                    <td>${item.format}</td>
+                    <td>${item.size}</td>
+                    <td>${item.duration}</td>
+                    <td>${item.updater}</td>
+                    <td>${item.updateTime}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button onclick="playVideo('${item.name}')">播放</button>
+                            <button onclick="deleteVideo('${item.name}')" class="btn-delete">删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染辅导教材表格
+        function renderMaterialTable() {
+            const tbody = document.getElementById('materialTableBody');
+            tbody.innerHTML = materialData.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.course}</td>
+                    <td>${item.format}</td>
+                    <td>${item.size}</td>
+                    <td>${item.updater}</td>
+                    <td>${item.updateTime}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button onclick="previewMaterial('${item.name}')">预览</button>
+                            <button onclick="deleteMaterial('${item.name}')" class="btn-delete">删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染普通试卷表格
+        function renderNormalExamTable() {
+            const tbody = document.getElementById('normalExamTableBody');
+            tbody.innerHTML = normalExamData.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.questions}题</td>
+                    <td>${item.score}分</td>
+                    <td>${item.duration}</td>
+                    <td>${item.useCount}</td>
+                    <td><span class="tag ${item.status === '已发布' ? 'tag-green' : 'tag-orange'}">${item.status}</span></td>
+                    <td>
+                        ${item.publishTarget && item.publishTarget.length > 0
+                            ? `<button class="btn-link" onclick="showPublishTarget(${item.id}, 'normal')">${item.publishTarget.length}人</button>`
+                            : '<span style="color: #999;">未发布</span>'
+                        }
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            <button onclick="viewNormalExam('${item.name}')">查看</button>
+                            ${item.status !== '已发布' ? `<button onclick="editNormalExam('${item.name}')">编辑</button>` : ''}
+                            ${item.status !== '已发布' ? `<button onclick="deleteNormalExam('${item.name}')" class="btn-delete" style="display: none;">删除</button>` : ''}
+                            ${item.status !== '已发布' ? `<button onclick="publishNormalExam('${item.name}')" style="background: #52C41A; color: #fff; border-color: #52C41A;">发布</button>` : `<button onclick="unpublishNormalExam('${item.name}')" style="background: #FF4D4F; color: #fff; border-color: #FF4D4F;">取消发布</button>`}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 编辑普通试卷
+        function editNormalExam(paperName) {
+            const paper = normalExamData.find(p => p.name === paperName);
+            if (paper) {
+                if (paper.status === '已发布') {
+                    alert('已发布的试卷不能编辑，请先取消发布！');
+                    return;
+                }
+                // 跳转到编辑页面
+                const courseName = document.getElementById('courseTitle').textContent;
+                window.location.href = `./教师端_试卷管理_编辑.html?name=${encodeURIComponent(paperName)}&course=${encodeURIComponent(courseName)}`;
+            }
+        }
+
+        // 删除普通试卷
+        function deleteNormalExam(paperName) {
+            const paper = normalExamData.find(p => p.name === paperName);
+            if (paper) {
+                if (paper.status === '已发布') {
+                    alert('已发布的试卷不能删除，请先取消发布！');
+                    return;
+                }
+                if (confirm(`确定要删除试卷"${paperName}"吗？\n删除后不可恢复！`)) {
+                    const index = normalExamData.findIndex(p => p.name === paperName);
+                    if (index > -1) {
+                        normalExamData.splice(index, 1);
+                        renderNormalExamTable();
+                        alert(`试卷"${paperName}"删除成功！`);
+                    }
+                }
+            }
+        }
+
+        // 取消发布普通试卷
+        function unpublishNormalExam(paperName) {
+            const paper = normalExamData.find(p => p.name === paperName);
+            if (paper) {
+                if (confirm(`确定要取消发布试卷"${paperName}"吗？\n取消发布后学生将无法查看该试卷。`)) {
+                    paper.status = '未发布';
+                    renderNormalExamTable();
+                    alert(`试卷"${paperName}"已取消发布！`);
+                }
+            }
+        }
+
+        // 渲染实训试卷表格
+        function renderTrainingExamTable() {
+            const tbody = document.getElementById('trainingExamTableBody');
+            tbody.innerHTML = trainingExamData.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.questions}</td>
+                    <td>${item.score}分</td>
+                    <td>${item.duration}</td>
+                    <td>${item.useCount}</td>
+                    <td><span class="tag ${item.status === '已发布' ? 'tag-green' : 'tag-orange'}">${item.status}</span></td>
+                    <td>
+                        ${item.publishTarget && item.publishTarget.length > 0
+                            ? `<button class="btn-link" onclick="showPublishTarget(${item.id}, 'training')">${item.publishTarget.length}人</button>`
+                            : '<span style="color: #999;">未发布</span>'
+                        }
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            <button onclick="viewTrainingExam('${item.name}')">查看</button>
+                            ${item.status !== '已发布' ? `<button onclick="publishTrainingExamItem('${item.name}')" style="background: #52C41A; color: #fff; border-color: #52C41A;">发布</button>` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染综合试卷表格
+        function renderComprehensiveExamTable() {
+            const tbody = document.getElementById('comprehensiveExamTableBody');
+            tbody.innerHTML = comprehensiveExamData.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${item.name}</strong></td>
+                    <td>${item.questions}题</td>
+                    <td>${item.score}分</td>
+                    <td>${item.duration}</td>
+                    <td>
+                        ${item.publishTarget && item.publishTarget.length > 0
+                            ? `<button class="btn-link" onclick="showPublishTarget(${item.id}, 'comprehensive')">${item.publishTarget.length}人</button>`
+                            : '<span style="color: #999;">未发布</span>'
+                        }
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            <button onclick="viewComprehensiveExam('${item.name}')">查看</button>
+                            ${item.status !== '已发布' ? `<button onclick="publishComprehensiveExamItem('${item.name}')" style="background: #52C41A; color: #fff; border-color: #52C41A;">发布</button>` : ''}
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 返回课程列表
+        function goBack() {
+            window.location.href = './教师端_我的课程.html';
+        }
+
+        // 显示上课时间弹窗
+        function showScheduleModal() {
+            // 创建遮罩层
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay active';
+            overlay.id = 'scheduleModalOverlay';
+            overlay.style.cssText = 'display: flex; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); z-index: 1000; justify-content: center; align-items: center;';
+            overlay.onclick = function(e) {
+                if (e.target === overlay) closeScheduleModal();
+            };
+
+            // 计算统计数据
+            const totalSessions = scheduleData.length;
+            const uniqueDates = new Set(scheduleData.map(s => s.date)).size;
+
+            overlay.innerHTML = `
+                <div style="background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%); border-radius: 20px; width: 90%; max-width: 650px; max-height: 85vh; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255, 255, 255, 0.5) inset;">
+                    <div style="padding: 24px 28px; background: linear-gradient(135deg, #1e293b 0%, #334155 100%); display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden;">
+                        <div style="font-size: 20px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 12px; position: relative; z-index: 1;">
+                            <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);">📅</div>
+                            <span>上课时间信息</span>
+                        </div>
+                        <button onclick="closeScheduleModal()" style="width: 36px; height: 36px; border-radius: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: rgba(255, 255, 255, 0.8); cursor: pointer; font-size: 20px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; position: relative; z-index: 1;">&times;</button>
+                    </div>
+                    <div style="display: flex; gap: 16px; padding: 20px 28px; background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%); border-bottom: 1px solid #e2e8f0;">
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex: 1;">
+                            <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%); display: flex; align-items: center; justify-content: center; font-size: 18px;">📚</div>
+                            <div>
+                                <div style="font-size: 20px; font-weight: 700; color: #1e293b;">${totalSessions}</div>
+                                <div style="font-size: 12px; color: #64748b;">总课时</div>
+                            </div>
+                        </div>
+                        <div style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #fff; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); flex: 1;">
+                            <div style="width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); display: flex; align-items: center; justify-content: center; font-size: 18px;">📆</div>
+                            <div>
+                                <div style="font-size: 20px; font-weight: 700; color: #1e293b;">${uniqueDates}</div>
+                                <div style="font-size: 12px; color: #64748b;">上课天数</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="padding: 0; overflow-y: auto; max-height: 50vh;">
+                        <div style="padding: 24px 28px;">
+                            <table style="width: 100%; border-collapse: separate; border-spacing: 0; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);">
+                                <thead style="background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);">
+                                    <tr>
+                                        <th style="padding: 16px 20px; text-align: left; font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0; padding-left: 24px;">上课日期</th>
+                                        <th style="padding: 16px 20px; text-align: left; font-size: 13px; font-weight: 600; color: #475569; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #e2e8f0; padding-right: 24px;">上课时间段</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${scheduleData.map((schedule, index) => `
+                                        <tr style="transition: all 0.2s ease;">
+                                            <td style="padding: 16px 20px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9; padding-left: 24px;">
+                                                <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); color: #065f46; border-radius: 20px; font-size: 13px; font-weight: 500;">${schedule.date}</span>
+                                            </td>
+                                            <td style="padding: 16px 20px; font-size: 14px; color: #334155; border-bottom: 1px solid #f1f5f9; padding-right: 24px;">
+                                                <span style="display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); color: #92400e; border-radius: 20px; font-size: 13px; font-weight: 500;">${schedule.time}</span>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div style="padding: 20px 28px; background: #f1f5f9; border-top: 1px solid #e2e8f0; display: flex; justify-content: flex-end; gap: 12px;">
+                        <button onclick="closeScheduleModal()" style="padding: 10px 24px; border-radius: 10px; cursor: pointer; font-size: 14px; font-weight: 500; transition: all 0.3s ease; border: none; background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); color: #fff; box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);">确定</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        // 关闭上课时间弹窗
+        function closeScheduleModal() {
+            const overlay = document.getElementById('scheduleModalOverlay');
+            if (overlay) {
+                overlay.remove();
+            }
+        }
+
+        // 一级Tab切换
+        function switchPrimaryTab(tabId, element) {
+            document.querySelectorAll('.primary-tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            element.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // 二级Tab切换
+        function switchSecondaryTab(tabId, element) {
+            const teachingContent = document.getElementById('teaching');
+            if (teachingContent) {
+                teachingContent.querySelectorAll('.secondary-tab').forEach(tab => tab.classList.remove('active'));
+                teachingContent.querySelectorAll('.tab-content').forEach(content => {
+                    if (content.id !== 'teaching') content.classList.remove('active');
+                });
+            }
+            element.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // 成绩管理Tab切换
+        function switchGradeTab(tabId, element) {
+            const gradeContent = document.getElementById('grade');
+            if (gradeContent) {
+                gradeContent.querySelectorAll('.secondary-tab').forEach(tab => tab.classList.remove('active'));
+                gradeContent.querySelectorAll('.tab-content').forEach(content => {
+                    if (content.id !== 'grade') content.classList.remove('active');
+                });
+            }
+            element.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // 菜单展开/收起
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 视频教材功能
+        function addVideo() { 
+            alert('上传视频'); 
+        }
+        function playVideo(name) { 
+            const courseName = document.getElementById('courseTitle').textContent;
+            window.location.href = `./教师端_视频播放.html?name=${encodeURIComponent(name)}&course=${encodeURIComponent(courseName)}`;
+        }
+        function deleteVideo(name) {
+            if (confirm(`确定要删除视频"${name}"吗？`)) {
+                const index = videoData.findIndex(v => v.name === name);
+                if (index > -1) {
+                    videoData.splice(index, 1);
+                    renderVideoTable();
+                    alert(`视频"${name}"已删除！`);
+                }
+            }
+        }
+
+        // 辅导教材功能
+        function addMaterial() { 
+            alert('上传资料'); 
+        }
+        function previewMaterial(name) { 
+            const courseName = document.getElementById('courseTitle').textContent;
+            window.location.href = `./教师端_资料预览.html?name=${encodeURIComponent(name)}&course=${encodeURIComponent(courseName)}`;
+        }
+        function deleteMaterial(name) {
+            if (confirm(`确定要删除资料"${name}"吗？`)) {
+                const index = materialData.findIndex(m => m.name === name);
+                if (index > -1) {
+                    materialData.splice(index, 1);
+                    renderMaterialTable();
+                    alert(`资料"${name}"已删除！`);
+                }
+            }
+        }
+
+        // 普通试卷功能
+        function addNormalExam() {
+            const courseName = document.getElementById('courseTitle').textContent;
+            window.location.href = `./教师端_添加试卷.html?course=${encodeURIComponent(courseName)}`;
+        }
+        function viewNormalExam(name) {
+            const courseName = document.getElementById('courseTitle').textContent;
+            window.location.href = `./教师端_普通试卷查看.html?name=${encodeURIComponent(name)}&course=${encodeURIComponent(courseName)}`;
+        }
+        function showPublishTarget(paperId, type) {
+            let paperData;
+            if (type === 'normal') {
+                paperData = normalExamData;
+            } else if (type === 'training') {
+                paperData = trainingExamData;
+            } else if (type === 'comprehensive') {
+                paperData = comprehensiveExamData;
+            }
+            const paper = paperData.find(p => p.id === paperId);
+            if (!paper) return;
+
+            document.getElementById('targetPaperName').textContent = paper.name;
+            const list = document.getElementById('targetList');
+            const courseName = document.getElementById('courseTitle').textContent;
+            list.innerHTML = paper.publishTarget.map((target, index) => `
+                <div class="target-item" onclick="viewStudentDetail('${target}', '${index + 2024001}', '${courseName}')">${target}</div>
+            `).join('');
+            document.getElementById('publishTargetModal').classList.add('active');
+        }
+        function closePublishTargetModal() {
+            document.getElementById('publishTargetModal').classList.remove('active');
+        }
+
+        // 查看学生详情
+        function viewStudentDetail(studentName, studentId, courseName) {
+            closePublishTargetModal();
+            window.location.href = `./教师端_学生详情.html?name=${encodeURIComponent(studentName)}&id=${encodeURIComponent(studentId)}&course=${encodeURIComponent(courseName)}`;
+        }
+
+        // 实训试卷功能
+        function addTrainingExam() {
+            const courseName = document.getElementById('courseTitle').textContent;
+            window.location.href = `./教师端_添加实训试卷.html?course=${encodeURIComponent(courseName)}`;
+        }
+        function viewTrainingExam(name) {
+            const courseName = document.getElementById('courseTitle').textContent;
+            window.location.href = `./教师端_实训试卷查看.html?name=${encodeURIComponent(name)}&course=${encodeURIComponent(courseName)}`;
+        }
+
+        // 发布普通试卷
+        function publishNormalExam(paperName) {
+            const paper = normalExamData.find(p => p.name === paperName);
+            if (paper) {
+                if (confirm(`确定要发布试卷"${paperName}"吗？\n发布后将通知所有发布对象。`)) {
+                    paper.status = '已发布';
+                    renderNormalExamTable();
+                    alert(`试卷"${paperName}"发布成功！`);
+                }
+            }
+        }
+
+        // 发布实训试卷
+        function publishTrainingExamItem(paperName) {
+            const paper = trainingExamData.find(p => p.name === paperName);
+            if (paper) {
+                if (confirm(`确定要发布实训试卷"${paperName}"吗？\n发布后将通知所有发布对象。`)) {
+                    paper.status = '已发布';
+                    renderTrainingExamTable();
+                    alert(`实训试卷"${paperName}"发布成功！`);
+                }
+            }
+        }
+
+        // 综合试卷功能
+        function addComprehensiveExam() {
+            const courseName = document.getElementById('courseTitle').textContent;
+            window.location.href = `./教师端_添加综合试卷.html?course=${encodeURIComponent(courseName)}`;
+        }
+        function viewComprehensiveExam(name) {
+            const courseName = document.getElementById('courseTitle').textContent;
+            window.location.href = `./教师端_综合试卷查看.html?name=${encodeURIComponent(name)}&course=${encodeURIComponent(courseName)}`;
+        }
+        function publishComprehensiveExamItem(paperName) {
+            const paper = comprehensiveExamData.find(p => p.name === paperName);
+            if (paper) {
+                if (confirm(`确定要发布综合试卷"${paperName}"吗？\n发布后将通知所有发布对象。`)) {
+                    paper.status = '已发布';
+                    renderComprehensiveExamTable();
+                    alert(`综合试卷"${paperName}"发布成功！`);
+                }
+            }
+        }
+
+        // 成绩管理功能
+        function exportGrades(type) { 
+            alert('导出' + (type === 'normal' ? '普通试卷' : '实训试卷') + '成绩'); 
+        }
+        function viewGradeDetail(studentName, type) { 
+            alert('查看' + studentName + '的' + (type === 'normal' ? '普通试卷' : '实训试卷') + '成绩详情'); 
+        }
+        function reviewExam(studentName, type) { 
+            const courseName = document.getElementById('courseTitle').textContent;
+            if (type === 'normal') {
+                window.location.href = `./教师端_普通试卷批阅.html?student=${encodeURIComponent(studentName)}&course=${encodeURIComponent(courseName)}`;
+            } else {
+                window.location.href = `./教师端_实训试卷批阅.html?student=${encodeURIComponent(studentName)}&course=${encodeURIComponent(courseName)}`;
+            }
+        }
+
+        // 成员管理功能
+        // 切换班级展开/收起
+        function toggleClass(classId) {
+            const content = document.getElementById(classId);
+            const header = content.previousElementSibling;
+            const icon = header.querySelector('.toggle-icon');
+            
+            if (content.classList.contains('collapsed')) {
+                content.classList.remove('collapsed');
+                icon.classList.remove('collapsed');
+            } else {
+                content.classList.add('collapsed');
+                icon.classList.add('collapsed');
+            }
+        }
+
+        // 导入成员
+        function importMembers() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+            modal.innerHTML = `
+                <div style="background: #fff; padding: 24px; border-radius: 8px; width: 500px; max-width: 90%;">
+                    <h3 style="margin-bottom: 16px;">导入成员</h3>
+                    <div style="border: 2px dashed #D9D9D9; padding: 40px; text-align: center; margin-bottom: 16px; border-radius: 4px;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">📁</div>
+                        <p style="color: #666; margin-bottom: 8px;">点击或拖拽文件到此处上传</p>
+                        <p style="color: #999; font-size: 12px;">支持 Excel、CSV 格式</p>
+                    </div>
+                    <div style="background: #F6FFED; padding: 12px; border-radius: 4px; margin-bottom: 16px;">
+                        <p style="color: #52C41A; font-size: 13px;">💡 提示：请按照模板格式上传学生名单</p>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <button onclick="this.closest('.modal-overlay').remove()" style="padding: 8px 16px; border: 1px solid #D9D9D9; background: #fff; border-radius: 4px; cursor: pointer;">取消</button>
+                        <button onclick="showToast('开始导入成员...'); this.closest('.modal-overlay').remove();" style="padding: 8px 16px; background: #1890FF; color: #fff; border: none; border-radius: 4px; cursor: pointer;">确认导入</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // 添加成员
+        function addMember() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0,0,0,0.5);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 1000;
+            `;
+            modal.innerHTML = `
+                <div style="background: #fff; padding: 24px; border-radius: 8px; width: 450px; max-width: 90%;">
+                    <h3 style="margin-bottom: 20px;">添加成员</h3>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 8px; color: #333; font-size: 14px;">学号 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" id="studentId" placeholder="请输入学号" style="width: 100%; padding: 10px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    <div style="margin-bottom: 16px;">
+                        <label style="display: block; margin-bottom: 8px; color: #333; font-size: 14px;">姓名 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" id="studentName" placeholder="请输入姓名" style="width: 100%; padding: 10px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px;">
+                    </div>
+                    <div style="margin-bottom: 20px;">
+                        <label style="display: block; margin-bottom: 8px; color: #333; font-size: 14px;">班级</label>
+                        <select id="studentClass" style="width: 100%; padding: 10px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px;">
+                            <option value="">请选择班级</option>
+                            <option value="机械2301班">机械2301班</option>
+                            <option value="机械2302班">机械2302班</option>
+                            <option value="数控2301班">数控2301班</option>
+                        </select>
+                    </div>
+                    <div style="display: flex; justify-content: flex-end; gap: 8px;">
+                        <button onclick="this.closest('.modal-overlay').remove()" style="padding: 8px 16px; border: 1px solid #D9D9D9; background: #fff; border-radius: 4px; cursor: pointer;">取消</button>
+                        <button onclick="confirmAddMember()" style="padding: 8px 16px; background: #1890FF; color: #fff; border: none; border-radius: 4px; cursor: pointer;">确认添加</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            });
+        }
+
+        // 确认添加成员
+        function confirmAddMember() {
+            const studentId = document.getElementById('studentId')?.value;
+            const studentName = document.getElementById('studentName')?.value;
+            const studentClass = document.getElementById('studentClass')?.value;
+            
+            if (!studentId || !studentName) {
+                showToast('请填写学号和姓名');
+                return;
+            }
+            
+            showToast(`成功添加成员：${studentName}`);
+            document.querySelector('.modal-overlay')?.remove();
+        }
+
+        // 查看成员详情
+        function viewMember(studentId, studentName) {
+            window.location.href = `./教师端_学生详情.html?id=${studentId}&name=${encodeURIComponent(studentName)}`;
+        }
+
+        // 移出成员
+        function removeMember(studentId, studentName) {
+            if (confirm(`确定要将 ${studentName}（${studentId}）移出课程吗？`)) {
+                showToast(`${studentName} 已移出课程`);
+            }
+        }
+
+        // 显示提示信息
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%);
+                background: rgba(0, 0, 0, 0.8);
+                color: #fff;
+                padding: 16px 32px;
+                border-radius: 8px;
+                font-size: 14px;
+                z-index: 9999;
+                animation: fadeIn 0.3s ease;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.animation = 'fadeOut 0.3s ease';
+                setTimeout(() => {
+                    if (toast.parentNode) {
+                        document.body.removeChild(toast);
+                    }
+                }, 300);
+            }, 2000);
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 获取URL参数
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 页面初始化 - 根据URL参数切换标签页
+        function initPage() {
+            const tab = getUrlParam('tab');
+            const subTab = getUrlParam('subTab');
+            
+            if (tab === 'grade') {
+                // 切换到成绩管理标签
+                const gradeTabBtn = document.querySelector('.primary-tab:nth-child(2)');
+                if (gradeTabBtn) {
+                    switchPrimaryTab('grade', gradeTabBtn);
+                }
+                
+                // 切换到对应的子标签
+                if (subTab === 'normal-grade') {
+                    const normalGradeBtn = document.querySelector('#grade .secondary-tab:nth-child(1)');
+                    if (normalGradeBtn) {
+                        switchGradeTab('normal-grade', normalGradeBtn);
+                    }
+                } else if (subTab === 'training-grade') {
+                    const trainingGradeBtn = document.querySelector('#grade .secondary-tab:nth-child(2)');
+                    if (trainingGradeBtn) {
+                        switchGradeTab('training-grade', trainingGradeBtn);
+                    }
+                }
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', initPage);
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

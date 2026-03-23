@@ -1,0 +1,1117 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实训试卷查看 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb span {
+            color: #1890FF;
+            cursor: pointer;
+        }
+
+        .breadcrumb span:hover {
+            text-decoration: underline;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            color: #1890FF;
+        }
+
+        /* 内容区域 - 教务端风格 */
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        /* 返回按钮 */
+        .btn-back {
+            padding: 10px 20px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .btn-back:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+            box-shadow: 0 4px 12px rgba(24,144,255,0.15);
+        }
+
+        /* 试卷信息卡片 */
+        .exam-info-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .exam-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin-bottom: 12px;
+        }
+
+        .exam-meta {
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .exam-score-display {
+            text-align: center;
+        }
+
+        .score-label {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .score-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #1890FF;
+        }
+
+        .score-total {
+            font-size: 14px;
+            color: #999;
+        }
+
+        /* 批阅区域布局 */
+        .review-container {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 20px;
+        }
+
+        /* 左侧题目面板 */
+        .question-panel {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .question-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .question-type {
+            font-size: 12px;
+            color: #1890FF;
+            background: #E6F7FF;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .question-category {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+        }
+
+        .question-category.工艺 {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        .question-category.编程 {
+            background: #FFF7E6;
+            color: #FA8C16;
+        }
+
+        .question-category.设计 {
+            background: #E6F7FF;
+            color: #1890FF;
+        }
+
+        .question-category.加工 {
+            background: #FFF2F0;
+            color: #F5222D;
+        }
+
+        .question-category.检测 {
+            background: #F9F0FF;
+            color: #722ED1;
+        }
+
+        .question-score {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .question-content {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #FAFAFA;
+            border-radius: 8px;
+        }
+
+        /* 参考答案区域 */
+        .reference-answer-section {
+            background: #F6FFED;
+            border: 1px solid #B7EB8F;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .reference-answer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .reference-answer-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #52C41A;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .reference-answer-title::before {
+            content: '✓';
+            width: 18px;
+            height: 18px;
+            background: #52C41A;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+        }
+
+        .reference-answer-content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+            background: #fff;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 3px solid #52C41A;
+        }
+
+        /* 学生答案区域 */
+        .student-answer-section {
+            background: #F5F7FA;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 20px;
+        }
+
+        .student-answer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .student-answer-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .answer-status {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 4px;
+        }
+
+        .answer-status.correct {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        .answer-status.wrong {
+            background: #FFF2F0;
+            color: #FF4D4F;
+        }
+
+        .student-answer-content {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 检测结果表格 */
+        .detection-results {
+            margin-top: 12px;
+        }
+
+        .detection-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+        }
+
+        .detection-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #E8E8E8;
+        }
+
+        .detection-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #F0F0F0;
+            color: #666;
+        }
+
+        .detection-table tbody tr:hover {
+            background: #F5F7FA;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-badge.status-pass {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        .status-badge.status-fail {
+            background: #FFF2F0;
+            color: #FF4D4F;
+        }
+
+        /* 加工工序结果展示 */
+        .process-results {
+            margin-top: 12px;
+        }
+
+        .process-card {
+            background: #FAFAFA;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 12px;
+            border-left: 4px solid #1890FF;
+        }
+
+        .process-card:last-child {
+            margin-bottom: 0;
+        }
+
+        .process-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px dashed #E8E8E8;
+        }
+
+        .process-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .process-badge {
+            font-size: 12px;
+            color: #1890FF;
+            background: #E6F7FF;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-weight: 500;
+        }
+
+        .process-info {
+            margin-bottom: 12px;
+        }
+
+        .info-row {
+            display: flex;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        .info-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .process-info .info-label {
+            color: #999;
+            width: 70px;
+            flex-shrink: 0;
+        }
+
+        .process-info .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .process-params {
+            background: #fff;
+            border-radius: 6px;
+            padding: 12px;
+            border: 1px solid #F0F0F0;
+        }
+
+        .params-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .params-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .param-item {
+            display: flex;
+            flex-direction: column;
+            padding: 8px 12px;
+            background: #F5F7FA;
+            border-radius: 4px;
+        }
+
+        .param-name {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 4px;
+        }
+
+        .param-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .param-unit {
+            font-size: 12px;
+            color: #999;
+            font-weight: normal;
+        }
+
+        /* 操作视频 */
+        .video-section {
+            margin-bottom: 20px;
+        }
+
+        .video-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ed 100%);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px dashed #D9D9D9;
+        }
+
+        .video-placeholder:hover {
+            border-color: #1890FF;
+            background: linear-gradient(135deg, #E6F7FF 0%, #F0F7FF 100%);
+        }
+
+        .video-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .video-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 导航按钮 */
+        .navigation-buttons {
+            display: flex;
+            gap: 12px;
+            padding-top: 20px;
+            border-top: 1px dashed #E8E8E8;
+        }
+
+        .btn-nav {
+            padding: 10px 20px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-nav:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .btn-nav.primary {
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-nav.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+
+        /* 右侧侧边栏 */
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .panel-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .panel-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .info-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .info-label {
+            color: #666;
+        }
+
+        .info-value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 题目导航 */
+        .question-nav-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .nav-item {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .nav-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .nav-item.pending {
+            background: #F5F5F5;
+            color: #666;
+            border-color: #D9D9D9;
+        }
+
+        .nav-item.correct {
+            background: #F6FFED;
+            color: #52C41A;
+            border-color: #B7EB8F;
+        }
+
+        .nav-item.wrong {
+            background: #FFF2F0;
+            color: #FF4D4F;
+            border-color: #FFCCC7;
+        }
+
+        .nav-item.current {
+            background: #E6F7FF;
+            color: #1890FF;
+            border-color: #91D5FF;
+        }
+
+        .nav-item.active {
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.2);
+        }
+
+        .nav-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #666;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.correct {
+            background: #52C41A;
+        }
+
+        .legend-dot.wrong {
+            background: #FF4D4F;
+        }
+
+        .legend-dot.current {
+            background: #1890FF;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">
+                <span onclick="goBack()">实训批阅</span> / 学生列表 / 试卷查看
+            </div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <div class="content-body">
+            <button class="btn-back" onclick="goBack()">
+                ← 返回学生列表
+            </button>
+
+            <!-- 试卷信息卡片 -->
+            <div class="exam-info-card">
+                <div class="exam-header">
+                    <div>
+                        <h2 class="exam-title" id="examTitle">数控车床操作实训</h2>
+                        <div class="exam-meta">
+                            <span>学生：<strong id="studentName">王五</strong></span>
+                            <span>学号：2023010103</span>
+                            <span>班级：2023级机械工程1班</span>
+                        </div>
+                    </div>
+                    <div class="exam-score-display">
+                        <div class="score-label">当前得分</div>
+                        <div class="score-value" id="currentScore">0</div>
+                        <div class="score-total">/ 100</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 批阅区域 -->
+            <div class="review-container">
+                <!-- 左侧题目面板 -->
+                <div class="question-panel">
+                    <div class="question-header">
+                        <div class="question-info">
+                            <span class="question-number">第 <span id="questionNumber">1</span> 题</span>
+                            <span class="question-type" id="questionType">工艺题</span>
+                            <span class="question-category" id="questionCategory">工艺</span>
+                        </div>
+                        <div class="question-score">
+                            分值：<span id="questionScore">20</span> 分
+                        </div>
+                    </div>
+
+                    <div class="question-content" id="questionContent">
+                        题目内容加载中...
+                    </div>
+
+                    <!-- 学生答案 -->
+                    <div class="student-answer-section">
+                        <div class="student-answer-header">
+                            <span class="student-answer-title">学生答案</span>
+                            <span class="answer-status" id="answerStatus">待批阅</span>
+                        </div>
+                        <div class="student-answer-content" id="studentAnswer">
+                            学生答案加载中...
+                        </div>
+                    </div>
+
+                    <!-- 参考答案 -->
+                    <div class="reference-answer-section">
+                        <div class="reference-answer-header">
+                            <span class="reference-answer-title">参考答案</span>
+                        </div>
+                        <div class="reference-answer-content" id="referenceAnswer">
+                            参考答案加载中...
+                        </div>
+                    </div>
+
+                    <!-- 导航按钮 -->
+                    <div class="navigation-buttons">
+                        <button class="btn-nav" onclick="prevQuestion()" id="prevBtn">← 上一题</button>
+                        <button class="btn-nav primary" onclick="nextQuestion()" id="nextBtn">下一题 →</button>
+                    </div>
+                </div>
+
+                <!-- 右侧：学生信息和题目导航 -->
+                <div class="sidebar-panel">
+                    <div class="panel-card">
+                        <h3>学生信息</h3>
+                        <div class="info-item">
+                            <span class="info-label">姓名：</span>
+                            <span class="info-value" id="sidebarStudentName">王五</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">学号：</span>
+                            <span class="info-value">2023010103</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">班级：</span>
+                            <span class="info-value">2023级机械工程1班</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="info-label">提交时间：</span>
+                            <span class="info-value">2025-01-18 14:20</span>
+                        </div>
+                    </div>
+
+                    <div class="panel-card">
+                        <h3>题目导航</h3>
+                        <div class="question-nav-grid" id="questionNavGrid">
+                            <!-- 动态生成 -->
+                        </div>
+                        <div class="nav-legend">
+                            <div class="legend-item">
+                                <span class="legend-dot correct"></span>
+                                <span>正确</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot wrong"></span>
+                                <span>错误</span>
+                            </div>
+                            <div class="legend-item">
+                                <span class="legend-dot current"></span>
+                                <span>当前</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 题目数据 - 与批阅页格式保持一致
+        const questionsData = [
+            {
+                id: 1,
+                type: '工艺题',
+                category: '工艺',
+                content: '数控车床对刀操作中，X轴对刀的步骤和注意事项是什么？请详细描述操作过程。',
+                referenceAnswer: '1. 将刀具移动到工件外圆附近，启动主轴旋转<br>2. 用手轮微调刀具位置，使刀尖轻触工件外圆<br>3. 在坐标系中输入测量值（如X50），完成X轴对刀<br>4. 注意事项：<br>   - 对刀时要缓慢进给，避免撞刀<br>   - 主轴转速不宜过高，建议300-500rpm<br>   - 对刀后要进行试切验证',
+                studentAnswer: '1. 首先将刀具移动到工件端面附近<br>2. 用手轮微调刀具位置，使刀尖轻触工件端面<br>3. 在坐标系中输入Z0，完成对刀<br>4. 注意对刀时要缓慢进给，避免撞刀',
+                score: 0,
+                maxScore: 20,
+                status: 'pending'
+            },
+            {
+                id: 2,
+                type: '编程题',
+                category: '编程',
+                content: '编写数控车床加工程序，完成外圆粗加工和精加工。工件材料：45#钢，直径50mm，长度100mm。',
+                referenceAnswer: 'N10 G90 G54 G00 X52.0 Z2.0<br>N20 M03 S800<br>N30 G71 U2.0 R1.0<br>N40 G71 P50 Q100 U0.5 W0.1 F0.2<br>N50 G00 X20.0<br>N60 G01 Z0 F0.1<br>N70 X50.0 Z-50.0<br>N80 X52.0<br>N90 G00 Z2.0<br>N100 X52.0<br>N110 M30',
+                studentAnswer: 'N10 G90 G54 G00 X52.0 Z2.0<br>N20 M03 S800<br>N30 G71 U2.0 R1.0<br>N40 G71 P50 Q100 U0.5 W0.1 F0.2',
+                score: 0,
+                maxScore: 20,
+                status: 'pending'
+            },
+            {
+                id: 3,
+                type: '设计题',
+                category: '设计',
+                content: '根据给定的零件图纸，分析加工工艺路线，确定装夹方案和刀具选择。',
+                referenceAnswer: '加工工艺路线：<br>1. 毛坯准备：φ55×105mm<br>2. 装夹：三爪卡盘夹持，伸出长度60mm<br>3. 刀具选择：<br>   - T01：外圆粗车刀（55°）<br>   - T02：外圆精车刀（35°）<br>   - T03：切槽刀（宽3mm）<br>   - T04：螺纹刀<br>4. 加工顺序：粗车→精车→切槽→车螺纹',
+                studentAnswer: '加工工艺路线：<br>1. 毛坯准备：φ55×105mm<br>2. 装夹：三爪卡盘夹持<br>3. 刀具：外圆刀、切槽刀、螺纹刀',
+                score: 0,
+                maxScore: 20,
+                status: 'pending'
+            },
+            {
+                id: 4,
+                type: '加工题',
+                category: '加工',
+                content: '完成轴类零件的外圆车削加工，包括粗加工和精加工工序。',
+                referenceAnswer: '标准加工参数：<br>【粗加工】<br>- 主轴转速：600-800 r/min<br>- 进给速度：0.2-0.3 mm/r<br>- 切削深度：2.0-3.0 mm<br><br>【精加工】<br>- 主轴转速：1000-1200 r/min<br>- 进给速度：0.08-0.15 mm/r<br>- 切削深度：0.1-0.3 mm<br>- 表面粗糙度：Ra1.6-3.2μm',
+                studentAnswer: [
+                    {
+                        process: '粗加工',
+                        operator: '张三',
+                        time: '2025-01-18 14:30:25',
+                        params: [
+                            { name: '主轴转速', value: '800', unit: 'r/min' },
+                            { name: '进给速度', value: '0.2', unit: 'mm/r' },
+                            { name: '切削深度', value: '2.0', unit: 'mm' },
+                            { name: '刀具编号', value: 'T01', unit: '' }
+                        ]
+                    },
+                    {
+                        process: '半精加工',
+                        operator: '张三',
+                        time: '2025-01-18 14:45:12',
+                        params: [
+                            { name: '主轴转速', value: '1000', unit: 'r/min' },
+                            { name: '进给速度', value: '0.15', unit: 'mm/r' },
+                            { name: '切削深度', value: '0.5', unit: 'mm' },
+                            { name: '刀具编号', value: 'T02', unit: '' }
+                        ]
+                    },
+                    {
+                        process: '精加工',
+                        operator: '李四',
+                        time: '2025-01-18 15:10:38',
+                        params: [
+                            { name: '主轴转速', value: '1200', unit: 'r/min' },
+                            { name: '进给速度', value: '0.1', unit: 'mm/r' },
+                            { name: '切削深度', value: '0.2', unit: 'mm' },
+                            { name: '刀具编号', value: 'T03', unit: '' }
+                        ]
+                    }
+                ],
+                score: 0,
+                maxScore: 20,
+                status: 'pending'
+            },
+            {
+                id: 5,
+                type: '检测题',
+                category: '检测',
+                content: '使用千分尺测量工件外径，记录测量结果并判断是否在公差范围内。',
+                referenceAnswer: '测量要求：<br>- 测量工具：外径千分尺（0-25mm，精度0.001mm）<br>- 测量位置：至少测量4个截面，每个截面测量2个方向<br>- 标准值：φ50±0.02mm<br>- 合格范围：49.98mm ~ 50.02mm<br>- 测量记录应包含：测量值、测量位置、测量时间、测量人员',
+                studentAnswer: [
+                    { item: '测量位置1', result: '49.98mm', standard: '50±0.02mm', status: '合格' },
+                    { item: '测量位置2', result: '50.01mm', standard: '50±0.02mm', status: '合格' },
+                    { item: '测量位置3', result: '49.97mm', standard: '50±0.02mm', status: '合格' },
+                    { item: '测量位置4', result: '50.03mm', standard: '50±0.02mm', status: '不合格' }
+                ],
+                score: 0,
+                maxScore: 20,
+                status: 'pending'
+            }
+        ];
+
+        let currentQuestion = 1;
+        const totalQuestions = questionsData.length;
+
+        // 初始化页面
+        function initPage() {
+            const studentName = getUrlParam('studentName') || '王五';
+            const taskName = getUrlParam('taskName') || '数控车床操作实训';
+
+            document.getElementById('studentName').textContent = studentName;
+            document.getElementById('sidebarStudentName').textContent = studentName;
+            document.getElementById('examTitle').textContent = taskName;
+
+            // 初始化题目导航
+            initQuestionNav();
+
+            // 显示第一题
+            updateQuestionDisplay(1);
+        }
+
+        // 更新题目显示
+        function updateQuestionDisplay(questionNum) {
+            const question = questionsData[questionNum - 1];
+            if (!question) return;
+
+            document.getElementById('questionNumber').textContent = questionNum;
+            document.getElementById('questionType').textContent = question.type;
+            document.getElementById('questionCategory').textContent = question.category;
+            document.getElementById('questionCategory').className = 'question-category ' + question.category;
+            document.getElementById('questionScore').textContent = question.maxScore;
+            document.getElementById('questionContent').textContent = question.content;
+
+            // 显示参考答案
+            const referenceAnswerEl = document.getElementById('referenceAnswer');
+            if (referenceAnswerEl && question.referenceAnswer) {
+                referenceAnswerEl.innerHTML = question.referenceAnswer;
+            }
+
+            // 根据题目类型展示学生答案
+            if (question.category === '检测' && Array.isArray(question.studentAnswer)) {
+                // 检测题：展示各检测项结果表格
+                let answerHtml = '<div class="detection-results">';
+                answerHtml += '<table class="detection-table">';
+                answerHtml += '<thead><tr><th>检测项</th><th>学生提交结果</th><th>标准值</th><th>判定</th></tr></thead>';
+                answerHtml += '<tbody>';
+                question.studentAnswer.forEach(item => {
+                    const statusClass = item.status === '合格' ? 'status-pass' : 'status-fail';
+                    answerHtml += `<tr>
+                        <td>${item.item}</td>
+                        <td>${item.result}</td>
+                        <td>${item.standard}</td>
+                        <td><span class="status-badge ${statusClass}">${item.status}</span></td>
+                    </tr>`;
+                });
+                answerHtml += '</tbody></table></div>';
+                document.getElementById('studentAnswer').innerHTML = answerHtml;
+            } else if (question.category === '加工' && Array.isArray(question.studentAnswer)) {
+                // 加工题：展示各道工序过站信息
+                let answerHtml = '<div class="process-results">';
+                question.studentAnswer.forEach((item, index) => {
+                    answerHtml += `<div class="process-card">`;
+                    answerHtml += `<div class="process-header">`;
+                    answerHtml += `<span class="process-name">${item.process}</span>`;
+                    answerHtml += `<span class="process-badge">工序 ${index + 1}</span>`;
+                    answerHtml += `</div>`;
+                    answerHtml += `<div class="process-info">`;
+                    answerHtml += `<div class="info-row"><span class="info-label">过站人：</span><span class="info-value">${item.operator}</span></div>`;
+                    answerHtml += `<div class="info-row"><span class="info-label">过站时间：</span><span class="info-value">${item.time}</span></div>`;
+                    answerHtml += `</div>`;
+                    answerHtml += `<div class="process-params">`;
+                    answerHtml += `<div class="params-title">采集参数：</div>`;
+                    answerHtml += `<div class="params-grid">`;
+                    item.params.forEach(param => {
+                        answerHtml += `<div class="param-item">`;
+                        answerHtml += `<span class="param-name">${param.name}</span>`;
+                        answerHtml += `<span class="param-value">${param.value} <span class="param-unit">${param.unit}</span></span>`;
+                        answerHtml += `</div>`;
+                    });
+                    answerHtml += `</div></div></div>`;
+                });
+                answerHtml += '</div>';
+                document.getElementById('studentAnswer').innerHTML = answerHtml;
+            } else {
+                // 其他题型：普通文本展示
+                document.getElementById('studentAnswer').innerHTML = question.studentAnswer;
+            }
+
+            // 更新答案状态
+            const answerStatus = document.getElementById('answerStatus');
+            if (question.status === 'completed') {
+                answerStatus.textContent = '已批阅';
+                answerStatus.className = 'answer-status correct';
+            } else if (question.status === 'reviewing') {
+                answerStatus.textContent = '批阅中';
+                answerStatus.className = 'answer-status wrong';
+            } else {
+                answerStatus.textContent = '待批阅';
+                answerStatus.className = 'answer-status';
+            }
+
+            // 更新导航按钮状态
+            document.getElementById('prevBtn').disabled = questionNum === 1;
+            document.getElementById('nextBtn').disabled = questionNum === totalQuestions;
+        }
+
+        // 初始化题目导航
+        function initQuestionNav() {
+            const navGrid = document.getElementById('questionNavGrid');
+            if (!navGrid) return;
+
+            let html = '';
+            questionsData.forEach((q, index) => {
+                const questionNum = index + 1;
+                let statusClass = '';
+                let statusText = '';
+
+                if (q.status === 'completed') {
+                    statusClass = 'correct';
+                    statusText = '✓';
+                } else if (q.status === 'reviewing') {
+                    statusClass = 'current';
+                    statusText = '批';
+                } else {
+                    statusClass = 'pending';
+                    statusText = questionNum;
+                }
+
+                html += `
+                    <div class="nav-item ${statusClass} ${questionNum === currentQuestion ? 'active' : ''}" 
+                         onclick="switchQuestion(${questionNum})" 
+                         title="第${questionNum}题">
+                        ${statusText}
+                    </div>
+                `;
+            });
+
+            navGrid.innerHTML = html;
+        }
+
+        // 切换题目
+        function switchQuestion(questionNum) {
+            if (questionNum < 1 || questionNum > totalQuestions) return;
+            currentQuestion = questionNum;
+            updateQuestionDisplay(questionNum);
+            initQuestionNav();
+        }
+
+        // 上一题
+        function prevQuestion() {
+            if (currentQuestion > 1) {
+                switchQuestion(currentQuestion - 1);
+            }
+        }
+
+        // 下一题
+        function nextQuestion() {
+            if (currentQuestion < totalQuestions) {
+                switchQuestion(currentQuestion + 1);
+            }
+        }
+
+        // 返回上一页（学生列表）
+        function goBack() {
+            const taskId = getUrlParam('taskId');
+            const taskName = getUrlParam('taskName') || '数控车床操作实训';
+            window.location.href = `./教师端_实训批阅_学生列表.html?taskId=${taskId}&taskName=${encodeURIComponent(taskName)}&mode=detail`;
+        }
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = './教学实训平台_登录.html';
+            }
+        }
+
+        // 菜单折叠展开
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.style.display = menuItems.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        // 页面加载时初始化
+        window.onload = initPage;
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

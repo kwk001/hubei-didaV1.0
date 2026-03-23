@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>错题详情 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb span {
+            color: #1890FF;
+            cursor: pointer;
+        }
+
+        .breadcrumb span:hover {
+            text-decoration: underline;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            color: #1890FF;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* 返回按钮 */
+        .btn-back {
+            padding: 8px 16px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        /* 错题信息卡片 */
+        .question-info-card {
+            background: linear-gradient(135deg, #fff 0%, #f8faff 100%);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            border: 1px solid rgba(24,144,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .question-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1a1a1a;
+            flex: 1;
+        }
+
+        .question-tags {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tag {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .tag-blue { background: #E6F7FF; color: #1890FF; }
+        .tag-green { background: #F6FFED; color: #52C41A; }
+        .tag-orange { background: #FFF7E6; color: #FA8C16; }
+        .tag-red { background: #FFF1F0; color: #F5222D; }
+
+        .question-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            padding: 20px 0;
+            border-top: 1px solid #F0F0F0;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1890FF;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .stat-value.red { color: #F5222D; }
+        .stat-value.orange { color: #FA8C16; }
+        .stat-value.green { color: #52C41A; }
+
+        /* 题目内容 */
+        .question-content-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1a1a1a;
+            margin-bottom: 16px;
+            padding-left: 12px;
+            border-left: 4px solid #1890FF;
+        }
+
+        .question-text {
+            font-size: 15px;
+            color: #333;
+            line-height: 1.8;
+            padding: 16px;
+            background: #F8FAFC;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #F8FAFC;
+            border-radius: 8px;
+            border: 2px solid transparent;
+        }
+
+        .option-item.correct {
+            border-color: #52C41A;
+            background: #F6FFED;
+        }
+
+        .option-item.wrong {
+            border-color: #F5222D;
+            background: #FFF1F0;
+        }
+
+        .option-label {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #E6F7FF;
+            color: #1890FF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .option-item.correct .option-label {
+            background: #52C41A;
+            color: #fff;
+        }
+
+        .option-item.wrong .option-label {
+            background: #F5222D;
+            color: #fff;
+        }
+
+        .option-text {
+            font-size: 14px;
+            color: #333;
+        }
+
+        /* 答案解析 */
+        .answer-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .answer-box {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .answer-item {
+            padding: 16px;
+            border-radius: 8px;
+        }
+
+        .answer-item.correct-answer {
+            background: #F6FFED;
+            border: 1px solid #B7EB8F;
+        }
+
+        .answer-item.student-answer {
+            background: #FFF1F0;
+            border: 1px solid #FFA39E;
+        }
+
+        .answer-label {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .answer-value {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .answer-item.correct-answer .answer-value {
+            color: #52C41A;
+        }
+
+        .answer-item.student-answer .answer-value {
+            color: #F5222D;
+        }
+
+        .analysis-content {
+            padding: 16px;
+            background: #F8FAFC;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* 错误分布 */
+        .error-distribution {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .distribution-chart {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .distribution-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .distribution-label {
+            width: 80px;
+            font-size: 14px;
+            color: #666;
+            text-align: right;
+        }
+
+        .distribution-bar {
+            flex: 1;
+            height: 24px;
+            background: #F0F0F0;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .distribution-fill {
+            height: 100%;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            padding-right: 8px;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 500;
+            transition: width 0.5s ease;
+        }
+
+        .distribution-fill.high { background: #F5222D; }
+        .distribution-fill.medium { background: #FA8C16; }
+        .distribution-fill.low { background: #52C41A; }
+
+        .distribution-count {
+            width: 60px;
+            font-size: 14px;
+            color: #333;
+            text-align: right;
+        }
+
+        /* 实训试卷特有样式 */
+        .operation-steps-section,
+        .scoring-criteria-section,
+        .common-errors-section,
+        .analysis-section,
+        .process-params-section,
+        .video-section,
+        .student-records-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        /* 工艺参数 */
+        .params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .param-item {
+            background: #F5F7FA;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .param-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .param-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .param-unit {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 操作视频 */
+        .video-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #e4e7ed 100%);
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 2px dashed #D9D9D9;
+        }
+
+        .video-placeholder:hover {
+            border-color: #1890FF;
+            background: linear-gradient(135deg, #E6F7FF 0%, #F0F7FF 100%);
+        }
+
+        .video-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .video-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        /* 学生操作记录 */
+        .records-summary {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 16px;
+        }
+
+        .record-item {
+            background: #F8FAFC;
+            border-radius: 8px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .record-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1890FF;
+            margin-bottom: 4px;
+        }
+
+        .record-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* 操作步骤 */
+        .steps-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .step-item {
+            padding: 16px;
+            background: #F6FFED;
+            border-left: 4px solid #52C41A;
+            border-radius: 0 8px 8px 0;
+            font-size: 14px;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        /* 评分标准 */
+        .criteria-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .criteria-item {
+            padding: 16px;
+            background: #F8FAFC;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+        }
+
+        .criteria-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .criteria-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .criteria-score {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1890FF;
+        }
+
+        .criteria-desc {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+        }
+
+        /* 常见错误 */
+        .errors-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .error-item {
+            padding: 16px;
+            background: #FFF2F0;
+            border: 1px solid #FFCCC7;
+            border-radius: 8px;
+        }
+
+        .error-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .error-rank {
+            font-size: 13px;
+            font-weight: 600;
+            color: #CF1322;
+            background: #FFCCC7;
+            padding: 2px 10px;
+            border-radius: 4px;
+        }
+
+        .error-percentage {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .error-percentage.high { color: #CF1322; }
+        .error-percentage.medium { color: #FA8C16; }
+
+        .error-content {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .error-reason {
+            font-size: 13px;
+            color: #666;
+            line-height: 1.5;
+            padding: 8px;
+            background: #FFF;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+
+        .error-reason i {
+            color: #1890FF;
+            margin-right: 4px;
+        }
+
+        .error-count {
+            font-size: 12px;
+            color: #999;
+            text-align: right;
+        }
+
+        /* 操作按钮 */
+        .action-section {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .btn {
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-primary {
+            background: #1890FF;
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            background: #40A9FF;
+        }
+
+        .btn-default {
+            background: #fff;
+            color: #666;
+            border: 1px solid #D9D9D9;
+        }
+
+        .btn-default:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    <!-- 左侧菜单 -->
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">
+                <span onclick="window.location.href='./教师端_首页.html'">首页</span> / 
+                <span onclick="window.location.href='./教师端_错题集库.html'">错题集库</span> / 
+                错题详情
+            </div>
+            <div class="user-info">
+                <span>👨‍🏫 教师：张三</span>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+
+        <div class="content-body">
+            <button class="btn-back" onclick="goBack()">
+                <i class="iconfont icon-arrow-left"></i>
+                返回错题集库
+            </button>
+
+            <!-- 错题信息卡片 -->
+            <div class="question-info-card">
+                <div class="question-header">
+                    <div class="question-title" id="questionTitle">题目内容加载中...</div>
+                    <div class="question-tags" id="questionTags">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+                <div class="question-stats" id="normalStats">
+                    <div class="stat-item">
+                        <div class="stat-value red" id="errorCount">0</div>
+                        <div class="stat-label">错误人数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value orange" id="errorRate">0%</div>
+                        <div class="stat-label">错误率</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="totalCount">0</div>
+                        <div class="stat-label">答题总人数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value green" id="correctCount">0</div>
+                        <div class="stat-label">答对人数</div>
+                    </div>
+                </div>
+                <div class="question-stats" id="trainingStats" style="display: none;">
+                    <div class="stat-item">
+                        <div class="stat-value red" id="trainingErrorCount">0</div>
+                        <div class="stat-label">操作不合格人数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value orange" id="trainingErrorRate">0%</div>
+                        <div class="stat-label">不合格率</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="trainingTotalCount">0</div>
+                        <div class="stat-label">参与实训人数</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value green" id="trainingPassCount">0</div>
+                        <div class="stat-label">操作合格人数</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 普通试卷内容区域 -->
+            <div id="normalContent">
+                <!-- 题目内容 -->
+                <div class="question-content-section">
+                    <div class="section-title">题目内容</div>
+                    <div class="question-text" id="questionContent">
+                        加载中...
+                    </div>
+                    <div class="options-list" id="optionsList">
+                        <!-- 动态生成选项 -->
+                    </div>
+                </div>
+
+                <!-- 答案解析 -->
+                <div class="answer-section">
+                    <div class="section-title">答案与解析</div>
+                    <div class="answer-box">
+                        <div class="answer-item correct-answer">
+                            <div class="answer-label">正确答案</div>
+                            <div class="answer-value" id="correctAnswer">-</div>
+                        </div>
+                        <div class="answer-item student-answer">
+                            <div class="answer-label">常见错误答案</div>
+                            <div class="answer-value" id="commonWrongAnswer">-</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 错误分布 -->
+                <div class="error-distribution">
+                    <div class="section-title">错误选项分布</div>
+                    <div class="distribution-chart" id="distributionChart">
+                        <!-- 动态生成 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 实训试卷内容区域 -->
+            <div id="trainingContent" style="display: none;">
+                <!-- 题目内容 -->
+                <div class="question-content-section">
+                    <div class="section-title">实训任务</div>
+                    <div class="question-text" id="trainingQuestionContent">
+                        加载中...
+                    </div>
+                </div>
+
+                <!-- 工艺参数 -->
+                <div class="process-params-section">
+                    <div class="section-title">工艺参数要求</div>
+                    <div class="params-grid" id="processParams">
+                        <!-- 动态生成工艺参数 -->
+                    </div>
+                </div>
+
+                <!-- 操作步骤 -->
+                <div class="operation-steps-section">
+                    <div class="section-title">标准操作步骤</div>
+                    <div class="steps-list" id="operationSteps">
+                        <!-- 动态生成操作步骤 -->
+                    </div>
+                </div>
+
+                <!-- 操作视频 -->
+                <div class="video-section">
+                    <div class="section-title">标准操作视频</div>
+                    <div class="video-placeholder" id="videoPlaceholder">
+                        <div class="video-icon">▶️</div>
+                        <div class="video-text">点击播放标准操作示范视频</div>
+                    </div>
+                </div>
+
+                <!-- 评分标准 -->
+                <div class="scoring-criteria-section">
+                    <div class="section-title">评分细则</div>
+                    <div class="criteria-list" id="scoringCriteria">
+                        <!-- 动态生成评分标准 -->
+                    </div>
+                </div>
+
+                <!-- 常见错误 -->
+                <div class="common-errors-section">
+                    <div class="section-title">典型错误案例分析</div>
+                    <div class="errors-list" id="commonErrors">
+                        <!-- 动态生成常见错误 -->
+                    </div>
+                </div>
+
+                <!-- 学生操作记录 -->
+                <div class="student-records-section">
+                    <div class="section-title">学生操作记录统计</div>
+                    <div class="records-summary" id="studentRecords">
+                        <!-- 动态生成学生操作记录统计 -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- 解析 -->
+            <div class="analysis-section">
+                <div class="section-title">教学建议</div>
+                <div class="analysis-content" id="analysisContent">
+                    解析内容加载中...
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="action-section" style="display: none;">
+                <button class="btn btn-primary" onclick="viewStudents()">查看答错学生</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 错题数据
+        const questionData = {
+            1: {
+                id: 1,
+                content: '计算机的CPU主要由哪两部分组成？',
+                type: 'single',
+                typeName: '单选题',
+                courseName: '计算机基础',
+                errorCount: 45,
+                errorRate: 52,
+                totalCount: 87,
+                correctCount: 42,
+                options: [
+                    { label: 'A', text: '运算器和控制器', isCorrect: true },
+                    { label: 'B', text: '存储器和运算器', isCorrect: false },
+                    { label: 'C', text: '输入设备和输出设备', isCorrect: false },
+                    { label: 'D', text: '硬件和软件', isCorrect: false }
+                ],
+                correctAnswer: 'A',
+                commonWrongAnswer: 'B',
+                analysis: 'CPU（中央处理器）是计算机的核心部件，主要由运算器和控制器两部分组成。运算器负责执行算术运算和逻辑运算，控制器负责协调指挥计算机各部件工作。存储器属于计算机的存储设备，不属于CPU的组成部分。',
+                distribution: [
+                    { label: '选项A', count: 42, percentage: 48 },
+                    { label: '选项B', count: 35, percentage: 40 },
+                    { label: '选项C', count: 7, percentage: 8 },
+                    { label: '选项D', count: 3, percentage: 4 }
+                ]
+            },
+            2: {
+                id: 2,
+                content: 'Java中以下哪些是基本数据类型？',
+                type: 'multiple',
+                typeName: '多选题',
+                courseName: 'Java程序设计',
+                errorCount: 38,
+                errorRate: 48,
+                totalCount: 79,
+                correctCount: 41,
+                options: [
+                    { label: 'A', text: 'int', isCorrect: true },
+                    { label: 'B', text: 'String', isCorrect: false },
+                    { label: 'C', text: 'double', isCorrect: true },
+                    { label: 'D', text: 'boolean', isCorrect: true }
+                ],
+                correctAnswer: 'A、C、D',
+                commonWrongAnswer: 'A、B、C、D',
+                analysis: 'Java的基本数据类型包括：byte、short、int、long、float、double、char、boolean。String是引用数据类型，不是基本数据类型。很多学生容易将String误认为基本类型。',
+                distribution: [
+                    { label: '正确', count: 41, percentage: 52 },
+                    { label: '多选B', count: 25, percentage: 32 },
+                    { label: '漏选', count: 10, percentage: 13 },
+                    { label: '其他', count: 3, percentage: 4 }
+                ]
+            },
+            101: {
+                id: 101,
+                content: '数控车床对刀操作中，X轴对刀的步骤和注意事项是什么？',
+                type: 'process',
+                typeName: '工艺',
+                courseName: '数控加工技术',
+                major: '机械工程专业',
+                errorCount: 35,
+                errorRate: 45,
+                totalCount: 78,
+                correctCount: 43,
+                // 实训题目特有字段
+                isTraining: true,
+                // 工艺参数
+                processParams: [
+                    { label: '主轴转速', value: '800', unit: 'r/min' },
+                    { label: '进给速度', value: '0.1', unit: 'mm/r' },
+                    { label: '切削深度', value: '0.5', unit: 'mm' },
+                    { label: '对刀精度', value: '±0.02', unit: 'mm' },
+                    { label: '操作时间', value: '5', unit: '分钟' }
+                ],
+                operationSteps: [
+                    '1. 使用手轮模式，选择X轴',
+                    '2. 缓慢移动刀具，轻触工件外圆表面',
+                    '3. 听到轻微切削声后，停止进给',
+                    '4. 沿Z轴方向退出刀具（不要移动X轴）',
+                    '5. 在刀具补偿页面输入测量的工件直径值'
+                ],
+                scoringCriteria: [
+                    { item: '操作规范性', score: 30, desc: '正确使用手轮模式，操作步骤规范' },
+                    { item: '对刀精度', score: 40, desc: '对刀误差控制在0.02mm以内' },
+                    { item: '安全意识', score: 20, desc: '操作过程中注意安全，无违规操作' },
+                    { item: '操作效率', score: 10, desc: '在规定时间内完成对刀操作' }
+                ],
+                commonErrors: [
+                    { error: '直接使用手动模式快速移动刀具', count: 28, percentage: 36, reason: '未掌握对刀的基本操作规范，缺乏安全意识' },
+                    { error: '对刀后未记录坐标值', count: 15, percentage: 19, reason: '对刀流程不熟悉，遗漏关键步骤' },
+                    { error: '对刀时撞刀', count: 8, percentage: 10, reason: '进给速度过快，未使用手轮微调' }
+                ],
+                // 学生操作记录统计
+                studentRecords: [
+                    { label: '操作超时', value: 12 },
+                    { label: '精度不达标', value: 20 },
+                    { label: '操作违规', value: 8 },
+                    { label: '未完成', value: 5 }
+                ],
+                analysis: '数控车床对刀是数控加工的基础操作，学生常见错误主要集中在操作不规范和安全意识不足。需要加强对刀操作流程的培训，强调使用手轮微调的重要性。'
+            },
+            102: {
+                id: 102,
+                content: '根据给定的零件图纸，编写数控车床加工程序，包括粗加工和精加工代码。',
+                type: 'programming',
+                typeName: '编程',
+                courseName: '电气控制技术',
+                major: '电气工程专业',
+                errorCount: 28,
+                errorRate: 38,
+                totalCount: 74,
+                correctCount: 46,
+                // 实训题目特有字段
+                isTraining: true,
+                // 工艺参数
+                processParams: [
+                    { label: '粗车转速', value: '600', unit: 'r/min' },
+                    { label: '精车转速', value: '1200', unit: 'r/min' },
+                    { label: '粗车进给', value: '0.2', unit: 'mm/r' },
+                    { label: '精车进给', value: '0.08', unit: 'mm/r' },
+                    { label: '编程时间', value: '30', unit: '分钟' }
+                ],
+                operationSteps: [
+                    '1. 分析零件图纸，确定加工工艺路线',
+                    '2. 选择合适的刀具和切削参数',
+                    '3. 编写粗加工程序（使用G71循环）',
+                    '4. 编写精加工程序（使用G70循环）',
+                    '5. 进行程序校验和模拟加工'
+                ],
+                scoringCriteria: [
+                    { item: '程序完整性', score: 30, desc: '程序结构完整，包含必要的安全指令' },
+                    { item: '工艺合理性', score: 35, desc: '加工工艺路线合理，切削参数选择恰当' },
+                    { item: '代码规范性', score: 20, desc: '代码格式规范，注释清晰' },
+                    { item: '加工精度', score: 15, desc: '程序能够保证零件加工精度要求' }
+                ],
+                commonErrors: [
+                    { error: '只编写精加工程序，缺少粗加工', count: 18, percentage: 24, reason: '对加工工艺理解不全面，不知道粗加工的作用' },
+                    { error: '切削参数选择不合理', count: 12, percentage: 16, reason: '对切削用量三要素（切削速度、进给量、背吃刀量）理解不深' },
+                    { error: '程序缺少安全指令', count: 10, percentage: 14, reason: '编程规范意识不足，忽略程序安全性' }
+                ],
+                analysis: '数控编程需要综合考虑加工工艺、刀具选择、切削参数等多个因素。学生常见问题是只关注程序编写，忽略了工艺分析和程序安全性。建议加强工艺知识的学习，培养规范编程习惯。'
+            }
+        };
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const questionId = getUrlParam('id');
+            if (questionId && questionData[questionId]) {
+                renderQuestionDetail(questionData[questionId]);
+            } else {
+                // 默认显示第一个
+                renderQuestionDetail(questionData[1]);
+            }
+        });
+
+        // 渲染错题详情
+        function renderQuestionDetail(data) {
+            // 标题
+            document.getElementById('questionTitle').textContent = data.content;
+            
+            // 标签
+            const majorTag = data.major ? `<span class="tag tag-purple">${data.major}</span>` : '';
+            const tagsHtml = `
+                <span class="tag tag-blue">${data.typeName}</span>
+                <span class="tag tag-green">${data.courseName}</span>
+                ${majorTag}
+            `;
+            document.getElementById('questionTags').innerHTML = tagsHtml;
+            
+            // 统计数据
+            document.getElementById('errorCount').textContent = data.errorCount;
+            document.getElementById('errorRate').textContent = data.errorRate + '%';
+            document.getElementById('totalCount').textContent = data.totalCount;
+            document.getElementById('correctCount').textContent = data.correctCount;
+            
+            // 题目内容
+            document.getElementById('questionContent').textContent = data.content;
+            const trainingQuestionContent = document.getElementById('trainingQuestionContent');
+            if (trainingQuestionContent) {
+                trainingQuestionContent.textContent = data.content;
+            }
+
+            // 根据题目类型渲染不同内容
+            if (data.isTraining) {
+                // 实训试卷：显示操作步骤、评分标准、常见错误
+                renderTrainingContent(data);
+            } else {
+                // 普通试卷：显示选项、正确答案、错误分布
+                renderNormalContent(data);
+            }
+            
+            // 解析
+            document.getElementById('analysisContent').textContent = data.analysis;
+        }
+        
+        // 渲染普通试卷内容
+        function renderNormalContent(data) {
+            // 选项
+            const optionsHtml = data.options.map(opt => `
+                <div class="option-item ${opt.isCorrect ? 'correct' : (opt.label === data.commonWrongAnswer ? 'wrong' : '')}">
+                    <div class="option-label">${opt.label}</div>
+                    <div class="option-text">${opt.text}</div>
+                </div>
+            `).join('');
+            document.getElementById('optionsList').innerHTML = optionsHtml;
+            
+            // 答案
+            document.getElementById('correctAnswer').textContent = data.correctAnswer;
+            document.getElementById('commonWrongAnswer').textContent = data.commonWrongAnswer;
+            
+            // 错误分布
+            const distributionHtml = data.distribution.map(item => `
+                <div class="distribution-item">
+                    <div class="distribution-label">${item.label}</div>
+                    <div class="distribution-bar">
+                        <div class="distribution-fill ${item.percentage >= 40 ? 'high' : (item.percentage >= 20 ? 'medium' : 'low')}" 
+                             style="width: ${item.percentage}%">
+                            ${item.percentage}%
+                        </div>
+                    </div>
+                    <div class="distribution-count">${item.count}人</div>
+                </div>
+            `).join('');
+            document.getElementById('distributionChart').innerHTML = distributionHtml;
+
+            // 显示普通试卷区域和统计，隐藏实训试卷区域和统计
+            document.getElementById('normalContent').style.display = 'block';
+            document.getElementById('normalStats').style.display = 'grid';
+            document.getElementById('trainingContent').style.display = 'none';
+            document.getElementById('trainingStats').style.display = 'none';
+        }
+        
+        // 渲染实训试卷内容
+        function renderTrainingContent(data) {
+            // 更新实训统计区域
+            document.getElementById('trainingErrorCount').textContent = data.errorCount;
+            document.getElementById('trainingErrorRate').textContent = data.errorRate + '%';
+            document.getElementById('trainingTotalCount').textContent = data.totalCount;
+            document.getElementById('trainingPassCount').textContent = data.correctCount;
+
+            // 工艺参数
+            if (data.processParams) {
+                const paramsHtml = data.processParams.map(param => `
+                    <div class="param-item">
+                        <span class="param-label">${param.label}</span>
+                        <span class="param-value">${param.value}<span class="param-unit">${param.unit}</span></span>
+                    </div>
+                `).join('');
+                document.getElementById('processParams').innerHTML = paramsHtml;
+            }
+
+            // 操作步骤
+            const stepsHtml = data.operationSteps.map(step => `
+                <div class="step-item">${step}</div>
+            `).join('');
+            document.getElementById('operationSteps').innerHTML = stepsHtml;
+
+            // 评分标准
+            const criteriaHtml = data.scoringCriteria.map(criteria => `
+                <div class="criteria-item">
+                    <div class="criteria-header">
+                        <span class="criteria-name">${criteria.item}</span>
+                        <span class="criteria-score">${criteria.score}分</span>
+                    </div>
+                    <div class="criteria-desc">${criteria.desc}</div>
+                </div>
+            `).join('');
+            document.getElementById('scoringCriteria').innerHTML = criteriaHtml;
+
+            // 常见错误
+            const errorsHtml = data.commonErrors.map((error, index) => `
+                <div class="error-item">
+                    <div class="error-header">
+                        <span class="error-rank">错误${index + 1}</span>
+                        <span class="error-percentage ${error.percentage >= 30 ? 'high' : 'medium'}">${error.percentage}%</span>
+                    </div>
+                    <div class="error-content">${error.error}</div>
+                    <div class="error-reason">
+                        <i class="iconfont icon-info-circle"></i>
+                        ${error.reason}
+                    </div>
+                    <div class="error-count">涉及 ${error.count} 名学生</div>
+                </div>
+            `).join('');
+            document.getElementById('commonErrors').innerHTML = errorsHtml;
+
+            // 学生操作记录统计
+            if (data.studentRecords) {
+                const recordsHtml = data.studentRecords.map(record => `
+                    <div class="record-item">
+                        <div class="record-value">${record.value}</div>
+                        <div class="record-label">${record.label}</div>
+                    </div>
+                `).join('');
+                document.getElementById('studentRecords').innerHTML = recordsHtml;
+            }
+
+            // 隐藏普通试卷区域和统计，显示实训试卷区域和统计
+            document.getElementById('normalContent').style.display = 'none';
+            document.getElementById('normalStats').style.display = 'none';
+            document.getElementById('trainingContent').style.display = 'block';
+            document.getElementById('trainingStats').style.display = 'grid';
+        }
+
+        // 返回上一页
+        function goBack() {
+            window.location.href = './教师端_错题集库.html';
+        }
+
+        // 查看答错学生
+        function viewStudents() {
+            const questionId = getUrlParam('id') || 1;
+            window.location.href = `./教师端_错题学生列表.html?id=${questionId}`;
+        }
+
+        // 加入重点关注
+        function addToFocus() {
+            alert('已将该错题加入重点关注列表');
+        }
+
+        // 导出错题报告
+        function exportError() {
+            alert('正在导出错题分析报告...');
+        }
+
+        // 菜单切换
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

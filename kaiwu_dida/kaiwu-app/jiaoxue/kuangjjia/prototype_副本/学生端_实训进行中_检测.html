@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>检测类实训 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <!-- 实训进行中页面不加载导航样式，保持沉浸式体验 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #F5F5F5;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #E8E8E8;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%);
+            border-radius: 8px;
+            color: #FA8C16;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            background: #F6FFED;
+            color: #52C41A;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .container {
+            width: calc(100% - 220px);
+            margin-left: 220px;
+            margin-right: 0;
+            padding: 24px;
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            box-sizing: border-box;
+            min-height: calc(100vh - 64px);
+        }
+
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .sidebar-panel {
+            width: 400px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .panel-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 检测进度 */
+        .check-progress {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #F9F0FF 0%, #F0E6FF 100%);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #D3ADF7;
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .progress-text strong {
+            color: #722ED1;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            height: 10px;
+            background: #E8E8E8;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #722ED1 0%, #B37FEB 100%);
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+        }
+
+        .progress-percent {
+            font-size: 16px;
+            font-weight: 700;
+            color: #722ED1;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* 检测项目表格 */
+        .check-items-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 16px;
+        }
+
+        .check-items-table th,
+        .check-items-table td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .check-items-table th {
+            background: #FAFAFA;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .check-items-table td {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .check-items-table tr:hover {
+            background: #F5F7FA;
+        }
+
+        .check-item-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .check-item-standard {
+            color: #666;
+            font-size: 13px;
+        }
+
+        /* 检测结果输入 */
+        .result-input {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .result-input input {
+            width: 100px;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+            text-align: center;
+        }
+
+        .result-input input:focus {
+            outline: none;
+            border-color: #722ED1;
+            box-shadow: 0 0 0 2px rgba(114, 46, 209, 0.2);
+        }
+
+        .result-unit {
+            font-size: 13px;
+            color: #999;
+        }
+
+        /* 合格/不合格选择 */
+        .result-select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .result-select:focus {
+            outline: none;
+            border-color: #722ED1;
+        }
+
+        .result-select.pass {
+            border-color: #52C41A;
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        .result-select.fail {
+            border-color: #FF4D4F;
+            background: #FFF2F0;
+            color: #FF4D4F;
+        }
+
+        /* 状态标签 */
+        .status-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-tag.pending {
+            background: #F5F5F5;
+            color: #999;
+        }
+
+        .status-tag.pass {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        .status-tag.fail {
+            background: #FFF2F0;
+            color: #FF4D4F;
+        }
+
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .btn-group button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .save-btn {
+            background: linear-gradient(135deg, #F0F0F0 0%, #E0E0E0 100%);
+            color: #666;
+            border: 1px solid #D0D0D0;
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(135deg, #E8E8E8 0%, #D8D8D8 100%);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #722ED1 0%, #B37FEB 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(114, 46, 209, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(114, 46, 209, 0.4);
+        }
+
+
+
+        /* 工单信息 */
+        .workorder-info {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .workorder-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .workorder-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .workorder-item:last-child {
+            border-bottom: none;
+        }
+
+        .workorder-label {
+            font-size: 13px;
+            color: #999;
+        }
+
+        .workorder-value {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 检测要求 */
+        .check-requirements {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .requirements-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .requirements-content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .requirements-content p {
+            margin-bottom: 12px;
+        }
+
+        .requirements-content strong {
+            color: #722ED1;
+            font-weight: 600;
+        }
+
+        /* 参考附件 */
+        .check-attachments {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .attachments-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .attachment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .attachment-file {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #FAFAFA;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attachment-file:hover {
+            background: #F9F0FF;
+            border-color: #722ED1;
+        }
+
+        .attachment-file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .attachment-file-icon.dwg {
+            background: #E6F7FF;
+        }
+
+        .attachment-file-icon.pdf {
+            background: #FFF2F0;
+        }
+
+        .attachment-file-icon.img {
+            background: #F6FFED;
+        }
+
+        .attachment-file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .attachment-file-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .attachment-file-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .attachment-file-preview {
+            padding: 6px 12px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .attachment-file-preview:hover {
+            border-color: #722ED1;
+            color: #722ED1;
+            background: #F9F0FF;
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="confirmExit()">
+                <i class="iconfont icon-fanhui"></i>
+            </button>
+            <div>
+                <div class="header-title">质量检测实训：轴承座成品检验</div>
+                <div class="header-subtitle">检测类型：尺寸检测 + 外观检测</div>
+            </div>
+        </div>
+        <div class="header-info">
+            <div class="timer">
+                <i class="iconfont icon-shijian"></i>
+                <span id="timer">00:00:00</span>
+            </div>
+            <div class="status-badge">检测进行中</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-panel">
+            <!-- 检测进度 -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="iconfont icon-jindu"></i>
+                    检测进度
+                </div>
+                <div class="check-progress">
+                    <div class="progress-info">
+                        <span class="progress-text">已检测 <strong id="checkedCount">0</strong>/8 项</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="progress-percent" id="progressPercent">0%</div>
+                </div>
+            </div>
+
+            <!-- 检测项目列表 -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="iconfont icon-jiancha"></i>
+                    检测项目
+                </div>
+                <table class="check-items-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">序号</th>
+                            <th>检测项目</th>
+                            <th style="width: 150px;">标准要求</th>
+                            <th style="width: 180px;">检测结果</th>
+                            <th style="width: 100px;">判定</th>
+                            <th style="width: 80px;">状态</th>
+                        </tr>
+                    </thead>
+                    <tbody id="checkItemsBody">
+                        <!-- 检测项目由JS动态生成 -->
+                    </tbody>
+                </table>
+
+                <!-- 按钮组 -->
+                <div class="btn-group">
+                    <button class="save-btn" onclick="saveCheckResult()">
+                        <i class="iconfont icon-baocun"></i>
+                        保存
+                    </button>
+                    <button class="submit-btn" onclick="submitCheckResult()">
+                        <i class="iconfont icon-shangchuan"></i>
+                        提交检测结果
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-panel">
+            <!-- 工单信息 -->
+            <div class="workorder-info">
+                <div class="workorder-title">📋 工单信息</div>
+                <div class="workorder-item">
+                    <span class="workorder-label">工单编号</span>
+                    <span class="workorder-value">WO-2024-001</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">产品名称</span>
+                    <span class="workorder-value">轴承座</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">规格型号</span>
+                    <span class="workorder-value">BZ-200</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">生产数量</span>
+                    <span class="workorder-value">50 件</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">检验员</span>
+                    <span class="workorder-value">李华</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">检测日期</span>
+                    <span class="workorder-value">2026-02-28</span>
+                </div>
+            </div>
+
+            <!-- 检测要求 -->
+            <div class="check-requirements">
+                <div class="requirements-title">
+                    <i class="iconfont icon-yaoqiu"></i>
+                    检测要求
+                </div>
+                <div class="requirements-content">
+                    <p><strong>检测对象：</strong>轴承座成品</p>
+                    <p><strong>检测类型：</strong>尺寸精度检测、外观质量检测</p>
+                    <p><strong>检测标准：</strong>GB/T 1804-m级</p>
+                    <p><strong>检测工具：</strong>游标卡尺、千分尺、高度尺、塞规</p>
+                    <p><strong>合格标准：</strong>所有检测项目均在公差范围内，外观无缺陷</p>
+                </div>
+            </div>
+
+            <!-- 参考附件 -->
+            <div class="check-attachments" style="display: none;">
+                <div class="attachments-title">
+                    <i class="iconfont icon-fujian"></i>
+                    参考附件
+                    <span style="margin-left: 8px; font-size: 12px; color: #999; font-weight: normal;">共 3 个</span>
+                </div>
+                <div class="attachment-list">
+                    <div class="attachment-file" onclick="previewFile('drawing')">
+                        <div class="attachment-file-icon dwg">📐</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">轴承座零件图纸.dwg</div>
+                            <div class="attachment-file-meta">
+                                <span>DWG</span>
+                                <span>1.2MB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    <div class="attachment-file" onclick="previewFile('standard')">
+                        <div class="attachment-file-icon pdf">📋</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">检测标准规范.pdf</div>
+                            <div class="attachment-file-meta">
+                                <span>PDF</span>
+                                <span>580KB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    <div class="attachment-file" onclick="previewFile('sample')">
+                        <div class="attachment-file-icon img">🖼️</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">合格样品参考图.jpg</div>
+                            <div class="attachment-file-meta">
+                                <span>JPG</span>
+                                <span>320KB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认退出弹窗 -->
+    <div class="modal-overlay" id="exitModal">
+        <div class="modal-content">
+            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+            <div style="font-size: 20px; font-weight: 600; color: #333; margin-bottom: 12px;">确认退出？</div>
+            <div style="font-size: 14px; color: #666; margin-bottom: 24px;">退出后当前检测进度将保存，您可以稍后继续。是否确认退出？</div>
+            <div style="display: flex; gap: 12px;">
+                <button class="save-btn" onclick="closeModal()" style="flex: 1;">取消</button>
+                <button class="submit-btn" onclick="exitTraining()" style="flex: 1;">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提交确认弹窗 -->
+    <div class="modal-overlay" id="submitModal">
+        <div class="modal-content">
+            <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+            <div style="font-size: 20px; font-weight: 600; color: #333; margin-bottom: 12px;">确认提交？</div>
+            <div style="font-size: 14px; color: #666; margin-bottom: 24px;">提交后将无法修改检测结果，请确认所有检测项目已填写完毕。</div>
+            <div style="display: flex; gap: 12px;">
+                <button class="save-btn" onclick="closeModal()" style="flex: 1;">取消</button>
+                <button class="submit-btn" onclick="confirmSubmit()" style="flex: 1;">确认提交</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检测项目数据
+        const checkItems = [
+            { id: 1, name: '外径尺寸', standard: 'Φ50±0.02mm', unit: 'mm', type: 'value' },
+            { id: 2, name: '内径尺寸', standard: 'Φ30±0.02mm', unit: 'mm', type: 'value' },
+            { id: 3, name: '总长度', standard: '80±0.05mm', unit: 'mm', type: 'value' },
+            { id: 4, name: '孔距', standard: '60±0.03mm', unit: 'mm', type: 'value' },
+            { id: 5, name: '表面粗糙度', standard: 'Ra3.2', unit: 'μm', type: 'value' },
+            { id: 6, name: '外观质量', standard: '无划痕、无毛刺', unit: '', type: 'select' },
+            { id: 7, name: '垂直度', standard: '≤0.05mm', unit: 'mm', type: 'value' },
+            { id: 8, name: '同轴度', standard: '≤0.03mm', unit: 'mm', type: 'value' }
+        ];
+
+        let checkResults = {};
+        let startTime = new Date();
+        let timerInterval;
+
+        // 初始化
+        function init() {
+            renderCheckItems();
+            startTimer();
+        }
+
+        // 渲染检测项目
+        function renderCheckItems() {
+            const tbody = document.getElementById('checkItemsBody');
+            let html = '';
+
+            checkItems.forEach((item, index) => {
+                const result = checkResults[item.id] || {};
+                const status = result.status || 'pending';
+                const statusText = status === 'pending' ? '待检测' : (status === 'pass' ? '合格' : '不合格');
+                const statusClass = status;
+
+                html += `
+                    <tr data-id="${item.id}">
+                        <td>${index + 1}</td>
+                        <td>
+                            <div class="check-item-name">${item.name}</div>
+                        </td>
+                        <td class="check-item-standard">${item.standard}</td>
+                        <td>
+                            ${item.type === 'value' ? `
+                                <div class="result-input">
+                                    <input type="text" 
+                                           placeholder="输入数值" 
+                                           value="${result.value || ''}"
+                                           onchange="updateResult(${item.id}, 'value', this.value)"
+                                           onblur="validateResult(${item.id})">
+                                    <span class="result-unit">${item.unit}</span>
+                                </div>
+                            ` : `
+                                <select class="result-select ${result.value || ''}" 
+                                        onchange="updateResult(${item.id}, 'value', this.value); this.className='result-select ' + this.value">
+                                    <option value="">请选择</option>
+                                    <option value="pass" ${result.value === 'pass' ? 'selected' : ''}>合格</option>
+                                    <option value="fail" ${result.value === 'fail' ? 'selected' : ''}>不合格</option>
+                                </select>
+                            `}
+                        </td>
+                        <td>
+                            <select class="result-select ${status}" 
+                                    onchange="updateResult(${item.id}, 'status', this.value); this.className='result-select ' + this.value; updateProgress();">
+                                <option value="pending" ${status === 'pending' ? 'selected' : ''}>待判定</option>
+                                <option value="pass" ${status === 'pass' ? 'selected' : ''}>合格</option>
+                                <option value="fail" ${status === 'fail' ? 'selected' : ''}>不合格</option>
+                            </select>
+                        </td>
+                        <td>
+                            <span class="status-tag ${statusClass}">${statusText}</span>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            tbody.innerHTML = html;
+        }
+
+        // 更新检测结果
+        function updateResult(id, field, value) {
+            if (!checkResults[id]) {
+                checkResults[id] = {};
+            }
+            checkResults[id][field] = value;
+        }
+
+        // 验证结果
+        function validateResult(id) {
+            // 这里可以添加数值范围验证逻辑
+            updateProgress();
+        }
+
+        // 更新进度
+        function updateProgress() {
+            const total = checkItems.length;
+            const checked = Object.values(checkResults).filter(r => r.status && r.status !== 'pending').length;
+            const percent = Math.round((checked / total) * 100);
+
+            document.getElementById('checkedCount').textContent = checked;
+            document.getElementById('progressBar').style.width = percent + '%';
+            document.getElementById('progressPercent').textContent = percent + '%';
+        }
+
+        // 计时器
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = Math.floor((now - startTime) / 1000);
+                const hours = Math.floor(diff / 3600).toString().padStart(2, '0');
+                const minutes = Math.floor((diff % 3600) / 60).toString().padStart(2, '0');
+                const seconds = (diff % 60).toString().padStart(2, '0');
+                document.getElementById('timer').textContent = `${hours}:${minutes}:${seconds}`;
+            }, 1000);
+        }
+
+        // 保存检测结果
+        function saveCheckResult() {
+            alert('检测结果已保存！');
+        }
+
+        // 提交检测结果
+        function submitCheckResult() {
+            const checked = Object.values(checkResults).filter(r => r.status && r.status !== 'pending').length;
+            if (checked < checkItems.length) {
+                alert('请完成所有检测项目后再提交！');
+                return;
+            }
+            document.getElementById('submitModal').classList.add('active');
+        }
+
+        // 确认提交
+        function confirmSubmit() {
+            alert('检测结果提交成功！');
+            closeModal();
+            // 这里可以添加提交后的跳转逻辑
+        }
+
+        // 确认退出
+        function confirmExit() {
+            document.getElementById('exitModal').classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // 退出实训
+        function exitTraining() {
+            window.location.href = './学生端_我的实训.html';
+        }
+
+        // 预览文件
+        function previewFile(type) {
+            alert('预览文件：' + type);
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+    <!-- 实训进行中页面不加载导航栏，保持沉浸式体验 -->
+</body>
+</html>

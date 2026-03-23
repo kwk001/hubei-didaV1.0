@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教学实训平台 - 登录</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .login-wrapper {
+            display: flex;
+            background: #fff;
+            border-radius: 24px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            overflow: hidden;
+            max-width: 1000px;
+            width: 100%;
+            min-height: 600px;
+        }
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, #0F3167 0%, #1a4a8c 50%, #2563eb 100%);
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            color: #fff;
+            position: relative;
+            overflow: hidden;
+        }
+        .login-left::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            animation: pulse 4s ease-in-out infinite;
+        }
+        .login-left::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            background: linear-gradient(to top, rgba(0,0,0,0.2), transparent);
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 0.5; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        .brand-section {
+            position: relative;
+            z-index: 1;
+        }
+        .brand-icon {
+            width: 120px;
+            height: 120px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: 700;
+            color: #0F3167;
+            margin-bottom: 35px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+            overflow: hidden;
+            border: 4px solid rgba(255,255,255,0.3);
+        }
+        .brand-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .university-name {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            opacity: 0.95;
+            letter-spacing: 1px;
+        }
+        .brand-title {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .brand-subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.8;
+            margin-bottom: 50px;
+            max-width: 320px;
+        }
+        .feature-list {
+            list-style: none;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 24px;
+            font-size: 15px;
+            transition: transform 0.3s ease;
+        }
+        .feature-item:hover {
+            transform: translateX(5px);
+        }
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            backdrop-filter: blur(10px);
+        }
+        .login-right {
+            flex: 1;
+            padding: 60px 50px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        .login-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #1a1a1a;
+            margin-bottom: 10px;
+        }
+        .login-subtitle {
+            font-size: 15px;
+            color: #888;
+        }
+        .role-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 35px;
+            background: #f0f4f8;
+            padding: 6px;
+            border-radius: 14px;
+        }
+        .role-btn {
+            flex: 1;
+            padding: 14px 20px;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-size: 15px;
+            font-weight: 500;
+            color: #666;
+        }
+        .role-btn:hover {
+            color: #0F3167;
+            background: rgba(255,255,255,0.5);
+        }
+        .role-btn.active {
+            background: #fff;
+            color: #0F3167;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .input-wrapper {
+            position: relative;
+        }
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 20px;
+            color: #999;
+        }
+        .form-group input {
+            width: 100%;
+            padding: 16px 18px 16px 52px;
+            border: 2px solid #e8e8e8;
+            border-radius: 14px;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            background: #fafafa;
+        }
+        .form-group input:focus {
+            outline: none;
+            border-color: #0F3167;
+            background: #fff;
+            box-shadow: 0 0 0 4px rgba(15, 49, 103, 0.08);
+        }
+        .form-group input::placeholder {
+            color: #aaa;
+        }
+        .login-options {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 14px;
+        }
+        .remember-me {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #666;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        .remember-me input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: #0F3167;
+            cursor: pointer;
+        }
+        .forgot-link {
+            color: #0F3167;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .forgot-link:hover {
+            opacity: 0.8;
+            text-decoration: underline;
+        }
+        .btn-login {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #0F3167 0%, #1a4a8c 50%, #2563eb 100%);
+            color: #fff;
+            border: none;
+            border-radius: 14px;
+            font-size: 17px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 6px 20px rgba(15, 49, 103, 0.3);
+            letter-spacing: 2px;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(15, 49, 103, 0.4);
+        }
+        .btn-login:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .login-wrapper {
+                flex-direction: column;
+                max-width: 400px;
+            }
+            .login-left {
+                padding: 40px 30px;
+                min-height: 180px;
+            }
+            .brand-icon {
+                width: 80px;
+                height: 80px;
+                margin-bottom: 20px;
+            }
+            .university-name {
+                font-size: 18px;
+            }
+            .brand-title {
+                font-size: 26px;
+            }
+            .brand-subtitle {
+                font-size: 14px;
+                margin-bottom: 0;
+            }
+            .feature-list {
+                display: none;
+            }
+            .login-right {
+                padding: 35px 30px;
+            }
+            .login-title {
+                font-size: 26px;
+            }
+        }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="login-wrapper">
+        <!-- 左侧品牌区域 -->
+        <div class="login-left">
+            <div class="brand-section">
+                <div class="brand-icon">
+                    <img src="../地质大学LOGO.png" alt="武汉地质大学" onerror="this.onerror=null; this.src='../地质大学.png';">
+                </div>
+                <div class="university-name">武汉地质大学</div>
+                <h1 class="brand-title">教学实训平台</h1>
+                <p class="brand-subtitle">智能化教学管理，助力职业教育数字化转型，打造高效实训教学新生态</p>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <span>全场景教学管理</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <span>实训过程全程跟踪</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon">✓</div>
+                        <span>多维度数据分析</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 右侧登录区域 -->
+        <div class="login-right">
+            <div class="login-header">
+                <h2 class="login-title">欢迎登录</h2>
+                <p class="login-subtitle">请选择身份并登录系统</p>
+            </div>
+
+            <div class="role-selector">
+                <div class="role-btn active" onclick="selectRole('admin', this)">教务管理</div>
+                <div class="role-btn" onclick="selectRole('teacher', this)">教师</div>
+                <div class="role-btn" onclick="selectRole('student', this)">学生</div>
+            </div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label>账号</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">👤</span>
+                        <input type="text" id="username" placeholder="请输入账号">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label>密码</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">🔒</span>
+                        <input type="password" id="password" placeholder="请输入密码">
+                    </div>
+                </div>
+                
+                <div class="login-options">
+                    <label class="remember-me">
+                        <input type="checkbox">
+                        <span>记住我</span>
+                    </label>
+                    <a href="#" class="forgot-link">忘记密码？</a>
+                </div>
+                
+                <button type="button" class="btn-login" onclick="doLogin()">登 录</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentRole = 'admin';
+        
+        function selectRole(role, btn) {
+            currentRole = role;
+            document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+        
+        function doLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if (!username || !password) {
+                alert('请输入账号和密码');
+                return;
+            }
+            
+            let isValid = false;
+            if (currentRole === 'admin' && username === 'admin' && password === 'admin123') {
+                isValid = true;
+            } else if (currentRole === 'teacher' && username === 'zhangsan' && password === '123456') {
+                isValid = true;
+            } else if (currentRole === 'student' && username === 'stu001' && password === '123456') {
+                isValid = true;
+            }
+            
+            if (isValid) {
+                localStorage.setItem('iBodaoUser', JSON.stringify({
+                    username: username,
+                    role: currentRole,
+                    loginTime: new Date().toISOString()
+                }));
+                
+                if (currentRole === 'admin') {
+                    window.location.href = './教学实训平台_教务管理端.html';
+                } else if (currentRole === 'teacher') {
+                    window.location.href = './教学实训平台_教师端.html';
+                } else if (currentRole === 'student') {
+                    window.location.href = './教学实训平台_学生端.html';
+                }
+            } else {
+                alert('账号或密码错误');
+            }
+        }
+        
+        document.getElementById('password').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                doLogin();
+            }
+        });
+        
+        window.onload = function() {
+            document.getElementById('username').value = 'admin';
+            document.getElementById('password').value = 'admin123';
+        };
+    </script>
+</body>
+</html>

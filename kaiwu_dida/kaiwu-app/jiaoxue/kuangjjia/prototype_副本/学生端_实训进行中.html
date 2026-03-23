@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实训进行中 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <!-- 实训进行中页面不加载导航样式，保持沉浸式体验 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #F5F5F5;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #E8E8E8;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%);
+            border-radius: 8px;
+            color: #FA8C16;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            background: #F6FFED;
+            color: #52C41A;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .container {
+            width: calc(100% - 220px);
+            margin-left: 220px;
+            margin-right: 0;
+            padding: 24px;
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            box-sizing: border-box;
+            min-height: calc(100vh - 64px);
+        }
+
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .sidebar-panel {
+            width: 360px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .panel-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .task-description {
+            color: #666;
+            line-height: 1.8;
+            margin-bottom: 20px;
+        }
+
+        .task-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: #F5F7FA;
+            border-radius: 8px;
+            border-left: 4px solid #D9D9D9;
+            transition: all 0.3s;
+        }
+
+        .step-item.active {
+            border-left-color: #FA8C16;
+            background: #FFF7E6;
+        }
+
+        .step-item.completed {
+            border-left-color: #52C41A;
+            background: #F6FFED;
+        }
+
+        .step-number {
+            width: 28px;
+            height: 28px;
+            background: #D9D9D9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            flex-shrink: 0;
+        }
+
+        .step-item.active .step-number {
+            background: #FA8C16;
+        }
+
+        .step-item.completed .step-number {
+            background: #52C41A;
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .step-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .operation-area {
+            background: #001529;
+            border-radius: 12px;
+            padding: 24px;
+            color: #fff;
+            min-height: 300px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .operation-placeholder {
+            text-align: center;
+        }
+
+        .operation-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .operation-text {
+            font-size: 16px;
+            opacity: 0.7;
+        }
+
+        .device-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+
+        .device-info-item {
+            padding: 12px;
+            background: #F5F7FA;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .device-info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .device-info-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FA8C16 0%, #FF6B35 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(250, 140, 22, 0.4);
+        }
+
+        .btn-secondary {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #E8E8E8;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(82, 196, 26, 0.4);
+        }
+
+        .data-record {
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .record-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .record-item:last-child {
+            border-bottom: none;
+        }
+
+        .record-time {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .record-value {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            animation: modalSlide 0.3s ease;
+        }
+
+        @keyframes modalSlide {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-icon {
+            width: 80px;
+            height: 80px;
+            background: #F6FFED;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .modal-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 24px;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .modal-buttons .btn {
+            flex: 1;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="confirmExit()">
+                <i class="iconfont icon-fanhui"></i>
+            </button>
+            <div class="header-title">数控车床编程与操作：外圆车削加工</div>
+        </div>
+        <div class="header-info">
+            <div class="timer">
+                <i class="iconfont icon-shijian"></i>
+                <span id="timer">00:00:00</span>
+            </div>
+            <div class="status-badge">实训进行中</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-panel">
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="iconfont icon-renwu"></i>
+                    实训任务
+                </div>
+                <div class="task-description">
+                    本实训任务要求完成外圆车削加工，包括：工件装夹、刀具选择、程序编制、对刀操作、自动加工等步骤。请按照操作步骤依次完成，并注意安全防护。
+                </div>
+                <div class="task-steps">
+                    <div class="step-item completed">
+                        <div class="step-number">✓</div>
+                        <div class="step-content">
+                            <div class="step-title">准备工作</div>
+                            <div class="step-desc">阅读指导书、检查防护装备、确认设备状态</div>
+                        </div>
+                    </div>
+                    <div class="step-item active">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <div class="step-title">工件装夹</div>
+                            <div class="step-desc">将毛坯工件装夹到卡盘上，校正并夹紧</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <div class="step-title">程序编制</div>
+                            <div class="step-desc">在数控系统中输入加工程序</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <div class="step-title">对刀操作</div>
+                            <div class="step-desc">进行刀具对刀，建立工件坐标系</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <div class="step-title">自动加工</div>
+                            <div class="step-desc">启动程序，完成自动加工</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="operation-area">
+                <div class="operation-placeholder">
+                    <div class="operation-icon">🖥️</div>
+                    <div class="operation-text">设备操作界面将在此显示</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-panel">
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="iconfont icon-shebei"></i>
+                    设备状态
+                </div>
+                <div class="device-info">
+                    <div class="device-info-item">
+                        <div class="device-info-label">主轴转速</div>
+                        <div class="device-info-value" id="spindleSpeed">0 RPM</div>
+                    </div>
+                    <div class="device-info-item">
+                        <div class="device-info-label">主轴倍率</div>
+                        <div class="device-info-value" id="spindleOverride">100%</div>
+                    </div>
+                    <div class="device-info-item">
+                        <div class="device-info-label">进给值</div>
+                        <div class="device-info-value" id="feedRate">0 mm/r</div>
+                    </div>
+                    <div class="device-info-item">
+                        <div class="device-info-label">进给倍率</div>
+                        <div class="device-info-value" id="feedOverride">100%</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="iconfont icon-shuju"></i>
+                    数据采集记录
+                </div>
+                <div class="data-record" id="dataRecord">
+                    <div class="record-item">
+                        <span class="record-time">14:32:15</span>
+                        <span class="record-value">设备启动</span>
+                    </div>
+                    <div class="record-item">
+                        <span class="record-time">14:32:18</span>
+                        <span class="record-value">主轴转速：800 RPM</span>
+                    </div>
+                    <div class="record-item">
+                        <span class="record-time">14:32:20</span>
+                        <span class="record-value">进给值：0.15 mm/r</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="iconfont icon-caozuo"></i>
+                    操作按钮
+                </div>
+                <div class="action-buttons">
+                    <button class="btn btn-primary" onclick="completeStep()">
+                        <i class="iconfont icon-duihao"></i>
+                        完成当前步骤
+                    </button>
+                    <button class="btn btn-secondary" onclick="pauseTraining()">
+                        <i class="iconfont icon-zanting"></i>
+                        暂停实训
+                    </button>
+                    <button class="btn btn-success" onclick="submitTraining()">
+                        <i class="iconfont icon-shangchuan"></i>
+                        提交实训结果
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认退出弹窗 -->
+    <div class="modal-overlay" id="exitModal">
+        <div class="modal-content">
+            <div class="modal-icon">⚠️</div>
+            <div class="modal-title">确认退出？</div>
+            <div class="modal-text">退出后实训进度将保存，您可以稍后继续。是否确认退出？</div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary" onclick="exitTraining()">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提交确认弹窗 -->
+    <div class="modal-overlay" id="submitModal">
+        <div class="modal-content">
+            <div class="modal-icon">🎉</div>
+            <div class="modal-title">实训完成！</div>
+            <div class="modal-text">恭喜您完成了本次实训任务！用时：<span id="totalTime">00:45:32</span></div>
+            <div class="modal-buttons">
+                <button class="btn btn-secondary" onclick="closeModal()">返回修改</button>
+                <button class="btn btn-success" onclick="confirmSubmit()">确认提交</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let startTime = new Date();
+        let timerInterval;
+        let currentStep = 2;
+
+        // 启动计时器
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = now - startTime;
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                
+                document.getElementById('timer').textContent = 
+                    String(hours).padStart(2, '0') + ':' +
+                    String(minutes).padStart(2, '0') + ':' +
+                    String(seconds).padStart(2, '0');
+            }, 1000);
+        }
+
+        // 确认退出
+        function confirmExit() {
+            document.getElementById('exitModal').classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // 退出实训
+        function exitTraining() {
+            clearInterval(timerInterval);
+            window.location.href = './学生端_我的实训.html';
+        }
+
+        // 暂停实训
+        function pauseTraining() {
+            alert('实训已暂停，点击确定继续');
+        }
+
+        // 完成当前步骤
+        function completeStep() {
+            const steps = document.querySelectorAll('.step-item');
+            if (currentStep < steps.length) {
+                steps[currentStep - 1].classList.remove('active');
+                steps[currentStep - 1].classList.add('completed');
+                steps[currentStep - 1].querySelector('.step-number').textContent = '✓';
+                
+                if (currentStep < steps.length) {
+                    steps[currentStep].classList.add('active');
+                }
+                
+                currentStep++;
+                
+                // 添加数据记录
+                addDataRecord('完成步骤' + (currentStep - 1), '步骤完成');
+            }
+        }
+
+        // 提交实训
+        function submitTraining() {
+            document.getElementById('totalTime').textContent = document.getElementById('timer').textContent;
+            document.getElementById('submitModal').classList.add('active');
+        }
+
+        // 确认提交
+        function confirmSubmit() {
+            clearInterval(timerInterval);
+            alert('实训结果已提交！');
+            window.location.href = './学生端_我的实训.html';
+        }
+
+        // 添加数据记录
+        function addDataRecord(time, value) {
+            const recordDiv = document.getElementById('dataRecord');
+            const now = new Date();
+            const timeStr = String(now.getHours()).padStart(2, '0') + ':' +
+                           String(now.getMinutes()).padStart(2, '0') + ':' +
+                           String(now.getSeconds()).padStart(2, '0');
+            
+            const item = document.createElement('div');
+            item.className = 'record-item';
+            item.innerHTML = `
+                <span class="record-time">${timeStr}</span>
+                <span class="record-value">${value}</span>
+            `;
+            recordDiv.insertBefore(item, recordDiv.firstChild);
+        }
+
+        // 模拟设备数据更新
+        function simulateDeviceData() {
+            setInterval(() => {
+                const speed = Math.floor(Math.random() * 500) + 800;
+                document.getElementById('spindleSpeed').textContent = speed + ' RPM';
+                
+                if (Math.random() > 0.7) {
+                    addDataRecord('', '主轴转速：' + speed + ' RPM');
+                }
+            }, 5000);
+        }
+
+        // 页面加载
+        window.onload = function() {
+            startTimer();
+            simulateDeviceData();
+        };
+    </script>
+    <!-- 实训进行中页面不加载导航栏，保持沉浸式体验 -->
+</body>
+</html>

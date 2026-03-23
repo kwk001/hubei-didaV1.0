@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>普通题目 - 教务管理端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <link rel="stylesheet" href="./components.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #F5F7FA; min-height: 100vh; }
+
+        /* 页面特定样式 - 题目类型标签 */
+        .type-tag { 
+            display: inline-flex; 
+            align-items: center;
+            padding: 3px 10px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+        .type-single { background: #E6F7FF; color: #1890FF; border-color: #91D5FF; }
+        .type-multiple { background: #F6FFED; color: #52C41A; border-color: #B7EB8F; }
+        .type-judge { background: #FFF7E6; color: #FA8C16; border-color: #FFD591; }
+        .type-fill { background: #F9F0FF; color: #722ED1; border-color: #D3ADF7; }
+        
+        /* 难度标签 */
+        .difficulty-tag { 
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .difficulty-easy { background: #F6FFED; color: #52C41A; }
+        .difficulty-medium { background: #FFF7E6; color: #FA8C16; }
+        .difficulty-hard { background: #FFF1F0; color: #FF4D4F; }
+
+        /* 批量操作栏 */
+        .batch-operation-bar {
+            background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(99,102,241,0.02) 100%);
+            border: 1px solid rgba(99,102,241,0.15);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .batch-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .batch-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #1e293b;
+        }
+        .batch-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+        .batch-info strong {
+            color: #6366f1;
+            font-weight: 600;
+        }
+        .batch-right {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-batch {
+            padding: 6px 14px;
+            border: 1px solid rgba(99,102,241,0.2);
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #64748b;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-batch:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+            background: rgba(99,102,241,0.04);
+            transform: translateY(-1px);
+        }
+        .btn-batch.danger:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: rgba(239,68,68,0.04);
+        }
+
+        /* 页面切换 */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* 筛选区域展开/收起按钮样式 */
+        .filter-toggle {
+            margin-left: auto;
+            padding: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6366f1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+        }
+
+        .filter-toggle:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+
+        .filter-toggle .toggle-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 12px;
+            height: 12px;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .filter-toggle.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        /* 页面样式覆盖 - 统一间距和布局 */
+        .content-area {
+            padding: 16px !important;
+        }
+        
+        /* 表格分页容器 - 白色背景 */
+        .table-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+            overflow: hidden;
+        }
+        .table-section .data-table {
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+        }
+        .table-section .pagination {
+            border-top: 1px solid #F0F0F0;
+            background: transparent;
+            padding: 16px 0 0 0;
+            margin-top: 16px;
+        }
+        
+        /* 筛选条件模块间距调整 */
+        .filter-section {
+            margin-bottom: 16px !important;
+            padding: 16px !important;
+        }
+
+        /* 只隐藏编辑和删除按钮，保留查看按钮 */
+        .action-btns button:nth-child(2),
+        .action-btns button:nth-child(3) {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏导航容器 - 由 nav-loader-new.js 动态加载现代化导航组件 -->
+    <div id="nav-container"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <nav class="breadcrumb">
+                    <a href="./教学实训平台_教务管理端.html">教务管理</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>普通题目</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div id="user-menu-container"></div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- 左侧树状图 -->
+            <div class="tree-sidebar" style="display: none;">
+                <div class="tree-header">
+                    <span class="tree-title">分类目录</span>
+                    <div class="tree-actions">
+                        <button class="tree-btn" onclick="TreeSidebar.expandAll()">展开</button>
+                        <button class="tree-btn" onclick="TreeSidebar.collapseAll()">收起</button>
+                    </div>
+                </div>
+                <div class="tree-search">
+                    <input type="text" placeholder="搜索专业、课程或文件夹..." id="treeSearch" oninput="TreeSidebar.filter(this.value)">
+                </div>
+                <div class="tree-content" id="treeContent"></div>
+            </div>
+
+            <!-- 右侧内容区 -->
+            <div class="content-area">
+                <!-- 第一级：题库列表页 -->
+                <div id="bankListPage" class="page active">
+                    <!-- 统计卡片 -->
+                    <div class="stats-row">
+                        <div class="stat-card success">
+                            <div class="stat-icon">✓</div>
+                            <div class="stat-info">
+                                <h3>题目总数</h3>
+                                <div class="number" id="totalQuestions">856</div>
+                            </div>
+                        </div>
+                        <div class="stat-card primary">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-info">
+                                <h3>本周新增</h3>
+                                <div class="number" id="weekNew">24</div>
+                            </div>
+                        </div>
+                        <div class="stat-card info">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-info">
+                                <h3>本月新增</h3>
+                                <div class="number" id="monthNew">86</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 筛选区域 -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <div class="filter-title">
+                                <i class="iconfont icon-shaixuan"></i>
+                                筛选条件
+                            </div>
+                            <button class="filter-toggle" id="filterToggle" onclick="FilterSection.toggle(this)">
+                                <span class="toggle-text">收起</span>
+                                <span class="toggle-icon">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                        <div id="filterRow" class="filter-row">
+                            <!-- 筛选字段由 JS 动态生成 -->
+                        </div>
+                    </div>
+
+                    <!-- 批量操作栏 -->
+                    <div class="batch-operation-bar" style="display: none;">
+                        <div class="batch-left">
+                            <label class="batch-checkbox">
+                                <input type="checkbox" id="selectAllBanks" onchange="toggleSelectAllBanks()">
+                                <span>全选</span>
+                            </label>
+                            <span class="batch-info">已选择 <strong id="selectedCount">0</strong> 项</span>
+                        </div>
+                        <div class="batch-right">
+                            <button class="btn-batch" onclick="batchExport()">
+                                <i class="iconfont icon-xiazai"></i> 批量导出
+                            </button>
+                            <button class="btn-batch danger" onclick="batchDelete()">
+                                <i class="iconfont icon-shanchu"></i> 批量删除
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 数据表格容器 -->
+                    <div class="table-section">
+                        <div id="dataTable" class="data-table"></div>
+
+                        <!-- 分页 -->
+                        <div id="pagination" class="pagination"></div>
+                    </div>
+                </div>
+
+                <!-- 第二级：题目列表页 -->
+                <div id="questionListPage" class="page">
+                    <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 16px;">
+                        <button class="btn-reset" onclick="backToBankList()">
+                            <i class="iconfont icon-fanhui"></i> 返回题库列表
+                        </button>
+                        <div class="breadcrumb-nav" id="questionBreadcrumb">
+                            <span>全部题库</span>
+                            <span class="separator">/</span>
+                            <span class="current" id="currentBankName">Java程序设计</span>
+                        </div>
+                    </div>
+
+                    <div class="page-header" style="margin-bottom: 20px;">
+                        <h1 class="page-title" id="questionListTitle">Java程序设计 - 题目列表</h1>
+                    </div>
+
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <div class="filter-title">
+                                <i class="iconfont icon-shaixuan"></i>
+                                筛选条件
+                            </div>
+                        </div>
+                        <div class="filter-row">
+                            <div class="filter-item">
+                                <label>题型</label>
+                                <select id="questionTypeFilter">
+                                    <option value="">全部题型</option>
+                                    <option value="single">单选题</option>
+                                    <option value="multiple">多选题</option>
+                                    <option value="judge">判断题</option>
+                                    <option value="fill">填空题</option>
+                                </select>
+                            </div>
+                            <div class="filter-item">
+                                <label>难度</label>
+                                <select id="questionDifficultyFilter">
+                                    <option value="">全部难度</option>
+                                    <option value="easy">简单</option>
+                                    <option value="medium">中等</option>
+                                    <option value="hard">困难</option>
+                                </select>
+                            </div>
+                            <div class="filter-item">
+                                <label>搜索</label>
+                                <input type="text" id="questionSearch" placeholder="搜索题目内容...">
+                            </div>
+                            <div class="filter-actions" style="margin-top: 0; padding-top: 22px;">
+                                <button class="btn-reset" onclick="resetQuestionFilter()">重置</button>
+                                <button class="btn-search" onclick="searchQuestions()">查询</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-section">
+                        <div id="questionTable" class="data-table"></div>
+                        <div id="questionPagination" class="pagination"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./components.js"></script>
+    <script>
+        // ==================== 树状图数据 ====================
+        const treeData = [
+            {
+                id: '1',
+                label: '计算机科学与技术',
+                icon: '📁',
+                count: 5,
+                expanded: true,
+                children: [
+                    {
+                        id: '1-1',
+                        label: 'Java程序设计',
+                        icon: '📂',
+                        count: 3,
+                        children: [
+                            { id: '1-1-1', label: '基础语法', icon: '📄', count: 45 },
+                            { id: '1-1-2', label: '面向对象', icon: '📄', count: 38 },
+                            { id: '1-1-3', label: '集合框架', icon: '📄', count: 52 }
+                        ]
+                    },
+                    {
+                        id: '1-2',
+                        label: '数据结构与算法',
+                        icon: '📂',
+                        count: 2,
+                        children: [
+                            { id: '1-2-1', label: '线性表', icon: '📄', count: 30 },
+                            { id: '1-2-2', label: '树与图', icon: '📄', count: 42 }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: '2',
+                label: '软件工程',
+                icon: '📁',
+                count: 3,
+                children: [
+                    {
+                        id: '2-1',
+                        label: '软件测试',
+                        icon: '📂',
+                        count: 2,
+                        children: [
+                            { id: '2-1-1', label: '单元测试', icon: '📄', count: 28 },
+                            { id: '2-1-2', label: '集成测试', icon: '📄', count: 35 }
+                        ]
+                    },
+                    { id: '2-2', label: '项目管理', icon: '📄', count: 18 }
+                ]
+            },
+            {
+                id: '3',
+                label: '人工智能',
+                icon: '📁',
+                count: 4,
+                expanded: true,
+                children: [
+                    { id: '3-1', label: '机器学习基础', icon: '📄', count: 65 },
+                    { id: '3-2', label: '深度学习', icon: '📄', count: 48 },
+                    { id: '3-3', label: '自然语言处理', icon: '📄', count: 52 }
+                ]
+            }
+        ];
+
+        // ==================== 题目表格数据（一级页面直接显示题目） ====================
+        const bankTableData = [
+            { id: 1, type: 'single', typeName: '单选题', content: 'Java中，以下哪个关键字用于定义接口？', course: 'Java程序设计', difficulty: 'easy', difficultyName: '简单', updater: '张教授', updateTime: '2026-03-11 11:22:25' },
+            { id: 2, type: 'multiple', typeName: '多选题', content: '以下哪些是Java的基本数据类型？', course: 'Java程序设计', difficulty: 'easy', difficultyName: '简单', updater: '李讲师', updateTime: '2026-03-11 10:15:30' },
+            { id: 3, type: 'judge', typeName: '判断题', content: 'Java中的String类是不可变的。', course: '面向对象编程', difficulty: 'medium', difficultyName: '中等', updater: '王教授', updateTime: '2026-03-10 16:45:18' },
+            { id: 4, type: 'fill', typeName: '填空题', content: 'Java中，使用______关键字可以创建类的实例。', course: 'Java程序设计', difficulty: 'easy', difficultyName: '简单', updater: '赵教授', updateTime: '2026-03-10 14:20:33' },
+            { id: 5, type: 'single', typeName: '单选题', content: '以下哪个集合类是线程安全的？', course: 'Java高级特性', difficulty: 'hard', difficultyName: '困难', updater: '刘讲师', updateTime: '2026-03-10 09:30:45' },
+            { id: 6, type: 'multiple', typeName: '多选题', content: 'Java中，以下哪些是正确的异常处理关键字？', course: 'Java高级特性', difficulty: 'medium', difficultyName: '中等', updater: '陈教授', updateTime: '2026-03-09 17:10:22' },
+            { id: 7, type: 'judge', typeName: '判断题', content: '抽象类可以被实例化。', course: '面向对象编程', difficulty: 'easy', difficultyName: '简单', updater: '孙讲师', updateTime: '2026-03-09 11:05:55' },
+            { id: 8, type: 'single', typeName: '单选题', content: 'Java中，以下哪个方法用于获取字符串的长度？', course: 'Java程序设计', difficulty: 'easy', difficultyName: '简单', updater: '周教授', updateTime: '2026-03-09 08:40:12' },
+            { id: 9, type: 'multiple', typeName: '多选题', content: '以下哪些是Java的访问修饰符？', course: '面向对象编程', difficulty: 'easy', difficultyName: '简单', updater: '吴讲师', updateTime: '2026-03-09 08:00:38' },
+            { id: 10, type: 'single', typeName: '单选题', content: 'Java中，以下哪个类是所有类的父类？', course: 'Java程序设计', difficulty: 'easy', difficultyName: '简单', updater: '郑教授', updateTime: '2026-03-09 07:15:25' },
+            { id: 11, type: 'judge', typeName: '判断题', content: 'Java支持多重继承。', course: '面向对象编程', difficulty: 'medium', difficultyName: '中等', updater: '钱讲师', updateTime: '2026-03-09 06:30:48' },
+            { id: 12, type: 'fill', typeName: '填空题', content: 'Java中，______方法用于程序的入口点。', course: 'Java程序设计', difficulty: 'easy', difficultyName: '简单', updater: '冯教授', updateTime: '2026-03-09 05:45:33' }
+        ];
+
+        // ==================== 题目表格数据 ====================
+        const questionTableData = [
+            { id: 1, type: 'single', typeName: '单选题', content: 'Java中，以下哪个关键字用于定义接口？', course: 'Java程序设计', difficulty: 'easy', difficultyName: '简单', knowledge: '基础语法', updater: '张教授', updateTime: '2026-03-11 11:22:25' },
+            { id: 2, type: 'multiple', typeName: '多选题', content: '以下哪些是Java的基本数据类型？', course: 'Java程序设计', difficulty: 'easy', difficultyName: '简单', knowledge: '基础语法', updater: '李讲师', updateTime: '2026-03-11 10:15:30' },
+            { id: 3, type: 'judge', typeName: '判断题', content: 'Java中的String类是不可变的。', course: '面向对象编程', difficulty: 'medium', difficultyName: '中等', knowledge: '面向对象', updater: '王教授', updateTime: '2026-03-10 16:45:18' },
+            { id: 4, type: 'fill', typeName: '填空题', content: 'Java中，使用______关键字可以创建类的实例。', course: 'Java程序设计', difficulty: 'easy', difficultyName: '简单', knowledge: '基础语法', updater: '赵教授', updateTime: '2026-03-10 14:20:33' },
+            { id: 5, type: 'single', typeName: '单选题', content: '以下哪个集合类是线程安全的？', course: 'Java高级特性', difficulty: 'hard', difficultyName: '困难', knowledge: '集合框架', updater: '刘讲师', updateTime: '2026-03-10 09:30:45' },
+            { id: 6, type: 'multiple', typeName: '多选题', content: 'Java中，以下哪些是正确的异常处理关键字？', course: 'Java高级特性', difficulty: 'medium', difficultyName: '中等', knowledge: '异常处理', updater: '陈教授', updateTime: '2026-03-09 17:10:22' },
+            { id: 7, type: 'judge', typeName: '判断题', content: '抽象类可以被实例化。', course: '面向对象编程', difficulty: 'easy', difficultyName: '简单', knowledge: '面向对象', updater: '孙讲师', updateTime: '2026-03-09 11:05:55' },
+            { id: 8, type: 'single', typeName: '单选题', content: 'Java中，以下哪个方法用于获取字符串的长度？', course: 'Java程序设计', difficulty: 'easy', difficultyName: '简单', knowledge: '基础语法', updater: '周教授', updateTime: '2026-03-09 08:40:12' }
+        ];
+
+        // ==================== 筛选字段配置 ====================
+        const filterFields = [
+            { type: 'text', label: '题目名称', name: 'content', placeholder: '请输入题目名称' },
+            { 
+                type: 'select', 
+                label: '题型', 
+                name: 'type',
+                options: [
+                    { value: '', label: '全部题型' },
+                    { value: 'single', label: '单选题' },
+                    { value: 'multiple', label: '多选题' },
+                    { value: 'judge', label: '判断题' },
+                    { value: 'fill', label: '填空题' }
+                ]
+            },
+            { 
+                type: 'select', 
+                label: '难度', 
+                name: 'difficulty',
+                options: [
+                    { value: '', label: '全部难度' },
+                    { value: 'easy', label: '简单' },
+                    { value: 'medium', label: '中等' },
+                    { value: 'hard', label: '困难' }
+                ]
+            },
+            { 
+                type: 'select', 
+                label: '时间范围', 
+                name: 'time',
+                options: [
+                    { value: '', label: '全部时间' },
+                    { value: 'today', label: '今天' },
+                    { value: 'week', label: '本周' },
+                    { value: 'month', label: '本月' }
+                ]
+            }
+        ];
+
+        // ==================== 题目表格列配置（一级页面直接显示题目） ====================
+        const bankColumns = [
+            { title: '序号', dataIndex: 'id' },
+            {
+                title: '题目名称',
+                dataIndex: 'content',
+                render: (val) => `<span style="color: #1e293b; font-weight: 500;">${val}</span>`
+            },
+            { title: '所属课程', dataIndex: 'course' },
+            {
+                title: '题型',
+                dataIndex: 'typeName',
+                render: (val, row) => {
+                    const typeClass = {
+                        '单选题': 'type-single',
+                        '多选题': 'type-multiple',
+                        '判断题': 'type-judge',
+                        '填空题': 'type-fill'
+                    }[val] || 'type-single';
+                    return `<span class="type-tag ${typeClass}">${val}</span>`;
+                }
+            },
+            {
+                title: '难度',
+                dataIndex: 'difficultyName',
+                render: (val) => {
+                    const diffClass = {
+                        '简单': 'difficulty-easy',
+                        '中等': 'difficulty-medium',
+                        '困难': 'difficulty-hard'
+                    }[val] || 'difficulty-easy';
+                    return `<span class="difficulty-tag ${diffClass}">${val}</span>`;
+                }
+            },
+            { title: '更新人', dataIndex: 'updater' },
+            { title: '更新时间', dataIndex: 'updateTime' }
+        ];
+
+        // ==================== 题目表格列配置 ====================
+        const questionColumns = [
+            { title: '序号', dataIndex: 'id' },
+            {
+                title: '题目名称',
+                dataIndex: 'content',
+                render: (val) => `<span style="color: #1e293b; font-weight: 500;">${val}</span>`
+            },
+            { title: '所属课程', dataIndex: 'course' },
+            {
+                title: '题型',
+                dataIndex: 'typeName',
+                render: (val, row) => {
+                    const typeClass = {
+                        '单选题': 'type-single',
+                        '多选题': 'type-multiple',
+                        '判断题': 'type-judge',
+                        '填空题': 'type-fill'
+                    }[val] || 'type-single';
+                    return `<span class="type-tag ${typeClass}">${val}</span>`;
+                }
+            },
+            {
+                title: '难度',
+                dataIndex: 'difficultyName',
+                render: (val) => {
+                    const diffClass = {
+                        '简单': 'difficulty-easy',
+                        '中等': 'difficulty-medium',
+                        '困难': 'difficulty-hard'
+                    }[val] || 'difficulty-easy';
+                    return `<span class="difficulty-tag ${diffClass}">${val}</span>`;
+                }
+            },
+            { title: '更新人', dataIndex: 'updater' },
+            { title: '更新时间', dataIndex: 'updateTime' }
+        ];
+
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化树状图
+            TreeSidebar.render(treeData, {
+                containerId: 'treeContent',
+                onSelect: (nodeData) => {
+                    console.log('选中节点:', nodeData);
+                    filterByCategory(nodeData.id);
+                }
+            });
+
+            // 初始化筛选组件
+            FilterSection.init({
+                containerId: 'filterRow',
+                fields: filterFields,
+                onSearch: (values) => {
+                    console.log('筛选条件:', values);
+                    filterBanks(values);
+                },
+                onReset: () => {
+                    DataTable.setData(bankTableData);
+                }
+            });
+
+            // 初始化题库表格
+            DataTable.init({
+                containerId: 'dataTable',
+                columns: bankColumns,
+                data: bankTableData,
+                fixedFirstColumn: true,
+                fixedLastColumn: true
+            });
+
+            // 初始化分页
+            Pagination.init({
+                containerId: 'pagination',
+                total: bankTableData.length,
+                pageSize: 10,
+                current: 1,
+                onChange: (page, pageSize) => {
+                    console.log('页码变化:', page, pageSize);
+                }
+            });
+
+            // 初始化题目表格
+            DataTable.init({
+                containerId: 'questionTable',
+                columns: questionColumns,
+                data: questionTableData,
+                fixedFirstColumn: true,
+                fixedLastColumn: true
+            });
+
+            // 初始化题目分页
+            Pagination.init({
+                containerId: 'questionPagination',
+                total: questionTableData.length,
+                pageSize: 10,
+                current: 1
+            });
+
+            // 初始化菜单状态
+            initMenuState();
+        });
+
+        // ==================== 菜单状态初始化 ====================
+        function initMenuState() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+        }
+
+        // ==================== 筛选功能 ====================
+        function filterByCategory(categoryId) {
+            const filtered = bankTableData.filter(item => {
+                return item['data-category'].startsWith(categoryId);
+            });
+            DataTable.setData(filtered.length > 0 ? filtered : bankTableData);
+        }
+
+        function filterBanks(values) {
+            let filtered = bankTableData;
+            
+            if (values.name) {
+                filtered = filtered.filter(item => item.name.includes(values.name));
+            }
+            
+            DataTable.setData(filtered);
+        }
+
+        // ==================== 全选功能 ====================
+        function toggleSelectAllBanks() {
+            const selectAll = document.getElementById('selectAllBanks').checked;
+            const checkboxes = document.querySelectorAll('.bank-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAll);
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const count = document.querySelectorAll('.bank-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = count;
+        }
+
+        // ==================== 批量操作 ====================
+        function batchExport() {
+            alert('批量导出功能开发中...');
+        }
+
+        function batchDelete() {
+            const count = document.querySelectorAll('.bank-checkbox:checked').length;
+            if (count === 0) {
+                alert('请先选择要删除的题库');
+                return;
+            }
+            if (confirm(`确定要删除选中的 ${count} 个题库吗？`)) {
+                alert('批量删除成功');
+            }
+        }
+
+        // ==================== 题库操作 ====================
+        function viewBank(id) {
+            const bank = bankTableData.find(b => b.id === id);
+            if (bank) {
+                document.getElementById('currentBankName').textContent = bank.name;
+                document.getElementById('questionListTitle').textContent = bank.name + ' - 题目列表';
+                document.getElementById('bankListPage').classList.remove('active');
+                document.getElementById('questionListPage').classList.add('active');
+            }
+        }
+
+        function editBank(id) {
+            alert('编辑题库 ID: ' + id);
+        }
+
+        function deleteBank(id) {
+            if (confirm('确定要删除该题库吗？')) {
+                alert('删除成功');
+            }
+        }
+
+        function backToBankList() {
+            document.getElementById('questionListPage').classList.remove('active');
+            document.getElementById('bankListPage').classList.add('active');
+        }
+
+        // ==================== 题目操作 ====================
+        function viewQuestion(id) {
+            alert('查看题目 ID: ' + id);
+        }
+
+        function editQuestion(id) {
+            alert('编辑题目 ID: ' + id);
+        }
+
+        function deleteQuestion(id) {
+            if (confirm('确定要删除该题目吗？')) {
+                alert('删除成功');
+            }
+        }
+
+        function searchQuestions() {
+            alert('搜索题目');
+        }
+
+        function resetQuestionFilter() {
+            document.getElementById('questionTypeFilter').value = '';
+            document.getElementById('questionDifficultyFilter').value = '';
+            document.getElementById('questionSearch').value = '';
+        }
+
+        // ==================== 退出登录 ====================
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = './login.html';
+            }
+        }
+    </script>
+    <!-- 导航加载器 - 动态加载现代化导航组件 -->
+    <script src="./nav-loader-new.js"></script>
+    <script src="./user-menu-component.js"></script>
+</body>
+</html>

@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>保养项管理 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .page-header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .page-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: #1890FF;
+            border-radius: 2px;
+        }
+        
+        .toolbar {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-item label {
+            font-size: 13px;
+            color: #666;
+        }
+        .filter-item input,
+        .filter-item select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 140px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: #1890FF; color: #fff; }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success { background: #52C41A; color: #fff; }
+        .btn-success:hover { background: #73D13D; }
+        .btn-default { background: #fff; color: #666; border: 1px solid #D9D9D9; }
+        .btn-default:hover { border-color: #1890FF; color: #1890FF; }
+        .btn-sm { padding: 4px 12px; font-size: 12px; }
+        
+        .content-body {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+        }
+        
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            overflow: hidden;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .data-table tbody tr:hover { background: #F6FFFE; }
+        
+        .status-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-enabled { background: #F6FFED; color: #52C41A; border: 1px solid #B7EB8F; }
+        .status-disabled { background: #FFF2F0; color: #FF4D4F; border: 1px solid #FFA39E; }
+        
+        .action-group { display: flex; gap: 8px; }
+        
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 20px;
+            gap: 8px;
+            background: #fff;
+            border-top: 1px solid #E8E8E8;
+        }
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .pagination-btn:hover { border-color: #1890FF; color: #1890FF; }
+        .pagination-btn.active { background: #1890FF; color: #fff; border-color: #1890FF; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active { display: flex; }
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title { font-size: 18px; font-weight: 600; color: #fff; }
+        .modal-close {
+            font-size: 24px;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+        .modal-body { padding: 24px; overflow-y: auto; flex: 1; }
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #FAFAFA;
+        }
+        
+        .form-item { margin-bottom: 20px; }
+        .form-item label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-item label span { color: #FF4D4F; }
+        .form-item input,
+        .form-item select,
+        .form-item textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+        .form-item textarea { resize: vertical; min-height: 80px; }
+        .form-row { display: flex; gap: 20px; }
+        .form-row .form-item { flex: 1; }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">保养项管理</div>
+        </div>
+        
+        <div class="toolbar">
+            <div class="filter-group">
+                <div class="filter-item">
+                    <label>保养项名称</label>
+                    <input type="text" placeholder="请输入保养项名称">
+                </div>
+                <div class="filter-item">
+                    <label>保养类型</label>
+                    <select>
+                        <option value="">全部</option>
+                        <option value="regular">定期保养</option>
+                        <option value="repair">修复保养</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary">
+                    <i class="iconfont icon-sousuo"></i> 查询
+                </button>
+                <button class="btn btn-default">重置</button>
+            </div>
+            <div class="action-group">
+                <button class="btn btn-success" onclick="openModal()">
+                    <i class="iconfont icon-add"></i> 新增保养项
+                </button>
+            </div>
+        </div>
+        
+        <div class="content-body">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>保养项编码</th>
+                            <th>保养项名称</th>
+                            <th>保养类型</th>
+                            <th>保养内容</th>
+                            <th>标准工时</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>BY001</strong></td>
+                            <td>刀片检查更换</td>
+                            <td>定期保养</td>
+                            <td>检查刀片磨损情况，必要时更换</td>
+                            <td>30分钟</td>
+                            <td><span class="status-tag status-enabled">启用</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm">编辑</button>
+                                    <button class="btn btn-danger btn-sm">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>BY002</strong></td>
+                            <td>刀具清洁</td>
+                            <td>定期保养</td>
+                            <td>清洗刀具表面，去除切屑和油污</td>
+                            <td>15分钟</td>
+                            <td><span class="status-tag status-enabled">启用</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm">编辑</button>
+                                    <button class="btn btn-danger btn-sm">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>BY003</strong></td>
+                            <td>刀柄检查</td>
+                            <td>定期保养</td>
+                            <td>检查刀柄磨损、拉钉松动情况</td>
+                            <td>20分钟</td>
+                            <td><span class="status-tag status-enabled">启用</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm">编辑</button>
+                                    <button class="btn btn-danger btn-sm">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>BY004</strong></td>
+                            <td>崩刃修复</td>
+                            <td>修复保养</td>
+                            <td>对崩刃刀具进行修复处理</td>
+                            <td>60分钟</td>
+                            <td><span class="status-tag status-enabled">启用</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm">编辑</button>
+                                    <button class="btn btn-danger btn-sm">删除</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <span style="font-size: 13px; color: #666; margin-right: 16px;">共 12 条记录</span>
+                    <button class="pagination-btn">上一页</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增/编辑模态框 -->
+    <div class="modal" id="itemModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">新增保养项</div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>保养项编码 <span>*</span></label>
+                        <input type="text" placeholder="请输入保养项编码">
+                    </div>
+                    <div class="form-item">
+                        <label>保养项名称 <span>*</span></label>
+                        <input type="text" placeholder="请输入保养项名称">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>保养类型 <span>*</span></label>
+                        <select>
+                            <option value="">请选择</option>
+                            <option value="regular">定期保养</option>
+                            <option value="repair">修复保养</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>标准工时</label>
+                        <input type="text" placeholder="如：30分钟">
+                    </div>
+                </div>
+                <div class="form-item">
+                    <label>保养内容 <span>*</span></label>
+                    <textarea placeholder="请输入保养内容"></textarea>
+                </div>
+                <div class="form-item">
+                    <label>备注</label>
+                    <textarea placeholder="请输入备注信息"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.classList.remove('collapsed');
+                    }
+                }
+            }
+        });
+
+        function openModal() {
+            document.getElementById('itemModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('itemModal').classList.remove('active');
+        }
+
+        document.getElementById('itemModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>试卷批阅 - 学生列表</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb span {
+            color: #1890FF;
+            cursor: pointer;
+        }
+
+        .breadcrumb span:hover {
+            text-decoration: underline;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            color: #1890FF;
+        }
+
+        /* 内容区域 - 教务端风格 */
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        /* 返回按钮 */
+        .btn-back {
+            padding: 10px 20px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .btn-back:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+            box-shadow: 0 4px 12px rgba(24,144,255,0.15);
+        }
+
+        /* 考试信息卡片 */
+        .exam-info-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            margin-bottom: 20px;
+        }
+
+        .exam-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .exam-title-section {
+            flex: 1;
+        }
+
+        .exam-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin-bottom: 12px;
+        }
+
+        .exam-meta {
+            display: flex;
+            gap: 24px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .exam-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .exam-meta-item .label {
+            color: #999;
+        }
+
+        .exam-meta-item .value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .exam-status {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 8px;
+        }
+
+        .status-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .status-tag.orange {
+            background: linear-gradient(135deg, #FFF7E6 0%, #FFD591 100%);
+            color: #FA8C16;
+            border: 1px solid #FFC069;
+        }
+
+        .status-tag.green {
+            background: linear-gradient(135deg, #F6FFED 0%, #D9F7BE 100%);
+            color: #52C41A;
+            border: 1px solid #B7EB8F;
+        }
+
+        .review-progress {
+            font-size: 13px;
+            color: #666;
+        }
+
+        /* 统计卡片 - 教务端风格 */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.blue { background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%); }
+        .stat-icon.green { background: linear-gradient(135deg, #F6FFED 0%, #D9F7BE 100%); }
+        .stat-icon.orange { background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%); }
+        .stat-icon.purple { background: linear-gradient(135deg, #F9F0FF 0%, #EFDBFF 100%); }
+
+        .stat-content { flex: 1; }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #262626;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #8C8C8C;
+            margin-top: 4px;
+        }
+
+        .stat-trend {
+            font-size: 12px;
+            color: #52C41A;
+            margin-top: 4px;
+        }
+
+        .stat-trend.down { color: #FF4D4F; }
+
+        /* 搜索筛选区 - 卡片式布局 */
+        .search-filter-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .search-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .filter-label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #E8E8E8;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #333;
+            background: #fff;
+            cursor: pointer;
+            min-width: 120px;
+        }
+
+        .filter-select:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+
+        .btn-search {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-search:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+
+        .btn-reset {
+            padding: 12px 20px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .btn-reset:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            overflow-x: auto;
+        }
+
+        .data-table table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+
+        .data-table th {
+            background: linear-gradient(180deg, #FAFAFA 0%, #F5F7FA 100%);
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #E8E8E8;
+            white-space: nowrap;
+        }
+
+        .data-table td {
+            padding: 18px 20px;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+        }
+
+        .data-table tbody tr {
+            transition: all 0.3s;
+        }
+
+        .data-table tbody tr:hover {
+            background: linear-gradient(90deg, #F6FFED 0%, #E6F7FF 100%);
+            transform: scale(1.002);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* 学生信息 */
+        .student-info-cell {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            color: #fff;
+            font-weight: 500;
+        }
+
+        .student-details {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .student-name {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .student-id {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 提交状态 */
+        .submit-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .submit-status.submitted {
+            background: #E6F7FF;
+            color: #1890FF;
+        }
+
+        .submit-status.pending {
+            background: #FFF7E6;
+            color: #FA8C16;
+        }
+
+        /* 批阅状态 */
+        .review-status {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .review-status.pending {
+            background: #FFF7E6;
+            color: #FA8C16;
+        }
+
+        .review-status.reviewing {
+            background: #E6F7FF;
+            color: #1890FF;
+        }
+
+        .review-status.completed {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        /* 分数显示 */
+        .score-display {
+            font-weight: 600;
+            color: #333;
+        }
+
+        .score-display.pending {
+            color: #999;
+        }
+
+        /* 操作按钮 */
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btns button {
+            padding: 6px 14px;
+            border: 1px solid #1890FF;
+            background: #fff;
+            cursor: pointer;
+            color: #1890FF;
+            font-size: 13px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .action-btns button:hover {
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+            transform: translateY(-1px);
+        }
+
+        .action-btns button.primary {
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .action-btns button.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+
+        .action-btns button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #F5F5F5;
+            border-color: #D9D9D9;
+            color: #999;
+        }
+
+        .action-btns button:disabled:hover {
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* 分页 - 优化样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .pagination-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pagination-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 1px solid #E8E8E8;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #595959;
+            transition: all 0.3s;
+            min-width: 36px;
+            text-align: center;
+        }
+
+        .pagination-btn:hover:not(:disabled) {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #F5F5F5;
+        }
+
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+            font-weight: 500;
+        }
+
+        .pagination-info {
+            font-size: 14px;
+            color: #8C8C8C;
+        }
+
+        .pagination-total {
+            font-size: 14px;
+            color: #262626;
+            font-weight: 500;
+        }
+
+        .pagination-jump {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .pagination-jump input {
+            width: 48px;
+            padding: 6px 8px;
+            border: 1px solid #E8E8E8;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        /* 上课时间信息对话框样式 */
+        .schedule-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .schedule-modal .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .schedule-modal .modal-content {
+            position: relative;
+            background: #fff;
+            border-radius: 12px;
+            width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+        }
+
+        .schedule-modal .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #F0F0F0;
+            background: #FAFAFA;
+        }
+
+        .schedule-modal .modal-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .schedule-modal .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .schedule-modal .modal-close:hover {
+            background: #F0F0F0;
+            color: #666;
+        }
+
+        .schedule-modal .modal-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .schedule-table th {
+            background: #FAFAFA;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .schedule-table td {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .schedule-table tr:hover td {
+            background: #F5F7FA;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">
+                <span onclick="goBack()">试卷批阅</span> / 学生列表
+            </div>
+            <div>👨‍🏫 教师：张三 | <button onclick="logout()" class="logout-btn">退出登录</button></div>
+        </div>
+
+        <div class="content-body">
+            <button class="btn-back" onclick="goBack()" style="display: none;">
+                ← 返回试卷列表
+            </button>
+
+            <!-- 考试信息卡片 -->
+            <div class="exam-info-card">
+                <div class="exam-header">
+                    <div class="exam-title-section">
+                        <h2 class="exam-title" id="examTitle">机械制图期中考试</h2>
+                        <div class="exam-meta">
+                            <div class="exam-meta-item">
+                                <span class="label">课程：</span>
+                                <span class="value" id="courseName">机械制图</span>
+                            </div>
+                            <div class="exam-meta-item">
+                                <span class="label">总分：</span>
+                                <span class="value" id="totalScore">100分</span>
+                            </div>
+                            <div class="exam-meta-item">
+                                <span class="label">任课教师：</span>
+                                <span class="value" id="teacherName">张老师</span>
+                            </div>
+                            <div class="exam-meta-item">
+                                <span class="label">参加人数：</span>
+                                <span class="value" id="studentCount">45人</span>
+                            </div>
+                            <div class="exam-meta-item">
+                                <span class="label">上课教室：</span>
+                                <span class="value" id="classroom">A101</span>
+                            </div>
+                            <div class="exam-meta-item">
+                                <span class="label">上课时间信息：</span>
+                                <span class="value"><a href="javascript:void(0)" onclick="showClassScheduleList()" style="color: #1890FF; text-decoration: none;">3个时间段</a></span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="exam-status">
+                        <span class="status-tag orange" id="examStatus">批阅中</span>
+                        <div class="review-progress">
+                            已批阅 <span id="reviewedCount">15</span> / <span id="totalCount">45</span> 人
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon blue">👨‍🎓</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalStudents">45</div>
+                        <div class="stat-label">学生总数</div>
+                        <div class="stat-trend">应考人数</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="submittedCount">42</div>
+                        <div class="stat-label">已提交</div>
+                        <div class="stat-trend">占比 93%</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">⏳</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="pendingReview">27</div>
+                        <div class="stat-label">待批阅</div>
+                        <div class="stat-trend down">需尽快处理</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">📊</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="avgScore">78.5</div>
+                        <div class="stat-label">平均分</div>
+                        <div class="stat-trend">当前统计</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 搜索筛选 -->
+            <div class="search-filter-card">
+                <div class="search-row">
+                    <input type="text" class="search-input" placeholder="搜索学生姓名或学号..." id="searchInput">
+                    <button class="btn-search" onclick="search()">🔍 查询</button>
+                    <button class="btn-reset" onclick="reset()">重置</button>
+                </div>
+                <div class="search-row">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <span class="filter-label">提交状态：</span>
+                            <select class="filter-select" id="submitStatus">
+                                <option value="">全部</option>
+                                <option value="submitted">已提交</option>
+                                <option value="pending">未提交</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">批阅状态：</span>
+                            <select class="filter-select" id="reviewStatus">
+                                <option value="">全部</option>
+                                <option value="pending">待批阅</option>
+                                <option value="reviewing">批阅中</option>
+                                <option value="completed">已完成</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">分数范围：</span>
+                            <select class="filter-select" id="scoreRange">
+                                <option value="">全部</option>
+                                <option value="90-100">90-100分</option>
+                                <option value="80-89">80-89分</option>
+                                <option value="60-79">60-79分</option>
+                                <option value="0-59">0-59分</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 学生列表表格 -->
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">序号</th>
+                            <th>学生信息</th>
+                            <th style="width: 120px;">提交状态</th>
+                            <th style="width: 120px;">提交时间</th>
+                            <th style="width: 100px;">批阅状态</th>
+                            <th style="width: 100px;">得分</th>
+                            <th style="width: 150px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentTableBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <div class="pagination-left">
+                    <span class="pagination-info">显示第 <span id="startRecord">1</span>-<span id="endRecord">10</span> 条，共 <span class="pagination-total" id="totalRecords">45</span> 条记录</span>
+                </div>
+                <div class="pagination-right">
+                    <button class="pagination-btn" onclick="prevPage()" id="prevBtn">上一页</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn" onclick="nextPage()" id="nextBtn">下一页</button>
+                    <div class="pagination-jump">
+                        <span>跳至</span>
+                        <input type="number" min="1" id="jumpPage" value="1">
+                        <span>页</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 模拟学生数据
+        const mockStudents = [
+            { id: 1, name: '张三', studentId: '2023010101', submitStatus: 'submitted', submitTime: '2025-01-15 15:30', reviewStatus: 'completed', score: 85 },
+            { id: 2, name: '李四', studentId: '2023010102', submitStatus: 'submitted', submitTime: '2025-01-15 15:45', reviewStatus: 'completed', score: 92 },
+            { id: 3, name: '王五', studentId: '2023010103', submitStatus: 'submitted', submitTime: '2025-01-15 15:20', reviewStatus: 'pending', score: null },
+            { id: 4, name: '赵六', studentId: '2023010104', submitStatus: 'submitted', submitTime: '2025-01-15 15:50', reviewStatus: 'reviewing', score: null },
+            { id: 5, name: '钱七', studentId: '2023010105', submitStatus: 'submitted', submitTime: '2025-01-15 15:35', reviewStatus: 'completed', score: 78 },
+            { id: 6, name: '孙八', studentId: '2023010106', submitStatus: 'pending', submitTime: '-', reviewStatus: 'pending', score: null },
+            { id: 7, name: '周九', studentId: '2023010107', submitStatus: 'submitted', submitTime: '2025-01-15 15:40', reviewStatus: 'completed', score: 88 },
+            { id: 8, name: '吴十', studentId: '2023010108', submitStatus: 'submitted', submitTime: '2025-01-15 15:25', reviewStatus: 'pending', score: null },
+            { id: 9, name: '郑十一', studentId: '2023010109', submitStatus: 'submitted', submitTime: '2025-01-15 15:55', reviewStatus: 'completed', score: 95 },
+            { id: 10, name: '王十二', studentId: '2023010110', submitStatus: 'pending', submitTime: '-', reviewStatus: 'pending', score: null },
+        ];
+
+        let currentPage = 1;
+        const pageSize = 10;
+        let filteredData = [...mockStudents];
+
+        // 初始化页面
+        function initPage() {
+            const examId = getUrlParam('examId');
+            const examName = getUrlParam('examName') || '机械制图期中考试';
+            
+            document.getElementById('examTitle').textContent = examName;
+            
+            renderTable();
+            updatePagination();
+        }
+
+        // 渲染表格
+        function renderTable() {
+            const tbody = document.getElementById('studentTableBody');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredData.slice(start, end);
+
+            tbody.innerHTML = pageData.map((item, index) => `
+                <tr>
+                    <td>${start + index + 1}</td>
+                    <td>
+                        <div class="student-info-cell">
+                            <div class="student-avatar">${item.name.charAt(0)}</div>
+                            <div class="student-details">
+                                <span class="student-name">${item.name}</span>
+                                <span class="student-id">${item.studentId}</span>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <span class="submit-status ${item.submitStatus}">
+                            ${item.submitStatus === 'submitted' ? '已提交' : '未提交'}
+                        </span>
+                    </td>
+                    <td>${item.submitTime}</td>
+                    <td>
+                        <span class="review-status ${item.reviewStatus}">
+                            ${getReviewStatusText(item.reviewStatus)}
+                        </span>
+                    </td>
+                    <td>
+                        <span class="score-display ${item.score === null ? 'pending' : ''}">
+                            ${item.score !== null ? item.score + '分' : '-'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            ${item.submitStatus === 'submitted' ? 
+                                (() => {
+                                    const mode = getUrlParam('mode') || 'review';
+                                    if (mode === 'detail') {
+                                        // 详情模式：只显示"查看"按钮
+                                        return `<button class="primary" onclick="startReview(${item.id}, '${item.name}')">查看</button>`;
+                                    } else {
+                                        // 批阅模式：根据状态显示"批阅"或"查看"
+                                        return `<button class="${item.reviewStatus === 'completed' ? '' : 'primary'}" onclick="startReview(${item.id}, '${item.name}')">
+                                            ${item.reviewStatus === 'completed' ? '查看' : '批阅'}
+                                        </button>`;
+                                    }
+                                })() : 
+                                '<button disabled>未提交</button>'
+                            }
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 获取批阅状态文本
+        function getReviewStatusText(status) {
+            const statusMap = {
+                'pending': '待批阅',
+                'reviewing': '批阅中',
+                'completed': '已完成'
+            };
+            return statusMap[status] || status;
+        }
+
+        // 开始批阅或查看（进入三级页面）
+        function startReview(studentId, studentName) {
+            const examId = getUrlParam('examId');
+            const examName = getUrlParam('examName') || '机械制图期中考试';
+            const mode = getUrlParam('mode') || 'review'; // 获取模式参数，默认为批阅模式
+            
+            // 根据模式决定跳转到批阅页还是详情页
+            if (mode === 'detail') {
+                // 详情模式：跳转到试卷查看页面
+                window.location.href = `./教师端_普通试卷查看.html?examId=${examId}&examName=${encodeURIComponent(examName)}&studentId=${studentId}&studentName=${encodeURIComponent(studentName)}`;
+            } else {
+                // 批阅模式：跳转到批阅页面
+                window.location.href = `./教师端_普通试卷批阅.html?examId=${examId}&examName=${encodeURIComponent(examName)}&studentId=${studentId}&studentName=${encodeURIComponent(studentName)}`;
+            }
+        }
+
+        // 更新分页
+        function updatePagination() {
+            const totalRecords = filteredData.length;
+            const startRecord = (currentPage - 1) * pageSize + 1;
+            const endRecord = Math.min(currentPage * pageSize, totalRecords);
+            
+            document.getElementById('startRecord').textContent = startRecord;
+            document.getElementById('endRecord').textContent = endRecord;
+            document.getElementById('totalRecords').textContent = totalRecords;
+            
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === Math.ceil(totalRecords / pageSize);
+        }
+
+        // 上一页
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+                updatePagination();
+            }
+        }
+
+        // 下一页
+        function nextPage() {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+                updatePagination();
+            }
+        }
+
+        // 搜索
+        function search() {
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const submitStatus = document.getElementById('submitStatus').value;
+            const reviewStatus = document.getElementById('reviewStatus').value;
+            const scoreRange = document.getElementById('scoreRange').value;
+
+            filteredData = mockStudents.filter(item => {
+                const matchKeyword = !keyword || 
+                    item.name.toLowerCase().includes(keyword) || 
+                    item.studentId.includes(keyword);
+                const matchSubmit = !submitStatus || item.submitStatus === submitStatus;
+                const matchReview = !reviewStatus || item.reviewStatus === reviewStatus;
+                
+                let matchScore = true;
+                if (scoreRange && item.score !== null) {
+                    const [min, max] = scoreRange.split('-').map(Number);
+                    matchScore = item.score >= min && item.score <= max;
+                }
+                
+                return matchKeyword && matchSubmit && matchReview && matchScore;
+            });
+
+            currentPage = 1;
+            renderTable();
+            updatePagination();
+        }
+
+        // 重置
+        function reset() {
+            document.getElementById('searchInput').value = '';
+            document.getElementById('submitStatus').value = '';
+            document.getElementById('reviewStatus').value = '';
+            document.getElementById('scoreRange').value = '';
+            
+            filteredData = [...mockStudents];
+            currentPage = 1;
+            renderTable();
+            updatePagination();
+        }
+
+        // 返回上一页
+        function goBack() {
+            window.location.href = './教师端_试卷批阅.html';
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 菜单折叠展开
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 跳转页码输入框事件监听
+        document.getElementById('jumpPage').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const page = parseInt(this.value);
+                const totalPages = Math.ceil(filteredData.length / pageSize);
+                if (page >= 1 && page <= totalPages) {
+                    currentPage = page;
+                    renderTable();
+                    updatePagination();
+                }
+            }
+        });
+
+        // 显示上课时间列表对话框
+        function showClassScheduleList() {
+            // 模拟数据 - 多时间段
+            const classSchedules = [
+                { classDate: '2025-01-15', classTime: '09:00-11:00' },
+                { classDate: '2025-01-17', classTime: '14:00-16:00' },
+                { classDate: '2025-01-20', classTime: '09:00-11:00' }
+            ];
+            
+            // 创建对话框
+            const modal = document.createElement('div');
+            modal.className = 'schedule-modal';
+            modal.innerHTML = `
+                <div class="modal-overlay" onclick="closeClassScheduleList()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>上课时间信息</h3>
+                        <button class="modal-close" onclick="closeClassScheduleList()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>上课日期</th>
+                                    <th>上课时间段</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${classSchedules.map(schedule => `
+                                    <tr>
+                                        <td>${schedule.classDate}</td>
+                                        <td>${schedule.classTime}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // 关闭上课时间列表对话框
+        function closeClassScheduleList() {
+            const modal = document.querySelector('.schedule-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 初始化
+        initPage();
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

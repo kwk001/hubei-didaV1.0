@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备数据采集看板 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        /* 统计卡片 */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 12px;
+        }
+
+        .stat-icon.running { background: linear-gradient(135deg, #F6FFED 0%, #D9F7BE 100%); }
+        .stat-icon.alarm { background: linear-gradient(135deg, #FFF1F0 0%, #FFCCC7 100%); }
+        .stat-icon.idle { background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%); }
+        .stat-icon.offline { background: linear-gradient(135deg, #F5F5F5 0%, #D9D9D9 100%); }
+        .stat-icon.debug { background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%); }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-value.running { color: #52C41A; }
+        .stat-value.alarm { color: #FF4D4F; }
+        .stat-value.idle { color: #FAAD14; }
+        .stat-value.offline { color: #999; }
+        .stat-value.debug { color: #1890FF; }
+
+        .stat-label {
+            font-size: 13px;
+            color: #8C8C8C;
+        }
+
+        /* 筛选栏 */
+        .filter-bar {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select {
+            padding: 8px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            min-width: 140px;
+        }
+
+        .btn-refresh {
+            padding: 8px 20px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-left: auto;
+        }
+
+        /* 设备卡片网格 */
+        .device-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .device-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            border-left: 4px solid #D9D9D9;
+            transition: all 0.3s;
+        }
+
+        .device-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+
+        .device-card.running { border-left-color: #52C41A; }
+        .device-card.alarm { border-left-color: #FF4D4F; }
+        .device-card.idle { border-left-color: #FAAD14; }
+        .device-card.offline { border-left-color: #999; }
+        .device-card.debug { border-left-color: #1890FF; }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .device-name {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .device-status {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .device-status.running {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        .device-status.alarm {
+            background: #FFF1F0;
+            color: #FF4D4F;
+        }
+
+        .device-status.idle {
+            background: #FFF7E6;
+            color: #FAAD14;
+        }
+
+        .device-status.offline {
+            background: #F5F5F5;
+            color: #999;
+        }
+
+        .device-status.debug {
+            background: #E6F7FF;
+            color: #1890FF;
+        }
+
+        .device-info {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background: #F5F7FA;
+            border-radius: 8px;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .info-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .info-value.alarm {
+            color: #FF4D4F;
+        }
+
+        /* 报警信息 */
+        .alarm-info {
+            padding: 12px;
+            background: #FFF1F0;
+            border-radius: 8px;
+            border: 1px solid #FFCCC7;
+        }
+
+        .alarm-title {
+            font-size: 12px;
+            color: #CF1322;
+            margin-bottom: 4px;
+        }
+
+        .alarm-content {
+            font-size: 13px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .alarm-time {
+            font-size: 11px;
+            color: #999;
+        }
+
+        /* 普通设备卡片 */
+        .simple-device-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .simple-device-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .simple-device-type {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        /* 机械手状态 */
+        .robot-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            color: #fff;
+        }
+
+        .robot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .robot-name {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .robot-status {
+            padding: 4px 12px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .robot-info {
+            display: flex;
+            gap: 20px;
+        }
+
+        .robot-info-item {
+            text-align: center;
+        }
+
+        .robot-info-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .robot-info-label {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* 分组标题 */
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 24px 0 16px;
+            padding-left: 12px;
+            border-left: 4px solid #1890FF;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1200px) {
+            .device-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .device-grid {
+                grid-template-columns: 1fr;
+            }
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+<div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">报表 / 设备数据采集看板</div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <div class="content-body">
+            <!-- 统计卡片 -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon running">▶</div>
+                    <div class="stat-value running">12</div>
+                    <div class="stat-label">运行中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon alarm">⚠</div>
+                    <div class="stat-value alarm">3</div>
+                    <div class="stat-label">报警中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon idle">◐</div>
+                    <div class="stat-value idle">5</div>
+                    <div class="stat-label">空闲中</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon offline">○</div>
+                    <div class="stat-value offline">2</div>
+                    <div class="stat-label">已关机</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon debug">🔧</div>
+                    <div class="stat-value debug">1</div>
+                    <div class="stat-label">调试中</div>
+                </div>
+            </div>
+
+            <!-- 筛选栏 -->
+            <div class="filter-bar">
+                <select class="filter-select">
+                    <option value="">全部车间</option>
+                    <option value="workshop1">数控加工车间</option>
+                    <option value="workshop2">模具制造车间</option>
+                    <option value="workshop3">精密加工车间</option>
+                </select>
+                <select class="filter-select">
+                    <option value="">全部状态</option>
+                    <option value="running">运行中</option>
+                    <option value="alarm">报警中</option>
+                    <option value="idle">空闲中</option>
+                    <option value="offline">已关机</option>
+                    <option value="debug">调试中</option>
+                </select>
+                <select class="filter-select">
+                    <option value="">设备类型</option>
+                    <option value="cnc">数控设备</option>
+                    <option value="normal">普通机床</option>
+                    <option value="robot">机械手</option>
+                </select>
+                <button class="btn-refresh">🔄 刷新数据</button>
+            </div>
+
+            <!-- 数控设备 -->
+            <div class="section-title">数控设备</div>
+            <div class="device-grid">
+                <!-- 运行中设备 -->
+                <div class="device-card running">
+                    <div class="device-header">
+                        <div class="device-name">数控车床-01</div>
+                        <div class="device-status running">● 运行中</div>
+                    </div>
+                    <div class="device-info">
+                        <div class="info-item">
+                            <div class="info-label">主轴转速</div>
+                            <div class="info-value">1,500 RPM</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">主轴倍率</div>
+                            <div class="info-value">100%</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">进给值</div>
+                            <div class="info-value">0.2 mm/r</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">进给倍率</div>
+                            <div class="info-value">80%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 报警中设备 -->
+                <div class="device-card alarm">
+                    <div class="device-header">
+                        <div class="device-name">数控车床-02</div>
+                        <div class="device-status alarm">⚠ 报警中</div>
+                    </div>
+                    <div class="device-info">
+                        <div class="info-item">
+                            <div class="info-label">主轴转速</div>
+                            <div class="info-value alarm">0 RPM</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">主轴倍率</div>
+                            <div class="info-value">0%</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">进给值</div>
+                            <div class="info-value">0 mm/r</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">进给倍率</div>
+                            <div class="info-value">0%</div>
+                        </div>
+                    </div>
+                    <div class="alarm-info">
+                        <div class="alarm-title">⚠ 当前报警</div>
+                        <div class="alarm-content">主轴温度过高，超过设定阈值85℃</div>
+                        <div class="alarm-time">2025-01-20 14:35:22</div>
+                    </div>
+                </div>
+
+                <!-- 空闲中设备 -->
+                <div class="device-card idle">
+                    <div class="device-header">
+                        <div class="device-name">数控铣床-01</div>
+                        <div class="device-status idle">◐ 空闲中</div>
+                    </div>
+                    <div class="device-info">
+                        <div class="info-item">
+                            <div class="info-label">主轴转速</div>
+                            <div class="info-value">0 RPM</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">主轴倍率</div>
+                            <div class="info-value">0%</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">进给值</div>
+                            <div class="info-value">0 mm/r</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">进给倍率</div>
+                            <div class="info-value">0%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 调试中设备 -->
+                <div class="device-card debug">
+                    <div class="device-header">
+                        <div class="device-name">加工中心-01</div>
+                        <div class="device-status debug">🔧 调试中</div>
+                    </div>
+                    <div class="device-info">
+                        <div class="info-item">
+                            <div class="info-label">主轴转速</div>
+                            <div class="info-value">500 RPM</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">主轴倍率</div>
+                            <div class="info-value">50%</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">进给值</div>
+                            <div class="info-value">0.1 mm/r</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">进给倍率</div>
+                            <div class="info-value">50%</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 关机设备 -->
+                <div class="device-card offline">
+                    <div class="device-header">
+                        <div class="device-name">数控铣床-02</div>
+                        <div class="device-status offline">○ 已关机</div>
+                    </div>
+                    <div class="device-info">
+                        <div class="info-item">
+                            <div class="info-label">主轴转速</div>
+                            <div class="info-value">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">主轴倍率</div>
+                            <div class="info-value">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">进给值</div>
+                            <div class="info-value">--</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">进给倍率</div>
+                            <div class="info-value">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 机械手 -->
+            <div class="section-title">智能产线 - 机械手</div>
+            <div class="device-grid">
+                <div class="robot-card">
+                    <div class="robot-header">
+                        <div class="robot-name">🤖 搬运机械手-01</div>
+                        <div class="robot-status">● 运行中</div>
+                    </div>
+                    <div class="robot-info">
+                        <div class="robot-info-item">
+                            <div class="robot-info-value">1,245</div>
+                            <div class="robot-info-label">今日搬运次数</div>
+                        </div>
+                        <div class="robot-info-item">
+                            <div class="robot-info-value">98.5%</div>
+                            <div class="robot-info-label">成功率</div>
+                        </div>
+                        <div class="robot-info-item">
+                            <div class="robot-info-value">6.2h</div>
+                            <div class="robot-info-label">运行时长</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="robot-card" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);">
+                    <div class="robot-header">
+                        <div class="robot-name">🤖 装配机械手-02</div>
+                        <div class="robot-status">◐ 空闲中</div>
+                    </div>
+                    <div class="robot-info">
+                        <div class="robot-info-item">
+                            <div class="robot-info-value">892</div>
+                            <div class="robot-info-label">今日装配次数</div>
+                        </div>
+                        <div class="robot-info-item">
+                            <div class="robot-info-value">99.2%</div>
+                            <div class="robot-info-label">成功率</div>
+                        </div>
+                        <div class="robot-info-item">
+                            <div class="robot-info-value">4.8h</div>
+                            <div class="robot-info-label">运行时长</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 普通机床 -->
+            <div class="section-title">普通机床及设备</div>
+            <div class="device-grid">
+                <div class="simple-device-card">
+                    <div>
+                        <div class="simple-device-name">普通车床-01</div>
+                        <div class="simple-device-type">普通机床</div>
+                    </div>
+                    <div class="device-status running">● 运行中</div>
+                </div>
+                <div class="simple-device-card">
+                    <div>
+                        <div class="simple-device-name">普通铣床-01</div>
+                        <div class="simple-device-type">普通机床</div>
+                    </div>
+                    <div class="device-status idle">◐ 空闲中</div>
+                </div>
+                <div class="simple-device-card">
+                    <div>
+                        <div class="simple-device-name">钻床-01</div>
+                        <div class="simple-device-type">普通机床</div>
+                    </div>
+                    <div class="device-status running">● 运行中</div>
+                </div>
+                <div class="simple-device-card">
+                    <div>
+                        <div class="simple-device-name">磨床-01</div>
+                        <div class="simple-device-type">普通机床</div>
+                    </div>
+                    <div class="device-status offline">○ 已关机</div>
+                </div>
+                <div class="simple-device-card">
+                    <div>
+                        <div class="simple-device-name">空压机-01</div>
+                        <div class="simple-device-type">辅助设备</div>
+                    </div>
+                    <div class="device-status running">● 运行中</div>
+                </div>
+                <div class="simple-device-card">
+                    <div>
+                        <div class="simple-device-name">冷却系统-01</div>
+                        <div class="simple-device-type">辅助设备</div>
+                    </div>
+                    <div class="device-status running">● 运行中</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 菜单折叠
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

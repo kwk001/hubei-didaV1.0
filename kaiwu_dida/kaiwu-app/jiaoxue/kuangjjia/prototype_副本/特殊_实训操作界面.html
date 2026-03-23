@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实训操作 - 学生端</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            min-height: 100vh;
+        }
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .header-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #FFF7E6;
+            border-radius: 4px;
+            color: #FA8C16;
+            font-size: 14px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 24px;
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 24px;
+        }
+        .main-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .task-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 16px;
+        }
+        .task-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .task-type {
+            padding: 4px 10px;
+            background: #E6F7FF;
+            color: #1890FF;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .task-content {
+            color: #666;
+            line-height: 1.8;
+            font-size: 14px;
+        }
+        .upload-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .upload-area {
+            border: 2px dashed #D9D9D9;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .upload-area:hover {
+            border-color: #1890FF;
+            background: #F0F7FF;
+        }
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+        .upload-text {
+            color: #666;
+            font-size: 14px;
+        }
+        .upload-hint {
+            color: #999;
+            font-size: 12px;
+            margin-top: 8px;
+        }
+        .file-list {
+            margin-top: 16px;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #FAFAFA;
+            border-radius: 6px;
+            margin-bottom: 8px;
+        }
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .file-icon {
+            font-size: 24px;
+        }
+        .file-name {
+            font-size: 14px;
+            color: #333;
+        }
+        .file-size {
+            font-size: 12px;
+            color: #999;
+        }
+        .file-delete {
+            color: #FF4D4F;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .input-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .input-label {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            display: block;
+        }
+        .input-textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+        }
+        .input-textarea:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+        }
+        .sidebar-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .step-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .step-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .step-item:hover {
+            background: #F5F7FA;
+        }
+        .step-item.active {
+            background: #E6F7FF;
+        }
+        .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #D9D9D9;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+        .step-item.active .step-number {
+            background: #1890FF;
+        }
+        .step-item.completed .step-number {
+            background: #52C41A;
+        }
+        .step-content {
+            flex: 1;
+        }
+        .step-title {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        .step-desc {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+        .resource-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .resource-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .resource-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #FAFAFA;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .resource-icon {
+            font-size: 20px;
+        }
+        .resource-name {
+            font-size: 13px;
+            color: #333;
+            flex: 1;
+        }
+        .footer-actions {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-top: 1px solid #E8E8E8;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+        .btn-default {
+            padding: 10px 24px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary {
+            padding: 10px 32px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .sidebar-panel {
+                order: -1;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-title">数控加工-实训任务三</div>
+        <div class="header-info">
+            <span>👨‍🎓 李明</span>
+            <div class="timer">
+                <span>⏱️</span>
+                <span>剩余 2:35:00</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-panel">
+            <!-- 任务描述 -->
+            <div class="task-card">
+                <div class="task-header">
+                    <div class="task-title">任务描述</div>
+                    <span class="task-type">加工类</span>
+                </div>
+                <div class="task-content">
+                    根据给定的零件图纸，使用数控加工中心完成零件的加工。要求：
+                    <br>1. 正确编制加工程序
+                    <br>2. 合理选择刀具和切削参数
+                    <br>3. 保证加工精度达到图纸要求
+                    <br>4. 提交加工过程照片和最终成品照片
+                </div>
+            </div>
+
+            <!-- 文件上传 -->
+            <div class="upload-section">
+                <div class="section-title">📎 提交加工过程照片</div>
+                <div class="upload-area">
+                    <div class="upload-icon">📤</div>
+                    <div class="upload-text">点击或拖拽文件到此处上传</div>
+                    <div class="upload-hint">支持 JPG、PNG 格式，单个文件不超过 10MB</div>
+                </div>
+                <div class="file-list">
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-icon">🖼️</span>
+                            <div>
+                                <div class="file-name">加工过程_1.jpg</div>
+                                <div class="file-size">2.5 MB</div>
+                            </div>
+                        </div>
+                        <span class="file-delete">删除</span>
+                    </div>
+                    <div class="file-item">
+                        <div class="file-info">
+                            <span class="file-icon">🖼️</span>
+                            <div>
+                                <div class="file-name">加工过程_2.jpg</div>
+                                <div class="file-size">3.1 MB</div>
+                            </div>
+                        </div>
+                        <span class="file-delete">删除</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 程序代码 -->
+            <div class="input-section">
+                <label class="input-label">📝 加工程序代码（G代码）</label>
+                <textarea class="input-textarea" placeholder="请输入或粘贴加工程序代码"></textarea>
+            </div>
+
+            <!-- 心得体会 -->
+            <div class="input-section">
+                <label class="input-label">💭 实训心得体会</label>
+                <textarea class="input-textarea" placeholder="请描述本次实训的收获和遇到的问题"></textarea>
+            </div>
+        </div>
+
+        <div class="sidebar-panel">
+            <!-- 操作步骤 -->
+            <div class="step-card">
+                <div class="section-title">📋 操作步骤</div>
+                <div class="step-list">
+                    <div class="step-item completed">
+                        <span class="step-number">✓</span>
+                        <div class="step-content">
+                            <div class="step-title">阅读任务要求</div>
+                            <div class="step-desc">了解加工要求和评分标准</div>
+                        </div>
+                    </div>
+                    <div class="step-item completed">
+                        <span class="step-number">✓</span>
+                        <div class="step-content">
+                            <div class="step-title">编制加工程序</div>
+                            <div class="step-desc">编写G代码程序</div>
+                        </div>
+                    </div>
+                    <div class="step-item active">
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+                            <div class="step-title">上传加工照片</div>
+                            <div class="step-desc">提交过程和成品照片</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-number">4</span>
+                        <div class="step-content">
+                            <div class="step-title">填写实训报告</div>
+                            <div class="step-desc">提交代码和心得</div>
+                        </div>
+                    </div>
+                    <div class="step-item">
+                        <span class="step-number">5</span>
+                        <div class="step-content">
+                            <div class="step-title">提交任务</div>
+                            <div class="step-desc">完成并提交</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 参考资料 -->
+            <div class="resource-card">
+                <div class="section-title">📚 参考资料</div>
+                <div class="resource-list">
+                    <div class="resource-item">
+                        <span class="resource-icon">📄</span>
+                        <span class="resource-name">零件加工图纸.pdf</span>
+                    </div>
+                    <div class="resource-item">
+                        <span class="resource-icon">🎥</span>
+                        <span class="resource-name">加工操作视频教程</span>
+                    </div>
+                    <div class="resource-item">
+                        <span class="resource-icon">📖</span>
+                        <span class="resource-name">G代码编程手册</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部操作 -->
+    <div class="footer-actions">
+        <button class="btn-default">保存草稿</button>
+        <button class="btn-primary">提交任务</button>
+    </div>
+</body>
+</html>

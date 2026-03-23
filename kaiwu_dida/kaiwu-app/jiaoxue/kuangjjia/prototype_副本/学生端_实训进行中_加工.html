@@ -1,0 +1,1800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>加工类实训 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <!-- 实训进行中页面不加载导航样式，保持沉浸式体验 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #F5F5F5;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #E8E8E8;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-subtitle {
+            font-size: 13px;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%);
+            border-radius: 8px;
+            color: #FA8C16;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            background: #F6FFED;
+            color: #52C41A;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .container {
+            width: 100%;
+            margin: 0 auto;
+            padding: 24px;
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            box-sizing: border-box;
+            min-height: calc(100vh - 64px);
+        }
+
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .sidebar-panel {
+            width: 360px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .panel-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 工序进度条 - 优化样式 */
+        .process-progress {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #F0F5FF 0%, #E6F7FF 100%);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            border: 1px solid #D6E4FF;
+            box-shadow: 0 2px 8px rgba(24, 144, 255, 0.08);
+        }
+
+        .progress-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .progress-text strong {
+            color: #1890FF;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .progress-bar-container {
+            flex: 1;
+            height: 10px;
+            background: #E8E8E8;
+            border-radius: 5px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: repeating-linear-gradient(
+                90deg,
+                transparent,
+                transparent 20px,
+                rgba(255,255,255,0.3) 20px,
+                rgba(255,255,255,0.3) 22px
+            );
+            z-index: 1;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1890FF 0%, #36CFC9 50%, #52C41A 100%);
+            border-radius: 5px;
+            transition: width 0.5s ease-out;
+            position: relative;
+            box-shadow: 0 0 10px rgba(24, 144, 255, 0.3);
+        }
+
+        .progress-bar-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255,255,255,0.4) 50%,
+                transparent 100%
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-percent {
+            font-size: 16px;
+            font-weight: 700;
+            color: #52C41A;
+            min-width: 50px;
+            text-align: right;
+        }
+
+        /* 工序步骤 - 全新优化样式 */
+        .process-steps {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            gap: 0;
+            overflow-x: auto;
+            padding: 24px 16px;
+            background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%);
+            border-radius: 16px;
+            border: 1px solid #E2E8F0;
+            position: relative;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .process-steps::-webkit-scrollbar {
+            height: 6px;
+        }
+
+        .process-steps::-webkit-scrollbar-track {
+            background: #E2E8F0;
+            border-radius: 3px;
+            margin: 0 16px;
+        }
+
+        .process-steps::-webkit-scrollbar-thumb {
+            background: #94A3B8;
+            border-radius: 3px;
+        }
+
+        .process-steps::-webkit-scrollbar-thumb:hover {
+            background: #64748B;
+        }
+
+        /* 步骤连接线 */
+        .process-steps::before {
+            content: '';
+            position: absolute;
+            top: 42px;
+            left: 50px;
+            right: 50px;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                #52C41A 0%, 
+                #52C41A var(--progress-percent, 0%), 
+                #E2E8F0 var(--progress-percent, 0%), 
+                #E2E8F0 100%);
+            z-index: 0;
+            border-radius: 2px;
+        }
+
+        .process-step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            padding: 0 24px;
+            background: transparent;
+            border: none;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            min-width: 120px;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .process-step:hover {
+            transform: translateY(-4px);
+        }
+
+        .process-step:hover .step-number {
+            transform: scale(1.1);
+        }
+
+        /* 步骤编号/图标容器 */
+        .step-number {
+            width: 40px;
+            height: 40px;
+            background: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: #94A3B8;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 0 0 4px #F8FAFC;
+            border: 2px solid #E2E8F0;
+            transition: all 0.3s ease;
+        }
+
+        /* 待进行状态 */
+        .process-step.pending .step-number {
+            background: #fff;
+            border-color: #E2E8F0;
+            color: #94A3B8;
+        }
+
+        /* 进行中状态 - 蓝色 */
+        .process-step.active .step-number {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            border-color: #3B82F6;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4), 0 0 0 4px rgba(59, 130, 246, 0.1);
+            animation: pulse-blue 2s infinite;
+        }
+
+        @keyframes pulse-blue {
+            0%, 100% { 
+                box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4), 0 0 0 4px rgba(59, 130, 246, 0.1);
+            }
+            50% { 
+                box-shadow: 0 4px 16px rgba(59, 130, 246, 0.5), 0 0 0 8px rgba(59, 130, 246, 0);
+            }
+        }
+
+        /* 已完成状态 - 绿色带勾选 */
+        .process-step.completed .step-number {
+            background: linear-gradient(135deg, #52C41A 0%, #389E0D 100%);
+            border-color: #52C41A;
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3), 0 0 0 4px rgba(82, 196, 26, 0.1);
+        }
+
+        .process-step.completed .step-number::after {
+            content: '✓';
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .process-step.completed .step-number {
+            font-size: 0;
+        }
+
+        /* 步骤内容 */
+        .step-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            margin-top: 4px;
+        }
+
+        .step-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #475569;
+            white-space: nowrap;
+            letter-spacing: 0.3px;
+        }
+
+        .process-step.active .step-title {
+            color: #2563EB;
+            font-weight: 700;
+        }
+
+        .process-step.completed .step-title {
+            color: #389E0D;
+        }
+
+        .process-step.pending .step-title {
+            color: #94A3B8;
+        }
+
+        /* 步骤状态标签 */
+        .step-status {
+            font-size: 11px;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            margin-top: 2px;
+        }
+
+        .step-status.pending {
+            background: #F1F5F9;
+            color: #94A3B8;
+        }
+
+        .step-status.active {
+            background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%);
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(59, 130, 246, 0.3);
+        }
+
+        .step-status.completed {
+            background: linear-gradient(135deg, #52C41A 0%, #389E0D 100%);
+            color: #fff;
+            box-shadow: 0 2px 6px rgba(82, 196, 26, 0.3);
+        }
+
+        /* 合格/不良标记 */
+        .step-result {
+            font-size: 11px;
+            font-weight: 600;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 4px;
+        }
+
+        .step-result.pass {
+            background: #DCFCE7;
+            color: #166534;
+        }
+
+        .step-result.fail {
+            background: #FEE2E2;
+            color: #991B1B;
+        }
+
+        /* 加工要求区域 - 文本内容方式 */
+        .process-requirements {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .requirements-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .requirements-content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .requirements-content p {
+            margin-bottom: 12px;
+        }
+
+        .requirements-content strong {
+            color: #1890FF;
+            font-weight: 600;
+        }
+
+        /* 附件列表 - 白色卡片 */
+        .process-attachments {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .attachments-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .attachment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .attachment-file {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #FAFAFA;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attachment-file:hover {
+            background: #F0F7FF;
+            border-color: #1890FF;
+        }
+
+        .attachment-file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .attachment-file-icon.dwg {
+            background: #E6F7FF;
+        }
+
+        .attachment-file-icon.pdf {
+            background: #FFF2F0;
+        }
+
+        .attachment-file-icon.img {
+            background: #F6FFED;
+        }
+
+        .attachment-file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .attachment-file-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .attachment-file-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .attachment-file-preview {
+            padding: 6px 12px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .attachment-file-preview:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        /* 当前工序详情面板 */
+        .current-process-panel {
+            background: linear-gradient(135deg, #001529 0%, #002140 100%);
+            border-radius: 12px;
+            padding: 24px;
+            color: #fff;
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+        }
+
+        .current-process-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .current-process-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .current-process-step {
+            padding: 6px 16px;
+            background: rgba(250, 140, 22, 0.2);
+            border-radius: 20px;
+            color: #FAAD14;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        /* 设备数采区域 */
+        .device-data-section {
+            background: rgba(255,255,255,0.08);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .section-title-icon {
+            font-size: 18px;
+        }
+
+        .device-info-header {
+            display: flex;
+            gap: 24px;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+
+        .device-info-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .device-info-label {
+            font-size: 13px;
+            color: #88AACC;
+        }
+
+        .device-info-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .device-info-value.status {
+            padding: 4px 12px;
+            background: rgba(82, 196, 26, 0.2);
+            border-radius: 4px;
+            color: #52C41A;
+        }
+
+        .device-params-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .device-param-item {
+            background: rgba(255,255,255,0.05);
+            border-radius: 8px;
+            padding: 14px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .device-param-label {
+            font-size: 12px;
+            color: #88AACC;
+            margin-bottom: 8px;
+        }
+
+        .device-param-value {
+            font-size: 22px;
+            font-weight: 700;
+            color: #00D4FF;
+            margin-bottom: 4px;
+        }
+
+        .device-param-unit {
+            font-size: 11px;
+            color: #88AACC;
+        }
+
+        .sync-btn {
+            width: 100%;
+            padding: 12px;
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .sync-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.4);
+        }
+
+        /* 产品参数区域 */
+        .product-param-section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .param-input-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .param-input-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .param-input-item {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .param-input-label {
+            font-size: 13px;
+            color: #88AACC;
+        }
+
+        .param-input-field {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .param-input-value {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1px solid rgba(255,255,255,0.2);
+            border-radius: 6px;
+            background: rgba(255,255,255,0.1);
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .param-input-value:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+
+        .param-input-unit {
+            font-size: 12px;
+            color: #88AACC;
+            min-width: 40px;
+        }
+
+        /* 按钮组 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-group button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-group button i {
+            font-size: 16px;
+        }
+
+        /* 保存按钮 */
+        .save-btn {
+            background: linear-gradient(135deg, #F0F0F0 0%, #E0E0E0 100%);
+            color: #666;
+            border: 1px solid #D0D0D0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(135deg, #E8E8E8 0%, #D8D8D8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 提交按钮 */
+        .complete-step-btn {
+            background: linear-gradient(135deg, #FA8C16 0%, #FF9C38 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(250, 140, 22, 0.3);
+        }
+
+        .complete-step-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(250, 140, 22, 0.4);
+        }
+
+        .param-sync-btn {
+            padding: 8px 16px;
+            background: rgba(24, 144, 255, 0.2);
+            border: 1px solid #1890FF;
+            border-radius: 6px;
+            color: #1890FF;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .param-sync-btn:hover {
+            background: #1890FF;
+            color: #fff;
+        }
+
+        /* 侧边栏 */
+
+
+        /* 工单信息 */
+        .workorder-info {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .workorder-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .workorder-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .workorder-item:last-child {
+            border-bottom: none;
+        }
+
+        .workorder-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .workorder-value {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 操作记录 */
+        .operation-record {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .record-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .record-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .record-item {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            background: #F5F7FA;
+            border-radius: 8px;
+        }
+
+        .record-time {
+            font-size: 12px;
+            color: #999;
+            min-width: 60px;
+        }
+
+        .record-content {
+            flex: 1;
+        }
+
+        .record-step {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .record-detail {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* 操作按钮 */
+        .action-panel {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1890FF 0%, #52C41A 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(24, 144, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #E8E8E8;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #FA8C16 0%, #FF6B35 100%);
+            color: #fff;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(250, 140, 22, 0.4);
+        }
+
+        /* 紧急停止按钮 */
+        .emergency-stop {
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #FF4D4F 0%, #FF7875 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            animation: pulse-red 2s infinite;
+        }
+
+        @keyframes pulse-red {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(255, 77, 79, 0.4); }
+            50% { box-shadow: 0 0 0 10px rgba(255, 77, 79, 0); }
+        }
+
+        /* 弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+
+        /* 提示信息 - 默认隐藏 */
+        .tips-section {
+            background: #E6F7FF;
+            border: 1px solid #91D5FF;
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .tips-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #1890FF;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .tips-content {
+            font-size: 12px;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        /* 响应式布局 */
+        @media (max-width: 1200px) {
+            .container {
+                flex-direction: column;
+                gap: 20px;
+            }
+            .sidebar-panel {
+                width: 100%;
+                order: -1;
+                flex-direction: row;
+                flex-wrap: wrap;
+            }
+            .sidebar-panel > div {
+                flex: 1;
+                min-width: 300px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+            .device-params-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .param-input-grid {
+                grid-template-columns: 1fr;
+            }
+            .process-step {
+                min-width: 100px;
+                padding: 0 16px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .device-params-grid {
+                grid-template-columns: 1fr;
+            }
+            .btn-group {
+                flex-direction: column;
+            }
+            .btn-group button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="confirmExit()">
+                <i class="iconfont icon-fanhui"></i>
+            </button>
+            <div>
+                <div class="header-title">生产工单：WO-2024-001</div>
+                <div class="header-subtitle">工艺路线：轴类零件加工 | 8道工序</div>
+            </div>
+        </div>
+        <div class="header-info">
+            <div class="timer">
+                <i class="iconfont icon-shijian"></i>
+                <span id="timer">00:00:00</span>
+            </div>
+            <div class="status-badge" id="statusBadge">进行中</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-panel">
+            <!-- 工序进度 -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="iconfont icon-liucheng"></i>
+                    工序进度
+                </div>
+                <div class="process-progress">
+                    <div class="progress-info">
+                        <span class="progress-text">第 <strong id="currentStepNum">1</strong>/8 道</span>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" id="progressBar" style="width: 12.5%"></div>
+                    </div>
+                    <div class="progress-percent" id="progressPercent">12.5%</div>
+                </div>
+
+                <div class="process-steps" id="processSteps">
+                    <!-- 工序列表由JS动态生成 -->
+                </div>
+            </div>
+
+            <!-- 当前工序操作面板 -->
+            <div class="current-process-panel">
+                <div class="current-process-header">
+                    <div class="current-process-title" id="currentProcessTitle">工序1：下料</div>
+                    <div class="current-process-step">当前工序</div>
+                </div>
+
+                <!-- 第1部分：设备数采 -->
+                <div class="device-data-section">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span class="section-title-icon">📟</span>
+                            设备数采
+                        </div>
+                    </div>
+                    <div class="device-info-header">
+                        <div class="device-info-item">
+                            <span class="device-info-label">设备名称：</span>
+                            <span class="device-info-value" id="deviceName">数控车床-01</span>
+                        </div>
+                        <div class="device-info-item">
+                            <span class="device-info-label">设备状态：</span>
+                            <span class="device-info-value status" id="deviceStatus">待机</span>
+                        </div>
+                    </div>
+                    <div class="device-params-grid">
+                        <div class="device-param-item">
+                            <div class="device-param-label">主轴转速</div>
+                            <div class="device-param-value" id="monitorSpeed">--</div>
+                            <div class="device-param-unit">RPM</div>
+                        </div>
+                        <div class="device-param-item">
+                            <div class="device-param-label">进给速度</div>
+                            <div class="device-param-value" id="monitorFeed">--</div>
+                            <div class="device-param-unit">mm/min</div>
+                        </div>
+                        <div class="device-param-item">
+                            <div class="device-param-label">切削深度</div>
+                            <div class="device-param-value" id="monitorDepth">--</div>
+                            <div class="device-param-unit">mm</div>
+                        </div>
+                    </div>
+                    <!-- 同步设备参数按钮 -->
+                    <button class="sync-btn" onclick="syncDeviceParams()">
+                        <i class="iconfont icon-tongbu"></i>
+                        同步设备参数
+                    </button>
+                </div>
+
+                <!-- 第2部分：产品参数 -->
+                <div class="product-param-section">
+                    <div class="param-input-title">
+                        <span>📝</span>
+                        产品参数
+                    </div>
+                    <div class="param-input-grid" id="paramInputGrid">
+                        <!-- 参数输入项由JS动态生成 -->
+                    </div>
+                    <!-- 按钮组 -->
+                    <div class="btn-group">
+                        <button class="save-btn" onclick="saveProgress()">
+                            <i class="iconfont icon-baocun"></i>
+                            保存
+                        </button>
+                        <button class="complete-step-btn" onclick="completeCurrentStep()">
+                            <i class="iconfont icon-duihao"></i>
+                            提交
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 操作提示 -->
+                <div class="tips-section">
+                    <div class="tips-title">
+                        <i class="iconfont icon-tishi"></i>
+                        操作提示
+                    </div>
+                    <div class="tips-content" id="operationTips">
+                        请按照工艺要求进行操作，确保设备参数设置正确。操作完成后，点击"同步设备参数"按钮获取当前设备数据，并填写实际加工参数。
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-panel">
+            <!-- 工单信息 -->
+            <div class="workorder-info">
+                <div class="workorder-title">📋 工单信息</div>
+                <div class="workorder-item">
+                    <span class="workorder-label">工单编号</span>
+                    <span class="workorder-value">WO-2024-001</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">物料名称</span>
+                    <span class="workorder-value">传动轴毛坯</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">规格型号</span>
+                    <span class="workorder-value">Φ55×200mm</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">计划数量</span>
+                    <span class="workorder-value">1 件</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">操作员</span>
+                    <span class="workorder-value">张伟</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">起始时间段</span>
+                    <span class="workorder-value">2026-02-28 09:00-11:00</span>
+                </div>
+            </div>
+
+            <!-- 加工要求 -->
+            <div class="process-requirements">
+                <div class="requirements-title">
+                    <i class="iconfont icon-yaoqiu"></i>
+                    加工要求
+                </div>
+                <div class="requirements-content">
+                    <p><strong>工件材料：</strong>45#钢</p>
+                    <p><strong>毛坯尺寸：</strong>Φ55×120mm</p>
+                    <p><strong>加工精度：</strong>IT7级</p>
+                    <p><strong>表面粗糙度：</strong>Ra3.2</p>
+                    <p><strong>技术要求：</strong>完成轴类零件的外圆车削加工，保证尺寸精度和表面质量要求。加工过程中注意刀具选择、切削参数设定和测量检验。</p>
+                </div>
+            </div>
+
+            <!-- 参考附件 -->
+            <div class="process-attachments">
+                <div class="attachments-title">
+                    <i class="iconfont icon-fujian"></i>
+                    参考附件
+                    <span style="margin-left: 8px; font-size: 12px; color: #999; font-weight: normal;">共 3 个</span>
+                </div>
+                <div class="attachment-list">
+                    <div class="attachment-file" onclick="previewProcessFile('drawing')">
+                        <div class="attachment-file-icon dwg">📐</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">轴类零件加工图纸.dwg</div>
+                            <div class="attachment-file-meta">
+                                <span>DWG</span>
+                                <span>1.5MB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    <div class="attachment-file" onclick="previewProcessFile('process')">
+                        <div class="attachment-file-icon pdf">📋</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">加工工艺卡.pdf</div>
+                            <div class="attachment-file-meta">
+                                <span>PDF</span>
+                                <span>280KB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    <div class="attachment-file" onclick="previewProcessFile('photo')">
+                        <div class="attachment-file-icon img">🖼️</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">毛坯实物参考图.jpg</div>
+                            <div class="attachment-file-meta">
+                                <span>JPG</span>
+                                <span>450KB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 操作记录 -->
+            <div class="operation-record">
+                <div class="record-title">📝 操作记录</div>
+                <div class="record-list" id="recordList">
+                    <!-- 记录由JS动态生成 -->
+                </div>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="action-panel" style="display: none;">
+                <div class="action-buttons">
+                    <!-- 同步设备参数按钮已隐藏 -->
+                    <button class="btn btn-primary" onclick="syncDeviceParams()" style="display: none;">
+                        <i class="iconfont icon-tongbu"></i>
+                        同步设备参数
+                    </button>
+                    <!-- 完成当前工序按钮已移至产品参数下方 -->
+                    <button class="btn btn-warning" onclick="completeCurrentStep()" style="display: none;">
+                        <i class="iconfont icon-duihao"></i>
+                        完成当前工序
+                    </button>
+                    <!-- 暂停操作按钮已隐藏 -->
+                    <button class="btn btn-secondary" onclick="pauseOperation()" style="display: none;">
+                        <i class="iconfont icon-zanting"></i>
+                        暂停操作
+                    </button>
+                    <!-- 紧急停止按钮已隐藏 -->
+                    <button class="emergency-stop" onclick="emergencyStop()" style="display: none;">
+                        <i class="iconfont icon-jiting"></i>
+                        紧急停止
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 确认退出弹窗 -->
+    <div class="modal-overlay" id="exitModal">
+        <div class="modal-content">
+            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+            <div style="font-size: 20px; font-weight: 600; color: #333; margin-bottom: 12px;">确认退出？</div>
+            <div style="font-size: 14px; color: #666; margin-bottom: 24px;">退出后当前工序进度将保存，您可以稍后继续。是否确认退出？</div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">取消</button>
+                <button class="btn btn-primary" onclick="exitTraining()" style="flex: 1;">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 工序完成弹窗 -->
+    <div class="modal-overlay" id="completeModal">
+        <div class="modal-content">
+            <div style="font-size: 48px; margin-bottom: 16px;">✅</div>
+            <div style="font-size: 20px; font-weight: 600; color: #333; margin-bottom: 12px;">工序完成！</div>
+            <div style="font-size: 14px; color: #666; margin-bottom: 24px;" id="completeModalText">当前工序已完成，是否进入下一道工序？</div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">留在当前</button>
+                <button class="btn btn-primary" onclick="nextStep()" style="flex: 1;">进入下一道</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 8道工序数据
+        const processSteps = [
+            {
+                id: 1,
+                name: '下料',
+                desc: '根据工艺要求，将原材料切割至指定长度',
+                params: ['切割长度', '端面平整度'],
+                tips: '使用锯床进行切割，确保端面平整，无毛刺。切割长度公差控制在±0.5mm以内。'
+            },
+            {
+                id: 2,
+                name: '车端面',
+                desc: '车削工件两端面，保证端面与轴线垂直',
+                params: ['主轴转速', '进给速度', '端面粗糙度'],
+                tips: '装夹时注意校正，车刀对准工件中心。端面车削后粗糙度应达到Ra3.2。'
+            },
+            {
+                id: 3,
+                name: '钻中心孔',
+                desc: '在工件两端钻中心孔，为后续加工定位',
+                params: ['钻头直径', '钻孔深度', '主轴转速'],
+                tips: '中心钻对准工件中心，钻孔深度适中，不宜过深。注意冷却液的使用。'
+            },
+            {
+                id: 4,
+                name: '粗车外圆',
+                desc: '粗车各段外圆，留有余量供精加工',
+                params: ['主轴转速', '进给速度', '切削深度', '留量'],
+                tips: '粗车采用较大的切削深度和进给量，提高加工效率。各段外圆留0.5mm精加工余量。'
+            },
+            {
+                id: 5,
+                name: '精车外圆',
+                desc: '精车各段外圆至图纸要求尺寸',
+                params: ['主轴转速', '进给速度', '切削深度', '表面粗糙度'],
+                tips: '精车采用较小的切削深度和进给量，保证加工精度。表面粗糙度达到Ra1.6。'
+            },
+            {
+                id: 6,
+                name: '切槽',
+                desc: '加工各退刀槽和密封槽',
+                params: ['槽宽', '槽深', '主轴转速'],
+                tips: '切槽刀安装要牢固，切削深度逐渐加大，避免刀具损坏。注意槽的尺寸精度。'
+            },
+            {
+                id: 7,
+                name: '车螺纹',
+                desc: '加工连接螺纹',
+                params: ['螺距', '螺纹深度', '主轴转速', '进给速度'],
+                tips: '螺纹车刀对准工件中心，检查螺距设置。采用分刀切削，最后一刀光整加工。'
+            },
+            {
+                id: 8,
+                name: '检验入库',
+                desc: '全面检验工件尺寸，合格后入库',
+                params: ['外径尺寸', '长度尺寸', '表面粗糙度', '螺纹精度'],
+                tips: '使用游标卡尺、千分尺等工具全面检验。填写检验记录单，合格品办理入库。'
+            }
+        ];
+
+        let currentStep = 1;
+        let startTime = new Date();
+        let timerInterval;
+        let operationRecords = [];
+
+        // 初始化
+        function init() {
+            renderProcessSteps();
+            renderParamInputs();
+            startTimer();
+            updateCurrentProcess();
+        }
+
+        // 渲染工序列表 - 紧凑横向布局
+        function renderProcessSteps() {
+            const container = document.getElementById('processSteps');
+            let html = '';
+
+            processSteps.forEach((step, index) => {
+                const stepNum = index + 1;
+                let statusClass = 'pending';
+                let statusText = '待进行';
+                let statusClassTag = 'pending';
+
+                if (stepNum < currentStep) {
+                    statusClass = 'completed';
+                    statusText = '已完成';
+                    statusClassTag = 'completed';
+                } else if (stepNum === currentStep) {
+                    statusClass = 'active';
+                    statusText = '进行中';
+                    statusClassTag = 'active';
+                }
+
+                html += `
+                    <div class="process-step ${statusClass}" onclick="selectStep(${stepNum})" title="${step.name}: ${step.desc}">
+                        <div class="step-number">${stepNum < currentStep ? '✓' : stepNum}</div>
+                        <div class="step-content">
+                            <div class="step-title">${step.name}</div>
+                            <div class="step-status ${statusClassTag}">${statusText}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 渲染参数输入区域
+        function renderParamInputs() {
+            const container = document.getElementById('paramInputGrid');
+            const currentProcess = processSteps[currentStep - 1];
+            let html = '';
+            
+            currentProcess.params.forEach(param => {
+                html += `
+                    <div class="param-input-item">
+                        <label class="param-input-label">${param}</label>
+                        <div class="param-input-field">
+                            <input type="text" class="param-input-value" id="param_${param}" placeholder="请输入${param}">
+                            <span class="param-input-unit">--</span>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html;
+        }
+
+        // 更新当前工序显示
+        function updateCurrentProcess() {
+            const process = processSteps[currentStep - 1];
+            document.getElementById('currentProcessTitle').textContent = `工序${currentStep}：${process.name}`;
+            document.getElementById('currentStepNum').textContent = currentStep;
+            document.getElementById('operationTips').textContent = process.tips;
+
+            // 更新进度条
+            const progressPercent = Math.round((currentStep / 8) * 100);
+            document.getElementById('progressBar').style.width = `${progressPercent}%`;
+            document.getElementById('progressPercent').textContent = `${progressPercent}%`;
+
+            // 更新状态标签
+            const statusBadge = document.getElementById('statusBadge');
+            if (currentStep > 8) {
+                statusBadge.textContent = '已完成';
+                statusBadge.style.background = '#52C41A';
+                statusBadge.style.color = '#fff';
+            } else {
+                statusBadge.textContent = '进行中';
+            }
+
+            renderParamInputs();
+        }
+
+        // 选择工序
+        function selectStep(stepNum) {
+            if (stepNum > currentStep) {
+                alert('请先完成当前工序！');
+                return;
+            }
+            // 可以查看已完成工序的详情
+            if (stepNum < currentStep) {
+                alert(`工序${stepNum}已完成，可查看操作记录`);
+            }
+        }
+
+        // 同步设备参数
+        function syncDeviceParams() {
+            // 模拟获取设备参数
+            const params = {
+                speed: Math.floor(Math.random() * 1000) + 500,
+                feed: (Math.random() * 0.5 + 0.1).toFixed(2),
+                depth: (Math.random() * 2 + 0.5).toFixed(1)
+            };
+            
+            document.getElementById('monitorSpeed').textContent = params.speed;
+            document.getElementById('monitorFeed').textContent = params.feed;
+            document.getElementById('monitorDepth').textContent = params.depth;
+            document.getElementById('monitorStatus').textContent = '运行中';
+            
+            // 自动填充到输入框
+            const inputs = document.querySelectorAll('.param-input-value');
+            inputs.forEach((input, index) => {
+                if (index === 0) input.value = params.speed;
+                if (index === 1) input.value = params.feed;
+                if (index === 2) input.value = params.depth;
+            });
+            
+            addRecord('同步设备参数', `转速:${params.speed}RPM 进给:${params.feed}mm/min`);
+            alert('设备参数已同步！');
+        }
+
+        // 预览加工附件
+        function previewProcessFile(type) {
+            const files = {
+                'drawing': { 
+                    name: '轴类零件加工图纸.dwg', 
+                    type: 'CAD图纸',
+                    desc: '包含完整的加工尺寸、公差要求和技术要求'
+                },
+                'process': { 
+                    name: '加工工艺卡.pdf', 
+                    type: '工艺文档',
+                    desc: '详细的加工工艺流程、刀具选择和切削参数'
+                },
+                'photo': { 
+                    name: '毛坯实物参考图.jpg', 
+                    type: '参考图片',
+                    desc: '毛坯实物照片，供加工前参考对比'
+                }
+            };
+            const file = files[type];
+            alert(`正在预览：${file.name}\n\n类型：${file.type}\n说明：${file.desc}\n\n点击确定打开预览窗口...`);
+        }
+
+        // 保存进度
+        function saveProgress() {
+            // 收集当前填写的参数
+            const inputs = document.querySelectorAll('.param-input-value');
+            const savedData = {};
+            inputs.forEach((input, index) => {
+                if (input.value.trim()) {
+                    savedData[`param_${index}`] = input.value.trim();
+                }
+            });
+            
+            // 模拟保存到本地存储
+            const saveKey = `workorder_progress_${currentStep}`;
+            localStorage.setItem(saveKey, JSON.stringify({
+                step: currentStep,
+                data: savedData,
+                saveTime: new Date().toLocaleString()
+            }));
+            
+            addRecord('保存进度', `工序${currentStep}进度已保存`);
+            alert('✅ 进度已保存！您可以稍后继续操作。');
+        }
+
+        // 完成当前工序
+        function completeCurrentStep() {
+            // 检查是否填写了参数
+            const inputs = document.querySelectorAll('.param-input-value');
+            let hasValue = false;
+            inputs.forEach(input => {
+                if (input.value.trim()) hasValue = true;
+            });
+            
+            if (!hasValue) {
+                alert('请先填写或同步工序参数！');
+                return;
+            }
+            
+            document.getElementById('completeModal').classList.add('active');
+        }
+
+        // 进入下一道工序
+        function nextStep() {
+            addRecord(`完成工序${currentStep}`, processSteps[currentStep - 1].name);
+            
+            currentStep++;
+            closeModal();
+            
+            if (currentStep > 8) {
+                alert('🎉 所有工序已完成！');
+                document.getElementById('statusBadge').textContent = '已完成';
+                document.getElementById('completeModalText').textContent = '所有工序已完成，是否提交工单？';
+                document.getElementById('completeModal').classList.add('active');
+            } else {
+                renderProcessSteps();
+                updateCurrentProcess();
+                alert(`进入工序${currentStep}：${processSteps[currentStep - 1].name}`);
+            }
+        }
+
+        // 添加操作记录
+        function addRecord(action, detail) {
+            const now = new Date();
+            const time = now.toTimeString().slice(0, 8);
+            
+            operationRecords.unshift({
+                time: time,
+                step: `工序${currentStep}`,
+                action: action,
+                detail: detail
+            });
+            
+            renderRecords();
+        }
+
+        // 渲染操作记录
+        function renderRecords() {
+            const container = document.getElementById('recordList');
+            let html = '';
+            
+            operationRecords.slice(0, 10).forEach(record => {
+                html += `
+                    <div class="record-item">
+                        <span class="record-time">${record.time}</span>
+                        <div class="record-content">
+                            <div class="record-step">${record.step} - ${record.action}</div>
+                            <div class="record-detail">${record.detail}</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            container.innerHTML = html || '<div style="text-align: center; color: #999; padding: 20px;">暂无操作记录</div>';
+        }
+
+        // 启动计时器
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = now - startTime;
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                
+                document.getElementById('timer').textContent = 
+                    String(hours).padStart(2, '0') + ':' +
+                    String(minutes).padStart(2, '0') + ':' +
+                    String(seconds).padStart(2, '0');
+            }, 1000);
+        }
+
+        // 暂停操作
+        function pauseOperation() {
+            alert('操作已暂停，点击确定继续');
+        }
+
+        // 紧急停止
+        function emergencyStop() {
+            if (confirm('⚠️ 确定要紧急停止吗？这将立即停止设备运行！')) {
+                document.getElementById('monitorStatus').textContent = '已停止';
+                document.getElementById('monitorStatus').style.color = '#FF4D4F';
+                addRecord('紧急停止', '设备已紧急停止');
+                alert('设备已紧急停止！请检查设备状态。');
+            }
+        }
+
+        // 确认退出
+        function confirmExit() {
+            document.getElementById('exitModal').classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // 退出实训
+        function exitTraining() {
+            clearInterval(timerInterval);
+            window.location.href = './学生端_我的实训.html';
+        }
+
+        // 页面加载
+        window.onload = init;
+    </script>
+    <!-- 实训进行中页面不加载导航栏，保持沉浸式体验 -->
+</body>
+</html>

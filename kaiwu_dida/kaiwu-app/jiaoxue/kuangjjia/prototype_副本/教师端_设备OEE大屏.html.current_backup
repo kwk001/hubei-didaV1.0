@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备OEE实时监控 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: linear-gradient(135deg, #0a1628 0%, #1a2a4a 50%, #0d1b2a 100%);
+        }
+
+        /* 大屏标题 */
+        .dashboard-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 20, 40, 0.6);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 150, 255, 0.3);
+        }
+
+        .dashboard-title {
+            font-size: 28px;
+            font-weight: 700;
+            background: linear-gradient(90deg, #00d4ff, #0099ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 30px rgba(0, 150, 255, 0.5);
+            color: #fff;
+        }
+
+        .dashboard-time {
+            font-size: 16px;
+            color: #00d4ff;
+        }
+
+        /* 主容器 */
+        .dashboard-container {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+
+        /* 卡片样式 */
+        .card {
+            background: rgba(0, 30, 60, 0.4);
+            border: 1px solid rgba(0, 150, 255, 0.2);
+            border-radius: 12px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+            color: #fff;
+        }
+
+        .card-title {
+            font-size: 16px;
+            color: #00d4ff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: linear-gradient(180deg, #00d4ff, #0099ff);
+            border-radius: 2px;
+        }
+
+        /* OEE总览 */
+        .oee-overview {
+            grid-column: span 3;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 30px;
+        }
+
+        .oee-main {
+            text-align: center;
+        }
+
+        .oee-value {
+            font-size: 64px;
+            font-weight: 700;
+            background: linear-gradient(180deg, #00ff88, #00cc66);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(0, 255, 136, 0.3);
+        }
+
+        .oee-label {
+            font-size: 18px;
+            color: #88ccff;
+            margin-top: 8px;
+        }
+
+        .oee-sub-items {
+            display: flex;
+            gap: 40px;
+        }
+
+        .oee-sub-item {
+            text-align: center;
+        }
+
+        .sub-value {
+            font-size: 36px;
+            font-weight: 600;
+        }
+
+        .sub-value.availability { color: #00d4ff; }
+        .sub-value.performance { color: #ffaa00; }
+        .sub-value.quality { color: #00ff88; }
+
+        .sub-label {
+            font-size: 14px;
+            color: #88aacc;
+            margin-top: 6px;
+        }
+
+        /* 设备状态 */
+        .device-status {
+            grid-column: span 2;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .status-item {
+            background: rgba(0, 50, 100, 0.3);
+            border-radius: 10px;
+            padding: 16px;
+            text-align: center;
+            border: 1px solid rgba(0, 150, 255, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .status-item:hover {
+            transform: translateY(-3px);
+            border-color: rgba(0, 150, 255, 0.3);
+        }
+
+        .status-item.active {
+            border-color: #00d4ff;
+            background: rgba(0, 150, 255, 0.2);
+        }
+
+        /* 设备列表 */
+        .device-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .device-item {
+            background: rgba(0, 50, 100, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid rgba(0, 150, 255, 0.1);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .device-item:hover {
+            border-color: rgba(0, 150, 255, 0.3);
+            background: rgba(0, 70, 120, 0.4);
+        }
+
+        .device-item.active {
+            border-color: #00d4ff;
+            background: rgba(0, 150, 255, 0.2);
+        }
+
+        .device-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .device-name {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .device-status-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .device-status-badge.running {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+        }
+
+        .device-status-badge.idle {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+        }
+
+        .device-status-badge.error {
+            background: rgba(255, 77, 79, 0.2);
+            color: #ff4d4f;
+        }
+
+        .device-status-badge.offline {
+            background: rgba(136, 136, 136, 0.2);
+            color: #888;
+        }
+
+        .device-oee {
+            font-size: 20px;
+            font-weight: 700;
+            color: #00d4ff;
+            margin-bottom: 4px;
+        }
+
+        .device-info {
+            font-size: 11px;
+            color: #88aacc;
+        }
+
+        /* 设备详情 */
+        .device-detail {
+            grid-column: span 3;
+        }
+
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(0, 150, 255, 0.2);
+        }
+
+        .detail-title {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        .detail-status {
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+
+        .detail-item {
+            text-align: center;
+            padding: 16px;
+            background: rgba(0, 50, 100, 0.3);
+            border-radius: 10px;
+        }
+
+        .detail-value {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .detail-value.oee {
+            color: #00ff88;
+        }
+
+        .detail-value.availability {
+            color: #00d4ff;
+        }
+
+        .detail-value.performance {
+            color: #ffaa00;
+        }
+
+        .detail-value.quality {
+            color: #00ff88;
+        }
+
+        .detail-label {
+            font-size: 13px;
+            color: #88aacc;
+        }
+
+        .status-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 12px;
+        }
+
+        .status-icon.running {
+            background: rgba(0, 255, 136, 0.2);
+            color: #00ff88;
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.3);
+        }
+
+        .status-icon.idle {
+            background: rgba(255, 170, 0, 0.2);
+            color: #ffaa00;
+            box-shadow: 0 0 15px rgba(255, 170, 0, 0.3);
+        }
+
+        .status-icon.error {
+            background: rgba(255, 77, 79, 0.2);
+            color: #ff4d4f;
+            box-shadow: 0 0 15px rgba(255, 77, 79, 0.3);
+        }
+
+        .status-icon.offline {
+            background: rgba(136, 136, 136, 0.2);
+            color: #888;
+        }
+
+        .status-name {
+            font-size: 14px;
+            margin-bottom: 6px;
+        }
+
+        .status-count {
+            font-size: 28px;
+            font-weight: 700;
+            color: #00d4ff;
+        }
+
+        /* 实时数据 */
+        .realtime-data {
+            grid-column: span 1;
+        }
+
+        .data-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .data-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px;
+            background: rgba(0, 50, 100, 0.3);
+            border-radius: 8px;
+            border-left: 3px solid #00d4ff;
+        }
+
+        .data-label {
+            font-size: 13px;
+            color: #88aacc;
+        }
+
+        .data-value {
+            font-size: 16px;
+            font-weight: 600;
+            color: #00d4ff;
+        }
+
+        /* 图表区域 */
+        .chart-container {
+            grid-column: span 2;
+            height: 300px;
+        }
+
+        .chart-placeholder {
+            width: 100%;
+            height: 240px;
+            background: rgba(0, 30, 60, 0.3);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #88aacc;
+            font-size: 14px;
+        }
+
+        /* OEE趋势图表 - 面积图 */
+        .oee-chart {
+            width: 100%;
+            height: 240px;
+            position: relative;
+            padding: 20px 20px 40px 50px;
+        }
+
+        .chart-svg {
+            width: 100%;
+            height: 100%;
+            overflow: visible;
+        }
+
+        .chart-area {
+            fill: url(#areaGradient);
+            opacity: 0.6;
+            transition: all 0.3s;
+        }
+
+        .chart-area:hover {
+            opacity: 0.8;
+        }
+
+        .chart-line {
+            fill: none;
+            stroke: #00d4ff;
+            stroke-width: 3;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+
+        .chart-line.target-met {
+            stroke: #00ff88;
+        }
+
+        .chart-point {
+            fill: #00d4ff;
+            stroke: #fff;
+            stroke-width: 2;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .chart-point:hover {
+            r: 8;
+            fill: #00ff88;
+        }
+
+        .chart-point.target-met {
+            fill: #00ff88;
+        }
+
+        .chart-grid-line {
+            stroke: rgba(255, 255, 255, 0.1);
+            stroke-width: 1;
+            stroke-dasharray: 4, 4;
+        }
+
+        .chart-axis-line {
+            stroke: rgba(255, 255, 255, 0.3);
+            stroke-width: 1;
+        }
+
+        .chart-axis-text {
+            fill: #88aacc;
+            font-size: 11px;
+            text-anchor: middle;
+        }
+
+        .chart-axis-text.y-axis {
+            text-anchor: end;
+        }
+
+        .chart-target-line {
+            stroke: #ffaa00;
+            stroke-width: 2;
+            stroke-dasharray: 6, 4;
+        }
+
+        .chart-target-label {
+            fill: #ffaa00;
+            font-size: 11px;
+        }
+
+        .chart-tooltip {
+            position: absolute;
+            background: rgba(0, 20, 40, 0.95);
+            border: 1px solid rgba(0, 150, 255, 0.3);
+            border-radius: 8px;
+            padding: 12px;
+            color: #fff;
+            font-size: 12px;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s;
+            z-index: 100;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-tooltip.visible {
+            opacity: 1;
+        }
+
+        .chart-tooltip-title {
+            font-weight: 600;
+            margin-bottom: 6px;
+            color: #00d4ff;
+        }
+
+        .chart-tooltip-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 3px;
+        }
+
+        .chart-tooltip-value {
+            font-weight: 600;
+            color: #00ff88;
+        }
+
+        /* 学生使用情况 */
+        .student-usage {
+            grid-column: span 1;
+        }
+
+        .usage-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .usage-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: rgba(0, 50, 100, 0.3);
+            border-radius: 8px;
+        }
+
+        .usage-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #00d4ff, #0099ff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+        }
+
+        .usage-info {
+            flex: 1;
+        }
+
+        .usage-name {
+            font-size: 13px;
+            margin-bottom: 2px;
+        }
+
+        .usage-device {
+            font-size: 11px;
+            color: #88aacc;
+        }
+
+        .usage-time {
+            font-size: 13px;
+            color: #00ff88;
+            font-weight: 500;
+        }
+
+        /* 告警信息 */
+        .alert-section {
+            grid-column: span 3;
+        }
+
+        .alert-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .alert-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            background: rgba(255, 77, 79, 0.1);
+            border: 1px solid rgba(255, 77, 79, 0.3);
+            border-radius: 8px;
+        }
+
+        .alert-level {
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .alert-level.high {
+            background: rgba(255, 77, 79, 0.3);
+            color: #ff4d4f;
+        }
+
+        .alert-level.medium {
+            background: rgba(255, 170, 0, 0.3);
+            color: #ffaa00;
+        }
+
+        .alert-content {
+            flex: 1;
+            font-size: 13px;
+        }
+
+        .alert-time {
+            font-size: 11px;
+            color: #88aacc;
+        }
+
+        /* 动画效果 */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .pulse {
+            animation: pulse 2s infinite;
+        }
+
+        /* 响应式 */
+        @media (max-width: 1400px) {
+            .dashboard-container {
+                grid-template-columns: 1fr 1fr;
+            }
+            .oee-overview { grid-column: span 2; }
+            .device-status { grid-column: span 2; }
+            .alert-section { grid-column: span 2; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <!-- 顶部导航栏 -->
+        <div class="header">
+            <div class="breadcrumb">首页 / 报表 / 设备OEE大屏</div>
+            <button class="logout-btn" onclick="logout()">👤 教师：张老师 | 退出</button>
+        </div>
+        
+        <!-- 页面标题 -->
+        <div style="padding: 20px 24px 0;">
+            <h1 style="font-size: 24px; color: #1f2937; margin-bottom: 8px;">📊 设备OEE实时监控</h1>
+            <p style="color: #6b7280; font-size: 14px;">实时监控设备综合效率（OEE）指标</p>
+        </div>
+        
+        <!-- OEE概览卡片 -->
+        <div class="dashboard-container" style="padding: 20px 24px;">
+            <div class="oee-overview" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 16px; padding: 24px; color: white;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h3 style="font-size: 18px; margin: 0;">🏭 整体设备效率 (OEE)</h3>
+                    <span style="font-size: 48px; font-weight: 700;">85.6%</span>
+                </div>
+                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 32px; font-weight: 600;">92.3%</div>
+                        <div style="font-size: 12px; opacity: 0.9;">时间稼动率</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 32px; font-weight: 600;">95.1%</div>
+                        <div style="font-size: 12px; opacity: 0.9;">性能稼动率</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 32px; font-weight: 600;">97.8%</div>
+                        <div style="font-size: 12px; opacity: 0.9;">良品率</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 设备状态分布 -->
+            <div class="device-status" style="background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <h3 style="font-size: 16px; color: #1f2937; margin-bottom: 16px;">📱 设备状态分布</h3>
+                <div style="display: flex; gap: 16px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 120px; background: #d1fae5; border-radius: 8px; padding: 16px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 600; color: #065f46;">12</div>
+                        <div style="font-size: 12px; color: #047857;">运行中</div>
+                    </div>
+                    <div style="flex: 1; min-width: 120px; background: #fef3c7; border-radius: 8px; padding: 16px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 600; color: #92400e;">3</div>
+                        <div style="font-size: 12px; color: #b45309;">待机</div>
+                    </div>
+                    <div style="flex: 1; min-width: 120px; background: #fee2e2; border-radius: 8px; padding: 16px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 600; color: #991b1b;">1</div>
+                        <div style="font-size: 12px; color: #b91c1c;">故障</div>
+                    </div>
+                    <div style="flex: 1; min-width: 120px; background: #e0e7ff; border-radius: 8px; padding: 16px; text-align: center;">
+                        <div style="font-size: 28px; font-weight: 600; color: #3730a3;">4</div>
+                        <div style="font-size: 12px; color: #4338ca;">离线</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- OEE趋势图 -->
+            <div style="grid-column: span 2; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <h3 style="font-size: 16px; color: #1f2937; margin: 0;">📈 OEE趋势（近7天）</h3>
+                    <div style="display: flex; gap: 8px;">
+                        <button style="padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; cursor: pointer; font-size: 12px;">今日</button>
+                        <button style="padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; cursor: pointer; font-size: 12px;">本周</button>
+                        <button style="padding: 6px 12px; border: 1px solid #e5e7eb; border-radius: 6px; background: #fff; cursor: pointer; font-size: 12px;">本月</button>
+                    </div>
+                </div>
+                <div style="height: 250px; background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #9ca3af;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 48px; margin-bottom: 16px;">📊</div>
+                        <div>OEE趋势图表</div>
+                        <div style="font-size: 12px; margin-top: 8px;">（需要接入实际数据源）</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 设备列表 -->
+            <div style="grid-column: span 2; background: #fff; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+                <h3 style="font-size: 16px; color: #1f2937; margin-bottom: 16px;">🔧 设备OEE明细</h3>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <thead>
+                        <tr style="background: #f9fafb;">
+                            <th style="padding: 12px; text-align: left; font-size: 12px; color: #6b7280; font-weight: 500; border-bottom: 1px solid #e5e7eb;">设备编号</th>
+                            <th style="padding: 12px; text-align: left; font-size: 12px; color: #6b7280; font-weight: 500; border-bottom: 1px solid #e5e7eb;">设备名称</th>
+                            <th style="padding: 12px; text-align: left; font-size: 12px; color: #6b7280; font-weight: 500; border-bottom: 1px solid #e5e7eb;">状态</th>
+                            <th style="padding: 12px; text-align: left; font-size: 12px; color: #6b7280; font-weight: 500; border-bottom: 1px solid #e5e7eb;">OEE</th>
+                            <th style="padding: 12px; text-align: left; font-size: 12px; color: #6b7280; font-weight: 500; border-bottom: 1px solid #e5e7eb;">运行时间</th>
+                            <th style="padding: 12px; text-align: left; font-size: 12px; color: #6b7280; font-weight: 500; border-bottom: 1px solid #e5e7eb;">产量</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #6b7280;">NC-001</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937;">数控车床 #1</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6;"><span style="padding: 4px 8px; background: #d1fae5; color: #065f46; border-radius: 4px; font-size: 12px;">运行中</span></td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937; font-weight: 600;">89.2%</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #6b7280;">6h 32m</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937;">1,256</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #6b7280;">NC-002</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937;">数控铣床 #1</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6;"><span style="padding: 4px 8px; background: #d1fae5; color: #065f46; border-radius: 4px; font-size: 12px;">运行中</span></td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937; font-weight: 600;">92.5%</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #6b7280;">7h 15m</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937;">892</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #6b7280;">NC-003</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937;">加工中心 #1</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6;"><span style="padding: 4px 8px; background: #fef3c7; color: #92400e; border-radius: 4px; font-size: 12px;">待机</span></td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937; font-weight: 600;">76.8%</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #6b7280;">4h 20m</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937;">567</td>
+                        </tr>
+                        <tr>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #6b7280;">NC-004</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937;">数控车床 #2</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6;"><span style="padding: 4px 8px; background: #fee2e2; color: #991b1b; border-radius: 4px; font-size: 12px;">故障</span></td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937; font-weight: 600;">45.2%</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #6b7280;">2h 10m</td>
+                            <td style="padding: 12px; border-bottom: 1px solid #f3f4f6; color: #1f2937;">234</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+    
+    <script>
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = './login.html';
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>编程类实训 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <!-- 实训进行中页面不加载导航样式，保持沉浸式体验 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #F5F5F5;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #E8E8E8;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%);
+            border-radius: 8px;
+            color: #FA8C16;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            background: #FFF7E6;
+            color: #FA8C16;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .container {
+            width: calc(100% - 220px);
+            margin-left: 220px;
+            margin-right: 0;
+            padding: 24px;
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            box-sizing: border-box;
+            min-height: calc(100vh - 64px);
+        }
+
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .sidebar-panel {
+            width: 400px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .panel-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 编程要求区域 */
+        .program-requirements {
+            background: linear-gradient(135deg, #FFF7E6 0%, #FFF1E6 100%);
+            border-radius: 12px;
+            padding: 24px;
+            border-left: 4px solid #FA8C16;
+            display: none;
+        }
+
+        .requirements-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #FA8C16;
+            margin-bottom: 16px;
+        }
+
+        .requirements-content {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* 代码编辑器区域 */
+        .code-editor-container {
+            background: #1E1E1E;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .editor-toolbar {
+            background: #2D2D2D;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .toolbar-left {
+            display: flex;
+            gap: 12px;
+        }
+
+        .toolbar-btn {
+            padding: 6px 12px;
+            background: #3C3C3C;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .toolbar-btn:hover {
+            background: #505050;
+        }
+
+        .language-select {
+            padding: 6px 12px;
+            background: #3C3C3C;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 13px;
+        }
+
+        .code-editor {
+            min-height: 400px;
+            padding: 16px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #D4D4D4;
+            background: #1E1E1E;
+            border: none;
+            resize: vertical;
+            width: 100%;
+            outline: none;
+        }
+
+        .code-editor::placeholder {
+            color: #6E6E6E;
+        }
+
+        /* 运行结果区域 */
+        .output-panel {
+            background: #1E1E1E;
+            border-radius: 8px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .output-header {
+            background: #2D2D2D;
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 8px 8px 0 0;
+        }
+
+        .output-title {
+            color: #fff;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .output-clear {
+            padding: 4px 12px;
+            background: #3C3C3C;
+            border: none;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 12px;
+            cursor: pointer;
+        }
+
+        .output-content {
+            padding: 16px;
+            min-height: 150px;
+            color: #D4D4D4;
+            font-family: 'Consolas', monospace;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+
+        /* 工单信息 */
+        .workorder-info {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .workorder-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .workorder-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .workorder-item:last-child {
+            border-bottom: none;
+        }
+
+        .workorder-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .workorder-value {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 编程要求区域 - 文本内容方式 */
+        .process-requirements {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .requirements-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .requirements-content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .requirements-content p {
+            margin-bottom: 12px;
+        }
+
+        .requirements-content strong {
+            color: #1890FF;
+            font-weight: 600;
+        }
+
+        /* 附件列表 - 白色卡片 */
+        .process-attachments {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .attachments-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .attachment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .attachment-file {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #FAFAFA;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attachment-file:hover {
+            background: #F0F7FF;
+            border-color: #1890FF;
+        }
+
+        .attachment-file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .attachment-file-icon.dwg {
+            background: #E6F7FF;
+        }
+
+        .attachment-file-icon.pdf {
+            background: #FFF2F0;
+        }
+
+        .attachment-file-icon.img {
+            background: #F6FFED;
+        }
+
+        .attachment-file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .attachment-file-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .attachment-file-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .attachment-file-preview {
+            padding: 6px 12px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .attachment-file-preview:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        /* 操作按钮 */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-run {
+            background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+            color: #fff;
+        }
+
+        .btn-run:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(82, 196, 26, 0.4);
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FA8C16 0%, #FF6B35 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(250, 140, 22, 0.4);
+        }
+
+        .btn-secondary {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #E8E8E8;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(24, 144, 255, 0.4);
+        }
+
+        /* 按钮组 - 放在内容填写区域下方 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-group button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-group button i {
+            font-size: 16px;
+        }
+
+        /* 保存按钮 */
+        .save-btn {
+            background: linear-gradient(135deg, #F0F0F0 0%, #E0E0E0 100%);
+            color: #666;
+            border: 1px solid #D0D0D0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(135deg, #E8E8E8 0%, #D8D8D8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 提交按钮 */
+        .submit-btn {
+            background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #45B34A 0%, #63C13D 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(82, 196, 26, 0.4);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="confirmExit()">
+                <i class="iconfont icon-fanhui"></i>
+            </button>
+            <div class="header-title">数控编程-实训：宏程序编制与调试</div>
+        </div>
+        <div class="header-info">
+            <div class="timer">
+                <i class="iconfont icon-shijian"></i>
+                <span id="timer">00:00:00</span>
+            </div>
+            <div class="status-badge">编程中</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-panel">
+            <!-- 编程要求 -->
+            <div class="program-requirements">
+                <div class="requirements-title">📋 编程要求</div>
+                <div class="requirements-content">
+                    编写一个数控车床宏程序，实现外圆粗车循环加工。要求使用变量定义工件尺寸，通过条件判断控制切削深度，利用循环语句完成多次走刀。程序需包含安全保护措施，如刀具位置检查、切削参数限制等。
+                </div>
+            </div>
+
+            <!-- 代码编辑器 -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="iconfont icon-code"></i>
+                    代码编辑区
+                </div>
+                <div class="code-editor-container">
+                    <div class="editor-toolbar">
+                        <div class="toolbar-left">
+                            <select class="language-select">
+                                <option value="gcode">G代码</option>
+                                <option value="macro">宏程序</option>
+                            </select>
+                            <button class="toolbar-btn" onclick="formatCode()">格式化</button>
+                            <button class="toolbar-btn" onclick="clearCode()">清空</button>
+                        </div>
+                        <button class="toolbar-btn" onclick="loadTemplate()">加载模板</button>
+                    </div>
+                    <textarea class="code-editor" placeholder="请输入G代码或宏程序...
+
+示例：
+O0001 (外圆粗车宏程序)
+#1=50 (工件外径)
+#2=30 (工件内径)
+#3=2 (切削深度)
+#4=0 (当前深度)
+
+N10 IF[#4GE#1-#2] GOTO 30
+#4=#4+#3
+G00 X#4 Z2
+G01 Z-50 F0.2
+G00 X#4 Z2
+GOTO 10
+
+N30 M30"></textarea>
+                </div>
+
+                <!-- 运行结果 -->
+                <div class="output-panel">
+                    <div class="output-header">
+                        <span class="output-title">▶ 运行结果</span>
+                        <button class="output-clear" onclick="clearOutput()">清空</button>
+                    </div>
+                    <div class="output-content" id="outputContent">
+                        点击"运行代码"查看执行结果...
+                    </div>
+                </div>
+
+                <!-- 保存和提交按钮 -->
+                <div class="btn-group">
+                    <button class="save-btn" onclick="saveCode()">
+                        <i class="iconfont icon-baocun"></i>
+                        保存
+                    </button>
+                    <button class="submit-btn" onclick="submitCode()">
+                        <i class="iconfont icon-shangchuan"></i>
+                        提交
+                    </button>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="sidebar-panel">
+            <!-- 工单信息 -->
+            <div class="workorder-info">
+                <div class="workorder-title">📋 工单信息</div>
+                <div class="workorder-item">
+                    <span class="workorder-label">工单编号</span>
+                    <span class="workorder-value">WO-2024-001</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">物料名称</span>
+                    <span class="workorder-value">数控车床加工程序</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">规格型号</span>
+                    <span class="workorder-value">G代码</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">计划数量</span>
+                    <span class="workorder-value">1 件</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">操作员</span>
+                    <span class="workorder-value">张伟</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">起始时间段</span>
+                    <span class="workorder-value">2026-02-28 09:00-11:00</span>
+                </div>
+            </div>
+
+            <!-- 编程要求 -->
+            <div class="process-requirements">
+                <div class="requirements-title">
+                    <i class="iconfont icon-yaoqiu"></i>
+                    编程要求
+                </div>
+                <div class="requirements-content">
+                    <p><strong>编程任务：</strong>编写轴类零件的数控车床加工程序</p>
+                    <p><strong>加工材料：</strong>45#钢</p>
+                    <p><strong>加工工序：</strong>粗加工、精加工</p>
+                    <p><strong>精度要求：</strong>IT7级</p>
+                    <p><strong>技术要求：</strong>使用G71粗车循环和G70精车循环，程序需包含安全指令和刀具补偿。</p>
+                </div>
+            </div>
+
+            <!-- 参考附件 -->
+            <div class="process-attachments">
+                <div class="attachments-title">
+                    <i class="iconfont icon-fujian"></i>
+                    参考附件
+                    <span style="margin-left: 8px; font-size: 12px; color: #999; font-weight: normal;">共 3 个</span>
+                </div>
+                <div class="attachment-list">
+                    <div class="attachment-file" onclick="previewAttachment('drawing')">
+                        <div class="attachment-file-icon dwg">📐</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">零件图纸.dwg</div>
+                            <div class="attachment-file-meta">
+                                <span>DWG</span>
+                                <span>1.5MB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    <div class="attachment-file" onclick="previewAttachment('process')">
+                        <div class="attachment-file-icon pdf">📋</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">编程手册.pdf</div>
+                            <div class="attachment-file-meta">
+                                <span>PDF</span>
+                                <span>320KB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    <div class="attachment-file" onclick="previewAttachment('template')">
+                        <div class="attachment-file-icon img">📄</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">程序模板.nc</div>
+                            <div class="attachment-file-meta">
+                                <span>NC</span>
+                                <span>12KB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 确认退出弹窗 -->
+    <div class="modal-overlay" id="exitModal">
+        <div class="modal-content">
+            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+            <div style="font-size: 20px; font-weight: 600; color: #333; margin-bottom: 12px;">确认退出？</div>
+            <div style="font-size: 14px; color: #666; margin-bottom: 24px;">退出后代码将自动保存，您可以稍后继续。是否确认退出？</div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">取消</button>
+                <button class="btn btn-primary" onclick="exitTraining()" style="flex: 1;">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let startTime = new Date();
+        let timerInterval;
+
+        // 启动计时器
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = now - startTime;
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                
+                document.getElementById('timer').textContent = 
+                    String(hours).padStart(2, '0') + ':' +
+                    String(minutes).padStart(2, '0') + ':' +
+                    String(seconds).padStart(2, '0');
+            }, 1000);
+        }
+
+        // 确认退出
+        function confirmExit() {
+            document.getElementById('exitModal').classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // 退出实训
+        function exitTraining() {
+            clearInterval(timerInterval);
+            window.location.href = './学生端_我的实训.html';
+        }
+
+        // 格式化代码
+        function formatCode() {
+            alert('代码已格式化！');
+        }
+
+        // 清空代码
+        function clearCode() {
+            if (confirm('确定要清空代码吗？')) {
+                document.querySelector('.code-editor').value = '';
+            }
+        }
+
+        // 加载模板
+        function loadTemplate() {
+            alert('模板已加载！');
+        }
+
+        // 清空输出
+        function clearOutput() {
+            document.getElementById('outputContent').textContent = '点击"运行代码"查看执行结果...';
+        }
+
+        // 运行代码
+        function runCode() {
+            document.getElementById('outputContent').textContent = '正在编译运行...\n\n编译成功！\n运行结果：\n- 测试用例 1：通过\n- 测试用例 2：通过\n- 测试用例 3：失败（参数检查未通过）\n\n请检查第15行参数验证逻辑。';
+        }
+
+        // 保存代码
+        function saveCode() {
+            alert('代码已保存！');
+        }
+
+        // 提交代码
+        function submitCode() {
+            if (confirm('确定要提交代码吗？提交后将无法修改。')) {
+                alert('代码已提交！');
+                window.location.href = './学生端_我的实训.html';
+            }
+        }
+
+        // 页面加载
+        window.onload = function() {
+            startTimer();
+        };
+    </script>
+    <!-- 实训进行中页面不加载导航栏，保持沉浸式体验 -->
+</body>
+</html>

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业教学课程 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .user-info { display: flex; align-items: center; gap: 20px; }
+        .user-info span { color: #666; font-size: 14px; }
+
+        /* 内容区域 */
+        .content-body {
+            padding: 20px;
+            background: #F0F2F5;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 统计卡片 - 教务端风格 */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-icon.blue { background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%); }
+        .stat-icon.green { background: linear-gradient(135deg, #F6FFED 0%, #D9F7BE 100%); }
+        .stat-icon.orange { background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%); }
+        .stat-icon.purple { background: linear-gradient(135deg, #F9F0FF 0%, #EFDBFF 100%); }
+        .stat-content { flex: 1; }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #262626;
+            line-height: 1.2;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #8C8C8C;
+            margin-top: 4px;
+        }
+        .stat-trend {
+            font-size: 12px;
+            color: #52C41A;
+            margin-top: 4px;
+        }
+        .stat-trend.down { color: #FF4D4F; }
+
+        /* 搜索筛选区 - 卡片式布局 */
+        .search-filter-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .search-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .search-row:last-child {
+            margin-bottom: 0;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #E8E8E8;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #333;
+            background: #fff;
+            cursor: pointer;
+            min-width: 120px;
+        }
+        .filter-select:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        .btn-search {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-search:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+        .btn-reset {
+            padding: 12px 20px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+        .btn-reset:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        
+        /* 表格区域 */
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .table-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table-title { font-size: 16px; font-weight: 600; color: #333; }
+        .table-actions { display: flex; gap: 12px; }
+        .btn-primary {
+            padding: 8px 16px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary:hover { background: #40A9FF; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+        }
+        th {
+            background: #FAFAFA;
+            font-weight: 600;
+            color: #333;
+        }
+        td { color: #666; }
+        tr:hover { background: #F5F7FA; }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .tag-green { background: #E6F7FF; color: #1890FF; border: 1px solid #91D5FF; }
+        .tag-blue { background: #E6F7FF; color: #1890FF; border: 1px solid #91D5FF; }
+        .tag-orange { background: #FFF7E6; color: #FA8C16; border: 1px solid #FFD591; }
+        .tag-gray { background: #F5F5F5; color: #999; border: 1px solid #D9D9D9; }
+        
+        .action-btns { display: flex; gap: 8px; }
+        .action-btn {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .action-btn.primary { background: #1890FF; color: #fff; }
+        .action-btn.primary:hover { background: #40A9FF; }
+        .action-btn.link { background: transparent; color: #1890FF; }
+        .action-btn.link:hover { color: #40A9FF; }
+        .action-btn.danger { background: transparent; color: #FF4D4F; }
+        .action-btn.danger:hover { color: #FF7875; }
+        
+        /* 分页 - 优化样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .pagination-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        .pagination-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 1px solid #E8E8E8;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #595959;
+            transition: all 0.3s;
+            min-width: 36px;
+            text-align: center;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #F5F5F5;
+        }
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+            font-weight: 500;
+        }
+        .pagination-info {
+            font-size: 14px;
+            color: #8C8C8C;
+        }
+        .pagination-total {
+            font-size: 14px;
+            color: #262626;
+            font-weight: 500;
+        }
+        .pagination-jump {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+        .pagination-jump input {
+            width: 48px;
+            padding: 6px 8px;
+            border: 1px solid #E8E8E8;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+        }
+        
+        /* 进度条 */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #F0F0F0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #1890FF;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .progress-text { font-size: 12px; color: #666; margin-top: 4px; }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">首页 <span>/</span> 我的教学 <span>/</span> 专业教学课程</div>
+            <div class="user-info">
+                <span>👨‍🏫 教师：张三</span>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+
+        <div class="content-body">
+            <!-- 统计卡片 -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📚</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalCourses">8</div>
+                        <div class="stat-label">教学课程</div>
+                        <div class="stat-trend">本学期</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="teachingCount">5</div>
+                        <div class="stat-label">授课中</div>
+                        <div class="stat-trend">占比 62%</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📅</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="pendingCount">1</div>
+                        <div class="stat-label">待授课</div>
+                        <div class="stat-trend">即将开始</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">👨‍🎓</div>
+                    <div class="stat-content">
+                        <div class="stat-value" id="totalStudents">396</div>
+                        <div class="stat-label">学生总数</div>
+                        <div class="stat-trend">↑ 较上月 +12</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 搜索筛选 -->
+            <div class="search-filter-card">
+                <div class="search-row">
+                    <input type="text" class="search-input" placeholder="请输入专业名称" id="majorName">
+                    <input type="text" class="search-input" placeholder="请输入课程名称" id="courseName">
+                    <button class="btn-search" onclick="search()">🔍 查询</button>
+                    <button class="btn-reset" onclick="reset()">重置</button>
+                </div>
+                <div class="search-row">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <span class="filter-label">学期：</span>
+                            <select class="filter-select" id="semester">
+                                <option value="">全部学期</option>
+                                <option value="2025-2026-1">2025-2026学年第一学期</option>
+                                <option value="2024-2025-2">2024-2025学年第二学期</option>
+                                <option value="2024-2025-1">2024-2025学年第一学期</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">状态：</span>
+                            <select class="filter-select" id="status">
+                                <option value="">全部状态</option>
+                                <option value="pending">待授课</option>
+                                <option value="teaching">授课中</option>
+                                <option value="finished">已结课</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 表格区域 -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">专业教学课程列表</div>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px;">序号</th>
+                            <th>专业名称</th>
+                            <th>课程名称</th>
+                            <th>学期</th>
+                            <th>授课班级</th>
+                            <th>学生人数</th>
+                            <th>学时/学分</th>
+                            <th>教学进度</th>
+                            <th>状态</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                        <!-- 动态生成 -->
+                    </tbody>
+                </table>
+                <div class="pagination">
+                    <div class="pagination-left">
+                        <span class="pagination-info">显示第 <span id="startRecord">1</span>-<span id="endRecord">8</span> 条，共 <span class="pagination-total" id="totalCount">0</span> 条记录</span>
+                    </div>
+                    <div class="pagination-right">
+                        <button class="pagination-btn" onclick="prevPage()" id="prevBtn">上一页</button>
+                        <button class="pagination-btn active" id="page1">1</button>
+                        <button class="pagination-btn" id="page2">2</button>
+                        <button class="pagination-btn" id="page3">3</button>
+                        <button class="pagination-btn" onclick="nextPage()" id="nextBtn">下一页</button>
+                        <div class="pagination-jump">
+                            <span>跳至</span>
+                            <input type="number" min="1" id="jumpPage" value="1">
+                            <span>页</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockData = [
+            { id: 1, majorName: '计算机应用技术', courseName: '计算机基础', semester: '2025-2026-1', classes: '2026级计算机1班, 2026级计算机2班', studentCount: 86, hours: '64/4', progress: 65, status: 'teaching' },
+            { id: 2, majorName: '计算机应用技术', courseName: 'Java程序设计', semester: '2025-2026-1', classes: '2025级计算机1班', studentCount: 42, hours: '96/6', progress: 80, status: 'teaching' },
+            { id: 3, majorName: '软件技术', courseName: 'Web前端开发', semester: '2025-2026-1', classes: '2025级软件1班, 2025级软件2班', studentCount: 78, hours: '80/5', progress: 45, status: 'teaching' },
+            { id: 4, majorName: '计算机网络技术', courseName: '网络基础', semester: '2024-2025-2', classes: '2024级网络1班', studentCount: 38, hours: '64/4', progress: 100, status: 'finished' },
+            { id: 5, majorName: '电子商务', courseName: '网店运营', semester: '2025-2026-1', classes: '2026级电商1班', studentCount: 45, hours: '48/3', progress: 30, status: 'teaching' },
+            { id: 6, majorName: '数字媒体技术', courseName: '平面设计基础', semester: '2025-2026-1', classes: '2026级数媒1班, 2026级数媒2班', studentCount: 68, hours: '64/4', progress: 20, status: 'pending' },
+            { id: 7, majorName: '计算机应用技术', courseName: '数据库原理', semester: '2024-2025-2', classes: '2024级计算机1班', studentCount: 40, hours: '64/4', progress: 100, status: 'finished' },
+            { id: 8, majorName: '软件技术', courseName: 'Python编程', semester: '2025-2026-1', classes: '2025级软件1班', studentCount: 39, hours: '80/5', progress: 55, status: 'teaching' },
+        ];
+
+        let currentPage = 1;
+        const pageSize = 10;
+        let filteredData = [...mockData];
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredData.slice(start, end);
+
+            tbody.innerHTML = pageData.map((item, index) => `
+                <tr>
+                    <td>${start + index + 1}</td>
+                    <td>${item.majorName}</td>
+                    <td><strong>${item.courseName}</strong></td>
+                    <td>${item.semester}</td>
+                    <td>${item.classes}</td>
+                    <td>${item.studentCount}人</td>
+                    <td>${item.hours}</td>
+                    <td style="width: 120px;">
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${item.progress}%; background: ${item.progress === 100 ? '#1890FF' : '#1890FF'}"></div>
+                        </div>
+                        <div class="progress-text">${item.progress}%</div>
+                    </td>
+                    <td>${renderStatus(item.status)}</td>
+                </tr>
+            `).join('');
+
+            document.getElementById('totalCount').textContent = filteredData.length;
+            updatePagination();
+        }
+
+        function renderStatus(status) {
+            const statusMap = {
+                'pending': '<span class="tag tag-orange">待授课</span>',
+                'teaching': '<span class="tag tag-green">授课中</span>',
+                'finished': '<span class="tag tag-gray">已结课</span>'
+            };
+            return statusMap[status] || status;
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            const totalRecords = filteredData.length;
+            const startRecord = (currentPage - 1) * pageSize + 1;
+            const endRecord = Math.min(currentPage * pageSize, totalRecords);
+            
+            document.getElementById('startRecord').textContent = startRecord;
+            document.getElementById('endRecord').textContent = endRecord;
+            document.getElementById('totalCount').textContent = totalRecords;
+            
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
+            
+            // 更新跳转页码输入框
+            const jumpPage = document.getElementById('jumpPage');
+            jumpPage.max = totalPages;
+            jumpPage.value = currentPage;
+        }
+
+        function search() {
+            const majorName = document.getElementById('majorName').value.toLowerCase();
+            const courseName = document.getElementById('courseName').value.toLowerCase();
+            const semester = document.getElementById('semester').value;
+            const status = document.getElementById('status').value;
+
+            filteredData = mockData.filter(item => {
+                return (!majorName || item.majorName.toLowerCase().includes(majorName)) &&
+                       (!courseName || item.courseName.toLowerCase().includes(courseName)) &&
+                       (!semester || item.semester === semester) &&
+                       (!status || item.status === status);
+            });
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        function reset() {
+            document.getElementById('majorName').value = '';
+            document.getElementById('courseName').value = '';
+            document.getElementById('semester').value = '';
+            document.getElementById('status').value = '';
+            filteredData = [...mockData];
+            currentPage = 1;
+            renderTable();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        // 跳转页码输入框事件监听
+        document.getElementById('jumpPage').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const page = parseInt(this.value);
+                const totalPages = Math.ceil(filteredData.length / pageSize);
+                if (page >= 1 && page <= totalPages) {
+                    currentPage = page;
+                    renderTable();
+                }
+            }
+        });
+
+        function addCourse() {
+            alert('打开新增课程弹窗');
+        }
+
+        function enterCourse(id) {
+            const course = mockData.find(item => item.id === id);
+            alert(`进入课程：${course.courseName}`);
+        }
+
+        function manageResource(id) {
+            const course = mockData.find(item => item.id === id);
+            alert(`管理课程资源：${course.courseName}`);
+        }
+
+        function editCourse(id) {
+            const course = mockData.find(item => item.id === id);
+            alert(`编辑课程：${course.courseName}`);
+        }
+
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 初始化
+        renderTable();
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

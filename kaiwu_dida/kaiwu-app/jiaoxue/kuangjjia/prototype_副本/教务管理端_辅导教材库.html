@@ -1,0 +1,2015 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>辅导教材库 - 教务管理端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <link rel="stylesheet" href="./components.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #F5F7FA; min-height: 100vh; }
+
+        /* 页面整体布局 */
+        body { display: flex; }
+        
+        /* 侧边栏导航 - 使用common.css统一样式，此处仅保留页面特定样式 */
+        .sidebar {
+            background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+            color: #fff;
+        }
+        
+        .sidebar-header {
+            padding: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+        }
+        
+        .logo-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            width: 16px;
+            height: 16px;
+            background: #10b981;
+            border-radius: 50%;
+            border: 2px solid #1e293b;
+        }
+        
+        .logo-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #fff;
+        }
+        
+        .logo-subtitle {
+            font-size: 12px;
+            color: #94a3b8;
+            margin-top: 2px;
+        }
+        
+        .sidebar-menu {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px 12px;
+        }
+        
+        .menu-group {
+            margin-bottom: 8px;
+        }
+        
+        .menu-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 14px;
+            font-weight: 500;
+            color: #cbd5e1;
+        }
+        
+        .menu-title:hover {
+            background: rgba(99,102,241,0.1);
+            color: #fff;
+        }
+        
+        .menu-title.active {
+            background: rgba(99,102,241,0.2);
+            color: #fff;
+        }
+        
+        .menu-title .arrow {
+            margin-left: auto;
+            font-size: 10px;
+            transition: transform 0.3s ease;
+        }
+        
+        .menu-title[aria-expanded="true"] .arrow {
+            transform: rotate(180deg);
+        }
+        
+        .menu-items {
+            padding-left: 12px;
+            overflow: hidden;
+            max-height: 0;
+            transition: max-height 0.3s ease;
+        }
+        
+        .menu-title[aria-expanded="true"] + .menu-items {
+            max-height: 500px;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            font-size: 13px;
+            color: #94a3b8;
+            margin-bottom: 4px;
+        }
+        
+        .menu-item:hover {
+            background: rgba(99,102,241,0.1);
+            color: #fff;
+        }
+        
+        .menu-item.active {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+        }
+        
+        .sidebar-footer {
+            padding: 16px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            text-align: center;
+        }
+        
+        .version {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        /* 主内容区和内容包装器使用common.css统一样式 */
+        
+        /* 左侧树状图 */
+        .tree-sidebar {
+            width: 280px;
+            background: #F5F7FA;
+            border-right: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .tree-header {
+            padding: 20px 24px;
+            background: rgba(255,255,255,0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .tree-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1e293b;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .tree-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 2px;
+        }
+        
+        .tree-actions { display: flex; gap: 6px; }
+        
+        .tree-btn {
+            padding: 6px 14px;
+            border: none;
+            background: rgba(99,102,241,0.08);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6366f1;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tree-btn:hover {
+            background: #6366f1;
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+        }
+        
+        .tree-search { padding: 16px 20px; }
+        
+        .tree-search input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border: 1px solid rgba(99,102,241,0.12);
+            border-radius: 12px;
+            font-size: 13px;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 14px center;
+            transition: all 0.25s ease;
+        }
+        
+        .tree-search input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+        }
+        
+        .tree-content { flex: 1; overflow-y: auto; padding: 8px 12px; }
+        
+        .tree-node { user-select: none; margin-bottom: 4px; }
+        
+        .tree-node-content {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+            margin: 0 4px;
+            position: relative;
+        }
+        
+        .tree-node-content::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 0 2px 2px 0;
+            transition: height 0.25s ease;
+        }
+        
+        .tree-node-content:hover { background: rgba(99,102,241,0.04); }
+        .tree-node-content:hover::before { height: 60%; }
+        
+        .tree-node-content.active {
+            background: linear-gradient(90deg, rgba(99,102,241,0.08) 0%, rgba(99,102,241,0.02) 100%);
+            color: #4f46e5;
+        }
+        
+        .tree-toggle {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 10px;
+            color: #9ca3af;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+        }
+        
+        .tree-toggle:hover { background: rgba(0,0,0,0.04); color: #6366f1; }
+        .tree-toggle.expanded { transform: rotate(90deg); color: #6366f1; }
+        
+        .tree-icon {
+            margin-right: 10px;
+            font-size: 16px;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(99,102,241,0.06);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .tree-node-content:hover .tree-icon { background: rgba(99,102,241,0.15); transform: scale(1.05); }
+        .tree-node-content.active .tree-icon { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #fff; }
+        
+        .tree-label { font-size: 13px; font-weight: 500; flex: 1; color: #334155; }
+        .tree-node-content.active .tree-label { color: #4f46e5; font-weight: 600; }
+        
+        .tree-count {
+            font-size: 11px;
+            font-weight: 600;
+            color: #64748b;
+            background: rgba(99,102,241,0.06);
+            padding: 4px 10px;
+            border-radius: 20px;
+            min-width: 28px;
+            text-align: center;
+        }
+        
+        .tree-node-content.active .tree-count {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.25);
+        }
+        
+        .tree-children {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.25s ease, transform 0.3s ease;
+        }
+        
+        .tree-children.expanded { max-height: 1000px; opacity: 1; transform: translateY(0); }
+        
+        .tree-level-1 > .tree-node-content { padding-left: 16px; }
+        .tree-level-2 > .tree-node-content { padding-left: 44px; }
+        .tree-level-3 > .tree-node-content { padding-left: 72px; }
+        
+        /* 右侧内容区 */
+        .content-area { flex: 1; display: flex; flex-direction: column; overflow: hidden; padding: 16px; }
+        
+        /* 统计卡片 - 参考视频教材库 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 10px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%);
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(99, 102, 241, 0.25);
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        .stat-info h3 {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        .stat-info .number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1;
+        }
+        /* 不同状态的统计卡片颜色 */
+        .stat-card.success::before { background: linear-gradient(180deg, #10b981 0%, #34d399 100%); }
+        .stat-card.success .stat-icon { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); }
+        .stat-card.warning::before { background: linear-gradient(180deg, #f59e0b 0%, #fbbf24 100%); }
+        .stat-card.warning .stat-icon { background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); }
+        .stat-card.danger::before { background: linear-gradient(180deg, #ef4444 0%, #f87171 100%); }
+        .stat-card.danger .stat-icon { background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); }
+        
+        /* 筛选区域 */
+        .filter-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+            border: 1px solid rgba(99,102,241,0.06);
+        }
+        
+        .filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .filter-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .filter-toggle {
+            margin-left: auto;
+            padding: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6366f1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+        }
+        
+        .filter-toggle:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+        
+        .filter-toggle .toggle-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 12px;
+            height: 12px;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        
+        .filter-toggle.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            max-height: 70px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+
+        .filter-row.expanded { max-height: 400px; }
+        
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: calc(25% - 12px);
+            min-width: 200px;
+        }
+        
+        .filter-item label { font-size: 13px; color: #64748b; font-weight: 500; }
+        
+        .filter-item input, .filter-item select {
+            padding: 10px 14px;
+            border: 1px solid rgba(99,102,241,0.15);
+            border-radius: 8px;
+            font-size: 13px;
+            background: #fff;
+            color: #334155;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-item input:focus, .filter-item select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
+        }
+        
+        .filter-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            padding-top: 16px;
+            border-top: 1px solid rgba(99,102,241,0.06);
+            width: 100%;
+            justify-content: flex-end;
+        }
+        
+        .btn-search {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.2);
+        }
+        
+        .btn-search:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(99,102,241,0.3); }
+        
+        .btn-reset {
+            padding: 10px 24px;
+            background: #fff;
+            color: #64748b;
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .btn-reset:hover { background: rgba(99,102,241,0.04); border-color: #6366f1; color: #6366f1; }
+        
+        /* 表格 */
+        .data-table { 
+            background: #fff; 
+            border-radius: 12px; 
+            box-shadow: 0 2px 12px rgba(99,102,241,0.06); 
+            overflow: auto;
+            max-width: 100%;
+            border: 1px solid #E8E8E8;
+        }
+        
+        .data-table table { 
+            width: max-content;
+            min-width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        
+        /* 固定列样式 - 第1列（序号列） */
+        .data-table th:nth-child(1),
+        .data-table td:nth-child(1) {
+            position: sticky;
+            left: 0;
+            background: #FAFAFA;
+            z-index: 20;
+            border-right: 1px solid #E8E8E8;
+        }
+        .data-table td:nth-child(1) {
+            background: #fff;
+        }
+        
+        /* 固定操作栏 - 最后一列 */
+        .data-table th:last-child,
+        .data-table td:last-child {
+            position: sticky;
+            right: 0;
+            background: #FAFAFA;
+            z-index: 20;
+            border-left: 1px solid #E8E8E8;
+        }
+        .data-table td:last-child {
+            background: #fff;
+        }
+        
+        .data-table th, .data-table td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #F0F0F0; }
+        
+        .data-table th {
+            background: linear-gradient(180deg, #FAFAFA 0%, #F5F5F5 100%);
+            font-weight: 600;
+            color: #262626;
+            font-size: 13px;
+            border-bottom: 2px solid #E8E8E8;
+            white-space: nowrap;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        .data-table td {
+            font-size: 13px;
+            color: #595959;
+            transition: all 0.2s;
+        }
+        
+        .data-table tbody tr {
+            transition: all 0.2s;
+        }
+        
+        .data-table tbody tr:hover {
+            background: #F6FFFE;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        
+        .data-table tbody tr:nth-child(even) {
+            background: #FAFAFA;
+        }
+        
+        .data-table tbody tr:nth-child(even):hover {
+            background: #F6FFFE;
+        }
+        
+        .data-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .data-table tbody tr:last-child td:first-child {
+            border-bottom-left-radius: 8px;
+        }
+        
+        .data-table tbody tr:last-child td:last-child {
+            border-bottom-right-radius: 8px;
+        }
+        
+        /* 操作按钮优化 - 参考教师管理页面规范 */
+        .action-btns {
+            display: flex;
+            gap: 10px;
+            white-space: nowrap;
+            flex-wrap: nowrap;
+        }
+        
+        .action-btns button {
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: #6366f1;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 0;
+            transition: color 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        
+        .action-btns button:hover {
+            text-decoration: underline;
+            color: #4f46e5;
+        }
+        
+        /* 文件图标 */
+        .file-icon { width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        
+        .material-name-cell { display: flex; align-items: center; gap: 12px; }
+        .material-name-info { display: flex; flex-direction: column; }
+        .material-name-text { font-weight: 600; color: #6366f1; font-size: 14px; cursor: pointer; }
+        
+        /* 标签样式优化 */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-right: 6px;
+            border: 1px solid transparent;
+        }
+        .tag-blue { 
+            background: #E6F7FF; 
+            color: #1890FF; 
+            border-color: #91D5FF;
+        }
+        .tag-green { 
+            background: #F6FFED; 
+            color: #52C41A; 
+            border-color: #B7EB8F;
+        }
+        .tag-orange { 
+            background: #FFF7E6; 
+            color: #FA8C16; 
+            border-color: #FFD591;
+        }
+        .tag-purple { 
+            background: #F9F0FF; 
+            color: #722ED1; 
+            border-color: #D3ADF7;
+        }
+        .tag-red { 
+            background: #FFF1F0; 
+            color: #FF4D4F; 
+            border-color: #FFA39E;
+        }
+        
+        /* 空状态提示 - frontend-design */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(241, 245, 249, 0.6) 100%);
+            border-radius: 16px;
+            margin: 20px;
+            animation: emptyFadeIn 0.4s ease;
+        }
+
+        @keyframes emptyFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .empty-state-illustration {
+            width: 200px;
+            height: 160px;
+            margin-bottom: 16px;
+        }
+
+        .empty-state-illustration svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .empty-state-desc {
+            font-size: 14px;
+            color: #64748b;
+            margin-bottom: 16px;
+        }
+
+        .empty-state-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .empty-state-btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+        }
+
+        .empty-state-btn.primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+        }
+
+        .empty-state-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .empty-state-btn.secondary {
+            background: #fff;
+            color: #6366f1;
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .empty-state-btn.secondary:hover {
+            background: rgba(99, 102, 241, 0.04);
+            border-color: #6366f1;
+        }
+
+        /* 表格分页容器 - 白色背景 */
+        .table-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+            overflow: hidden;
+        }
+        .table-section .data-table {
+            border-radius: 0;
+            box-shadow: none;
+        }
+        .table-section .pagination {
+            border-top: 1px solid #F0F0F0;
+            background: transparent;
+            padding: 16px 0 0 0;
+            margin-top: 16px;
+        }
+        
+        /* 分页 */
+        .pagination { display: flex; justify-content: flex-end; align-items: center; gap: 8px; margin-top: 20px; }
+        
+        .pagination button {
+            padding: 8px 16px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        
+        .pagination button:hover { border-color: #6366f1; color: #6366f1; }
+        .pagination button.active { background: #6366f1; color: #fff; border-color: #6366f1; }
+        
+        /* 下载模态框 - 现代玻璃态设计 */
+        .download-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: modalFadeIn 0.3s ease;
+        }
+
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .download-modal.active {
+            display: flex;
+        }
+
+        .download-modal-content {
+            background: linear-gradient(145deg, #fefefe 0%, #f8f6f3 100%);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 80px rgba(99, 102, 241, 0.25);
+            overflow: hidden;
+            animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .download-modal-header {
+            padding: 24px 24px 16px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.08);
+        }
+
+        .download-modal-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            flex-shrink: 0;
+        }
+
+        .download-modal-title h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 4px;
+        }
+
+        .download-modal-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+        }
+
+        .download-modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(99, 102, 241, 0.08);
+            border: none;
+            color: #64748b;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: auto;
+            transition: all 0.2s;
+        }
+
+        .download-modal-close:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: #6366f1;
+        }
+
+        .download-modal-body {
+            padding: 10px;
+        }
+
+        .download-file-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: rgba(99, 102, 241, 0.04);
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+
+        .download-file-icon {
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #E6F7FF 0%, #F0F5FF 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .download-file-name {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 4px;
+        }
+
+        .download-file-meta {
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .download-progress-container {
+            margin-top: 8px;
+        }
+
+        .download-progress-bar {
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 12px;
+        }
+
+        .download-progress-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+
+        .download-progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+            color: #64748b;
+        }
+
+        .download-modal-footer {
+            padding: 16px 24px 24px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            border-top: 1px solid rgba(99, 102, 241, 0.08);
+        }
+
+        .download-btn-secondary {
+            padding: 10px 20px;
+            background: #fff;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .download-btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+        }
+
+        .download-btn-primary {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+        }
+
+        .download-btn-primary:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .download-btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Toast提示 */
+        .toast {
+            position: fixed;
+            bottom: 40px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #fff;
+            padding: 14px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .toast-icon {
+            width: 24px;
+            height: 24px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+
+        /* 预览对话框 */
+        .preview-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(20px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+        }
+        
+        .preview-modal.active { display: flex; }
+        
+        .preview-container {
+            background: linear-gradient(145deg, #fefefe 0%, #f8f6f3 100%);
+            border-radius: 24px;
+            width: 90%;
+            max-width: 1200px;
+            height: 85%;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 25px 80px rgba(99,102,241,0.25);
+        }
+        
+        .preview-header {
+            padding: 20px 28px;
+            background: rgba(255,255,255,0.9);
+            border-bottom: 1px solid rgba(99,102,241,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .preview-title-wrapper { display: flex; align-items: center; gap: 16px; }
+        
+        .preview-icon {
+            width: 48px; height: 48px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+        }
+        
+        .preview-title { font-size: 17px; font-weight: 700; color: #1e293b; margin: 0; }
+        .preview-meta { font-size: 12px; color: #64748b; }
+        
+        .preview-actions { display: flex; gap: 12px; }
+        
+        .preview-btn {
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .preview-btn-primary { background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%); color: #fff; }
+        .preview-btn-secondary { background: rgba(99,102,241,0.08); color: #6366f1; }
+        
+        .preview-close {
+            width: 36px; height: 36px;
+            border-radius: 10px;
+            background: rgba(99,102,241,0.08);
+            border: none;
+            color: #64748b;
+            font-size: 18px;
+            cursor: pointer;
+            margin-left: 8px;
+        }
+        
+        .preview-body { flex: 1; display: flex; overflow: hidden; }
+        
+        .preview-sidebar {
+            width: 220px;
+            background: rgba(99,102,241,0.03);
+            border-right: 1px solid rgba(99,102,241,0.06);
+            padding: 20px 0;
+        }
+        
+        .preview-nav { padding: 0 16px; }
+        
+        .preview-nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-bottom: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #64748b;
+        }
+        
+        .preview-nav-item:hover { background: rgba(99,102,241,0.06); color: #6366f1; }
+        .preview-nav-item.active { background: linear-gradient(135deg, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0.08) 100%); color: #6366f1; font-weight: 600; }
+        
+        .preview-thumbnails { padding: 20px 16px; display: flex; flex-direction: column; gap: 8px; }
+        
+        .preview-thumb {
+            aspect-ratio: 3/4;
+            background: #fff;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748b;
+            cursor: pointer;
+            border: 2px solid transparent;
+        }
+        
+        .preview-thumb:hover { border-color: rgba(99,102,241,0.5); }
+        .preview-thumb.active { border-color: #6366f1; background: rgba(99,102,241,0.1); }
+        
+        .preview-content { flex: 1; display: flex; flex-direction: column; background: #f5f3f0; }
+        
+        .preview-document { flex: 1; padding: 30px; overflow: auto; display: flex; justify-content: center; }
+        
+        .preview-page {
+            width: 100%;
+            max-width: 800px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 20px rgba(99,102,241,0.1);
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .preview-placeholder { text-align: center; color: #64748b; }
+        .preview-placeholder-icon { font-size: 64px; margin-bottom: 16px; opacity: 0.6; }
+        .preview-placeholder-text { font-size: 20px; font-weight: 600; margin-bottom: 8px; color: #334155; }
+        
+        .preview-toolbar {
+            padding: 16px 28px;
+            background: rgba(255,255,255,0.95);
+            border-top: 1px solid rgba(99,102,241,0.08);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .preview-zoom, .preview-pagination, .preview-view { display: flex; align-items: center; gap: 12px; }
+        
+        .preview-zoom-btn, .preview-page-btn, .preview-view-btn {
+            width: 36px; height: 36px;
+            border-radius: 8px;
+            border: none;
+            background: rgba(99,102,241,0.06);
+            color: #64748b;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .preview-zoom-btn:hover, .preview-page-btn:hover, .preview-view-btn:hover { background: rgba(99,102,241,0.12); color: #6366f1; }
+        .preview-view-btn.active { background: #fff; color: #6366f1; box-shadow: 0 2px 8px rgba(99,102,241,0.15); }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏导航容器 - 由 nav-loader-new.js 动态加载现代化导航组件 -->
+    <div id="nav-container"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <nav class="breadcrumb">
+                    <a href="./教学实训平台_教务管理端.html">教务管理</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>辅导教材库</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div id="user-menu-container"></div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+        <!-- 左侧树状图 -->
+        <div class="tree-sidebar" style="display: none;">
+            <div class="tree-header">
+                <span class="tree-title">分类目录</span>
+                <div class="tree-actions">
+                    <button class="tree-btn" onclick="expandAll()">展开</button>
+                    <button class="tree-btn" onclick="collapseAll()">收起</button>
+                </div>
+            </div>
+            <div class="tree-search">
+                <input type="text" placeholder="搜索专业、课程或文件夹..." oninput="filterTree()">
+            </div>
+            <div class="tree-content" id="treeContent">
+                <!-- 树状图内容将通过JS动态生成 -->
+            </div>
+        </div>
+
+        <!-- 右侧内容区 -->
+        <div class="content-area">
+            <div class="breadcrumb">当前位置：机械工程 / 机械制图 / 基础理论</div>
+            <div class="content-body" style="padding: 0; overflow-y: auto;">
+                <!-- 统计卡片 -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon">📚</div>
+                        <div class="stat-info">
+                            <h3>教材总数</h3>
+                            <div class="number">256</div>
+                        </div>
+                    </div>
+                    <div class="stat-card success" style="display: none;">
+                        <div class="stat-icon">✓</div>
+                        <div class="stat-info">
+                            <h3>已审核</h3>
+                            <div class="number">238</div>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">⏳</div>
+                        <div class="stat-info">
+                            <h3>待审核</h3>
+                            <div class="number">18</div>
+                        </div>
+                    </div>
+                    <div class="stat-card danger">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-info">
+                            <h3>本周新增</h3>
+                            <div class="number">12</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 筛选区域 -->
+                <div class="filter-section">
+                    <div class="filter-header">
+                        <span class="filter-title">筛选条件</span>
+                        <button class="filter-toggle" id="filterToggle" onclick="toggleFilter(this)">
+                            <span class="toggle-text">展开</span>
+                            <span class="toggle-icon">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div class="filter-row" id="filterRow">
+                        <div class="filter-item">
+                            <label>教材名称</label>
+                            <input type="text" placeholder="请输入教材名称">
+                        </div>
+
+                        <div class="filter-item">
+                            <label>所属课程</label>
+                            <select id="filterCourse">
+                                <option value="">全部课程</option>
+                                <option value="机械制图">机械制图</option>
+                                <option value="数控加工技术">数控加工技术</option>
+                                <option value="CAD/CAM技术">CAD/CAM技术</option>
+                                <option value="数控车床">数控车床</option>
+                                <option value="数控铣床">数控铣床</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label>更新人</label>
+                            <input type="text" placeholder="请输入更新人姓名">
+                        </div>
+                        <div class="filter-item">
+                            <label>文件格式</label>
+                            <select>
+                                <option value="">全部格式</option>
+                                <option value="PDF">PDF</option>
+                                <option value="DOC">DOC/DOCX</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label>更新时间</label>
+                            <input type="date">
+                        </div>
+                        <div class="filter-actions">
+                            <button class="btn-reset" onclick="resetFilters()">重置</button>
+                            <button class="btn-search" onclick="searchMaterials()">查询</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 表格 -->
+                <div class="table-section">
+                    <div class="data-table">
+                        <!-- 空状态提示 -->
+                    <div class="empty-state" id="emptyState" style="display: none;">
+                        <div class="empty-state-illustration">
+                            <svg viewBox="0 0 200 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <rect x="40" y="20" width="120" height="140" rx="8" fill="#F1F5F9" stroke="#CBD5E1" stroke-width="2"/>
+                                <rect x="55" y="40" width="90" height="8" rx="4" fill="#E2E8F0"/>
+                                <rect x="55" y="60" width="70" height="6" rx="3" fill="#E2E8F0"/>
+                                <rect x="55" y="75" width="80" height="6" rx="3" fill="#E2E8F0"/>
+                                <rect x="55" y="90" width="60" height="6" rx="3" fill="#E2E8F0"/>
+                                <rect x="55" y="110" width="40" height="30" rx="4" fill="#E2E8F0"/>
+                                <circle cx="140" cy="125" r="15" fill="#6366F1" opacity="0.1"/>
+                                <path d="M135 125L138 128L145 121" stroke="#6366F1" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </div>
+                        <div class="empty-state-title">暂无辅导教材</div>
+                        <div class="empty-state-desc">该分类下暂无辅导教材，您可以：</div>
+                        <div class="empty-state-actions">
+                            <button class="empty-state-btn primary" onclick="resetFilters()">
+                                <span>🔄</span> 查看全部教材
+                            </button>
+                            <button class="empty-state-btn secondary" onclick="alert('功能开发中...')">
+                                <span>➕</span> 上传新教材
+                            </button>
+                        </div>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">序号</th>
+                                <th>教材名称</th>
+                                <th style="width: 120px;">所属课程</th>
+                                <th style="width: 80px;">教材格式</th>
+                                <th style="width: 100px;">教材大小</th>
+                                <th style="width: 100px;">更新人</th>
+                                <th style="width: 180px;">更新时间</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr data-major="机械工程" data-course="机械制图">
+                                <td style="text-align: center; color: #999;">1</td>
+                                <td>机械制图基础教程</td>
+                                <td>机械制图</td>
+                                <td>PDF</td>
+                                <td>12.5MB</td>
+                                <td>张老师</td>
+                                <td>2026-03-07 17:22:12</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button onclick="previewMaterial('material1')">预览</button>
+                                        <button onclick="downloadMaterial('material1')">下载</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-major="机械工程" data-course="机械制图">
+                                <td style="text-align: center; color: #999;">2</td>
+                                <td>制图国家标准汇编</td>
+                                <td>机械制图</td>
+                                <td>PDF</td>
+                                <td>5.8MB</td>
+                                <td>李老师</td>
+                                <td>2026-03-07 16:45:30</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button onclick="previewMaterial('material2')">预览</button>
+                                        <button onclick="downloadMaterial('material2')">下载</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-major="机械工程" data-course="数控加工技术">
+                                <td style="text-align: center; color: #999;">3</td>
+                                <td>数控加工技术手册</td>
+                                <td>数控加工技术</td>
+                                <td>PDF</td>
+                                <td>28.6MB</td>
+                                <td>王老师</td>
+                                <td>2026-03-06 14:30:22</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button onclick="previewMaterial('material3')">预览</button>
+                                        <button onclick="downloadMaterial('material3')">下载</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-major="机械工程" data-course="CAD/CAM技术">
+                                <td style="text-align: center; color: #999;">4</td>
+                                <td>CAD/CAM软件应用教程</td>
+                                <td>CAD/CAM技术</td>
+                                <td>PDF</td>
+                                <td>45.2MB</td>
+                                <td>刘老师</td>
+                                <td>2026-03-05 09:15:45</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button onclick="previewMaterial('material4')">预览</button>
+                                        <button onclick="downloadMaterial('material4')">下载</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-major="数控技术" data-course="数控车床">
+                                <td style="text-align: center; color: #999;">5</td>
+                                <td>数控车床操作手册</td>
+                                <td>数控车床</td>
+                                <td>PDF</td>
+                                <td>18.3MB</td>
+                                <td>陈老师</td>
+                                <td>2026-03-04 11:20:18</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button onclick="previewMaterial('material5')">预览</button>
+                                        <button onclick="downloadMaterial('material5')">下载</button>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr data-major="数控技术" data-course="数控铣床">
+                                <td style="text-align: center; color: #999;">6</td>
+                                <td>数控铣床编程指南</td>
+                                <td>数控铣床</td>
+                                <td>PDF</td>
+                                <td>22.7MB</td>
+                                <td>赵老师</td>
+                                <td>2026-03-03 16:40:33</td>
+                                <td>
+                                    <div class="action-btns">
+                                        <button onclick="previewMaterial('material6')">预览</button>
+                                        <button onclick="downloadMaterial('material6')">下载</button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <!-- 分页 -->
+                    <div class="pagination">
+                        <button disabled>上一页</button>
+                        <button class="active">1</button>
+                        <button>下一页</button>
+                        <span style="color: #64748b; font-size: 13px;">共 8 条记录</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- 下载模态框 -->
+    <div id="downloadModal" class="download-modal">
+        <div class="download-modal-content">
+            <div class="download-modal-header">
+                <div class="download-modal-icon">⬇️</div>
+                <div class="download-modal-title">
+                    <h3>下载辅导教材</h3>
+                    <p class="download-modal-subtitle">正在准备下载文件...</p>
+                </div>
+                <button class="download-modal-close" onclick="closeDownloadModal()">✕</button>
+            </div>
+            <div class="download-modal-body">
+                <div class="download-file-info">
+                    <div class="download-file-icon" id="downloadFileIcon">📘</div>
+                    <div class="download-file-details">
+                        <div class="download-file-name" id="downloadFileName">机械制图基础教程.pdf</div>
+                        <div class="download-file-meta" id="downloadFileMeta">12.5MB · PDF</div>
+                    </div>
+                </div>
+                <div class="download-progress-container">
+                    <div class="download-progress-bar">
+                        <div class="download-progress-fill" id="downloadProgressFill"></div>
+                    </div>
+                    <div class="download-progress-text">
+                        <span id="downloadProgressText">准备中...</span>
+                        <span id="downloadProgressPercent">0%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="download-modal-footer">
+                <button class="download-btn-secondary" onclick="closeDownloadModal()">取消</button>
+                <button class="download-btn-primary" id="downloadConfirmBtn" onclick="startDownload()" disabled>
+                    <span>⬇️</span> 开始下载
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 预览对话框 -->
+    <div id="previewDialog" class="preview-modal">
+        <div class="preview-container">
+            <div class="preview-header">
+                <div class="preview-title-wrapper">
+                    <div class="preview-icon">📄</div>
+                    <div>
+                        <h3 class="preview-title">机械制图基础教程.pdf</h3>
+                        <span class="preview-meta">12.5MB · PDF · 上次修改 2026-03-07</span>
+                    </div>
+                </div>
+                <div class="preview-actions">
+                    <button class="preview-btn preview-btn-secondary" onclick="downloadMaterial()">⬇ 下载</button>
+                    <button class="preview-btn preview-btn-primary" onclick="printMaterial()">🖨 打印</button>
+                    <button class="preview-close" onclick="closePreviewDialog()">✕</button>
+                </div>
+            </div>
+            <div class="preview-body">
+                <div class="preview-sidebar">
+                    <div class="preview-nav">
+                        <div class="preview-nav-item active">📄 文档预览</div>
+                        <div class="preview-nav-item">ℹ 文件信息</div>
+                    </div>
+                    <div class="preview-thumbnails">
+                        <div class="preview-thumb active">1</div>
+                        <div class="preview-thumb">2</div>
+                        <div class="preview-thumb">3</div>
+                    </div>
+                </div>
+                <div class="preview-content">
+                    <div class="preview-document">
+                        <div class="preview-page">
+                            <div class="preview-placeholder">
+                                <div class="preview-placeholder-icon">📄</div>
+                                <div class="preview-placeholder-text">PDF文档预览区域</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="preview-toolbar">
+                        <div class="preview-zoom">
+                            <button class="preview-zoom-btn">−</button>
+                            <span>100%</span>
+                            <button class="preview-zoom-btn">+</button>
+                        </div>
+                        <div class="preview-pagination">
+                            <button class="preview-page-btn">←</button>
+                            <span>第 1 页，共 32 页</span>
+                            <button class="preview-page-btn">→</button>
+                        </div>
+                        <div class="preview-view">
+                            <button class="preview-view-btn active">📄</button>
+                            <button class="preview-view-btn">🖼</button>
+                            <button class="preview-view-btn">⛶</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 树状图数据
+        const treeData = [
+            {
+                id: 'mechanical',
+                label: '机械工程',
+                icon: '⚙️',
+                count: 86,
+                expanded: true,
+                children: [
+                    { id: 'drawing', label: '机械制图', icon: '📂', count: 32 },
+                    { id: 'cnc', label: '数控加工技术', icon: '📂', count: 28 },
+                    { id: 'cad', label: 'CAD/CAM技术', icon: '📂', count: 26 }
+                ]
+            },
+            {
+                id: 'cnc-tech',
+                label: '数控技术',
+                icon: '🔩',
+                count: 64,
+                children: [
+                    { id: 'lathe', label: '数控车床', icon: '📂', count: 24 },
+                    { id: 'milling', label: '数控铣床', icon: '📂', count: 20 }
+                ]
+            }
+        ];
+
+        // 渲染树状图
+        function renderTree(nodes, level = 0) {
+            return nodes.map(node => `
+                <div class="tree-node tree-level-${level}">
+                    <div class="tree-node-content ${node.expanded ? 'active' : ''}" onclick="${node.children ? `toggleNode(this, '${node.id}')` : `selectNode(this, 'course')`}">
+                        ${node.children ? `<span class="tree-toggle ${node.expanded ? 'expanded' : ''}">▶</span>` : '<span style="width: 20px;"></span>'}
+                        <span class="tree-icon">${node.icon}</span>
+                        <span class="tree-label">${node.label}</span>
+                        <span class="tree-count">${node.count}</span>
+                    </div>
+                    ${node.children ? `
+                        <div class="tree-children ${node.expanded ? 'expanded' : ''}" id="children-${node.id}">
+                            ${renderTree(node.children, level + 1)}
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
+        }
+
+        // 初始化树状图
+        document.getElementById('treeContent').innerHTML = renderTree(treeData);
+
+        // 展开/收起节点
+        function toggleNode(element, nodeId) {
+            const children = document.getElementById(`children-${nodeId}`);
+            const toggle = element.querySelector('.tree-toggle');
+
+            if (children) {
+                children.classList.toggle('expanded');
+                toggle.classList.toggle('expanded');
+            }
+
+            // 选中节点并触发筛选（专业级别）
+            selectNode(element, 'major');
+        }
+
+        // 选中节点
+        function selectNode(element, type) {
+            document.querySelectorAll('.tree-node-content').forEach(node => node.classList.remove('active'));
+            element.classList.add('active');
+
+            // 获取节点名称
+            const nodeName = element.querySelector('.tree-label').textContent;
+
+            // 获取父级专业名称
+            let majorName = '';
+            const parentChildren = element.closest('.tree-children');
+            if (parentChildren) {
+                const parentNode = parentChildren.previousElementSibling;
+                if (parentNode) {
+                    majorName = parentNode.querySelector('.tree-label')?.textContent || '';
+                }
+            }
+
+            // 筛选表格数据
+            if (type === 'major') {
+                filterTable(nodeName, '');
+                updateFilterSelects(nodeName, '');
+            } else {
+                filterTable(majorName, nodeName);
+                updateFilterSelects(majorName, nodeName);
+            }
+
+            // 更新面包屑
+            updateBreadcrumb(element, type);
+        }
+
+        // 筛选表格
+        function filterTable(major, course) {
+            const rows = document.querySelectorAll('tbody tr');
+            const table = document.querySelector('table');
+            const emptyState = document.getElementById('emptyState');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const rowMajor = row.getAttribute('data-major');
+                const rowCourse = row.getAttribute('data-course');
+
+                let shouldShow = true;
+
+                if (major && rowMajor !== major) {
+                    shouldShow = false;
+                }
+
+                if (course && rowCourse !== course) {
+                    shouldShow = false;
+                }
+
+                if (shouldShow) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // 显示/隐藏空状态
+            if (visibleCount === 0) {
+                if (table) table.style.display = 'none';
+                if (emptyState) emptyState.style.display = 'flex';
+            } else {
+                if (table) table.style.display = '';
+                if (emptyState) emptyState.style.display = 'none';
+            }
+
+            // 更新记录数显示
+            const pageInfo = document.querySelector('.pagination span:last-child');
+            if (pageInfo) {
+                pageInfo.textContent = `共 ${visibleCount} 条记录`;
+            }
+        }
+
+        // 更新筛选下拉框
+        function updateFilterSelects(major, course) {
+            const majorSelect = document.getElementById('filterMajor');
+            const courseSelect = document.getElementById('filterCourse');
+
+            if (majorSelect) {
+                majorSelect.value = major || '';
+            }
+
+            if (courseSelect) {
+                courseSelect.value = course || '';
+            }
+        }
+
+        // 更新面包屑
+        function updateBreadcrumb(element, type) {
+            const nodeName = element.querySelector('.tree-label').textContent;
+            const breadcrumb = document.querySelector('.breadcrumb');
+
+            if (breadcrumb) {
+                if (type === 'major') {
+                    breadcrumb.textContent = `当前位置：${nodeName}`;
+                } else {
+                    // 获取父级名称
+                    let parentName = '';
+                    const parentChildren = element.closest('.tree-children');
+                    if (parentChildren) {
+                        const parentNode = parentChildren.previousElementSibling;
+                        if (parentNode) {
+                            parentName = parentNode.querySelector('.tree-label')?.textContent || '';
+                        }
+                    }
+                    breadcrumb.textContent = `当前位置：${parentName} / ${nodeName}`;
+                }
+            }
+        }
+
+        // 重置筛选
+        function resetFilters() {
+            // 重置筛选下拉框
+            const majorSelect = document.getElementById('filterMajor');
+            const courseSelect = document.getElementById('filterCourse');
+            if (majorSelect) majorSelect.value = '';
+            if (courseSelect) courseSelect.value = '';
+
+            // 重置树状图选中状态
+            document.querySelectorAll('.tree-node-content').forEach(node => {
+                node.classList.remove('active');
+            });
+
+            // 显示所有数据
+            filterTable('', '');
+
+            // 更新面包屑
+            const breadcrumb = document.querySelector('.breadcrumb');
+            if (breadcrumb) {
+                breadcrumb.textContent = '当前位置：机械工程 / 机械制图 / 基础理论';
+            }
+        }
+
+        // 展开全部
+        function expandAll() {
+            document.querySelectorAll('.tree-children').forEach(child => child.classList.add('expanded'));
+            document.querySelectorAll('.tree-toggle').forEach(toggle => toggle.classList.add('expanded'));
+        }
+
+        // 收起全部
+        function collapseAll() {
+            document.querySelectorAll('.tree-children').forEach(child => child.classList.remove('expanded'));
+            document.querySelectorAll('.tree-toggle').forEach(toggle => toggle.classList.remove('expanded'));
+        }
+
+        // 筛选树状图
+        function filterTree() {
+            // 搜索功能实现
+        }
+
+        // 筛选区域展开/收起
+        function toggleFilter(btn) {
+            const filterRow = document.getElementById('filterRow');
+            const toggleText = btn.querySelector('.toggle-text');
+            const toggleIcon = btn.querySelector('.toggle-icon');
+            const isExpanded = filterRow.classList.contains('expanded');
+
+            if (isExpanded) {
+                // 收起动画
+                toggleText.textContent = '展开';
+                btn.classList.remove('expanded');
+                filterRow.classList.remove('expanded');
+
+                // 图标旋转动画
+                toggleIcon.style.transform = 'rotate(0deg)';
+            } else {
+                // 展开动画
+                toggleText.textContent = '收起';
+                btn.classList.add('expanded');
+                filterRow.classList.add('expanded');
+
+                // 图标旋转动画
+                toggleIcon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // 查询教材
+        function searchMaterials() {
+            alert('查询功能已触发');
+        }
+
+        // 重置筛选
+        function resetFilters() {
+            document.querySelectorAll('.filter-item input, .filter-item select').forEach(input => {
+                input.value = '';
+            });
+        }
+
+        // 预览教材
+        function previewMaterial(materialId) {
+            const dialog = document.getElementById('previewDialog');
+            dialog.style.display = 'flex';
+            dialog.classList.add('active');
+        }
+
+        // 关闭预览
+        function closePreviewDialog() {
+            const dialog = document.getElementById('previewDialog');
+            dialog.classList.remove('active');
+            setTimeout(() => {
+                dialog.style.display = 'none';
+            }, 300);
+        }
+
+        // 当前下载的文件信息
+        let currentDownloadFile = null;
+
+        // 打开下载模态框
+        function downloadMaterial(materialId) {
+            // 根据materialId获取文件信息（这里使用模拟数据）
+            const fileInfo = getMaterialInfo(materialId);
+            currentDownloadFile = fileInfo;
+
+            // 更新模态框内容
+            document.getElementById('downloadFileIcon').textContent = fileInfo.icon;
+            document.getElementById('downloadFileName').textContent = fileInfo.name;
+            document.getElementById('downloadFileMeta').textContent = `${fileInfo.size} · ${fileInfo.format}`;
+
+            // 重置进度条
+            document.getElementById('downloadProgressFill').style.width = '0%';
+            document.getElementById('downloadProgressText').textContent = '准备中...';
+            document.getElementById('downloadProgressPercent').textContent = '0%';
+            document.getElementById('downloadConfirmBtn').disabled = true;
+
+            // 显示模态框
+            const modal = document.getElementById('downloadModal');
+            modal.style.display = 'flex';
+            setTimeout(() => {
+                modal.classList.add('active');
+            }, 10);
+
+            // 模拟准备过程
+            setTimeout(() => {
+                document.getElementById('downloadProgressFill').style.width = '100%';
+                document.getElementById('downloadProgressText').textContent = '准备完成';
+                document.getElementById('downloadProgressPercent').textContent = '100%';
+                document.getElementById('downloadConfirmBtn').disabled = false;
+            }, 800);
+        }
+
+        // 关闭下载模态框
+        function closeDownloadModal() {
+            const modal = document.getElementById('downloadModal');
+            modal.classList.remove('active');
+            setTimeout(() => {
+                modal.style.display = 'none';
+            }, 300);
+        }
+
+        // 开始下载
+        function startDownload() {
+            if (!currentDownloadFile) return;
+
+            // 显示下载成功提示
+            showToast(`"${currentDownloadFile.name}" 下载成功！`);
+
+            // 关闭模态框
+            closeDownloadModal();
+        }
+
+        // 获取教材信息（模拟）
+        function getMaterialInfo(materialId) {
+            const materials = {
+                'material1': { name: '机械制图基础教程.pdf', size: '12.5MB', format: 'PDF', icon: '📘' },
+                'material2': { name: '制图国家标准汇编.pdf', size: '5.8MB', format: 'PDF', icon: '📗' },
+                'material3': { name: '数控加工技术手册.pdf', size: '28.6MB', format: 'PDF', icon: '📙' },
+                'material4': { name: 'CAD/CAM软件应用教程.pdf', size: '45.2MB', format: 'PDF', icon: '📕' },
+                'material5': { name: '数控车床操作手册.pdf', size: '18.3MB', format: 'PDF', icon: '📘' },
+                'material6': { name: '数控铣床编程指南.pdf', size: '22.7MB', format: 'PDF', icon: '📗' }
+            };
+            return materials[materialId] || { name: '未知文件.pdf', size: '0MB', format: 'PDF', icon: '📄' };
+        }
+
+        // 显示Toast提示
+        function showToast(message) {
+            // 移除已存在的toast
+            const existingToast = document.querySelector('.toast');
+            if (existingToast) {
+                existingToast.remove();
+            }
+
+            // 创建新的toast
+            const toast = document.createElement('div');
+            toast.className = 'toast';
+            toast.innerHTML = `
+                <div class="toast-icon">✓</div>
+                <span>${message}</span>
+            `;
+            document.body.appendChild(toast);
+
+            // 显示动画
+            setTimeout(() => {
+                toast.classList.add('show');
+            }, 10);
+
+            // 自动隐藏
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, 3000);
+        }
+
+        // 打印
+        function printMaterial() {
+            window.print();
+        }
+
+        // 键盘快捷键
+        document.addEventListener('keydown', function(e) {
+            const dialog = document.getElementById('previewDialog');
+            if (dialog.classList.contains('active') && e.key === 'Escape') {
+                closePreviewDialog();
+            }
+        });
+
+        // 退出登录
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = './login.html';
+            }
+        }
+    </script>
+    <script src="./components.js"></script>
+    <!-- 导航加载器 - 动态加载现代化导航组件 -->
+    <script src="./nav-loader-new.js"></script>
+    <script src="./user-menu-component.js"></script>
+</body>
+</html>

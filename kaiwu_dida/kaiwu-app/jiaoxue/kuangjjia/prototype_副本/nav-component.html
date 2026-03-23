@@ -1,0 +1,378 @@
+<!-- 统一导航组件 - Web Interface Guidelines 优化版 -->
+<!-- 符合 WCAG AA 可访问性标准 -->
+<nav class="sidebar" role="navigation" aria-label="主导航菜单">
+    <div class="sidebar-header">
+        <a href="./教学实训平台_教务管理端.html" class="logo" aria-label="教学实训平台 - 返回首页">
+            <div class="logo-icon" aria-hidden="true">
+                📚
+                <span class="logo-badge" aria-hidden="true"></span>
+            </div>
+            <div class="logo-text">
+                <div class="logo-title">教学实训平台</div>
+                <div class="logo-subtitle">教务管理系统</div>
+            </div>
+        </a>
+    </div>
+    
+    <div class="sidebar-menu" role="menubar">
+        <!-- 工作台 -->
+        <div class="menu-group" role="none">
+            <button 
+                class="menu-title" 
+                onclick="toggleMenu(this)"
+                aria-expanded="true"
+                aria-controls="menu-workbench"
+                role="menuitem"
+                type="button">
+                <i class="iconfont icon-shouye" aria-hidden="true"></i>
+                <span>工作台</span>
+                <span class="arrow" aria-hidden="true">▼</span>
+            </button>
+            <div class="menu-items" id="menu-workbench" role="menu">
+                <a href="./教学实训平台_教务管理端.html" 
+                   class="menu-item" 
+                   data-page="home"
+                   role="menuitem"
+                   aria-current="page">
+                    <i class="iconfont icon-shouye" aria-hidden="true"></i>
+                    <span>首页概览</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 知识库 -->
+        <div class="menu-group" role="none">
+            <button 
+                class="menu-title" 
+                onclick="toggleMenu(this)"
+                aria-expanded="true"
+                aria-controls="menu-knowledge"
+                role="menuitem"
+                type="button">
+                <i class="iconfont icon-p008zhishiku" aria-hidden="true"></i>
+                <span>知识库</span>
+                <span class="arrow" aria-hidden="true">▼</span>
+            </button>
+            <div class="menu-items" id="menu-knowledge" role="menu">
+                <a href="./教务管理端_视频教材库.html" 
+                   class="menu-item" 
+                   data-page="video"
+                   role="menuitem">
+                    <i class="iconfont icon-shipin" aria-hidden="true"></i>
+                    <span>视频教材库</span>
+                </a>
+                <a href="./教务管理端_辅导教材库.html" 
+                   class="menu-item" 
+                   data-page="material"
+                   role="menuitem">
+                    <i class="iconfont icon-jiaocai" aria-hidden="true"></i>
+                    <span>辅导教材库</span>
+                </a>
+                <a href="./教务管理端_题库.html" 
+                   class="menu-item" 
+                   data-page="question"
+                   role="menuitem">
+                    <i class="iconfont icon-tiku" aria-hidden="true"></i>
+                    <span>题库</span>
+                </a>
+                <a href="./教务管理端_试卷库.html" 
+                   class="menu-item" 
+                   data-page="paper"
+                   role="menuitem">
+                    <i class="iconfont icon-tiku" aria-hidden="true"></i>
+                    <span>普通任务库</span>
+                </a>
+                <a href="./教务管理端_实训试卷库.html" 
+                   class="menu-item" 
+                   data-page="practice"
+                   role="menuitem">
+                    <i class="iconfont icon-shixun" aria-hidden="true"></i>
+                    <span>实训任务库</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 教务管理 -->
+        <div class="menu-group" role="none">
+            <button 
+                class="menu-title" 
+                onclick="toggleMenu(this)"
+                aria-expanded="true"
+                aria-controls="menu-education"
+                role="menuitem"
+                type="button">
+                <i class="iconfont icon-jiaowuguanliqu" aria-hidden="true"></i>
+                <span>教务管理</span>
+                <span class="arrow" aria-hidden="true">▼</span>
+            </button>
+            <div class="menu-items" id="menu-education" role="menu">
+                <a href="./教务管理端_学年管理.html" 
+                   class="menu-item" 
+                   data-page="year"
+                   role="menuitem"
+                   style="display: none;">
+                    <i class="iconfont icon-xueqiguanli" aria-hidden="true"></i>
+                    <span>学年管理</span>
+                </a>
+                <a href="./教务管理端_学期管理.html" 
+                   class="menu-item" 
+                   data-page="term"
+                   role="menuitem"
+                   style="display: none;">
+                    <i class="iconfont icon-xueqiguanli" aria-hidden="true"></i>
+                    <span>学期管理</span>
+                </a>
+                <a href="./教务管理端_年级管理.html" 
+                   class="menu-item" 
+                   data-page="grade"
+                   role="menuitem"
+                   style="display: none;">
+                    <i class="iconfont icon-gongzuotai" aria-hidden="true"></i>
+                    <span>年级管理</span>
+                </a>
+                <a href="./教务管理端_教师管理_优化版.html" 
+                   class="menu-item" 
+                   data-page="teacher"
+                   role="menuitem">
+                    <i class="iconfont icon-jiaoshiguanli" aria-hidden="true"></i>
+                    <span>教师管理</span>
+                </a>
+                <a href="./教务管理端_学生管理_优化版.html"
+                   class="menu-item"
+                   data-page="student"
+                   role="menuitem">
+                    <i class="iconfont icon-xueshengguanli" aria-hidden="true"></i>
+                    <span>学生管理</span>
+                </a>
+                <a href="./教务管理端_上课时间段管理.html"
+                   class="menu-item"
+                   data-page="timeSlot"
+                   role="menuitem">
+                    <i class="iconfont icon-shijian" aria-hidden="true"></i>
+                    <span>上课时间段</span>
+                </a>
+                <a href="./教务管理端_专业管理_优化版.html" 
+                   class="menu-item" 
+                   data-page="major"
+                   role="menuitem">
+                    <i class="iconfont icon-jiaocai" aria-hidden="true"></i>
+                    <span>专业管理</span>
+                </a>
+                <a href="./教务管理端_课程管理_优化版.html" 
+                   class="menu-item" 
+                   data-page="course"
+                   role="menuitem">
+                    <i class="iconfont icon-gongzuotai" aria-hidden="true"></i>
+                    <span>课程管理</span>
+                </a>
+                <a href="./教务管理端_培养计划.html" 
+                   class="menu-item" 
+                   data-page="plan"
+                   role="menuitem"
+                   style="display: none;">
+                    <i class="iconfont icon-shijuan" aria-hidden="true"></i>
+                    <span>培养计划</span>
+                </a>
+                <a href="./教务管理端_班级管理_优化版.html" 
+                   class="menu-item" 
+                   data-page="class"
+                   role="menuitem">
+                    <i class="iconfont icon-xueshengguanli" aria-hidden="true"></i>
+                    <span>班级管理</span>
+                </a>
+                <a href="./教务管理端_教室管理_优化版.html"
+                   class="menu-item"
+                   data-page="classroom"
+                   role="menuitem">
+                    <i class="iconfont icon-jiaoshiguanli1" aria-hidden="true"></i>
+                    <span>教室管理</span>
+                </a>
+                <a href="./教务管理端_课程排课管理.html"
+                   class="menu-item"
+                   data-page="course-schedule"
+                   role="menuitem">
+                    <i class="iconfont icon-paike" aria-hidden="true"></i>
+                    <span>课程排课管理</span>
+                </a>
+                <a href="./教务管理端_教师课程表.html"
+                   class="menu-item"
+                   data-page="schedule"
+                   role="menuitem">
+                    <i class="iconfont icon-xueqiguanli" aria-hidden="true"></i>
+                    <span>课程表</span>
+                </a>
+            </div>
+        </div>
+        
+        <!-- 报表中心 -->
+        <!--
+        <div class="menu-group" role="none">
+            <button 
+                class="menu-title" 
+                onclick="toggleMenu(this)"
+                aria-expanded="true"
+                aria-controls="menu-report"
+                role="menuitem"
+                type="button">
+                <i class="iconfont icon-baobiao" aria-hidden="true"></i>
+                <span>报表中心</span>
+                <span class="arrow" aria-hidden="true">▼</span>
+            </button>
+            <div class="menu-items" id="menu-report" role="menu">
+                <a href="./教务管理端_课程表.html" 
+                   class="menu-item" 
+                   data-page="report"
+                   role="menuitem">
+                    <i class="iconfont icon-jiasupeiyangjihua" aria-hidden="true"></i>
+                    <span>课程表</span>
+                </a>
+            </div>
+        </div>
+        -->
+    </div>
+    
+    <div class="sidebar-footer">
+        <div class="version-info" aria-label="系统版本 2.0.0，运行正常">
+            <span aria-hidden="true"></span>
+            <span>版本 v2.0.0</span>
+        </div>
+    </div>
+</nav>
+
+<script>
+// 菜单展开/收起功能 - 符合可访问性标准
+function toggleMenu(element) {
+    const menuItems = element.nextElementSibling;
+    const isExpanded = element.getAttribute('aria-expanded') === 'true';
+    
+    // 更新 aria-expanded 状态
+    element.setAttribute('aria-expanded', !isExpanded);
+    
+    // 切换菜单显示状态
+    if (isExpanded) {
+        menuItems.setAttribute('hidden', '');
+        element.classList.add('collapsed');
+    } else {
+        menuItems.removeAttribute('hidden');
+        element.classList.remove('collapsed');
+    }
+}
+
+// 键盘导航支持
+document.addEventListener('DOMContentLoaded', function() {
+    const menuTitles = document.querySelectorAll('.menu-title');
+    const menuItems = document.querySelectorAll('.menu-item');
+    
+    // 为菜单标题添加键盘支持
+    menuTitles.forEach(title => {
+        title.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleMenu(this);
+            }
+        });
+    });
+    
+    // 高亮当前页面
+    const currentPage = window.location.pathname.split('/').pop();
+    menuItems.forEach(item => {
+        const itemHref = item.getAttribute('href');
+        if (itemHref && itemHref.includes(currentPage)) {
+            item.classList.add('active');
+            item.setAttribute('aria-current', 'page');
+            
+            // 展开父菜单
+            const parentMenu = item.closest('.menu-items');
+            if (parentMenu) {
+                parentMenu.removeAttribute('hidden');
+                const menuTitle = parentMenu.previousElementSibling;
+                if (menuTitle) {
+                    menuTitle.classList.add('active');
+                    menuTitle.setAttribute('aria-expanded', 'true');
+                }
+            }
+        }
+    });
+});
+
+// ESC 键关闭展开的菜单（可选功能）
+document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+        const expandedMenus = document.querySelectorAll('.menu-title[aria-expanded="true"]');
+        expandedMenus.forEach(menu => {
+            toggleMenu(menu);
+            menu.focus();
+        });
+    }
+});
+
+// 滚动交互功能
+document.addEventListener('DOMContentLoaded', function() {
+    const sidebarMenu = document.querySelector('.sidebar-menu');
+    
+    if (sidebarMenu) {
+        // 检测滚动位置并添加阴影提示
+        function updateScrollIndicators() {
+            const scrollTop = sidebarMenu.scrollTop;
+            const scrollHeight = sidebarMenu.scrollHeight;
+            const clientHeight = sidebarMenu.clientHeight;
+            const isScrollable = scrollHeight > clientHeight;
+            
+            // 顶部阴影
+            if (scrollTop > 10) {
+                sidebarMenu.classList.add('scroll-top');
+            } else {
+                sidebarMenu.classList.remove('scroll-top');
+            }
+            
+            // 底部阴影
+            if (isScrollable && scrollTop + clientHeight < scrollHeight - 10) {
+                sidebarMenu.classList.add('scroll-bottom');
+            } else {
+                sidebarMenu.classList.remove('scroll-bottom');
+            }
+        }
+        
+        // 监听滚动事件
+        sidebarMenu.addEventListener('scroll', updateScrollIndicators, { passive: true });
+        
+        // 初始检测
+        updateScrollIndicators();
+        
+        // 窗口大小改变时重新检测
+        window.addEventListener('resize', updateScrollIndicators, { passive: true });
+        
+        // 键盘滚动支持
+        sidebarMenu.addEventListener('keydown', function(e) {
+            const scrollAmount = 50;
+            
+            switch(e.key) {
+                case 'ArrowDown':
+                    e.preventDefault();
+                    sidebarMenu.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+                    break;
+                case 'ArrowUp':
+                    e.preventDefault();
+                    sidebarMenu.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+                    break;
+                case 'PageDown':
+                    e.preventDefault();
+                    sidebarMenu.scrollBy({ top: sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                    break;
+                case 'PageUp':
+                    e.preventDefault();
+                    sidebarMenu.scrollBy({ top: -sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                    break;
+                case 'Home':
+                    e.preventDefault();
+                    sidebarMenu.scrollTo({ top: 0, behavior: 'smooth' });
+                    break;
+                case 'End':
+                    e.preventDefault();
+                    sidebarMenu.scrollTo({ top: sidebarMenu.scrollHeight, behavior: 'smooth' });
+                    break;
+            }
+        });
+    }
+});
+</script>

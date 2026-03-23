@@ -1,0 +1,1047 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>辅导教材 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .user-info { display: flex; align-items: center; gap: 20px; }
+        .user-info span { color: #666; font-size: 14px; }
+
+        /* 左右布局 */
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* 左侧树状图 */
+        .tree-sidebar {
+            width: 280px;
+            background: #fff;
+            border-right: 1px solid #E8E8E8;
+            display: flex;
+            flex-direction: column;
+        }
+        .tree-sidebar[style*="display: none"] {
+            width: 0;
+            border: none;
+            overflow: hidden;
+        }
+        .tree-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tree-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .tree-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .tree-btn {
+            padding: 4px 10px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #666;
+        }
+        .tree-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .tree-search {
+            padding: 12px 16px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .tree-search input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .tree-search input:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        .tree-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0;
+        }
+        
+        /* 树状图样式 */
+        .tree-node {
+            user-select: none;
+        }
+        .tree-node-content {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tree-node-content:hover {
+            background: #F5F7FA;
+        }
+        .tree-node-content.active {
+            background: #E6F7FF;
+            color: #1890FF;
+        }
+        .tree-toggle {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-size: 12px;
+            color: #999;
+            transition: transform 0.2s;
+        }
+        .tree-toggle.expanded {
+            transform: rotate(90deg);
+        }
+        .tree-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        .tree-label {
+            font-size: 14px;
+            flex: 1;
+        }
+        .tree-count {
+            font-size: 12px;
+            color: #999;
+            background: #F5F5F5;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .tree-children {
+            display: none;
+        }
+        .tree-children.expanded {
+            display: block;
+        }
+        
+        /* 层级缩进 */
+        .tree-level-1 .tree-node-content { padding-left: 20px; }
+        .tree-level-2 .tree-node-content { padding-left: 44px; }
+        
+        /* 右侧内容区 */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Tab标签 */
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid #E8E8E8;
+            margin-bottom: 20px;
+        }
+        .tab-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab-item:hover {
+            color: #1890FF;
+        }
+        .tab-item.active {
+            color: #1890FF;
+            border-bottom-color: #1890FF;
+            font-weight: 500;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .btn-primary {
+            padding: 10px 20px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary:hover {
+            background: #40A9FF;
+        }
+        
+        /* 搜索栏 */
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        .btn-search {
+            padding: 10px 24px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .data-table table {
+            width: max-content;
+            min-width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .data-table tr:hover {
+            background: #F5F7FA;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        /* 固定第1列（序号列） */
+        .data-table th:first-child,
+        .data-table td:first-child {
+            position: sticky;
+            left: 0;
+            background: #FAFAFA;
+            z-index: 10;
+            border-right: 1px solid #E8E8E8;
+        }
+        .data-table td:first-child {
+            background: #fff;
+        }
+        .data-table tr:hover td:first-child {
+            background: #F5F7FA;
+        }
+        /* 固定操作栏（最后一列） */
+        .data-table th:last-child,
+        .data-table td:last-child {
+            position: sticky;
+            right: 0;
+            background: #FAFAFA;
+            z-index: 10;
+            border-left: 1px solid #E8E8E8;
+        }
+        .data-table td:last-child {
+            background: #fff;
+        }
+        .data-table tr:hover td:last-child {
+            background: #F5F7FA;
+        }
+        
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-blue { background: #E6F7FF; color: #1890FF; }
+        .tag-green { background: #F6FFED; color: #52C41A; }
+        .tag-orange { background: #FFF7E6; color: #FA8C16; }
+        
+        /* 操作按钮 */
+        .action-btns {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .action-btns button {
+            padding: 4px 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #1890FF;
+            font-size: 13px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .action-btns button:hover {
+            background: #E6F7FF;
+        }
+        
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 16px;
+            background: #fff;
+            border-radius: 8px;
+        }
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+        }
+        .pagination-info {
+            font-size: 14px;
+            color: #666;
+        }
+        .pagination-size {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        .pagination-size select {
+            padding: 6px 10px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .pagination-jump {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        .pagination-jump input {
+            width: 50px;
+            padding: 6px 10px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: center;
+        }
+        
+        /* 表格多选框 */
+        .checkbox-cell {
+            width: 50px;
+            text-align: center;
+        }
+        .checkbox-cell input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-close:hover {
+            color: #333;
+        }
+        .form-item {
+            margin-bottom: 16px;
+        }
+        .form-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+        .form-item input,
+        .form-item select,
+        .form-item textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-item input:focus,
+        .form-item select:focus,
+        .form-item textarea:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        .form-item textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-wrapper input[type="checkbox"] {
+            width: auto;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .btn-cancel {
+            padding: 10px 20px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+        .btn-cancel:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+    <div class="main-content">
+        <!-- 左侧树状图 -->
+        <div class="tree-sidebar" style="display: none;">
+                <div class="tree-header">
+                    <h3>专业课程</h3>
+                    <div class="tree-actions">
+                        <button class="tree-btn" onclick="expandAll()">展开</button>
+                        <button class="tree-btn" onclick="collapseAll()">收起</button>
+                    </div>
+                </div>
+                <div class="tree-search">
+                    <input type="text" placeholder="搜索专业或课程..." id="treeSearch">
+                </div>
+                <div class="tree-content" id="treeContent">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+
+            <!-- 右侧内容区 -->
+            <div class="content-area">
+                <div class="content-body">
+                    <!-- Tab标签 -->
+                    <div class="tab-container">
+                        <div class="tab-header">
+                            <div class="tab-item active" onclick="switchTab('myMaterial', this)">我的辅导教材</div>
+                            <div class="tab-item" onclick="switchTab('publicMaterial', this)">公用辅导教材</div>
+                        </div>
+                        
+                        <!-- 我的辅导教材 -->
+                        <div id="myMaterial" class="tab-content active">
+                            <div class="page-header">
+                                <h1 class="page-title" id="myMaterialTitle">机械制图 - 我的辅导教材</h1>
+                                <button class="btn-primary" onclick="openModal()">+ 新增辅导教材</button>
+                            </div>
+
+                            <div class="search-bar">
+                                <input type="text" class="search-input" placeholder="搜索教材名称、关键词...">
+                                <button class="btn-search">🔍 查询</button>
+                            </div>
+
+                            <div class="data-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th class="checkbox-cell"><input type="checkbox" id="selectAllMyMaterial" onclick="toggleSelectAll('myMaterial')"></th>
+                                            <th style="width: 60px;">序号</th>
+                                            <th>教材名称</th>
+                                            <th style="width: 100px; display: none;">所属专业</th>
+                                            <th style="width: 100px;">所属课程</th>
+                                            <th style="width: 80px;">教材格式</th>
+                                            <th style="width: 100px;">教材大小</th>
+                                            <th style="width: 100px;">是否公用</th>
+                                            <th style="width: 100px;">更新人</th>
+                                            <th style="width: 160px;">更新时间</th>
+                                            <th style="width: 120px;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myMaterialTableBody"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="pagination">
+                                <span class="pagination-info">共 <span id="myMaterialTotal">3</span> 条记录</span>
+                                <div class="pagination-size">
+                                    <span>每页</span>
+                                    <select id="myMaterialPageSize" onchange="changePageSize('myMaterial')">
+                                        <option value="10" selected>10</option>
+                                        <option value="50">50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                    <span>条</span>
+                                </div>
+                                <button class="pagination-btn" disabled>上一页</button>
+                                <button class="pagination-btn active">1</button>
+                                <button class="pagination-btn">下一页</button>
+                                <div class="pagination-jump">
+                                    <span>前往</span>
+                                    <input type="number" id="myMaterialJumpPage" min="1" value="1">
+                                    <span>页</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- 公用辅导教材 -->
+                        <div id="publicMaterial" class="tab-content">
+                            <div class="page-header">
+                                <h1 class="page-title" id="publicMaterialTitle">机械制图 - 公用辅导教材</h1>
+                            </div>
+
+                            <div class="search-bar">
+                                <input type="text" class="search-input" placeholder="搜索教材名称、关键词...">
+                                <button class="btn-search">🔍 查询</button>
+                            </div>
+
+                            <div class="data-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 60px;">序号</th>
+                                            <th>教材名称</th>
+                                            <th style="width: 100px; display: none;">所属专业</th>
+                                            <th style="width: 100px;">所属课程</th>
+                                            <th style="width: 80px;">教材格式</th>
+                                            <th style="width: 100px;">教材大小</th>
+                                            <th style="width: 100px;">更新人</th>
+                                            <th style="width: 160px;">更新时间</th>
+                                            <th style="width: 100px;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="publicMaterialTableBody"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="pagination">
+                                <span class="pagination-info">共 5 条记录</span>
+                                <button class="pagination-btn" disabled>上一页</button>
+                                <button class="pagination-btn active">1</button>
+                                <button class="pagination-btn">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增辅导教材模态框 -->
+    <div class="modal" id="addMaterialModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">新增辅导教材</h3>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-item">
+                    <label>教材名称 <span style="color: #FF4D4F;">*</span></label>
+                    <input type="text" placeholder="请输入教材名称">
+                </div>
+                <div class="form-item" style="display: none;">
+                    <label>所属专业 <span style="color: #FF4D4F;">*</span></label>
+                    <select>
+                        <option>请选择专业</option>
+                        <option>机械工程</option>
+                        <option>数控技术</option>
+                        <option>模具设计与制造</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>所属课程 <span style="color: #FF4D4F;">*</span></label>
+                    <select>
+                        <option>请选择课程</option>
+                        <option>机械制图</option>
+                        <option>数控加工技术</option>
+                        <option>CAD/CAM技术</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>教材格式 <span style="color: #FF4D4F;">*</span></label>
+                    <select>
+                        <option>请选择格式</option>
+                        <option>课件PPT</option>
+                        <option>Word文档</option>
+                        <option>PDF文档</option>
+                        <option>其他</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>教材文件 <span style="color: #FF4D4F;">*</span></label>
+                    <input type="file">
+                </div>
+                <div class="form-item">
+                    <label>教材描述</label>
+                    <textarea placeholder="请输入教材描述..."></textarea>
+                </div>
+                <div class="form-item">
+                    <div class="checkbox-wrapper">
+                        <input type="checkbox" id="isPublic">
+                        <label for="isPublic" style="margin-bottom: 0;">设为公用辅导教材（其他教师可见）</label>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">取消</button>
+                <button class="btn-primary" onclick="saveMaterial()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 树状图数据 - 专业-课程结构
+        const treeData = [
+            {
+                id: 'major1',
+                name: '计算机类',
+                icon: '💻',
+                children: [
+                    { id: 'course1-1', name: '计算机基础', count: 156 },
+                    { id: 'course1-2', name: 'Java程序设计', count: 128 },
+                    { id: 'course1-3', name: 'Web前端开发', count: 95 },
+                    { id: 'course1-4', name: '数据库原理', count: 87 }
+                ]
+            },
+            {
+                id: 'major2',
+                name: '机械工程类',
+                icon: '⚙️',
+                children: [
+                    { id: 'course2-1', name: '机械制图', count: 86 },
+                    { id: 'course2-2', name: '数控技术', count: 72 },
+                    { id: 'course2-3', name: '模具设计', count: 68 }
+                ]
+            },
+            {
+                id: 'major3',
+                name: '电气自动化类',
+                icon: '⚡',
+                children: [
+                    { id: 'course3-1', name: '电气控制', count: 92 },
+                    { id: 'course3-2', name: 'PLC编程', count: 78 },
+                    { id: 'course3-3', name: '传感器技术', count: 65 }
+                ]
+            }
+        ];
+
+        // 我的辅导教材数据
+        const myMaterialData = [
+            { id: 1, name: '机械制图基础课件', major: '机械工程', course: '机械制图', format: 'PPTX', size: '12.5MB', isPublic: true, creator: '张老师', createTime: '2025-01-10' },
+            { id: 2, name: '三视图练习题集', major: '机械工程', course: '机械制图', format: 'DOCX', size: '3.2MB', isPublic: false, creator: '张老师', createTime: '2025-01-09' },
+            { id: 3, name: '零件图标注规范', major: '机械工程', course: '机械制图', format: 'PDF', size: '8.7MB', isPublic: true, creator: '张老师', createTime: '2025-01-08' }
+        ];
+
+        // 公用辅导教材数据
+        const publicMaterialData = [
+            { id: 1, name: '机械制图国家标准汇编', major: '机械工程', course: '机械制图', format: 'PDF', size: '15.2MB', creator: '李老师', createTime: '2025-01-10' },
+            { id: 2, name: '常用件标准件手册', major: '机械工程', course: '机械制图', format: 'PDF', size: '22.8MB', creator: '王老师', createTime: '2025-01-09' },
+            { id: 3, name: '装配图阅读指南', major: '机械工程', course: '机械制图', format: 'DOCX', size: '5.6MB', creator: '张老师', createTime: '2025-01-08' },
+            { id: 4, name: 'CAD制图规范教程', major: '机械工程', course: '机械制图', format: 'PPTX', size: '18.3MB', creator: '李老师', createTime: '2025-01-07' },
+            { id: 5, name: '机械制图习题答案', major: '机械工程', course: '机械制图', format: 'PDF', size: '9.1MB', creator: '王老师', createTime: '2025-01-06' }
+        ];
+
+        let currentMajor = '机械工程';
+        let currentCourse = '机械制图';
+
+        // 全选/取消全选
+        function toggleSelectAll(type) {
+            const selectAllCheckbox = document.getElementById(`selectAll${type.charAt(0).toUpperCase() + type.slice(1)}`);
+            const checkboxes = document.querySelectorAll(`.${type}-checkbox`);
+            checkboxes.forEach(cb => cb.checked = selectAllCheckbox.checked);
+        }
+
+        // 切换每页显示条数
+        function changePageSize(type) {
+            const pageSize = document.getElementById(`${type}PageSize`).value;
+            console.log(`切换${type}每页显示条数为: ${pageSize}`);
+            // 这里可以添加重新渲染表格的逻辑
+        }
+
+        // 格式化日期时间为 2026-03-10 11:22:35 格式
+        function formatDateTime(dateStr) {
+            const date = new Date(dateStr);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            const hours = String(date.getHours()).padStart(2, '0');
+            const minutes = String(date.getMinutes()).padStart(2, '0');
+            const seconds = String(date.getSeconds()).padStart(2, '0');
+            return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+        }
+
+        // 渲染我的辅导教材表格
+        function renderMyMaterialTable() {
+            const tbody = document.getElementById('myMaterialTableBody');
+            tbody.innerHTML = myMaterialData.map((item, index) => `
+                <tr>
+                    <td class="checkbox-cell"><input type="checkbox" class="myMaterial-checkbox" value="${item.id}"></td>
+                    <td>${index + 1}</td>
+                    <td><strong>${item.name}</strong></td>
+                    <td style="display: none;">${item.major}</td>
+                    <td>${item.course}</td>
+                    <td>${item.format}</td>
+                    <td>${item.size}</td>
+                    <td>${item.isPublic ? '<span class="tag tag-green">公用</span>' : '<span class="tag tag-orange">私有</span>'}</td>
+                    <td>${item.creator}</td>
+                    <td>${formatDateTime(item.createTime)}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button onclick="viewMaterial(${item.id})">查看</button>
+                            <button onclick="editMaterial(${item.id})">编辑</button>
+                            <button onclick="deleteMaterial(${item.id})" style="color: #FF4D4F;">删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 渲染公用辅导教材表格
+        function renderPublicMaterialTable() {
+            const tbody = document.getElementById('publicMaterialTableBody');
+            tbody.innerHTML = publicMaterialData.map((item, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td><strong>${item.name}</strong></td>
+                    <td style="display: none;">${item.major}</td>
+                    <td>${item.course}</td>
+                    <td>${item.format}</td>
+                    <td>${item.size}</td>
+                    <td>${item.creator}</td>
+                    <td>${formatDateTime(item.createTime)}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button onclick="viewMaterial(${item.id})">查看</button>
+                            <button onclick="copyMaterial(${item.id})">复制</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderTypeTag(type) {
+            const typeMap = {
+                '课件PPT': '<span class="tag tag-orange">课件PPT</span>',
+                'Word文档': '<span class="tag tag-blue">Word</span>',
+                'PDF文档': '<span class="tag tag-green">PDF</span>',
+                '其他': '<span class="tag">其他</span>'
+            };
+            return typeMap[type] || type;
+        }
+
+        // Tab切换
+        function switchTab(tabId, element) {
+            document.querySelectorAll('.tab-item').forEach(item => item.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            element.classList.add('active');
+            document.getElementById(tabId).classList.add('active');
+        }
+
+        // 树节点展开/收起
+        function toggleNode(element) {
+            const toggle = element.querySelector('.tree-toggle');
+            const children = element.nextElementSibling;
+            if (toggle && children) {
+                toggle.classList.toggle('expanded');
+                children.classList.toggle('expanded');
+            }
+        }
+
+        // 选择树节点
+        function selectNode(element, major, course) {
+            document.querySelectorAll('.tree-node-content').forEach(node => node.classList.remove('active'));
+            element.classList.add('active');
+            currentMajor = major;
+            currentCourse = course;
+            document.getElementById('myMaterialTitle').textContent = `${course} - 我的辅导教材`;
+            document.getElementById('publicMaterialTitle').textContent = `${course} - 公用辅导教材`;
+        }
+
+        // 展开所有
+        function expandAll() {
+            document.querySelectorAll('.tree-toggle').forEach(toggle => {
+                toggle.classList.add('expanded');
+                const children = toggle.closest('.tree-node-content').nextElementSibling;
+                if (children) children.classList.add('expanded');
+            });
+        }
+
+        // 收起所有
+        function collapseAll() {
+            document.querySelectorAll('.tree-toggle').forEach(toggle => {
+                toggle.classList.remove('expanded');
+                const children = toggle.closest('.tree-node-content').nextElementSibling;
+                if (children) children.classList.remove('expanded');
+            });
+        }
+
+        // 过滤树
+        function filterTree() {
+            const keyword = document.getElementById('treeSearch').value.toLowerCase();
+            if (keyword) expandAll();
+        }
+
+        // 打开模态框
+        function openModal() {
+            document.getElementById('addMaterialModal').classList.add('active');
+        }
+
+        // 关闭模态框
+        function closeModal() {
+            document.getElementById('addMaterialModal').classList.remove('active');
+        }
+
+        // 保存辅导教材
+        function saveMaterial() {
+            alert('保存成功！');
+            closeModal();
+        }
+
+        // 查看辅导教材
+        function viewMaterial(id) {
+            alert('查看辅导教材：' + id);
+        }
+
+        // 编辑辅导教材
+        function editMaterial(id) {
+            alert('编辑辅导教材：' + id);
+        }
+
+        // 删除辅导教材
+        function deleteMaterial(id) {
+            if (confirm('确定要删除这个辅导教材吗？')) {
+                alert('删除成功！');
+            }
+        }
+
+        // 复制辅导教材
+        function copyMaterial(id) {
+            alert('已复制到我的辅导教材！');
+        }
+
+        // 菜单展开/收起
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 展开所有
+        function expandAll() {
+            document.querySelectorAll('.tree-toggle').forEach(toggle => {
+                toggle.classList.add('expanded');
+                const children = toggle.closest('.tree-node-content').nextElementSibling;
+                if (children) children.classList.add('expanded');
+            });
+        }
+
+        // 收起所有
+        function collapseAll() {
+            document.querySelectorAll('.tree-toggle').forEach(toggle => {
+                toggle.classList.remove('expanded');
+                const children = toggle.closest('.tree-node-content').nextElementSibling;
+                if (children) children.classList.remove('expanded');
+            });
+        }
+
+        // 渲染树状图
+        function renderTree() {
+            const container = document.getElementById('treeContent');
+            let html = '';
+
+            treeData.forEach((major, index) => {
+                html += `
+                    <div class="tree-node">
+                        <div class="tree-node-content" onclick="toggleTreeNode(this)">
+                            <span class="tree-toggle">▶</span>
+                            <span class="tree-icon">${major.icon}</span>
+                            <span class="tree-label">${major.name}</span>
+                        </div>
+                        <div class="tree-children">
+                            ${major.children.map(course => `
+                                <div class="tree-node-content" style="padding-left: 40px;" onclick="selectCourse('${course.id}')">
+                                    <span class="tree-toggle leaf">▶</span>
+                                    <span class="tree-icon">📚</span>
+                                    <span class="tree-label">${course.name}</span>
+                                    <span class="tree-count">${course.count}</span>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        // 切换树节点
+        function toggleTreeNode(element) {
+            const toggle = element.querySelector('.tree-toggle');
+            const children = element.nextElementSibling;
+
+            if (children && children.classList.contains('tree-children')) {
+                toggle.classList.toggle('expanded');
+                children.classList.toggle('expanded');
+            }
+        }
+
+        // 选择课程
+        function selectCourse(courseId) {
+            console.log('选择课程:', courseId);
+            // 可以在这里添加根据课程筛选教材的逻辑
+        }
+
+        // 初始化
+        renderTree();
+        renderMyMaterialTable();
+        renderPublicMaterialTable();
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+    </div>
+</body>
+</html>

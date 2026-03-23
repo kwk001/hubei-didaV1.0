@@ -1,0 +1,2210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>课程详情 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./nav-styles.css">
+    <link rel="stylesheet" href="./common.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS 变量系统 - 优化版 */
+        :root {
+            --primary-color: #FA8C16;
+            --primary-light: #FFB84D;
+            --primary-dark: #D46B08;
+            --primary-gradient: linear-gradient(135deg, #FA8C16 0%, #FF9C2E 50%, #FFB84D 100%);
+            --primary-gradient-hover: linear-gradient(135deg, #FF9C2E 0%, #FFB84D 50%, #FFD180 100%);
+            
+            --success-color: #00C853;
+            --warning-color: #FF9100;
+            --error-color: #FF1744;
+            --info-color: #2979FF;
+            
+            --text-primary: #1A1A2E;
+            --text-secondary: #4A4A6A;
+            --text-tertiary: #8A8AA3;
+            --border-color: rgba(0,0,0,0.08);
+            --bg-primary: #FFFFFF;
+            --bg-secondary: #F8F9FC;
+            --bg-tertiary: #F0F2F5;
+            
+            --spacing-xs: 4px;
+            --spacing-sm: 8px;
+            --spacing-md: 16px;
+            --spacing-lg: 24px;
+            --spacing-xl: 32px;
+            --spacing-2xl: 48px;
+            
+            --radius-sm: 6px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+            
+            --shadow-sm: 0 2px 8px rgba(0,0,0,0.04);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.08);
+            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
+            --shadow-glow: 0 0 40px rgba(250, 140, 22, 0.25);
+            --shadow-card: 0 2px 12px rgba(0,0,0,0.06), 0 8px 24px rgba(0,0,0,0.04);
+            
+            --font-display: 'Outfit', 'Noto Sans SC', sans-serif;
+            --font-body: 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+            
+            --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-base: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-secondary);
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        /* 布局 */
+        body.has-nav-sidebar { display: flex; }
+        body.has-nav-sidebar .main-content {
+            flex: 1;
+            margin-left: 260px;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 头部区域 - 优化版 */
+        .course-header {
+            background: linear-gradient(135deg, #ffffff 0%, #fafbfc 100%);
+            border-bottom: 1px solid var(--border-color);
+            padding: var(--spacing-2xl) var(--spacing-xl);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* 动态背景装饰 */
+        .course-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+        }
+        
+        .course-header::after {
+            content: '';
+            position: absolute;
+            top: -100px;
+            right: -100px;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(250, 140, 22, 0.08) 0%, transparent 70%);
+            border-radius: 50%;
+            animation: pulse-glow 4s ease-in-out infinite;
+        }
+        
+        @keyframes pulse-glow {
+            0%, 100% { transform: scale(1); opacity: 0.6; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* 面包屑导航 - 优化版 */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-lg);
+            font-size: 14px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .breadcrumb a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all var(--transition-fast);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .breadcrumb a:hover {
+            color: var(--primary-color);
+            transform: translateX(-2px);
+        }
+        
+        .breadcrumb a::before {
+            content: '←';
+            font-size: 12px;
+            opacity: 0;
+            transition: all var(--transition-fast);
+        }
+        
+        .breadcrumb a:hover::before {
+            opacity: 1;
+        }
+        
+        .breadcrumb-separator {
+            color: var(--text-tertiary);
+            font-size: 12px;
+        }
+        
+        .breadcrumb-current {
+            color: var(--text-primary);
+            font-weight: 600;
+            position: relative;
+        }
+        
+        .breadcrumb-current::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary-gradient);
+            border-radius: 1px;
+        }
+
+        .course-title-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            position: relative;
+            z-index: 1;
+        }
+
+        .course-title-wrapper {
+            flex: 1;
+        }
+
+        .course-title {
+            font-family: var(--font-display);
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-md);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            letter-spacing: -0.5px;
+        }
+        
+        .course-badge {
+            background: var(--primary-gradient);
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 4px 12px rgba(250, 140, 22, 0.3);
+            animation: badge-pulse 2s ease-in-out infinite;
+        }
+        
+        @keyframes badge-pulse {
+            0%, 100% { box-shadow: 0 4px 12px rgba(250, 140, 22, 0.3); }
+            50% { box-shadow: 0 4px 20px rgba(250, 140, 22, 0.5); }
+        }
+
+        .course-meta {
+            display: flex;
+            gap: var(--spacing-xl);
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+        
+        .course-meta-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            padding: 8px 16px;
+            background: rgba(250, 140, 22, 0.06);
+            border-radius: var(--radius-md);
+            transition: all var(--transition-base);
+        }
+        
+        .course-meta-item:hover {
+            background: rgba(250, 140, 22, 0.12);
+            transform: translateY(-2px);
+        }
+        
+        .course-meta-item i {
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        /* 进度区域 - 优化版 */
+        .course-progress {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: var(--spacing-md);
+            padding: var(--spacing-lg);
+            background: linear-gradient(135deg, rgba(250, 140, 22, 0.05) 0%, rgba(255, 184, 77, 0.05) 100%);
+            border-radius: var(--radius-lg);
+            border: 1px solid rgba(250, 140, 22, 0.1);
+            min-width: 220px;
+        }
+        
+        .progress-text {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        .progress-text strong {
+            color: var(--primary-color);
+            font-size: 36px;
+            font-family: var(--font-display);
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: rgba(0,0,0,0.06);
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-sm);
+            transition: width 1s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+            animation: shimmer 2s infinite;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* Tab 标签栏 - 优化版 */
+        .tab-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: var(--bg-secondary);
+        }
+
+        .tab-header {
+            background: var(--bg-primary);
+            padding: 0 var(--spacing-xl);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            gap: var(--spacing-xs);
+            position: relative;
+        }
+        
+        .tab-header::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--border-color), transparent);
+        }
+
+        .tab-item {
+            padding: var(--spacing-md) var(--spacing-lg);
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all var(--transition-base);
+            font-size: 15px;
+            color: var(--text-secondary);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .tab-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 50%;
+            width: 0;
+            height: 100%;
+            background: rgba(250, 140, 22, 0.08);
+            transition: all var(--transition-base);
+            transform: translateX(-50%);
+            border-radius: var(--radius-md) var(--radius-md) 0 0;
+        }
+
+        .tab-item:hover {
+            color: var(--primary-color);
+        }
+        
+        .tab-item:hover::before {
+            width: 100%;
+        }
+
+        .tab-item.active {
+            color: var(--primary-color);
+            border-bottom-color: var(--primary-color);
+        }
+        
+        .tab-item i {
+            font-size: 18px;
+            transition: transform var(--transition-base);
+        }
+        
+        .tab-item:hover i {
+            transform: scale(1.1);
+        }
+        
+        .tab-item.active i {
+            animation: icon-bounce 0.5s ease;
+        }
+        
+        @keyframes icon-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        /* Tab 内容区 - 优化版 */
+        .tab-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: var(--spacing-xl);
+            scroll-behavior: smooth;
+        }
+
+        .tab-panel {
+            display: none;
+        }
+
+        .tab-panel.active {
+            display: block;
+            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeInUp {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px) scale(0.98); 
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1); 
+            }
+        }
+
+        /* 统计栏 - 优化版 */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .stat-item {
+            background: var(--bg-primary);
+            padding: var(--spacing-xl);
+            border-radius: var(--radius-lg);
+            text-align: center;
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform var(--transition-base);
+        }
+
+        .stat-item:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-card);
+            border-color: rgba(250, 140, 22, 0.2);
+        }
+        
+        .stat-item:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-number {
+            font-family: var(--font-display);
+            font-size: 36px;
+            font-weight: 700;
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--spacing-xs);
+            transition: transform var(--transition-base);
+        }
+        
+        .stat-item:hover .stat-number {
+            transform: scale(1.1);
+        }
+
+        .stat-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /* 卡片样式 - 优化版 */
+        .content-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            margin-bottom: var(--spacing-lg);
+            box-shadow: var(--shadow-card);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .content-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+            transform: scaleY(0);
+            transition: transform var(--transition-base);
+        }
+        
+        .content-card:hover {
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-2px);
+        }
+        
+        .content-card:hover::before {
+            transform: scaleY(1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-md);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .card-title {
+            font-family: var(--font-display);
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+        
+        .card-title i {
+            color: var(--primary-color);
+            font-size: 24px;
+        }
+
+        /* 任务列表 - 优化版 */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-md);
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            padding: var(--spacing-xl);
+            background: linear-gradient(135deg, #fafbfc 0%, #ffffff 100%);
+            border-radius: var(--radius-lg);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-base);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .task-item::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(250, 140, 22, 0.03) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity var(--transition-base);
+        }
+
+        .task-item:hover {
+            border-color: rgba(250, 140, 22, 0.3);
+            transform: translateX(8px);
+            box-shadow: var(--shadow-md);
+        }
+        
+        .task-item:hover::after {
+            opacity: 1;
+        }
+
+        .task-icon {
+            width: 56px;
+            height: 56px;
+            background: var(--primary-gradient);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: var(--spacing-lg);
+            color: white;
+            font-size: 28px;
+            flex-shrink: 0;
+            box-shadow: 0 4px 16px rgba(250, 140, 22, 0.3);
+            transition: all var(--transition-base);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .task-item:hover .task-icon {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 6px 24px rgba(250, 140, 22, 0.4);
+        }
+
+        .task-info {
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .task-title {
+            font-family: var(--font-display);
+            font-size: 17px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-xs);
+        }
+
+        .task-desc {
+            font-size: 14px;
+            color: var(--text-tertiary);
+            line-height: 1.5;
+        }
+
+        .task-meta {
+            display: flex;
+            gap: var(--spacing-xl);
+            margin-top: var(--spacing-sm);
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+        
+        .task-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .task-meta i {
+            font-size: 14px;
+            color: var(--primary-color);
+        }
+
+        .task-status {
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #FFF7E6 0%, #FFECD9 100%);
+            color: var(--primary-color);
+            border: 1px solid rgba(250, 140, 22, 0.2);
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #E8F5E9 0%, #C8E6C9 100%);
+            color: var(--success-color);
+            border: 1px solid rgba(0, 200, 83, 0.2);
+        }
+
+        .status-overdue {
+            background: linear-gradient(135deg, #FFEBEE 0%, #FFCDD2 100%);
+            color: var(--error-color);
+            border: 1px solid rgba(255, 23, 68, 0.2);
+        }
+
+        .task-action {
+            margin-left: var(--spacing-lg);
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 按钮样式 - 优化版 */
+        .btn {
+            padding: 10px 24px;
+            border-radius: var(--radius-md);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all var(--transition-base);
+            border: none;
+            font-weight: 600;
+            font-family: var(--font-body);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+            box-shadow: 0 4px 16px rgba(250, 140, 22, 0.35);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-glow);
+            background: var(--primary-gradient-hover);
+        }
+        
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .btn-default {
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-default:hover {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
+        }
+
+        /* 试卷卡片 - 优化版 */
+        .exam-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: var(--spacing-xl);
+        }
+
+        .exam-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            padding: var(--spacing-xl);
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-base);
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-card);
+        }
+        
+        .exam-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-gradient);
+            transform: scaleX(0);
+            transition: transform var(--transition-base);
+        }
+
+        .exam-card:hover {
+            border-color: rgba(250, 140, 22, 0.3);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-8px);
+        }
+
+        .exam-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .exam-title {
+            font-family: var(--font-display);
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-lg);
+            line-height: 1.4;
+        }
+
+        .exam-info {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-sm);
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .exam-info-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        .exam-info-item i {
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        /* 资源网格 - 优化版 */
+        .resource-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: var(--spacing-xl);
+        }
+
+        .resource-card {
+            background: var(--bg-primary);
+            border-radius: var(--radius-xl);
+            overflow: hidden;
+            border: 1px solid var(--border-color);
+            transition: all var(--transition-base);
+            box-shadow: var(--shadow-card);
+        }
+
+        .resource-card:hover {
+            border-color: rgba(250, 140, 22, 0.3);
+            box-shadow: var(--shadow-lg);
+            transform: translateY(-6px);
+        }
+
+        .resource-thumbnail {
+            width: 100%;
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 56px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .resource-thumbnail.video {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .resource-thumbnail.document {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .resource-thumbnail i {
+            transition: all var(--transition-base);
+            z-index: 1;
+        }
+        
+        .resource-card:hover .resource-thumbnail i {
+            transform: scale(1.15);
+        }
+        
+        .resource-thumbnail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+        }
+        
+        .resource-duration {
+            position: absolute;
+            bottom: 12px;
+            right: 12px;
+            background: rgba(0,0,0,0.7);
+            color: white;
+            padding: 4px 12px;
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            font-weight: 500;
+            backdrop-filter: blur(4px);
+        }
+
+        .resource-info {
+            padding: var(--spacing-xl);
+        }
+
+        .resource-title {
+            font-family: var(--font-display);
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--spacing-sm);
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .resource-meta {
+            font-size: 13px;
+            color: var(--text-tertiary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .resource-meta span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* 空状态 - 优化版 */
+        .empty-state {
+            text-align: center;
+            padding: var(--spacing-2xl);
+            color: var(--text-tertiary);
+        }
+
+        .empty-state i {
+            font-size: 80px;
+            margin-bottom: var(--spacing-lg);
+            color: var(--border-color);
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        /* 响应式 - 优化版 */
+        @media (max-width: 1200px) {
+            .course-title-section {
+                flex-direction: column;
+                gap: var(--spacing-lg);
+            }
+            
+            .course-progress {
+                align-items: flex-start;
+                width: 100%;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .exam-grid,
+            .resource-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .course-meta {
+                flex-wrap: wrap;
+                gap: var(--spacing-sm);
+            }
+            
+            .course-meta-item {
+                font-size: 12px;
+                padding: 6px 12px;
+            }
+            
+            .tab-header {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .tab-item {
+                white-space: nowrap;
+                font-size: 14px;
+                padding: var(--spacing-sm) var(--spacing-md);
+            }
+            
+            .task-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--spacing-md);
+            }
+            
+            .task-icon {
+                margin-right: 0;
+            }
+            
+            .task-action {
+                margin-left: 0;
+                width: 100%;
+            }
+            
+            .task-action .btn {
+                width: 100%;
+            }
+        }
+
+        /* 页面加载动画 */
+        .page-loaded .course-header {
+            animation: slideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .page-loaded .tab-header {
+            animation: slideUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.1s both;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 玻璃拟态效果 - frontend-design */
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        /* 浮动动画 */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        /* 渐变文字效果 */
+        .gradient-text {
+            background: linear-gradient(135deg, #FA8C16 0%, #FF6B35 50%, #FF8E53 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 霓虹光晕效果 */
+        .neon-glow {
+            box-shadow: 
+                0 0 5px rgba(250, 140, 22, 0.5),
+                0 0 20px rgba(250, 140, 22, 0.3),
+                0 0 40px rgba(250, 140, 22, 0.1);
+        }
+
+        /* 3D卡片悬停效果 */
+        .card-3d {
+            transform-style: preserve-3d;
+            transition: transform 0.3s ease;
+        }
+
+        .card-3d:hover {
+            transform: perspective(1000px) rotateX(2deg) rotateY(-2deg) translateZ(10px);
+        }
+
+        /* 波浪背景动画 */
+        @keyframes wave {
+            0% { transform: translateX(0) translateZ(0) scaleY(1); }
+            50% { transform: translateX(-25%) translateZ(0) scaleY(0.8); }
+            100% { transform: translateX(-50%) translateZ(0) scaleY(1); }
+        }
+
+        .wave-bg {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 200%;
+            height: 100px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1440 320'%3E%3Cpath fill='%23FA8C16' fill-opacity='0.05' d='M0,96L48,112C96,128,192,160,288,160C384,160,480,128,576,122.7C672,117,768,139,864,154.7C960,171,1056,181,1152,165.3C1248,149,1344,107,1392,85.3L1440,64L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E") repeat-x;
+            animation: wave 15s linear infinite;
+            pointer-events: none;
+        }
+
+        /* 粒子效果 */
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: rgba(250, 140, 22, 0.4);
+            border-radius: 50%;
+            animation: particle-float 8s ease-in-out infinite;
+        }
+
+        @keyframes particle-float {
+            0%, 100% { 
+                transform: translateY(0) translateX(0);
+                opacity: 0;
+            }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { 
+                transform: translateY(-100px) translateX(50px);
+                opacity: 0;
+            }
+        }
+
+        /* 磁性按钮效果 */
+        .magnetic-btn {
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .magnetic-btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0.3) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+            border-radius: 50%;
+        }
+
+        .magnetic-btn:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* 视差滚动效果 */
+        .parallax-layer {
+            will-change: transform;
+            transition: transform 0.1s linear;
+        }
+
+        /* 文字打字机效果 */
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        .typing-effect {
+            overflow: hidden;
+            white-space: nowrap;
+            animation: typing 2s steps(40, end);
+        }
+
+        /* 脉冲环动画 */
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+
+        .pulse-ring {
+            position: relative;
+        }
+
+        .pulse-ring::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            animation: pulse-ring 2s ease-out infinite;
+        }
+
+        /* 滚动显示动画 */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 渐变边框 */
+        .gradient-border {
+            position: relative;
+            background: linear-gradient(135deg, #fff 0%, #fafbfc 100%);
+            border-radius: var(--radius-xl);
+        }
+
+        .gradient-border::before {
+            content: '';
+            position: absolute;
+            inset: -2px;
+            background: linear-gradient(135deg, #FA8C16, #FF6B35, #FF8E53, #FA8C16);
+            border-radius: calc(var(--radius-xl) + 2px);
+            z-index: -1;
+            animation: border-rotate 3s linear infinite;
+            background-size: 300% 300%;
+        }
+
+        @keyframes border-rotate {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* 悬浮卡片 */
+        .hover-lift {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .hover-lift:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.1),
+                0 0 0 1px rgba(250, 140, 22, 0.1);
+        }
+
+        /* 毛玻璃卡片 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            box-shadow: 
+                0 8px 32px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+        }
+
+        /* 动态网格背景 */
+        .grid-bg {
+            background-image: 
+                linear-gradient(rgba(250, 140, 22, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(250, 140, 22, 0.03) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* 发光文字 */
+        .glow-text {
+            text-shadow: 
+                0 0 10px rgba(250, 140, 22, 0.5),
+                0 0 20px rgba(250, 140, 22, 0.3),
+                0 0 30px rgba(250, 140, 22, 0.1);
+        }
+
+        /* 弹性动画 */
+        @keyframes elastic {
+            0% { transform: scale(0); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .elastic-in {
+            animation: elastic 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        /* 扫描线效果 */
+        .scan-line {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-line::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            animation: scan 3s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0% { left: -100%; }
+            50%, 100% { left: 100%; }
+        }
+
+        /* 圆形进度条 */
+        .circular-progress {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        .circular-progress svg {
+            transform: rotate(-90deg);
+        }
+
+        .circular-progress circle {
+            fill: none;
+            stroke-width: 8;
+            stroke-linecap: round;
+        }
+
+        .circular-progress .bg {
+            stroke: rgba(0,0,0,0.06);
+        }
+
+        .circular-progress .progress {
+            stroke: url(#gradient);
+            stroke-dasharray: 339.292;
+            stroke-dashoffset: 339.292;
+            transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* 资源卡片新样式 */
+        .resource-card-enhanced {
+            position: relative;
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9fc 100%);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(0,0,0,0.06);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+        }
+
+        .resource-card-enhanced::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #FA8C16, #FF6B35, #FF8E53);
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .resource-card-enhanced:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 
+                0 20px 40px rgba(0,0,0,0.12),
+                0 0 0 1px rgba(250, 140, 22, 0.1);
+        }
+
+        .resource-card-enhanced:hover::before {
+            transform: scaleX(1);
+        }
+
+        .resource-thumbnail-enhanced {
+            position: relative;
+            height: 200px;
+            overflow: hidden;
+        }
+
+        .resource-thumbnail-enhanced img,
+        .resource-thumbnail-enhanced .thumbnail-placeholder {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.6s ease;
+        }
+
+        .resource-card-enhanced:hover .resource-thumbnail-enhanced img,
+        .resource-card-enhanced:hover .resource-thumbnail-enhanced .thumbnail-placeholder {
+            transform: scale(1.1);
+        }
+
+        .play-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .resource-card-enhanced:hover .play-overlay {
+            opacity: 1;
+        }
+
+        .play-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,255,255,0.95);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform: scale(0.8);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .resource-card-enhanced:hover .play-btn {
+            transform: scale(1);
+        }
+
+        .play-btn i {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-left: 4px;
+        }
+
+        /* 统计数字动画 */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-number-animated {
+            animation: countUp 0.8s ease forwards;
+        }
+
+        /* 标签切换动画 */
+        .tab-panel {
+            display: none;
+            opacity: 0;
+            transform: translateY(20px) scale(0.98);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .tab-panel.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0) scale(1);
+            animation: tabFadeIn 0.5s ease forwards;
+        }
+
+        @keyframes tabFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .resource-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .course-title {
+                font-size: 24px;
+            }
+            
+            .stats-bar {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        /* 滚动条美化 */
+        .tab-content::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        .tab-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .tab-content::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 4px;
+        }
+        
+        .tab-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.2);
+        }
+
+        /* 玻璃卡片效果 */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
+            padding: 20px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .glass-card:hover {
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
+        }
+
+        /* 悬停下划线效果 */
+        .hover-underline {
+            position: relative;
+            text-decoration: none;
+        }
+
+        .hover-underline::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #FA8C16, #FF6B35);
+            transition: width 0.3s ease;
+        }
+
+        .hover-underline:hover::after {
+            width: 100%;
+        }
+
+        /* 徽章脉冲效果 */
+        .badge-pulse {
+            animation: badgePulse 2s ease-in-out infinite;
+        }
+
+        @keyframes badgePulse {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(250, 140, 22, 0.4);
+            }
+            50% {
+                box-shadow: 0 0 0 8px rgba(250, 140, 22, 0);
+            }
+        }
+
+        /* 进度条发光效果 */
+        .progress-glow {
+            box-shadow: 0 0 10px rgba(250, 140, 22, 0.3);
+        }
+
+        .progress-animated {
+            background: linear-gradient(90deg, #FA8C16 0%, #FF6B35 50%, #FF8E53 100%);
+            background-size: 200% 100%;
+            animation: progressShine 2s linear infinite;
+        }
+
+        @keyframes progressShine {
+            0% {
+                background-position: 200% 0;
+            }
+            100% {
+                background-position: -200% 0;
+            }
+        }
+
+        /* 数字动画效果 */
+        .stat-number-animated {
+            animation: numberPop 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55) forwards;
+            opacity: 0;
+            transform: scale(0.5);
+        }
+
+        @keyframes numberPop {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* 3D卡片效果 */
+        .card-3d {
+            transform-style: preserve-3d;
+            perspective: 1000px;
+        }
+
+        .card-3d:hover {
+            transform: rotateY(5deg) rotateX(5deg) translateY(-8px);
+        }
+
+        /* 页面加载动画 */
+        .page-loaded .course-header {
+            animation: slideDown 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Tab切换动画 */
+        .tab-panel {
+            animation: fadeInUp 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 资源网格交错动画 */
+        .resource-grid .resource-card-enhanced {
+            opacity: 0;
+            animation: cardFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .resource-grid .resource-card-enhanced:nth-child(1) { animation-delay: 0.1s; }
+        .resource-grid .resource-card-enhanced:nth-child(2) { animation-delay: 0.2s; }
+        .resource-grid .resource-card-enhanced:nth-child(3) { animation-delay: 0.3s; }
+        .resource-grid .resource-card-enhanced:nth-child(4) { animation-delay: 0.4s; }
+        .resource-grid .resource-card-enhanced:nth-child(5) { animation-delay: 0.5s; }
+        .resource-grid .resource-card-enhanced:nth-child(6) { animation-delay: 0.6s; }
+
+        @keyframes cardFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 统计栏交错动画 */
+        .stats-bar .stat-item {
+            opacity: 0;
+            animation: statFadeIn 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+        }
+
+        .stats-bar .stat-item:nth-child(1) { animation-delay: 0.1s; }
+        .stats-bar .stat-item:nth-child(2) { animation-delay: 0.2s; }
+        .stats-bar .stat-item:nth-child(3) { animation-delay: 0.3s; }
+        .stats-bar .stat-item:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes statFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* 响应式优化 */
+        @media (max-width: 768px) {
+            .glass-effect {
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+            
+            .resource-grid .resource-card-enhanced {
+                animation-delay: 0.1s !important;
+            }
+            
+            .stats-bar .stat-item {
+                animation-delay: 0.1s !important;
+            }
+        }
+    </style>
+</head>
+<body class="has-nav-sidebar">
+    <div class="main-content">
+        <!-- 课程头部信息 - 玻璃拟态效果 -->
+        <header class="course-header glass-effect float-animation">
+            <nav class="breadcrumb">
+                <a href="./学生端_我的课程.html" class="hover-underline">我的课程</a>
+                <span class="breadcrumb-separator">/</span>
+                <span class="breadcrumb-current gradient-text" id="courseName">机械制图</span>
+            </nav>
+            
+            <div class="course-title-section">
+                <div class="course-title-wrapper">
+                    <h1 class="course-title">
+                        <span id="courseTitle">机械制图</span>
+                        <span class="course-badge badge-pulse">学习中</span>
+                    </h1>
+                    <div class="course-meta">
+                        <div class="course-meta-item">
+                            <i class="iconfont icon-zhuanye"></i>
+                            <span>机械制造与自动化</span>
+                        </div>
+                        <div class="course-meta-item">
+                            <i class="iconfont icon-nianji"></i>
+                            <span>2024年</span>
+                        </div>
+                        <div class="course-meta-item">
+                            <i class="iconfont icon-banji"></i>
+                            <span>机械工程1班</span>
+                        </div>
+                        <div class="course-meta-item">
+                            <i class="iconfont icon-jiaoshi"></i>
+                            <span>王老师</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="course-progress">
+                    <div class="progress-text">
+                        已完成 <strong class="gradient-text">65%</strong>
+                    </div>
+                    <div class="progress-bar progress-glow">
+                        <div class="progress-fill progress-animated" style="width: 65%"></div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tab 标签页 - 玻璃拟态效果 -->
+        <div class="tab-container glass-effect">
+            <div class="tab-header">
+                <div class="tab-item active" data-tab="videos" onclick="switchTab('videos')">
+                    <i class="iconfont icon-shipin"></i>
+                    视频教材
+                </div>
+                <div class="tab-item" data-tab="materials" onclick="switchTab('materials')">
+                    <i class="iconfont icon-jiaocai"></i>
+                    辅导教材
+                </div>
+            </div>
+
+            <div class="tab-content">
+                <!-- 视频教材 Tab -->
+                <div class="tab-panel active" id="tab-videos">
+                    <!-- 统计栏 - 玻璃拟态效果 -->
+                    <div class="stats-bar">
+                        <div class="stat-item glass-card hover-lift">
+                            <div class="stat-number gradient-text stat-number-animated" style="animation-delay: 0.1s">12</div>
+                            <div class="stat-label">全部视频</div>
+                        </div>
+                        <div class="stat-item glass-card hover-lift">
+                            <div class="stat-number gradient-text stat-number-animated" style="animation-delay: 0.2s">8</div>
+                            <div class="stat-label">已学习</div>
+                        </div>
+                        <div class="stat-item glass-card hover-lift">
+                            <div class="stat-number gradient-text stat-number-animated" style="animation-delay: 0.3s">4</div>
+                            <div class="stat-label">未学习</div>
+                        </div>
+                        <div class="stat-item glass-card hover-lift">
+                            <div class="stat-number gradient-text stat-number-animated" style="animation-delay: 0.4s">6.5h</div>
+                            <div class="stat-label">总时长</div>
+                        </div>
+                    </div>
+
+                    <!-- 资源网格 - 增强版卡片 -->
+                    <div class="resource-grid">
+                        <div class="resource-card-enhanced card-3d" onclick="playVideo('第1章 制图的基本知识')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-bofang" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <span class="resource-duration">45:30</span>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-bofang"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">第1章 制图的基本知识</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-shijian"></i> 45分钟</span>
+                                    <span><i class="iconfont icon-yanjing"></i> 1.2k次</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resource-card-enhanced card-3d" onclick="playVideo('第2章 点、线、面的投影')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-bofang" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <span class="resource-duration">52:15</span>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-bofang"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">第2章 点、线、面的投影</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-shijian"></i> 52分钟</span>
+                                    <span><i class="iconfont icon-yanjing"></i> 980次</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resource-card-enhanced card-3d" onclick="playVideo('第3章 基本体的投影')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-bofang" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <span class="resource-duration">38:45</span>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-bofang"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">第3章 基本体的投影</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-shijian"></i> 38分钟</span>
+                                    <span><i class="iconfont icon-yanjing"></i> 856次</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resource-card-enhanced card-3d" onclick="playVideo('第4章 组合体的投影')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-bofang" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <span class="resource-duration">48:20</span>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-bofang"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">第4章 组合体的投影</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-shijian"></i> 48分钟</span>
+                                    <span><i class="iconfont icon-yanjing"></i> 723次</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resource-card-enhanced card-3d" onclick="playVideo('第5章 机件的表达方法')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-bofang" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <span class="resource-duration">55:00</span>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-bofang"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">第5章 机件的表达方法</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-shijian"></i> 55分钟</span>
+                                    <span><i class="iconfont icon-yanjing"></i> 612次</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resource-card-enhanced card-3d" onclick="playVideo('第6章 标准件与常用件')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-bofang" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <span class="resource-duration">42:30</span>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-bofang"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">第6章 标准件与常用件</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-shijian"></i> 42分钟</span>
+                                    <span><i class="iconfont icon-yanjing"></i> 534次</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 辅导教材 Tab -->
+                <div class="tab-panel" id="tab-materials">
+                    <!-- 统计栏 - 玻璃拟态效果 -->
+                    <div class="stats-bar">
+                        <div class="stat-item glass-card hover-lift">
+                            <div class="stat-number gradient-text stat-number-animated" style="animation-delay: 0.1s">8</div>
+                            <div class="stat-label">全部资料</div>
+                        </div>
+                        <div class="stat-item glass-card hover-lift">
+                            <div class="stat-number gradient-text stat-number-animated" style="animation-delay: 0.2s">5</div>
+                            <div class="stat-label">PDF文档</div>
+                        </div>
+                        <div class="stat-item glass-card hover-lift">
+                            <div class="stat-number gradient-text stat-number-animated" style="animation-delay: 0.3s">2</div>
+                            <div class="stat-label">PPT课件</div>
+                        </div>
+                        <div class="stat-item glass-card hover-lift">
+                            <div class="stat-number gradient-text stat-number-animated" style="animation-delay: 0.4s">1</div>
+                            <div class="stat-label">Word文档</div>
+                        </div>
+                    </div>
+
+                    <!-- 资源网格 - 增强版卡片 -->
+                    <div class="resource-grid">
+                        <div class="resource-card-enhanced card-3d" onclick="downloadMaterial('机械制图课程教学大纲')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a24 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-PDF" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-xiazai"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">机械制图课程教学大纲</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-wenjian"></i> PDF</span>
+                                    <span><i class="iconfont icon-xiazai"></i> 下载</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resource-card-enhanced card-3d" onclick="downloadMaterial('第1章 制图的基本知识课件')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-PPT" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-xiazai"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">第1章 制图的基本知识课件</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-wenjian"></i> PPT</span>
+                                    <span><i class="iconfont icon-xiazai"></i> 下载</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resource-card-enhanced card-3d" onclick="downloadMaterial('第2章 投影基础课件')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-PPT" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-xiazai"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">第2章 投影基础课件</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-wenjian"></i> PPT</span>
+                                    <span><i class="iconfont icon-xiazai"></i> 下载</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resource-card-enhanced card-3d" onclick="downloadMaterial('机械制图习题集')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #9b59b6 0%, #8e44ad 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-PDF" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-xiazai"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">机械制图习题集</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-wenjian"></i> PDF</span>
+                                    <span><i class="iconfont icon-xiazai"></i> 下载</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resource-card-enhanced card-3d" onclick="downloadMaterial('实验指导书')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #3498db 0%, #2980b9 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-word" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-xiazai"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">实验指导书</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-wenjian"></i> Word</span>
+                                    <span><i class="iconfont icon-xiazai"></i> 下载</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="resource-card-enhanced card-3d" onclick="downloadMaterial('机械制图国家标准汇编')">
+                            <div class="resource-thumbnail-enhanced">
+                                <div class="thumbnail-placeholder" style="background: linear-gradient(135deg, #1abc9c 0%, #16a085 100%); display: flex; align-items: center; justify-content: center;">
+                                    <i class="iconfont icon-PDF" style="font-size: 48px; color: rgba(255,255,255,0.9);"></i>
+                                </div>
+                                <div class="play-overlay">
+                                    <div class="play-btn">
+                                        <i class="iconfont icon-xiazai"></i>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="resource-info">
+                                <div class="resource-title">机械制图国家标准汇编</div>
+                                <div class="resource-meta">
+                                    <span><i class="iconfont icon-wenjian"></i> PDF</span>
+                                    <span><i class="iconfont icon-xiazai"></i> 下载</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 页面加载时设置课程名称
+        document.addEventListener('DOMContentLoaded', function() {
+            const courseName = getUrlParam('courseName');
+            if (courseName) {
+                document.getElementById('courseName').textContent = courseName;
+                document.getElementById('courseTitle').textContent = courseName;
+                document.title = courseName + ' - 课程详情';
+            }
+            
+            // 添加页面加载动画类
+            document.body.classList.add('page-loaded');
+        });
+
+        // Tab切换功能
+        function switchTab(tabName) {
+            // 移除所有active类
+            document.querySelectorAll('.tab-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelectorAll('.tab-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+
+            // 添加active类到当前tab
+            document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+        }
+
+        // 播放视频
+        function playVideo(videoName) {
+            // 创建视频播放弹窗
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(15, 23, 42, 0.9);
+                backdrop-filter: blur(20px);
+                z-index: 1000;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                padding: 40px;
+            `;
+            overlay.onclick = function(e) {
+                if (e.target === overlay) overlay.remove();
+            };
+
+            overlay.innerHTML = `
+                <div style="
+                    background: linear-gradient(145deg, #ffffff 0%, #f8f9fc 100%);
+                    border-radius: 24px;
+                    width: 100%;
+                    max-width: 900px;
+                    overflow: hidden;
+                    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+                ">
+                    <div style="
+                        padding: 24px 32px;
+                        background: linear-gradient(135deg, #FA8C16 0%, #FF6B35 100%);
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    ">
+                        <div style="color: white; font-size: 18px; font-weight: 600;">
+                            <i class="iconfont icon-shipin" style="margin-right: 8px;"></i>
+                            ${videoName}
+                        </div>
+                        <button onclick="this.closest('.tab-content').parentElement.remove()" style="
+                            width: 36px;
+                            height: 36px;
+                            border-radius: 50%;
+                            background: rgba(255,255,255,0.2);
+                            border: none;
+                            color: white;
+                            cursor: pointer;
+                            font-size: 20px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            transition: all 0.3s ease;
+                        " onmouseover="this.style.background='rgba(255,255,255,0.3)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">&times;</button>
+                    </div>
+                    <div style="padding: 32px;">
+                        <div style="
+                            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+                            border-radius: 16px;
+                            height: 400px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 64px;
+                        ">
+                            <i class="iconfont icon-bofang"></i>
+                        </div>
+                        <div style="margin-top: 24px; text-align: center; color: var(--text-secondary);">
+                            <p style="margin-bottom: 8px;">视频播放器区域</p>
+                            <p style="font-size: 14px; color: var(--text-tertiary);">点击播放按钮开始观看</p>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        // 下载资料
+        function downloadMaterial(materialName) {
+            // 创建下载提示
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                top: 24px;
+                right: 24px;
+                background: linear-gradient(135deg, #FA8C16 0%, #FF6B35 100%);
+                color: white;
+                padding: 16px 24px;
+                border-radius: 12px;
+                box-shadow: 0 8px 32px rgba(250, 140, 22, 0.4);
+                z-index: 10000;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+                font-weight: 500;
+                animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            `;
+            toast.innerHTML = `
+                <i class="iconfont icon-xiazai" style="font-size: 20px;"></i>
+                <span>正在下载：${materialName}</span>
+            `;
+            document.body.appendChild(toast);
+
+            // 3秒后移除提示
+            setTimeout(() => {
+                toast.style.animation = 'slideOutRight 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        }
+
+        // 添加滑入滑出动画
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes slideInRight {
+                from {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            @keyframes slideOutRight {
+                from {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+                to {
+                    opacity: 0;
+                    transform: translateX(100px);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+    <!-- 学生端导航组件加载器 -->
+    <script src="./nav-loader-student.js"></script>
+</body>
+</html>

@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教学实训平台 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        
+        .menu-item .iconfont, .menu-title .iconfont, .tree-title .iconfont {
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .user-info span {
+            color: #666;
+            font-size: 14px;
+        }
+
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-icon.blue { background: #E6F7FF; }
+        .stat-icon.orange { background: #FFF7E6; }
+        .stat-icon.green { background: #F6FFED; }
+        .stat-icon.purple { background: #F9F0FF; }
+        .stat-info h3 {
+            font-size: 14px;
+            color: #666;
+            font-weight: normal;
+            margin-bottom: 4px;
+        }
+        .stat-info .number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+        }
+        .module-section {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .section-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: #FA8C16;
+            border-radius: 2px;
+        }
+        .view-all {
+            color: #FA8C16;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .module-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+        }
+        .module-item {
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-decoration: none;
+        }
+        .module-item:hover {
+            border-color: #FA8C16;
+            box-shadow: 0 4px 12px rgba(250,140,22,0.15);
+            transform: translateY(-2px);
+        }
+        .module-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .module-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .module-icon.blue { background: #E6F7FF; }
+        .module-icon.green { background: #F6FFED; }
+        .module-icon.orange { background: #FFF7E6; }
+        .module-status {
+            padding: 4px 10px;
+            border-radius: 10px;
+            font-size: 12px;
+        }
+        .status-progress {
+            background: #E6F7FF;
+            color: #1890FF;
+        }
+        .status-pending {
+            background: #FFF7E6;
+            color: #FA8C16;
+        }
+        .status-completed {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+        .module-name {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        .module-desc {
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 12px;
+        }
+        .module-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #F0F0F0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #FA8C16;
+            border-radius: 3px;
+            transition: width 0.3s;
+        }
+        .progress-text {
+            font-size: 12px;
+            color: #666;
+            min-width: 40px;
+            text-align: right;
+        }
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #FAFAFA;
+            border-radius: 6px;
+            border-left: 4px solid #FA8C16;
+        }
+        .task-item.exam {
+            border-left-color: #1890FF;
+        }
+        .task-item.practice {
+            border-left-color: #52C41A;
+        }
+        .task-info h4 {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .task-info p {
+            font-size: 12px;
+            color: #999;
+        }
+        .task-action {
+            padding: 6px 16px;
+            background: #FA8C16;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .task-action:hover {
+            background: #FF9C2E;
+        }
+        .badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 8px;
+        }
+        .badge-red {
+            background: #FF4D4F;
+            color: #fff;
+        }
+        .badge-blue {
+            background: #1890FF;
+            color: #fff;
+        }
+        .badge-green {
+            background: #52C41A;
+            color: #fff;
+        }
+
+
+
+</style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="logo"><i class="iconfont icon-gongzuotai"></i> 教学实训平台</div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shouye"></i>工作台</div>
+            <div class="menu-items">
+                <div class="menu-item active" onclick="window.location.href='./教学实训平台_学生端.html'">
+                    <span><i class="iconfont icon-shouye"></i></span><span>首页概览</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-kechengguanli"></i>我的学习</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./学生端_我的课程.html'">
+                    <span><i class="iconfont icon-kechengguanli"></i></span><span>我的课程</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./学生端_我的考试.html'">
+                    <span><i class="iconfont icon-shijuan"></i></span><span>我的考试</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./学生端_我的实训.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>我的实训</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-p008zhishiku"></i>知识库</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./学生端_错题集.html'">
+                    <span><i class="iconfont icon-cuowu"></i></span><span>错题集</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./学生端_工艺管理.html'">
+                    <span><i class="iconfont icon-shezhi"></i></span><span>工艺管理</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <!-- 顶部导航 -->
+        <div class="header">
+            <div class="breadcrumb">
+                首页 <span>/</span> 工作台
+            </div>
+            <div id="user-menu-teacher-container" data-role="student"></div>
+        </div>
+
+        <!-- 内容区 -->
+        <div id="content-area" class="content-body">
+            <!-- 统计数据 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📖</div>
+                    <div class="stat-info">
+                        <h3>我的课程</h3>
+                        <div class="number">8</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📝</div>
+                    <div class="stat-info">
+                        <h3>待完成考试</h3>
+                        <div class="number">3</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">🔧</div>
+                    <div class="stat-info">
+                        <h3>待完成实训</h3>
+                        <div class="number">2</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">📊</div>
+                    <div class="stat-info">
+                        <h3>错题数量</h3>
+                        <div class="number">46</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 我的课程 -->
+            <div class="module-section">
+                <div class="section-header">
+                    <div class="section-title">我的课程</div>
+                    <span class="view-all" onclick="alert('功能开发中...')">查看全部 →</span>
+                </div>
+                <div class="module-grid">
+                    <div class="module-item" onclick="alert('功能开发中...')">
+                        <div class="module-header">
+                            <div class="module-icon blue">⚙️</div>
+                            <span class="module-status status-progress">学习中</span>
+                        </div>
+                        <div class="module-name">机械制图</div>
+                        <div class="module-desc">授课教师：王老师 | 32学时</div>
+                        <div class="module-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 75%"></div>
+                            </div>
+                            <span class="progress-text">75%</span>
+                        </div>
+                    </div>
+                    <div class="module-item" onclick="alert('功能开发中...')">
+                        <div class="module-header">
+                            <div class="module-icon green">🔩</div>
+                            <span class="module-status status-progress">学习中</span>
+                        </div>
+                        <div class="module-name">数控加工技术</div>
+                        <div class="module-desc">授课教师：张老师 | 48学时</div>
+                        <div class="module-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 45%"></div>
+                            </div>
+                            <span class="progress-text">45%</span>
+                        </div>
+                    </div>
+                    <div class="module-item" onclick="alert('功能开发中...')">
+                        <div class="module-header">
+                            <div class="module-icon orange">📐</div>
+                            <span class="module-status status-pending">未开始</span>
+                        </div>
+                        <div class="module-name">CAD/CAM技术</div>
+                        <div class="module-desc">授课教师：李老师 | 40学时</div>
+                        <div class="module-progress">
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: 0%"></div>
+                            </div>
+                            <span class="progress-text">0%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 待完成任务 -->
+            <div class="module-section">
+                <div class="section-header">
+                    <div class="section-title">待完成任务</div>
+                    <span class="view-all" onclick="window.location.href='./学生端_我的考试.html'">查看全部 →</span>
+                </div>
+                <div class="task-list">
+                    <div class="task-item exam">
+                        <div class="task-info">
+                            <h4>《机械制图》期末考试 <span class="badge badge-blue">考试</span> <span class="badge badge-red">紧急</span></h4>
+                            <p>截止时间：2025-01-15 23:59 | 时长：120分钟</p>
+                        </div>
+                        <button class="task-action" onclick="window.location.href='./特殊_在线考试界面.html'">开始考试</button>
+                    </div>
+                    <div class="task-item practice">
+                        <div class="task-info">
+                            <h4>《数控加工》实训任务三 <span class="badge badge-green">实训</span></h4>
+                            <p>截止时间：2025-01-18 23:59 | 类型：加工类</p>
+                        </div>
+                        <button class="task-action" onclick="window.location.href='./特殊_实训操作界面.html'">开始实训</button>
+                    </div>
+                    <div class="task-item">
+                        <div class="task-info">
+                            <h4>《机械制图》章节测试 <span class="badge badge-blue">考试</span></h4>
+                            <p>截止时间：2025-01-20 23:59 | 时长：45分钟</p>
+                        </div>
+                        <button class="task-action" onclick="window.location.href='./特殊_在线考试界面.html'">开始考试</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 最近错题 -->
+            <div class="module-section">
+                <div class="section-header">
+                    <div class="section-title">最近错题</div>
+                    <span class="view-all" onclick="alert('功能开发中...')">查看全部 →</span>
+                </div>
+                <div class="task-list">
+                    <div class="task-item exam">
+                        <div class="task-info">
+                            <h4>机械制图 - 第三章测试</h4>
+                            <p>错题：3道 | 涉及知识点：三视图投影、剖面图绘制</p>
+                        </div>
+                        <button class="task-action" style="background: #1890FF;" onclick="alert('功能开发中...')">查看解析</button>
+                    </div>
+                    <div class="task-item exam">
+                        <div class="task-info">
+                            <h4>数控加工 - 期中考试</h4>
+                            <p>错题：5道 | 涉及知识点：G代码编程、刀具补偿</p>
+                        </div>
+                        <button class="task-action" style="background: #1890FF;" onclick="alert('功能开发中...')">查看解析</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 页面配置
+        const pageConfig = {
+            'home': { url: './pages/home.html', title: '首页' },
+            'course': { url: './pages/course.html', title: '我的课程' },
+            'course-detail': { url: './pages/course-detail.html', title: '课程详情' },
+            'exam': { url: './pages/exam.html', title: '我的考试' },
+            'exam-detail': { url: './pages/exam-detail.html', title: '在线考试' },
+            'exam-result': { url: './pages/exam-result.html', title: '考试成绩' },
+            'training': { url: './pages/training.html', title: '我的实训' },
+            'training-detail': { url: './pages/training-detail.html', title: '实训操作' },
+            'wrong': { url: './pages/wrong.html', title: '错题集' },
+            'wrong-detail': { url: './pages/wrong-detail.html', title: '错题解析' }
+        };
+
+        // 当前页面
+        let currentPage = 'home';
+
+        // 页面内容缓存
+        const pageContents = {};
+
+        // 加载页面
+        function loadPage(pageName) {
+            if (!pageConfig[pageName]) return;
+            
+            const config = pageConfig[pageName];
+            const contentArea = document.getElementById('content-area');
+            
+            // 显示加载状态
+            contentArea.innerHTML = '<div style="text-align: center; padding: 50px;">加载中...</div>';
+            
+            // 如果有缓存，直接使用
+            if (pageContents[pageName]) {
+                contentArea.innerHTML = pageContents[pageName];
+                currentPage = pageName;
+                updateMenuActive(pageName);
+                updateBreadcrumb(config.title);
+                return;
+            }
+            
+            // 使用 XMLHttpRequest 加载页面内容（支持 file:// 协议）
+            const xhr = new XMLHttpRequest();
+            xhr.open('GET', config.url, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === 4) {
+                    if (xhr.status === 200 || xhr.status === 0) { // status 0 for file://
+                        const html = xhr.responseText;
+                        
+                        // 提取内容（去掉注释）
+                        const content = html.replace(/<!--[\s\S]*?-->/g, '').trim();
+                        
+                        // 缓存内容
+                        pageContents[pageName] = content;
+                        
+                        // 更新内容区域
+                        contentArea.innerHTML = content;
+                        
+                        // 更新当前页面
+                        currentPage = pageName;
+                        
+                        // 更新菜单高亮
+                        updateMenuActive(pageName);
+                        
+                        // 更新面包屑
+                        updateBreadcrumb(config.title);
+                    } else {
+                        console.error('加载页面失败:', xhr.statusText);
+                        contentArea.innerHTML = '<div style="text-align: center; padding: 50px; color: #ff4d4f;">页面加载失败，请稍后重试</div>';
+                    }
+                }
+            };
+            xhr.onerror = function() {
+                console.error('加载页面失败: 网络错误');
+                contentArea.innerHTML = '<div style="text-align: center; padding: 50px; color: #ff4d4f;">页面加载失败，请检查文件路径</div>';
+            };
+            xhr.send();
+        }
+
+        // 更新菜单高亮
+        function updateMenuActive(pageName) {
+            document.querySelectorAll('.menu-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // 根据pageName找到对应的菜单项并高亮
+            const menuMap = {
+                'home': 0,
+                'course': 1,
+                'exam': 2,
+                'training': 3,
+                'wrong': 4
+            };
+            
+            const menuItems = document.querySelectorAll('.menu-item');
+            if (menuItems[menuMap[pageName]]) {
+                menuItems[menuMap[pageName]].classList.add('active');
+            }
+        }
+
+        // 更新面包屑
+        function updateBreadcrumb(title) {
+            const breadcrumb = document.querySelector('.breadcrumb');
+            if (title === '首页') {
+                breadcrumb.innerHTML = '首页 <span>/</span> 工作台';
+            } else {
+                breadcrumb.innerHTML = `首页 <span>/</span> 我的学习 <span>/</span> ${title}`;
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+    
+        // 菜单展开/收起
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            // 自动展开包含 active 菜单项的菜单组
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.classList.remove('collapsed');
+                    }
+                }
+            }
+            
+            // 默认加载首页内容（将当前页面内容作为首页）
+            console.log('SPA框架已初始化');
+        });
+    </script>
+    <script src="./user-menu-teacher-component.js"></script>
+</body>
+</html>

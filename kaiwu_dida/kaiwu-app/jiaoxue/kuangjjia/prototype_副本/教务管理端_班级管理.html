@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>班级管理 - 教务管理端</title>
+        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css?v=2">
+    <style>
+        
+        .menu-item .iconfont, .menu-title .iconfont, .tree-title .iconfont {
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #F5F7FA; min-height: 100vh; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .page-title { font-size: 20px; font-weight: 600; color: #333; display: none !important; }
+        .btn-primary { padding: 10px 20px; background: #1890FF; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary:hover { background: #40A9FF; }
+        .filter-section { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .filter-row { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+        .filter-item { display: flex; align-items: center; gap: 8px; }
+        .filter-item label { font-size: 14px; color: #666; }
+        .filter-item input, .filter-item select { padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px; min-width: 150px; }
+        .btn-search { padding: 8px 20px; background: #1890FF; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-search:hover { background: #40A9FF; }
+        .btn-reset { padding: 8px 20px; background: #fff; border: 1px solid #D9D9D9; border-radius: 4px; cursor: pointer; font-size: 14px; color: #666; }
+        .btn-reset:hover { border-color: #1890FF; color: #1890FF; }
+        .stats-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .stat-item { background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 12px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .stat-icon.blue { background: #E6F7FF; }
+        .stat-icon.green { background: #F6FFED; }
+        .stat-number { font-size: 24px; font-weight: bold; color: #333; }
+        .stat-label { font-size: 13px; color: #666; }
+        .data-table { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 14px 16px; text-align: left; border-bottom: 1px solid #F0F0F0; }
+        th { background: #FAFAFA; font-weight: 600; color: #333; font-size: 14px; }
+        td { font-size: 14px; color: #666; }
+        tr:hover td { background: #F5F7FA; }
+        .action-btns { display: flex; gap: 8px; }
+        .action-btns button { padding: 4px 10px; border: none; background: transparent; color: #1890FF; cursor: pointer; font-size: 13px; }
+        .action-btns button:hover { background: #E6F7FF; border-radius: 4px; }
+        .pagination { display: flex; justify-content: flex-end; align-items: center; padding: 16px; gap: 8px; }
+        .pagination button { padding: 6px 12px; border: 1px solid #D9D9D9; background: #fff; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .pagination button:hover { border-color: #1890FF; color: #1890FF; }
+        .pagination button.active { background: #1890FF; color: #fff; border-color: #1890FF; }
+        .pagination button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #fff; border-radius: 8px; width: 500px; max-height: 90vh; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #F0F0F0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 18px; font-weight: 600; color: #333; }
+        .modal-close { font-size: 24px; color: #999; cursor: pointer; background: none; border: none; }
+        .modal-close:hover { color: #333; }
+        .modal-body { padding: 10px; overflow-y: auto; max-height: 60vh; }
+        .modal-footer { padding: 10px; border-top: 1px solid #F0F0F0; display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-cancel { padding: 8px 20px; background: #fff; border: 1px solid #D9D9D9; border-radius: 4px; cursor: pointer; font-size: 14px; color: #666; }
+        .btn-cancel:hover { border-color: #1890FF; color: #1890FF; }
+        .btn-confirm { padding: 8px 20px; background: #1890FF; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; color: #fff; }
+        .btn-confirm:hover { background: #40A9FF; }
+        .btn-danger { background: #FF4D4F; }
+        .btn-danger:hover { background: #FF7875; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; color: #333; margin-bottom: 8px; }
+        .form-group label .required { color: #FF4D4F; margin-left: 4px; }
+        .form-group input, .form-group select { width: 100%; padding: 10px 12px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #1890FF; }
+        .form-group input.error { border-color: #FF4D4F; }
+        .error-msg { font-size: 12px; color: #FF4D4F; margin-top: 4px; display: none; }
+        .error-msg.show { display: block; }
+
+        .detail-item { display: flex; padding: 12px 0; border-bottom: 1px solid #F0F0F0; }
+        .detail-item:last-child { border-bottom: none; }
+        .detail-label { width: 120px; color: #666; font-size: 14px; }
+        .detail-value { flex: 1; color: #333; font-size: 14px; }
+
+        .confirm-modal { width: 400px; }
+        .confirm-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
+        .confirm-title { font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 8px; }
+        .confirm-msg { font-size: 14px; color: #666; text-align: center; margin-bottom: 10px; }
+    
+        /* 表格容器 - 支持左右滚动 */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .table-container table {
+            width: max-content;
+            min-width: 100%;
+            border-collapse: collapse;
+        }
+        .table-container th,
+        .table-container td {
+            white-space: nowrap;
+        }
+        /* 固定列样式 */
+        .table-container th:nth-child(1),
+        .table-container td:nth-child(1),
+        .table-container th:nth-child(2),
+        .table-container td:nth-child(2) {
+            position: sticky;
+            left: 0;
+            background: #FAFAFA;
+            z-index: 10;
+        }
+        .table-container td:nth-child(1),
+        .table-container td:nth-child(2) {
+            background: #fff;
+        }
+        .table-container th:nth-child(2),
+        .table-container td:nth-child(2) {
+            left: 40px;
+        }
+        /* 固定操作栏 */
+        .table-container th:last-child,
+        .table-container td:last-child {
+            position: sticky;
+            right: 0;
+            background: #FAFAFA;
+            z-index: 10;
+        }
+        .table-container td:last-child {
+            background: #fff;
+        }
+.menu-title.collapsed .arrow {
+            transform: rotate(-90deg);
+        }
+</style>
+</head>
+<body>
+        <!-- 侧边栏导航 -->
+    <!-- 侧边栏导航容器 - 由 nav-loader-new.js 动态加载现代化导航组件 -->
+    <div id="nav-container"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <nav class="breadcrumb">
+                    <a href="./教学实训平台_教务管理端.html">教务管理</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>班级管理</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-menu-trigger">
+                        <div class="user-avatar">
+                            <span class="iconfont icon-jiaoshiguanli"></span>
+                        </div>
+                        <span class="user-name">欢迎您，教务管理员</span>
+                        <span class="iconfont icon-xiala user-dropdown-icon"></span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-dropdown-item" onclick="UserDropdown.switchTheme()">
+                            <span class="iconfont icon-zhuti"></span>
+                            <span>切换风格</span>
+                        </div>
+                        <div class="user-dropdown-divider"></div>
+                        <div class="user-dropdown-item" onclick="UserDropdown.logout()">
+                            <span class="iconfont icon-tuichu"></span>
+                            <span>退出登录</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-body">
+            <!-- 页面标题区域 -->
+            <div class="page-header">
+                <h1 class="page-title">班级管理</h1>
+                <button class="btn-primary" onclick="openAddModal()">+ 新增班级</button>
+            </div>
+
+            <div class="filter-section">
+                <div class="filter-row">
+                    <div class="filter-item">
+                        <label>班级名称</label>
+                        <input type="text" id="filterName" placeholder="请输入班级名称">
+                    </div>
+                    <div class="filter-item">
+                        <label>专业</label>
+                        <select id="filterMajor">
+                            <option value="">全部专业</option>
+                            <option value="机械工程">机械工程</option>
+                            <option value="数控技术">数控技术</option>
+                            <option value="模具设计">模具设计</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>年级</label>
+                        <select id="filterGrade">
+                            <option value="">全部年级</option>
+                            <option value="2023级">2023级</option>
+                            <option value="2024级">2024级</option>
+                            <option value="2025级">2025级</option>
+                        </select>
+                    </div>
+                    <button class="btn-search" onclick="searchClasses()"><i class="iconfont icon-shixun"></i> 查询</button>
+                    <button class="btn-reset" onclick="resetFilter()">重置</button>
+                </div>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-icon blue">👥</div>
+                    <div><div class="stat-number" id="totalClasses">3</div><div class="stat-label">班级总数</div></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon green">✅</div>
+                    <div><div class="stat-number" id="totalStudents">90</div><div class="stat-label">学生总数</div></div>
+                </div>
+            </div>
+
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr>
+                            <th><input type="checkbox" id="selectAll" onclick="toggleSelectAll()"></th>
+                            <th>班级名称</th>
+                            <th>专业</th>
+                            <th>年级</th>
+                            <th>班主任</th>
+                            <th>学生人数</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody id="classTable"></tbody>
+                </table>
+                <div class="pagination" id="pagination"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="classModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">新增班级</div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="classForm">
+                    <input type="hidden" id="classId">
+                    <div class="form-group">
+                        <label>班级名称 <span class="required">*</span></label>
+                        <input type="text" id="name" placeholder="请输入班级名称">
+                        <div class="error-msg" id="nameError">请输入班级名称</div>
+                    </div>
+                    <div class="form-group">
+                        <label>所属专业 <span class="required">*</span></label>
+                        <select id="major">
+                            <option value="">请选择</option>
+                            <option value="机械工程">机械工程</option>
+                            <option value="数控技术">数控技术</option>
+                            <option value="模具设计">模具设计</option>
+                        </select>
+                        <div class="error-msg" id="majorError">请选择所属专业</div>
+                    </div>
+                    <div class="form-group">
+                        <label>年级 <span class="required">*</span></label>
+                        <select id="grade">
+                            <option value="">请选择</option>
+                            <option value="2023级">2023级</option>
+                            <option value="2024级">2024级</option>
+                            <option value="2025级">2025级</option>
+                        </select>
+                        <div class="error-msg" id="gradeError">请选择年级</div>
+                    </div>
+                    <div class="form-group">
+                        <label>班主任 <span class="required">*</span></label>
+                        <input type="text" id="teacher" placeholder="请输入班主任姓名">
+                        <div class="error-msg" id="teacherError">请输入班主任姓名</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">取消</button>
+                <button class="btn-confirm" onclick="saveClass()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">班级详情</div>
+                <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-item"><div class="detail-label">班级名称</div><div class="detail-value" id="detailName">-</div></div>
+                <div class="detail-item"><div class="detail-label">所属专业</div><div class="detail-value" id="detailMajor">-</div></div>
+                <div class="detail-item"><div class="detail-label">年级</div><div class="detail-value" id="detailGrade">-</div></div>
+                <div class="detail-item"><div class="detail-label">班主任</div><div class="detail-value" id="detailTeacher">-</div></div>
+                <div class="detail-item"><div class="detail-label">学生人数</div><div class="detail-value" id="detailStudents">-</div></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeDetailModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal confirm-modal">
+            <div class="modal-body" style="padding: 10px;">
+                <div class="confirm-icon">⚠️</div>
+                <div class="confirm-title">确认删除</div>
+                <div class="confirm-msg">确定要删除班级 <strong id="deleteClassName"></strong> 吗？<br>删除后不可恢复！</div>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button class="btn-cancel" onclick="closeDeleteModal()">取消</button>
+                <button class="btn-confirm btn-danger" onclick="confirmDelete()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let classes = [
+            { id: 1, name: '机械工程1班', major: '机械工程', grade: '2023级', teacher: '王老师', students: 32 },
+            { id: 2, name: '机械工程2班', major: '机械工程', grade: '2023级', teacher: '李老师', students: 30 },
+            { id: 3, name: '数控技术1班', major: '数控技术', grade: '2023级', teacher: '张老师', students: 28 }
+        ];
+
+        let currentPage = 1;
+        let pageSize = 5;
+        let editingId = null;
+        let deletingId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTable();
+            renderPagination();
+            updateStats();
+        });
+
+        function renderTable() {
+            const tbody = document.getElementById('classTable');
+            const filteredData = getFilteredData();
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredData.slice(start, end);
+
+            tbody.innerHTML = pageData.map((cls, index) => `
+                <tr>
+                    <td><input type="checkbox" class="row-checkbox" value="${cls.id}"></td>
+                    <td>${cls.name}</td>
+                    <td>${cls.major}</td>
+                    <td>${cls.grade}</td>
+                    <td>${cls.teacher}</td>
+                    <td>${cls.students}</td>
+                    <td>
+                        <div class="action-btns">
+                            <button onclick="viewClass(${cls.id})">查看</button>
+                            <button onclick="editClass(${cls.id})">编辑</button>
+                            <button onclick="deleteClass(${cls.id})">删除</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function getFilteredData() {
+            const name = document.getElementById('filterName').value.toLowerCase();
+            const major = document.getElementById('filterMajor').value;
+            const grade = document.getElementById('filterGrade').value;
+
+            return classes.filter(cls => {
+                return (!name || cls.name.toLowerCase().includes(name)) &&
+                       (!major || cls.major === major) &&
+                       (!grade || cls.grade === grade);
+            });
+        }
+
+        function renderPagination() {
+            const filteredData = getFilteredData();
+            const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
+            const pagination = document.getElementById('pagination');
+
+            let html = `<span>共 ${filteredData.length} 条</span>`;
+            html += `<button onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>上一页</button>`;
+            for (let i = 1; i <= totalPages; i++) {
+                html += `<button class="${i === currentPage ? 'active' : ''}" onclick="goPage(${i})">${i}</button>`;
+            }
+            html += `<button onclick="goPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>下一页</button>`;
+            pagination.innerHTML = html;
+        }
+
+        function updateStats() {
+            document.getElementById('totalClasses').textContent = classes.length;
+            document.getElementById('totalStudents').textContent = classes.reduce((sum, cls) => sum + cls.students, 0);
+        }
+
+        function goPage(page) {
+            const totalPages = Math.ceil(getFilteredData().length / pageSize) || 1;
+            if (page < 1 || page > totalPages) return;
+            currentPage = page;
+            renderTable();
+            renderPagination();
+        }
+
+        function searchClasses() {
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+        function resetFilter() {
+            document.getElementById('filterName').value = '';
+            document.getElementById('filterMajor').value = '';
+            document.getElementById('filterGrade').value = '';
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+
+        function toggleSelectAll() {
+            const selectAll = document.getElementById('selectAll');
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAll.checked);
+        }
+
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = '新增班级';
+            document.getElementById('classForm').reset();
+            document.getElementById('classId').value = '';
+            clearErrors();
+            document.getElementById('classModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('classModal').classList.remove('active');
+        }
+
+        function viewClass(id) {
+            const cls = classes.find(c => c.id === id);
+            if (!cls) return;
+            document.getElementById('detailName').textContent = cls.name;
+            document.getElementById('detailMajor').textContent = cls.major;
+            document.getElementById('detailGrade').textContent = cls.grade;
+            document.getElementById('detailTeacher').textContent = cls.teacher;
+            document.getElementById('detailStudents').textContent = cls.students + '人';
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function editClass(id) {
+            const cls = classes.find(c => c.id === id);
+            if (!cls) return;
+            editingId = id;
+            document.getElementById('modalTitle').textContent = '编辑班级';
+            document.getElementById('classId').value = cls.id;
+            document.getElementById('name').value = cls.name;
+            document.getElementById('major').value = cls.major;
+            document.getElementById('grade').value = cls.grade;
+            document.getElementById('teacher').value = cls.teacher;
+            clearErrors();
+            document.getElementById('classModal').classList.add('active');
+        }
+
+        function deleteClass(id) {
+            const cls = classes.find(c => c.id === id);
+            if (!cls) return;
+            deletingId = id;
+            document.getElementById('deleteClassName').textContent = cls.name;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deletingId = null;
+        }
+
+        function confirmDelete() {
+            if (!deletingId) return;
+            classes = classes.filter(c => c.id !== deletingId);
+            renderTable();
+            renderPagination();
+            updateStats();
+            closeDeleteModal();
+            alert('删除成功');
+        }
+
+        function saveClass() {
+            if (!validateForm()) return;
+            const classData = {
+                name: document.getElementById('name').value.trim(),
+                major: document.getElementById('major').value,
+                grade: document.getElementById('grade').value,
+                teacher: document.getElementById('teacher').value.trim(),
+                students: 0
+            };
+            if (editingId) {
+                const index = classes.findIndex(c => c.id === editingId);
+                if (index !== -1) {
+                    classData.students = classes[index].students;
+                    classes[index] = { ...classes[index], ...classData };
+                    alert('修改成功');
+                }
+            } else {
+                const newId = Math.max(...classes.map(c => c.id), 0) + 1;
+                classes.push({ id: newId, ...classData });
+                alert('添加成功');
+            }
+            renderTable();
+            renderPagination();
+            updateStats();
+            closeModal();
+        }
+
+        function validateForm() {
+            let isValid = true;
+            clearErrors();
+            const fields = ['name', 'major', 'grade', 'teacher'];
+            fields.forEach(field => {
+                const value = document.getElementById(field).value.trim();
+                if (!value) {
+                    showError(field, '此项为必填项');
+                    isValid = false;
+                }
+            });
+            return isValid;
+        }
+
+        function showError(field, msg) {
+            document.getElementById(field).classList.add('error');
+            const errorEl = document.getElementById(field + 'Error');
+            if (errorEl) {
+                errorEl.textContent = msg;
+                errorEl.classList.add('show');
+            }
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+            document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+        }
+
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        
+        }
+    </script>
+
+    <script>
+        // 页面加载时自动展开包含 active 菜单项的菜单组
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            // 先收起所有菜单组
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            // 然后展开包含 active 菜单项的组
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        // 菜单展开/折叠
+        
+        }
+
+        // 页面加载时自动展开包含 active 菜单项的菜单组
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            // 先收起所有菜单组
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            // 然后展开包含 active 菜单项的组
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+            
+            // 侧边栏菜单滚动交互
+            const sidebarMenu = document.querySelector('.sidebar-menu');
+            
+            if (sidebarMenu) {
+                // 检测滚动位置并添加阴影提示
+                function updateScrollIndicators() {
+                    const scrollTop = sidebarMenu.scrollTop;
+                    const scrollHeight = sidebarMenu.scrollHeight;
+                    const clientHeight = sidebarMenu.clientHeight;
+                    const isScrollable = scrollHeight > clientHeight;
+                    
+                    // 顶部阴影
+                    if (scrollTop > 10) {
+                        sidebarMenu.classList.add('scroll-top');
+                    } else {
+                        sidebarMenu.classList.remove('scroll-top');
+                    }
+                    
+                    // 底部阴影
+                    if (isScrollable && scrollTop + clientHeight < scrollHeight - 10) {
+                        sidebarMenu.classList.add('scroll-bottom');
+                    } else {
+                        sidebarMenu.classList.remove('scroll-bottom');
+                    }
+                }
+                
+                // 监听滚动事件
+                sidebarMenu.addEventListener('scroll', updateScrollIndicators, { passive: true });
+                
+                // 初始检测
+                updateScrollIndicators();
+                
+                // 窗口大小改变时重新检测
+                window.addEventListener('resize', updateScrollIndicators, { passive: true });
+                
+                // 键盘滚动支持
+                sidebarMenu.addEventListener('keydown', function(e) {
+                    const scrollAmount = 50;
+                    
+                    switch(e.key) {
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+                            break;
+                        case 'PageDown':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                            break;
+                        case 'PageUp':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: -sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            sidebarMenu.scrollTo({ top: 0, behavior: 'smooth' });
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            sidebarMenu.scrollTo({ top: sidebarMenu.scrollHeight, behavior: 'smooth' });
+                            break;
+                    }
+                });
+                
+                // 菜单展开/收起时重新计算滚动
+                const menuTitles = document.querySelectorAll('.menu-title');
+                menuTitles.forEach(title => {
+                    title.addEventListener('click', function() {
+                        setTimeout(updateScrollIndicators, 300);
+                    });
+                });
+            }});
+        });
+    </script>
+
+    <!-- 导航加载器 - 动态加载现代化导航组件 -->
+    <script src="./nav-loader-new.js"></script>
+</body>
+</html>

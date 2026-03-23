@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>添加综合试卷 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        /* 返回按钮 */
+        .btn-back {
+            padding: 8px 16px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        /* 步骤条 */
+        .steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+            background: #fff;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .step-number {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: #F0F0F0;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .step.active .step-number {
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            color: #fff;
+        }
+
+        .step.completed .step-number {
+            background: #52C41A;
+            color: #fff;
+        }
+
+        .step-title {
+            font-size: 14px;
+            color: #999;
+        }
+
+        .step.active .step-title {
+            color: #1890FF;
+            font-weight: 500;
+        }
+
+        .step-line {
+            width: 80px;
+            height: 2px;
+            background: #F0F0F0;
+            margin: 0 16px;
+        }
+
+        /* 表单容器 */
+        .form-container {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        /* 提示信息 */
+        .tips {
+            background: #F6FFED;
+            border: 1px solid #B7EB8F;
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-bottom: 24px;
+            font-size: 14px;
+            color: #52C41A;
+            word-wrap: break-word;
+            line-height: 1.5;
+        }
+
+        /* 表单区块 */
+        .form-section {
+            margin-bottom: 32px;
+        }
+
+        .form-section:last-child {
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .required {
+            color: #FF4D4F;
+            margin-left: 4px;
+        }
+
+        /* 试卷选择器 */
+        .paper-selector {
+            position: relative;
+        }
+
+        .paper-selector-input {
+            padding: 12px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .paper-selector-input:hover {
+            border-color: #1890FF;
+        }
+
+        .paper-selector-input .placeholder {
+            color: #999;
+        }
+
+        .paper-selector-input .value {
+            color: #333;
+            font-weight: 500;
+        }
+
+        .paper-selector-input .arrow {
+            color: #999;
+            transition: transform 0.3s;
+        }
+
+        .paper-selector-input.active .arrow {
+            transform: rotate(180deg);
+        }
+
+        /* 试卷选择弹窗 */
+        .paper-dialog-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .paper-dialog-overlay.active {
+            display: flex;
+        }
+
+        .paper-dialog {
+            background: #fff;
+            border-radius: 12px;
+            width: 700px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        .paper-dialog-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .paper-dialog-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .paper-dialog-close {
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            background: none;
+            border: none;
+        }
+
+        .paper-dialog-close:hover {
+            color: #333;
+        }
+
+        .paper-dialog-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+        }
+
+        .paper-search {
+            margin-bottom: 16px;
+        }
+
+        .paper-search input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .paper-search input:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+
+        .paper-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .paper-item {
+            padding: 16px;
+            border: 1px solid #F0F0F0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .paper-item:hover {
+            border-color: #1890FF;
+            background: #F0F5FF;
+        }
+
+        .paper-item.selected {
+            border-color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        .paper-item-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .paper-item-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+
+        .paper-item-tag {
+            padding: 2px 8px;
+            background: #E6F7FF;
+            color: #1890FF;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .paper-item-info {
+            display: flex;
+            gap: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .paper-dialog-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+
+        /* 多选班级样式 */
+        .class-selector-multi {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            padding: 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            background: #fff;
+            margin-bottom: 16px;
+        }
+
+        .class-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            background: #F5F5F5;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: 1px solid transparent;
+        }
+
+        .class-checkbox:hover {
+            background: #E6F7FF;
+            border-color: #1890FF;
+        }
+
+        .class-checkbox input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            accent-color: #1890FF;
+        }
+
+        .class-checkbox .checkbox-text {
+            font-size: 14px;
+            color: #333;
+            user-select: none;
+        }
+
+        .class-checkbox:has(input:checked) {
+            background: #E6F7FF;
+            border-color: #1890FF;
+        }
+
+        .class-checkbox:has(input:checked) .checkbox-text {
+            color: #1890FF;
+            font-weight: 500;
+        }
+
+        /* 搜索框 */
+        .search-box {
+            margin-bottom: 16px;
+        }
+
+        .search-box input {
+            width: 100%;
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+        }
+
+        .search-box input:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+
+        /* 全选工具栏 */
+        .selection-toolbar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 12px 16px;
+            background: #FAFAFA;
+            border-radius: 6px;
+        }
+
+        .selection-count {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .selection-count strong {
+            color: #1890FF;
+        }
+
+        .btn-select-all {
+            padding: 6px 16px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .btn-select-all:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        /* 学生选择 */
+        .student-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 4px;
+        }
+
+        .student-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 14px;
+            border: 2px solid #F0F0F0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .student-option:hover {
+            border-color: #1890FF;
+            background: #F0F5FF;
+        }
+
+        .student-option.selected {
+            border-color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        .student-option input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .student-info {
+            flex: 1;
+        }
+
+        .student-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 2px;
+        }
+
+        .student-class {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 按钮组 */
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 40px;
+            padding-top: 24px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .btn {
+            padding: 12px 32px;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-default {
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            color: #666;
+        }
+
+        .btn-default:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+
+        /* 表单行 */
+        .form-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .form-item {
+            flex: 1;
+        }
+
+        .form-item label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        /* 响应式设计 - 大屏幕 (1200px以上) */
+        @media (max-width: 1400px) {
+            .student-selection {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* 响应式设计 - 平板横屏 (992px-1200px) */
+        @media (max-width: 1200px) {
+            .content-body {
+                padding: 20px;
+            }
+
+            .steps {
+                padding: 16px;
+            }
+
+            .step-line {
+                width: 60px;
+                margin: 0 12px;
+            }
+
+            .student-selection {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        /* 响应式设计 - 平板竖屏 (768px-992px) */
+        @media (max-width: 992px) {
+            .content-body {
+                padding: 16px;
+            }
+
+            .steps {
+                padding: 12px;
+                margin-bottom: 20px;
+            }
+
+            .step-title {
+                font-size: 13px;
+            }
+
+            .step-line {
+                width: 40px;
+                margin: 0 8px;
+            }
+
+            .form-container {
+                padding: 20px;
+            }
+
+            .class-selector-multi {
+                gap: 8px;
+                padding: 10px;
+            }
+
+            .class-checkbox {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+
+            .student-selection {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+
+            .student-option {
+                padding: 10px 12px;
+            }
+
+            .form-actions {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .form-actions .btn {
+                width: 100%;
+            }
+        }
+
+        /* 响应式设计 - 手机横屏 (576px-768px) */
+        @media (max-width: 768px) {
+            .content-body {
+                padding: 12px;
+            }
+
+            .btn-back {
+                margin-bottom: 16px;
+                font-size: 13px;
+                padding: 6px 12px;
+            }
+
+            .steps {
+                padding: 10px;
+                margin-bottom: 16px;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .step {
+                flex: 1;
+                min-width: 80px;
+                justify-content: center;
+            }
+
+            .step-number {
+                width: 28px;
+                height: 28px;
+                font-size: 13px;
+            }
+
+            .step-title {
+                font-size: 12px;
+            }
+
+            .step-line {
+                display: none;
+            }
+
+            .form-container {
+                padding: 16px;
+            }
+
+            .section-title {
+                font-size: 15px;
+            }
+
+            .tips {
+                padding: 10px 12px;
+                font-size: 13px;
+            }
+
+            .paper-selector-input {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .class-selector-multi {
+                gap: 8px;
+                padding: 10px;
+            }
+
+            .class-checkbox {
+                padding: 6px 10px;
+            }
+
+            .class-checkbox .checkbox-text {
+                font-size: 13px;
+            }
+
+            .search-box input {
+                padding: 10px 12px;
+                font-size: 14px;
+            }
+
+            .selection-toolbar {
+                flex-direction: column;
+                gap: 10px;
+                align-items: flex-start;
+            }
+
+            .student-selection {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+                max-height: 350px;
+            }
+
+            .student-option {
+                padding: 10px;
+            }
+
+            .student-name {
+                font-size: 13px;
+            }
+
+            .student-class {
+                font-size: 11px;
+            }
+
+            .paper-dialog {
+                width: 95%;
+                margin: 10px;
+                max-height: 90vh;
+            }
+
+            .paper-dialog-header {
+                padding: 16px 20px;
+            }
+
+            .paper-dialog-title {
+                font-size: 16px;
+            }
+
+            .paper-dialog-body {
+                padding: 16px 20px;
+            }
+
+            .paper-item {
+                padding: 12px;
+            }
+
+            .paper-item-name {
+                font-size: 14px;
+            }
+
+            .paper-item-info {
+                flex-wrap: wrap;
+                gap: 8px;
+                font-size: 12px;
+            }
+
+            .paper-dialog-footer {
+                padding: 12px 20px;
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .paper-dialog-footer .btn {
+                width: 100%;
+            }
+
+            .form-actions {
+                margin-top: 30px;
+                padding-top: 20px;
+            }
+
+            .form-actions .btn {
+                padding: 12px 24px;
+                font-size: 15px;
+            }
+        }
+
+        /* 响应式设计 - 手机竖屏 (576px以下) */
+        @media (max-width: 576px) {
+            .content-body {
+                padding: 10px;
+            }
+
+            .steps {
+                padding: 8px;
+            }
+
+            .step {
+                min-width: 60px;
+            }
+
+            .step-number {
+                width: 24px;
+                height: 24px;
+                font-size: 12px;
+            }
+
+            .step-title {
+                font-size: 11px;
+            }
+
+            .form-container {
+                padding: 12px;
+                border-radius: 8px;
+            }
+
+            .section-title {
+                font-size: 14px;
+                margin-bottom: 12px;
+                padding-bottom: 10px;
+            }
+
+            .class-selector-multi {
+                gap: 6px;
+                padding: 8px;
+            }
+
+            .class-checkbox {
+                padding: 5px 8px;
+            }
+
+            .class-checkbox input[type="checkbox"] {
+                width: 14px;
+                height: 14px;
+            }
+
+            .class-checkbox .checkbox-text {
+                font-size: 12px;
+            }
+
+            .student-selection {
+                grid-template-columns: 1fr;
+                gap: 8px;
+                max-height: 300px;
+            }
+
+            .student-option {
+                padding: 10px 12px;
+            }
+
+            .btn-select-all {
+                padding: 5px 12px;
+                font-size: 12px;
+            }
+
+            .selection-count {
+                font-size: 13px;
+            }
+
+            .paper-item-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 6px;
+            }
+
+            .paper-item-tag {
+                align-self: flex-start;
+            }
+        }
+
+        /* 超小屏幕 (375px以下) */
+        @media (max-width: 375px) {
+            .steps {
+                gap: 4px;
+            }
+
+            .step {
+                min-width: 50px;
+            }
+
+            .step-number {
+                width: 22px;
+                height: 22px;
+                font-size: 11px;
+            }
+
+            .step-title {
+                font-size: 10px;
+            }
+
+            .form-container {
+                padding: 10px;
+            }
+
+            .section-title {
+                font-size: 13px;
+            }
+
+            .tips {
+                font-size: 12px;
+                padding: 8px 10px;
+            }
+
+            .student-selection {
+                max-height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 -->
+    <div id="nav-container"></div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="content-body">
+        <!-- 返回按钮 -->
+        <button class="btn-back" onclick="goBack()">
+            <i class="iconfont icon-arrow-left"></i> 返回课程详情
+        </button>
+
+        <!-- 步骤条 -->
+        <div class="steps">
+            <div class="step active" id="step1">
+                <div class="step-number">1</div>
+                <div class="step-title">选择试卷</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" id="step2">
+                <div class="step-number">2</div>
+                <div class="step-title">选择发布对象</div>
+            </div>
+            <div class="step-line"></div>
+            <div class="step" id="step3">
+                <div class="step-number">3</div>
+                <div class="step-title">完成</div>
+            </div>
+        </div>
+
+        <!-- 表单容器 -->
+        <div class="form-container">
+            <!-- 提示信息 -->
+            <div class="tips">
+                请从综合试卷库中选择试卷，并选择发布对象（学生），带 <span style="color: #FF4D4F;">*</span> 的为必填项
+            </div>
+
+            <!-- 选择试卷 -->
+            <div class="form-section">
+                <div class="section-title">📋 选择综合试卷 <span class="required">*</span></div>
+                <div class="paper-selector">
+                    <div class="paper-selector-input" onclick="openPaperDialog()" id="paperSelectorInput">
+                        <span class="placeholder">点击选择综合试卷...</span>
+                        <span class="arrow">▼</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 选择发布对象 -->
+            <div class="form-section">
+                <div class="section-title">🎯 选择发布对象（学生） <span class="required">*</span></div>
+
+                <!-- 班级选择 -->
+                <div class="form-row" style="margin-bottom: 16px;">
+                    <div class="form-item">
+                        <label>选择班级 <span class="required">*</span></label>
+                        <div class="class-selector-multi" id="classSelectorContainer">
+                            <label class="class-checkbox">
+                                <input type="checkbox" value="机械2301班" onchange="filterStudentsByClass()">
+                                <span class="checkbox-text">机械2301班</span>
+                            </label>
+                            <label class="class-checkbox">
+                                <input type="checkbox" value="机械2302班" onchange="filterStudentsByClass()">
+                                <span class="checkbox-text">机械2302班</span>
+                            </label>
+                            <label class="class-checkbox">
+                                <input type="checkbox" value="数控2301班" onchange="filterStudentsByClass()">
+                                <span class="checkbox-text">数控2301班</span>
+                            </label>
+                            <label class="class-checkbox">
+                                <input type="checkbox" value="模具2301班" onchange="filterStudentsByClass()">
+                                <span class="checkbox-text">模具2301班</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 班级选择提示 -->
+                <div class="tips" style="margin-bottom: 16px;">
+                    可选择多个班级，然后在所选班级下选择学生作为发布对象
+                </div>
+
+                <!-- 搜索框 -->
+                <div class="search-box">
+                    <input type="text" id="studentSearch" placeholder="搜索学生姓名或学号..." oninput="filterStudents()">
+                </div>
+
+                <!-- 全选工具栏 -->
+                <div class="selection-toolbar">
+                    <div class="selection-count">
+                        已选择 <strong id="selectedCount">0</strong> 人 / 共 <strong id="totalCount">0</strong> 人
+                    </div>
+                    <button class="btn-select-all" onclick="toggleSelectAll()">全选</button>
+                </div>
+
+                <!-- 学生列表 -->
+                <div class="student-selection" id="studentSelection">
+                    <!-- 动态渲染学生列表 -->
+                </div>
+            </div>
+
+            <!-- 按钮组 -->
+            <div class="form-actions">
+                <button class="btn btn-default" onclick="goBack()">取消</button>
+                <button class="btn btn-primary" onclick="savePaper()">确认添加</button>
+            </div>
+        </div>
+    </div>
+    </div>
+
+    <!-- 试卷选择弹窗 -->
+    <div class="paper-dialog-overlay" id="paperDialog">
+        <div class="paper-dialog">
+            <div class="paper-dialog-header">
+                <div class="paper-dialog-title">选择综合试卷</div>
+                <button class="paper-dialog-close" onclick="closePaperDialog()">&times;</button>
+            </div>
+            <div class="paper-dialog-body">
+                <div class="paper-search">
+                    <input type="text" id="paperSearch" placeholder="搜索试卷名称..." oninput="filterPapers()">
+                </div>
+                <div class="paper-list" id="paperList">
+                    <!-- 动态渲染试卷列表 -->
+                </div>
+            </div>
+            <div class="paper-dialog-footer">
+                <button class="btn btn-default" onclick="closePaperDialog()">取消</button>
+                <button class="btn btn-primary" onclick="confirmPaperSelection()">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 综合试卷数据（来自教师端_综合试卷管理.html）
+        const paperData = [
+            { id: 1, name: '机械制图综合测试卷A', course: '机械制图', questions: 35, score: 100, duration: '120分钟', useCount: 2, createTime: '2025-01-15' },
+            { id: 2, name: '数控加工综合考核卷B', course: '数控加工技术', questions: 40, score: 100, duration: '150分钟', useCount: 1, createTime: '2025-01-14' },
+            { id: 3, name: 'CAD/CAM技术综合测评', course: 'CAD/CAM技术', questions: 30, score: 100, duration: '120分钟', useCount: 0, createTime: '2025-01-13' },
+            { id: 4, name: '模具设计综合能力测试', course: '模具设计', questions: 45, score: 100, duration: '180分钟', useCount: 0, createTime: '2025-01-12' }
+        ];
+
+        // 学生数据
+        const studentData = [
+            { id: '2024001', name: '张三', class: '机械2301班', selected: false },
+            { id: '2024002', name: '李四', class: '机械2301班', selected: false },
+            { id: '2024003', name: '王五', class: '机械2301班', selected: false },
+            { id: '2024004', name: '赵六', class: '机械2301班', selected: false },
+            { id: '2024005', name: '钱七', class: '机械2301班', selected: false },
+            { id: '2024006', name: '孙八', class: '机械2302班', selected: false },
+            { id: '2024007', name: '周九', class: '机械2302班', selected: false },
+            { id: '2024008', name: '吴十', class: '机械2302班', selected: false },
+            { id: '2024009', name: '郑十一', class: '数控2301班', selected: false },
+            { id: '2024010', name: '陈十二', class: '数控2301班', selected: false },
+            { id: '2024011', name: '刘十三', class: '数控2301班', selected: false },
+            { id: '2024012', name: '黄十四', class: '模具2301班', selected: false }
+        ];
+
+        let selectedPaperId = null;
+        let tempSelectedPaperId = null;
+        let filteredStudents = [...studentData];
+        let filteredPapers = [...paperData];
+
+        // 获取URL参数
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 页面加载时初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const courseName = getQueryParam('course') || '机械制图';
+            document.title = '添加综合试卷 - ' + courseName;
+
+            renderStudentList();
+            updateSelectionCount();
+        });
+
+        // 打开试卷选择弹窗
+        function openPaperDialog() {
+            document.getElementById('paperDialog').classList.add('active');
+            renderPaperList();
+        }
+
+        // 关闭试卷选择弹窗
+        function closePaperDialog() {
+            document.getElementById('paperDialog').classList.remove('active');
+            tempSelectedPaperId = selectedPaperId;
+        }
+
+        // 渲染试卷列表
+        function renderPaperList() {
+            const list = document.getElementById('paperList');
+            list.innerHTML = filteredPapers.map(paper => `
+                <div class="paper-item ${tempSelectedPaperId === paper.id ? 'selected' : ''}" onclick="selectPaper(${paper.id})">
+                    <div class="paper-item-header">
+                        <div class="paper-item-name">${paper.name}</div>
+                        <span class="paper-item-tag">${paper.course}</span>
+                    </div>
+                    <div class="paper-item-info">
+                        <span>${paper.questions}题</span>
+                        <span>${paper.score}分</span>
+                        <span>${paper.duration}</span>
+                        <span>已使用${paper.useCount}次</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 选择试卷
+        function selectPaper(paperId) {
+            tempSelectedPaperId = paperId;
+            renderPaperList();
+        }
+
+        // 筛选试卷
+        function filterPapers() {
+            const keyword = document.getElementById('paperSearch').value.toLowerCase();
+            filteredPapers = paperData.filter(paper =>
+                paper.name.toLowerCase().includes(keyword) ||
+                paper.course.toLowerCase().includes(keyword)
+            );
+            renderPaperList();
+        }
+
+        // 确认试卷选择
+        function confirmPaperSelection() {
+            if (!tempSelectedPaperId) {
+                alert('请选择一张试卷');
+                return;
+            }
+
+            selectedPaperId = tempSelectedPaperId;
+            const selectedPaper = paperData.find(p => p.id === selectedPaperId);
+
+            const selectorInput = document.getElementById('paperSelectorInput');
+            selectorInput.innerHTML = `
+                <span class="value">${selectedPaper.name}</span>
+                <span class="arrow">▼</span>
+            `;
+            selectorInput.classList.add('has-value');
+
+            closePaperDialog();
+        }
+
+        // 渲染学生列表
+        function renderStudentList() {
+            const container = document.getElementById('studentSelection');
+            container.innerHTML = filteredStudents.map(student => `
+                <div class="student-option ${student.selected ? 'selected' : ''}" onclick="toggleStudent('${student.id}')" data-student-id="${student.id}">
+                    <input type="checkbox" ${student.selected ? 'checked' : ''} onchange="updateStudentStyle(this)" onclick="event.stopPropagation()">
+                    <div class="student-info">
+                        <div class="student-name">${student.name}</div>
+                        <div class="student-class">${student.id} | ${student.class}</div>
+                    </div>
+                </div>
+            `).join('');
+            document.getElementById('totalCount').textContent = filteredStudents.length;
+        }
+
+        // 切换学生选择状态
+        function toggleStudent(studentId) {
+            const student = studentData.find(s => s.id === studentId);
+            if (student) {
+                student.selected = !student.selected;
+                renderStudentList();
+                updateSelectionCount();
+            }
+        }
+
+        // 更新学生样式
+        function updateStudentStyle(checkbox) {
+            const studentId = checkbox.closest('.student-option').dataset.studentId;
+            const student = studentData.find(s => s.id === studentId);
+            if (student) {
+                student.selected = checkbox.checked;
+                renderStudentList();
+                updateSelectionCount();
+            }
+        }
+
+        // 筛选学生
+        function filterStudents() {
+            const keyword = document.getElementById('studentSearch').value.toLowerCase();
+            const selectedClasses = getSelectedClasses();
+
+            filteredStudents = studentData.filter(student => {
+                const matchesKeyword = student.name.toLowerCase().includes(keyword) ||
+                                     student.id.toLowerCase().includes(keyword) ||
+                                     student.class.toLowerCase().includes(keyword);
+                // 如果没有选择任何班级，显示所有学生；否则只显示选中班级的学生
+                const matchesClass = selectedClasses.length === 0 || selectedClasses.includes(student.class);
+                return matchesKeyword && matchesClass;
+            });
+            renderStudentList();
+        }
+
+        // 获取选中的班级列表
+        function getSelectedClasses() {
+            const checkboxes = document.querySelectorAll('#classSelectorContainer input[type="checkbox"]:checked');
+            return Array.from(checkboxes).map(cb => cb.value);
+        }
+
+        // 根据班级筛选学生
+        function filterStudentsByClass() {
+            const selectedClasses = getSelectedClasses();
+
+            // 自动勾选所有选中班级的学生
+            studentData.forEach(student => {
+                if (selectedClasses.includes(student.class)) {
+                    student.selected = true;
+                }
+            });
+
+            filterStudents();
+            updateSelectionCount();
+        }
+
+        // 全选/取消全选
+        function toggleSelectAll() {
+            const allSelected = filteredStudents.every(s => s.selected);
+            filteredStudents.forEach(student => {
+                const originalStudent = studentData.find(s => s.id === student.id);
+                if (originalStudent) {
+                    originalStudent.selected = !allSelected;
+                }
+            });
+            renderStudentList();
+            updateSelectionCount();
+        }
+
+        // 更新选择计数
+        function updateSelectionCount() {
+            const selectedCount = studentData.filter(s => s.selected).length;
+            document.getElementById('selectedCount').textContent = selectedCount;
+        }
+
+        // 保存试卷
+        function savePaper() {
+            // 验证选择
+            if (!selectedPaperId) {
+                alert('请选择试卷');
+                return;
+            }
+
+            const selectedStudents = studentData.filter(s => s.selected);
+            if (selectedStudents.length === 0) {
+                alert('请至少选择一个发布对象（学生）');
+                return;
+            }
+
+            // 获取选中的试卷
+            const selectedPaper = paperData.find(p => p.id === selectedPaperId);
+
+            // 构建数据
+            const paperAssignment = {
+                paperId: selectedPaperId,
+                paperName: selectedPaper.name,
+                course: selectedPaper.course,
+                targetStudents: selectedStudents.map(s => ({
+                    id: s.id,
+                    name: s.name,
+                    class: s.class
+                })),
+                assignTime: new Date().toISOString(),
+                status: '已发布'
+            };
+
+            // 保存到本地存储
+            let assignments = JSON.parse(localStorage.getItem('comprehensivePaperAssignments') || '[]');
+            assignments.push(paperAssignment);
+            localStorage.setItem('comprehensivePaperAssignments', JSON.stringify(assignments));
+
+            // 显示成功信息
+            alert(`综合试卷"${selectedPaper.name}"添加成功！\n发布对象：${selectedStudents.length}名学生\n${selectedStudents.map(s => s.name).join('、')}`);
+
+            // 返回课程详情页
+            goBack();
+        }
+
+        // 返回课程详情
+        function goBack() {
+            const courseName = getQueryParam('course') || '机械制图';
+            window.location.href = `./教师端_课程详情.html?name=${encodeURIComponent(courseName)}`;
+        }
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

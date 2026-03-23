@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>学年管理 - 教务管理端</title>
+        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        
+        .menu-item .iconfont, .menu-title .iconfont, .tree-title .iconfont {
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #F5F7FA; min-height: 100vh; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .page-title { font-size: 20px; font-weight: 600; color: #333; }
+        .btn-primary { padding: 10px 20px; background: #1890FF; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary:hover { background: #40A9FF; }
+        .year-card { background: #fff; border-radius: 12px; padding: 10px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; }
+        .year-info h3 { font-size: 18px; color: #333; margin-bottom: 8px; }
+        .year-meta { font-size: 14px; color: #999; }
+        .year-status { padding: 6px 12px; border-radius: 4px; font-size: 12px; }
+        .status-active { background: #F6FFED; color: #52C41A; }
+        .status-inactive { background: #F5F5F5; color: #999; }
+        .year-actions { display: flex; gap: 8px; }
+        .btn-action { padding: 8px 16px; border: 1px solid #D9D9D9; background: #fff; border-radius: 4px; cursor: pointer; font-size: 13px; color: #666; }
+        .btn-action:hover { border-color: #1890FF; color: #1890FF; }
+
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #fff; border-radius: 8px; width: 500px; max-height: 90vh; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #F0F0F0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 18px; font-weight: 600; color: #333; }
+        .modal-close { font-size: 24px; color: #999; cursor: pointer; background: none; border: none; }
+        .modal-close:hover { color: #333; }
+        .modal-body { padding: 10px; overflow-y: auto; max-height: 60vh; }
+        .modal-footer { padding: 10px; border-top: 1px solid #F0F0F0; display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-cancel { padding: 8px 20px; background: #fff; border: 1px solid #D9D9D9; border-radius: 4px; cursor: pointer; font-size: 14px; color: #666; }
+        .btn-cancel:hover { border-color: #1890FF; color: #1890FF; }
+        .btn-confirm { padding: 8px 20px; background: #1890FF; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; color: #fff; }
+        .btn-confirm:hover { background: #40A9FF; }
+        .btn-danger { background: #FF4D4F; }
+        .btn-danger:hover { background: #FF7875; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; color: #333; margin-bottom: 8px; }
+        .form-group label .required { color: #FF4D4F; margin-left: 4px; }
+        .form-group input { width: 100%; padding: 10px 12px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px; }
+        .form-group input:focus { outline: none; border-color: #1890FF; }
+        .form-group input.error { border-color: #FF4D4F; }
+        .error-msg { font-size: 12px; color: #FF4D4F; margin-top: 4px; display: none; }
+        .error-msg.show { display: block; }
+
+        .detail-item { display: flex; padding: 12px 0; border-bottom: 1px solid #F0F0F0; }
+        .detail-item:last-child { border-bottom: none; }
+        .detail-label { width: 120px; color: #666; font-size: 14px; }
+        .detail-value { flex: 1; color: #333; font-size: 14px; }
+
+        .confirm-modal { width: 400px; }
+        .confirm-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
+        .confirm-title { font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 8px; }
+        .confirm-msg { font-size: 14px; color: #666; text-align: center; margin-bottom: 10px; }
+    
+        /* 表格容器 - 支持左右滚动 */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .table-container table {
+            width: max-content;
+            min-width: 100%;
+            border-collapse: collapse;
+        }
+        .table-container th,
+        .table-container td {
+            white-space: nowrap;
+        }
+        /* 固定列样式 */
+        .table-container th:nth-child(1),
+        .table-container td:nth-child(1),
+        .table-container th:nth-child(2),
+        .table-container td:nth-child(2) {
+            position: sticky;
+            left: 0;
+            background: #FAFAFA;
+            z-index: 10;
+        }
+        .table-container td:nth-child(1),
+        .table-container td:nth-child(2) {
+            background: #fff;
+        }
+        .table-container th:nth-child(2),
+        .table-container td:nth-child(2) {
+            left: 40px;
+        }
+        /* 固定操作栏 */
+        .table-container th:last-child,
+        .table-container td:last-child {
+            position: sticky;
+            right: 0;
+            background: #FAFAFA;
+            z-index: 10;
+        }
+        .table-container td:last-child {
+            background: #fff;
+        }
+.menu-title.collapsed
+</style>
+</head>
+<body>
+    <!-- 侧边栏导航 -->
+    <!-- 侧边栏导航容器 - 由 nav-loader-new.js 动态加载现代化导航组件 -->
+    <div id="nav-container"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <nav class="breadcrumb">
+                    <a href="./教学实训平台_教务管理端.html">教务管理</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>学年管理</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-menu-trigger">
+                        <div class="user-avatar">
+                            <span class="iconfont icon-jiaoshiguanli"></span>
+                        </div>
+                        <span class="user-name">欢迎您，教务管理员</span>
+                        <span class="iconfont icon-xiala user-dropdown-icon"></span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-dropdown-item" onclick="UserDropdown.switchTheme()">
+                            <span class="iconfont icon-zhuti"></span>
+                            <span>切换风格</span>
+                        </div>
+                        <div class="user-dropdown-divider"></div>
+                        <div class="user-dropdown-item" onclick="UserDropdown.logout()">
+                            <span class="iconfont icon-tuichu"></span>
+                            <span>退出登录</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-body">
+            <div class="page-header">
+                <h1 class="page-title">学年管理</h1>
+                <button class="btn-primary" onclick="openAddModal()">+ 新增学年</button>
+            </div>
+            <div id="yearList"></div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="yearModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">新增学年</div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="yearForm">
+                    <input type="hidden" id="yearId">
+                    <div class="form-group">
+                        <label>学年名称 <span class="required">*</span></label>
+                        <input type="text" id="name" placeholder="如：2025-2026学年">
+                        <div class="error-msg" id="nameError">请输入学年名称</div>
+                    </div>
+                    <div class="form-group">
+                        <label>开始日期 <span class="required">*</span></label>
+                        <input type="date" id="startDate">
+                        <div class="error-msg" id="startDateError">请选择开始日期</div>
+                    </div>
+                    <div class="form-group">
+                        <label>结束日期 <span class="required">*</span></label>
+                        <input type="date" id="endDate">
+                        <div class="error-msg" id="endDateError">请选择结束日期</div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">取消</button>
+                <button class="btn-confirm" onclick="saveYear()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">学年详情</div>
+                <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-item"><div class="detail-label">学年名称</div><div class="detail-value" id="detailName">-</div></div>
+                <div class="detail-item"><div class="detail-label">开始日期</div><div class="detail-value" id="detailStartDate">-</div></div>
+                <div class="detail-item"><div class="detail-label">结束日期</div><div class="detail-value" id="detailEndDate">-</div></div>
+                <div class="detail-item"><div class="detail-label">状态</div><div class="detail-value" id="detailStatus">-</div></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeDetailModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal confirm-modal">
+            <div class="modal-body" style="padding: 10px;">
+                <div class="confirm-icon">⚠️</div>
+                <div class="confirm-title">确认删除</div>
+                <div class="confirm-msg">确定要删除学年 <strong id="deleteYearName"></strong> 吗？<br>删除后不可恢复！</div>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button class="btn-cancel" onclick="closeDeleteModal()">取消</button>
+                <button class="btn-confirm btn-danger" onclick="confirmDelete()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let years = [
+            { id: 1, name: '2025-2026学年', startDate: '2025-09-01', endDate: '2026-07-15', status: '当前学年' },
+            { id: 2, name: '2024-2025学年', startDate: '2024-09-01', endDate: '2025-07-15', status: '已结束' }
+        ];
+
+        let editingId = null;
+        let deletingId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderList();
+        });
+
+        function renderList() {
+            const list = document.getElementById('yearList');
+            list.innerHTML = years.map(year => `
+                <div class="year-card">
+                    <div class="year-info">
+                        <h3>${year.name}</h3>
+                        <div class="year-meta">${year.startDate} - ${year.endDate}</div>
+                    </div>
+                    <span class="year-status ${year.status === '当前学年' ? 'status-active' : 'status-inactive'}">${year.status}</span>
+                    <div class="year-actions">
+                        <button class="btn-action" onclick="viewYear(${year.id})">查看</button>
+                        <button class="btn-action" onclick="editYear(${year.id})">编辑</button>
+                        <button class="btn-action" onclick="deleteYear(${year.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = '新增学年';
+            document.getElementById('yearForm').reset();
+            document.getElementById('yearId').value = '';
+            clearErrors();
+            document.getElementById('yearModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('yearModal').classList.remove('active');
+        }
+
+        function viewYear(id) {
+            const year = years.find(y => y.id === id);
+            if (!year) return;
+            document.getElementById('detailName').textContent = year.name;
+            document.getElementById('detailStartDate').textContent = year.startDate;
+            document.getElementById('detailEndDate').textContent = year.endDate;
+            document.getElementById('detailStatus').textContent = year.status;
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function editYear(id) {
+            const year = years.find(y => y.id === id);
+            if (!year) return;
+            editingId = id;
+            document.getElementById('modalTitle').textContent = '编辑学年';
+            document.getElementById('yearId').value = year.id;
+            document.getElementById('name').value = year.name;
+            document.getElementById('startDate').value = year.startDate;
+            document.getElementById('endDate').value = year.endDate;
+            clearErrors();
+            document.getElementById('yearModal').classList.add('active');
+        }
+
+        function deleteYear(id) {
+            const year = years.find(y => y.id === id);
+            if (!year) return;
+            deletingId = id;
+            document.getElementById('deleteYearName').textContent = year.name;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deletingId = null;
+        }
+
+        function confirmDelete() {
+            if (!deletingId) return;
+            years = years.filter(y => y.id !== deletingId);
+            renderList();
+            closeDeleteModal();
+            alert('删除成功');
+        }
+
+        function saveYear() {
+            if (!validateForm()) return;
+            const yearData = {
+                name: document.getElementById('name').value.trim(),
+                startDate: document.getElementById('startDate').value,
+                endDate: document.getElementById('endDate').value,
+                status: '已结束'
+            };
+            if (editingId) {
+                const index = years.findIndex(y => y.id === editingId);
+                if (index !== -1) {
+                    yearData.status = years[index].status;
+                    years[index] = { ...years[index], ...yearData };
+                    alert('修改成功');
+                }
+            } else {
+                const newId = Math.max(...years.map(y => y.id), 0) + 1;
+                years.push({ id: newId, ...yearData });
+                alert('添加成功');
+            }
+            renderList();
+            closeModal();
+        }
+
+        function validateForm() {
+            let isValid = true;
+            clearErrors();
+            const fields = ['name', 'startDate', 'endDate'];
+            fields.forEach(field => {
+                const value = document.getElementById(field).value.trim();
+                if (!value) {
+                    showError(field, '此项为必填项');
+                    isValid = false;
+                }
+            });
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            if (startDate && endDate && startDate > endDate) {
+                showError('endDate', '结束日期不能早于开始日期');
+                isValid = false;
+            }
+            return isValid;
+        }
+
+        function showError(field, msg) {
+            document.getElementById(field).classList.add('error');
+            const errorEl = document.getElementById(field + 'Error');
+            if (errorEl) {
+                errorEl.textContent = msg;
+                errorEl.classList.add('show');
+            }
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+            document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+        }
+
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // 菜单展开/折叠
+        
+        }
+
+        // 页面加载时自动展开包含 active 菜单项的菜单组
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            // 先收起所有菜单组
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            // 然后展开包含 active 菜单项的组
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+            
+            // 侧边栏菜单滚动交互
+            const sidebarMenu = document.querySelector('.sidebar-menu');
+            
+            if (sidebarMenu) {
+                // 检测滚动位置并添加阴影提示
+                function updateScrollIndicators() {
+                    const scrollTop = sidebarMenu.scrollTop;
+                    const scrollHeight = sidebarMenu.scrollHeight;
+                    const clientHeight = sidebarMenu.clientHeight;
+                    const isScrollable = scrollHeight > clientHeight;
+                    
+                    // 顶部阴影
+                    if (scrollTop > 10) {
+                        sidebarMenu.classList.add('scroll-top');
+                    } else {
+                        sidebarMenu.classList.remove('scroll-top');
+                    }
+                    
+                    // 底部阴影
+                    if (isScrollable && scrollTop + clientHeight < scrollHeight - 10) {
+                        sidebarMenu.classList.add('scroll-bottom');
+                    } else {
+                        sidebarMenu.classList.remove('scroll-bottom');
+                    }
+                }
+                
+                // 监听滚动事件
+                sidebarMenu.addEventListener('scroll', updateScrollIndicators, { passive: true });
+                
+                // 初始检测
+                updateScrollIndicators();
+                
+                // 窗口大小改变时重新检测
+                window.addEventListener('resize', updateScrollIndicators, { passive: true });
+                
+                // 键盘滚动支持
+                sidebarMenu.addEventListener('keydown', function(e) {
+                    const scrollAmount = 50;
+                    
+                    switch(e.key) {
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+                            break;
+                        case 'PageDown':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                            break;
+                        case 'PageUp':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: -sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            sidebarMenu.scrollTo({ top: 0, behavior: 'smooth' });
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            sidebarMenu.scrollTo({ top: sidebarMenu.scrollHeight, behavior: 'smooth' });
+                            break;
+                    }
+                });
+                
+                // 菜单展开/收起时重新计算滚动
+                const menuTitles = document.querySelectorAll('.menu-title');
+                menuTitles.forEach(title => {
+                    title.addEventListener('click', function() {
+                        setTimeout(updateScrollIndicators, 300);
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>

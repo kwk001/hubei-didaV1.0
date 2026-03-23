@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刀具档案管理 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .page-header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .page-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: #1890FF;
+            border-radius: 2px;
+        }
+        
+        .toolbar {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-item label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .filter-item input,
+        .filter-item select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 140px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: #1890FF; color: #fff; }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success { background: #52C41A; color: #fff; }
+        .btn-success:hover { background: #73D13D; }
+        .btn-default { background: #fff; color: #666; border: 1px solid #D9D9D9; }
+        .btn-default:hover { border-color: #1890FF; color: #1890FF; }
+        .btn-danger { background: #FF4D4F; color: #fff; }
+        .btn-danger:hover { background: #FF7875; }
+        .btn-warning { background: #FAAD14; color: #fff; }
+        .btn-warning:hover { background: #FFC53D; }
+        .btn-sm { padding: 4px 12px; font-size: 12px; }
+        
+        .content-body {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+        }
+        
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            overflow: hidden;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .data-table tbody tr:hover { background: #F6FFFE; }
+        
+        .status-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-normal { background: #F6FFED; color: #52C41A; border: 1px solid #B7EB8F; }
+        .status-warning { background: #FFFBE6; color: #FAAD14; border: 1px solid #FFE58F; }
+        .status-danger { background: #FFF2F0; color: #FF4D4F; border: 1px solid #FFA39E; }
+        .status-disabled { background: #F5F5F5; color: #999; border: 1px solid #D9D9D9; }
+        
+        .action-group { display: flex; gap: 8px; }
+        
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 20px;
+            gap: 8px;
+            background: #fff;
+            border-top: 1px solid #E8E8E8;
+        }
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .pagination-btn:hover { border-color: #1890FF; color: #1890FF; }
+        .pagination-btn.active { background: #1890FF; color: #fff; border-color: #1890FF; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 720px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-close {
+            font-size: 24px;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: all 0.3s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+        .modal-close:hover { color: #fff; background: rgba(255,255,255,0.2); }
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #FAFAFA;
+        }
+        
+        .form-item { margin-bottom: 20px; }
+        .form-item label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-item label span { color: #FF4D4F; }
+        .form-item input,
+        .form-item select,
+        .form-item textarea {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: #FAFAFA;
+        }
+        .form-item input:focus,
+        .form-item select:focus,
+        .form-item textarea:focus {
+            outline: none;
+            border-color: #1890FF;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+        .form-item textarea { resize: vertical; min-height: 80px; }
+        .form-row { display: flex; gap: 20px; }
+        .form-row .form-item { flex: 1; }
+        
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1890FF;
+            margin: 24px 0 16px;
+            padding-left: 12px;
+            border-left: 4px solid #1890FF;
+        }
+        .section-title:first-of-type { margin-top: 0; }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">刀具档案管理</div>
+        </div>
+        
+        <div class="toolbar">
+            <div class="filter-group">
+                <div class="filter-item">
+                    <label>刀具编码</label>
+                    <input type="text" placeholder="请输入刀具编码">
+                </div>
+                <div class="filter-item">
+                    <label>刀具名称</label>
+                    <input type="text" placeholder="请输入刀具名称">
+                </div>
+                <div class="filter-item">
+                    <label>刀具类型</label>
+                    <select>
+                        <option value="">全部</option>
+                        <option value="xd">铣刀</option>
+                        <option value="zt">钻头</option>
+                        <option value="cd">车刀</option>
+                    </select>
+                </div>
+                <div class="filter-item">
+                    <label>状态</label>
+                    <select>
+                        <option value="">全部</option>
+                        <option value="normal">正常</option>
+                        <option value="warning">预警</option>
+                        <option value="scrap">报废</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary">
+                    <i class="iconfont icon-sousuo"></i> 查询
+                </button>
+                <button class="btn btn-default">重置</button>
+            </div>
+            <div class="action-group">
+                <button class="btn btn-success" onclick="openModal()">
+                    <i class="iconfont icon-add"></i> 新增刀具
+                </button>
+                <button class="btn btn-default">
+                    <i class="iconfont icon-daoru"></i> 导入
+                </button>
+                <button class="btn btn-default">
+                    <i class="iconfont icon-daochu"></i> 导出
+                </button>
+            </div>
+        </div>
+        
+        <div class="content-body">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>刀具编码</th>
+                            <th>刀具名称</th>
+                            <th>类型</th>
+                            <th>规格</th>
+                            <th>制造商</th>
+                            <th>预警库存值</th>
+                            <th>创建人</th>
+                            <th>创建时间</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>T001</strong></td>
+                            <td>整体硬质合金立铣刀</td>
+                            <td>立铣刀</td>
+                            <td>Φ10×75mm</td>
+                            <td>山特维克</td>
+                            <td>10</td>
+                            <td>张三</td>
+                            <td>2025-01-10 09:30</td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm" onclick="window.location.href='./教师端_刀具档案_查看详情.html'">查看</button>
+                                    <button class="btn btn-primary btn-sm" onclick="openModal()">编辑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>T002</strong></td>
+                            <td>高速钢麻花钻</td>
+                            <td>钻头</td>
+                            <td>Φ5×80mm</td>
+                            <td>三菱</td>
+                            <td>8</td>
+                            <td>李四</td>
+                            <td>2025-01-08 14:20</td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm" onclick="window.location.href='./教师端_刀具档案_查看详情.html'">查看</button>
+                                    <button class="btn btn-primary btn-sm" onclick="openModal()">编辑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>T003</strong></td>
+                            <td>可转位面铣刀</td>
+                            <td>面铣刀</td>
+                            <td>Φ50mm</td>
+                            <td>肯纳</td>
+                            <td>5</td>
+                            <td>王五</td>
+                            <td>2025-01-05 11:15</td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm" onclick="window.location.href='./教师端_刀具档案_查看详情.html'">查看</button>
+                                    <button class="btn btn-primary btn-sm" onclick="openModal()">编辑</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>T004</strong></td>
+                            <td>外圆车刀</td>
+                            <td>车刀</td>
+                            <td>20×20mm</td>
+                            <td>京瓷</td>
+                            <td>10</td>
+                            <td>赵六</td>
+                            <td>2025-01-03 16:45</td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm" onclick="window.location.href='./教师端_刀具档案_查看详情.html'">查看</button>
+                                    <button class="btn btn-primary btn-sm" onclick="openModal()">编辑</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <span style="font-size: 13px; color: #666; margin-right: 16px;">共 128 条记录</span>
+                    <button class="pagination-btn">上一页</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">...</button>
+                    <button class="pagination-btn">13</button>
+                    <button class="pagination-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增/编辑模态框 -->
+    <div class="modal" id="toolModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="iconfont icon-daoju"></i>
+                    <span id="modalTitle">新增刀具档案</span>
+                </div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="section-title">基本信息</div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>刀具编码 <span>*</span></label>
+                        <input type="text" placeholder="请输入刀具编码">
+                    </div>
+                    <div class="form-item">
+                        <label>刀具名称 <span>*</span></label>
+                        <input type="text" placeholder="请输入刀具名称">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>单位 <span>*</span></label>
+                        <select>
+                            <option value="">请选择</option>
+                            <option value="ba">把</option>
+                            <option value="jian">件</option>
+                            <option value="tao">套</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>刀具类型 <span>*</span></label>
+                        <select>
+                            <option value="">请选择</option>
+                            <option value="lxd">立铣刀</option>
+                            <option value="mxd">面铣刀</option>
+                            <option value="mhz">麻花钻</option>
+                            <option value="wyc">外圆车刀</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>规格型号 <span>*</span></label>
+                        <input type="text" placeholder="请输入规格型号">
+                    </div>
+                    <div class="form-item">
+                        <label>制造商</label>
+                        <input type="text" placeholder="请输入制造商">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>品牌</label>
+                        <input type="text" placeholder="请输入品牌">
+                    </div>
+                </div>
+                
+                <div class="section-title">库存管理</div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>预警库存值</label>
+                        <input type="number" placeholder="低于此值时预警">
+                    </div>
+                </div>
+                
+                <div class="section-title">其他信息</div>
+                <div class="form-item">
+                    <label>备注</label>
+                    <textarea placeholder="请输入备注信息"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 报废确认弹窗 -->
+    <div class="modal" id="scrapModal">
+        <div class="modal-content" style="max-width: 480px;">
+            <div class="modal-header" style="background: linear-gradient(135deg, #FF4D4F 0%, #CF1322 100%);">
+                <div class="modal-title">
+                    <i class="iconfont icon-daoju"></i>
+                    <span>刀具报废确认</span>
+                </div>
+                <button class="modal-close" onclick="closeScrapModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div style="text-align: center; padding: 20px 0;">
+                    <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+                    <p style="font-size: 16px; color: #333; margin-bottom: 8px;">确定要报废该刀具吗？</p>
+                    <p style="font-size: 14px; color: #999;">刀具编码：<strong>T001</strong> | 刀具名称：<strong>整体硬质合金立铣刀</strong></p>
+                </div>
+                <div class="form-item">
+                    <label>报废原因 <span style="color: #FF4D4F;">*</span></label>
+                    <select style="width: 100%; padding: 10px 14px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 14px;">
+                        <option value="">请选择报废原因</option>
+                        <option value="wear">正常磨损</option>
+                        <option value="damage">意外损坏</option>
+                        <option value="life">寿命到期</option>
+                        <option value="other">其他原因</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>备注说明</label>
+                    <textarea style="width: 100%; padding: 10px 14px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 14px; resize: vertical; min-height: 80px;" placeholder="请输入报废备注说明"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeScrapModal()">取消</button>
+                <button class="btn btn-danger" style="background: #FF4D4F; color: #fff;">确认报废</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.classList.remove('collapsed');
+                    }
+                }
+            }
+        });
+
+        function openModal() {
+            document.getElementById('toolModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('toolModal').classList.remove('active');
+        }
+
+        document.getElementById('toolModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+
+        function openScrapModal() {
+            document.getElementById('scrapModal').classList.add('active');
+        }
+
+        function closeScrapModal() {
+            document.getElementById('scrapModal').classList.remove('active');
+        }
+
+        document.getElementById('scrapModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeScrapModal();
+            }
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频教材 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        /* 左右布局 */
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* 左侧树状图 */
+        .tree-sidebar {
+            width: 280px;
+            background: #fff;
+            border-right: 1px solid #E8E8E8;
+            display: flex;
+            flex-direction: column;
+        }
+        .tree-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .tree-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        .tree-actions {
+            display: flex;
+            gap: 8px;
+        }
+        .tree-btn {
+            padding: 4px 10px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            color: #666;
+        }
+        .tree-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .tree-search {
+            padding: 12px 16px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .tree-search input {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .tree-search input:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        .tree-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px 0;
+        }
+        
+        /* 树状图样式 */
+        .tree-node {
+            user-select: none;
+        }
+        .tree-node-content {
+            display: flex;
+            align-items: center;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .tree-node-content:hover {
+            background: #F5F7FA;
+        }
+        .tree-node-content.active {
+            background: #E6F7FF;
+            color: #1890FF;
+        }
+        .tree-toggle {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 8px;
+            font-size: 12px;
+            color: #999;
+            transition: transform 0.2s;
+        }
+        .tree-toggle.expanded {
+            transform: rotate(90deg);
+        }
+        .tree-icon {
+            margin-right: 8px;
+            font-size: 16px;
+        }
+        .tree-label {
+            font-size: 14px;
+            flex: 1;
+        }
+        .tree-count {
+            font-size: 12px;
+            color: #999;
+            background: #F5F5F5;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+        .tree-children {
+            display: none;
+        }
+        .tree-children.expanded {
+            display: block;
+        }
+        
+        /* 层级缩进 */
+        .tree-level-1 .tree-node-content { padding-left: 20px; }
+        .tree-level-2 .tree-node-content { padding-left: 44px; }
+        
+        /* 右侧内容区 */
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* Tab标签 */
+        .tab-container {
+            margin-bottom: 20px;
+        }
+        .tab-header {
+            display: flex;
+            border-bottom: 1px solid #E8E8E8;
+            margin-bottom: 20px;
+        }
+        .tab-item {
+            padding: 12px 24px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+        .tab-item:hover {
+            color: #1890FF;
+        }
+        .tab-item.active {
+            color: #1890FF;
+            border-bottom-color: #1890FF;
+            font-weight: 500;
+        }
+        .tab-content {
+            display: none;
+        }
+        .tab-content.active {
+            display: block;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .btn-primary {
+            padding: 10px 20px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary:hover {
+            background: #40A9FF;
+        }
+        
+        /* 搜索栏 */
+        .search-bar {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        .btn-search {
+            padding: 10px 24px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow-x: auto;
+            white-space: nowrap;
+        }
+        .data-table table {
+            width: max-content;
+            min-width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .data-table tr:hover {
+            background: #F5F7FA;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        /* 固定第1列（序号列） */
+        .data-table th:first-child,
+        .data-table td:first-child {
+            position: sticky;
+            left: 0;
+            background: #FAFAFA;
+            z-index: 10;
+            border-right: 1px solid #E8E8E8;
+        }
+        .data-table td:first-child {
+            background: #fff;
+        }
+        .data-table tr:hover td:first-child {
+            background: #F5F7FA;
+        }
+        /* 固定操作栏（最后一列） */
+        .data-table th:last-child,
+        .data-table td:last-child {
+            position: sticky;
+            right: 0;
+            background: #FAFAFA;
+            z-index: 10;
+            border-left: 1px solid #E8E8E8;
+        }
+        .data-table td:last-child {
+            background: #fff;
+        }
+        .data-table tr:hover td:last-child {
+            background: #F5F7FA;
+        }
+        
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-blue { background: #E6F7FF; color: #1890FF; }
+        .tag-green { background: #F6FFED; color: #52C41A; }
+        .tag-orange { background: #FFF7E6; color: #FA8C16; }
+        
+        /* 操作按钮 */
+        .action-btns {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 8px;
+            white-space: nowrap;
+        }
+        .action-btns button {
+            padding: 4px 10px;
+            border: none;
+            background: transparent;
+            cursor: pointer;
+            color: #1890FF;
+            font-size: 13px;
+            border-radius: 4px;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .action-btns button:hover {
+            background: #E6F7FF;
+        }
+        
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 8px;
+            margin-top: 20px;
+            padding: 16px;
+            background: #fff;
+            border-radius: 8px;
+        }
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+        }
+        .pagination-info {
+            font-size: 14px;
+            color: #666;
+        }
+        
+        /* 模态框 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+        .modal.active {
+            display: flex;
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 8px;
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 24px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .modal-close {
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+        }
+        .modal-close:hover {
+            color: #333;
+        }
+        .form-item {
+            margin-bottom: 16px;
+        }
+        .form-item label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+        .form-item input,
+        .form-item select,
+        .form-item textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .form-item input:focus,
+        .form-item select:focus,
+        .form-item textarea:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        .form-item textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        .checkbox-wrapper {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .checkbox-wrapper input[type="checkbox"] {
+            width: auto;
+        }
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+        }
+        .btn-cancel {
+            padding: 10px 20px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+        }
+        .btn-cancel:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+    </style>
+</head>
+<body>
+        <!-- 侧边栏 -->
+    <div class="sidebar">
+        <div class="logo"><i class="iconfont icon-gongzuotai"></i> 教学实训平台</div>
+                <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shouye"></i>工作台</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教学实训平台_教师端.html'">
+                    <span><i class="iconfont icon-shouye"></i></span><span>首页概览</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-kechengguanli"></i>我的教学</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_我的课程.html'">
+                    <span><i class="iconfont icon-kechengguanli"></i></span><span>我的课程</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_专业教学课程.html'">
+                    <span><i class="iconfont icon-zhuanyeguanli"></i></span><span>专业教学课程</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shijuan"></i>考试管理</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷管理.html'">
+                    <span><i class="iconfont icon-shijuan"></i></span><span>试卷管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_列表.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷批阅.html'">
+                    <span><i class="iconfont icon-shijuan"></i></span><span>试卷批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训批阅.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_错题集库.html'">
+                    <span><i class="iconfont icon-cuowu"></i></span><span>错题集</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-p008zhishiku"></i>知识库</div>
+            <div class="menu-items">
+                <div class="menu-item active" onclick="window.location.href='./教师端_视频教材.html'">
+                    <span><i class="iconfont icon-shipin"></i></span><span>视频教材</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_辅导教材.html'">
+                    <span><i class="iconfont icon-jiaocai"></i></span><span>辅导教材</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_题库.html'">
+                    <span><i class="iconfont icon-tiku"></i></span><span>普通题库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_列表.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训题库</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shengchanguanli"></i>生产管理</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_生产工单管理_V2.html'">
+                    <span><i class="iconfont icon-gongdan"></i></span><span>生产工单</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_排产策略管理.html'">
+                    <span><i class="iconfont icon-celve"></i></span><span>排产策略</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目模板管理.html'">
+                    <span><i class="iconfont icon-moban"></i></span><span>项目模版</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目甘特图.html'">
+                    <span><i class="iconfont icon-gantetu"></i></span><span>项目甘特图</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目看板.html'">
+                    <span><i class="iconfont icon-kanban"></i></span><span>项目看板</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-baobiao"></i>报表</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_实训任务管理.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>实训任务管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./图表_成绩分析.html'">
+                    <span><i class="iconfont icon-baobiao"></i></span><span>成绩分析</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_学生任务总览.html'">
+                    <span><i class="iconfont icon-renwu"></i></span><span>学生任务总览</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+            <!-- 右侧内容区 -->
+            <div class="content-area">
+                <div class="content-body">
+                    <!-- Tab标签 -->
+                    <div class="tab-container">
+                        <div class="tab-header">
+                            <div class="tab-item active" onclick="switchTab('myVideo', this)">我的视频</div>
+                            <div class="tab-item" onclick="switchTab('publicVideo', this)">公用视频</div>
+                        </div>
+                        
+                        <!-- 我的视频 -->
+                        <div id="myVideo" class="tab-content active">
+                            <div class="page-header">
+                                <h1 class="page-title" id="myVideoTitle">机械制图 - 我的视频</h1>
+                                <button class="btn-primary" onclick="openModal()">+ 新增视频</button>
+                            </div>
+
+                            <div class="search-bar">
+                                <input type="text" class="search-input" placeholder="搜索视频名称、关键词...">
+                                <button class="btn-search">🔍 查询</button>
+                            </div>
+
+                            <div class="data-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 60px;">序号</th>
+                                            <th style="width: 120px;">视频缩略图</th>
+                                            <th>视频名称</th>
+                                            <th style="width: 100px;">所属专业</th>
+                                            <th style="width: 80px;">文件格式</th>
+                                            <th style="width: 100px;">文件大小</th>
+                                            <th style="width: 80px;">时长</th>
+                                            <th style="width: 100px;">是否公用</th>
+                                            <th style="width: 120px;">更新时间</th>
+                                            <th style="width: 120px;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="myVideoTableBody"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="pagination">
+                                <span class="pagination-info">共 5 条记录</span>
+                                <button class="pagination-btn" disabled>上一页</button>
+                                <button class="pagination-btn active">1</button>
+                                <button class="pagination-btn">下一页</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 公用视频 -->
+                        <div id="publicVideo" class="tab-content">
+                            <div class="page-header">
+                                <h1 class="page-title" id="publicVideoTitle">机械制图 - 公用视频</h1>
+                            </div>
+
+                            <div class="search-bar">
+                                <input type="text" class="search-input" placeholder="搜索视频名称、关键词...">
+                                <button class="btn-search">🔍 查询</button>
+                            </div>
+
+                            <div class="data-table">
+                                <table>
+                                    <thead>
+                                        <tr>
+                                            <th style="width: 60px;">序号</th>
+                                            <th style="width: 120px;">视频缩略图</th>
+                                            <th>视频名称</th>
+                                            <th style="width: 100px;">所属专业</th>
+                                            <th style="width: 80px;">文件格式</th>
+                                            <th style="width: 100px;">文件大小</th>
+                                            <th style="width: 80px;">时长</th>
+                                            <th style="width: 100px;">创建人</th>
+                                            <th style="width: 120px;">更新时间</th>
+                                            <th style="width: 100px;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="publicVideoTableBody"></tbody>
+                                </table>
+                            </div>
+
+                            <div class="pagination">
+                                <span class="pagination-info">共 8 条记录</span>
+                                <button class="pagination-btn" disabled>上一页</button>
+                                <button class="pagination-btn active">1</button>
+                                <button class="pagination-btn">2</button>
+                                <button class="pagination-btn">下一页</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增视频模态框 -->
+    <div class="modal" id="addVideoModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">新增视频</h3>
+                <span class="modal-close" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <div class="form-item">
+                    <label>视频名称 <span style="color: #FF4D4F;">*</span></label>
+                    <input type="text" placeholder="请输入视频名称">
+                </div>
+                <div class="form-item">
+                    <label>所属专业 <span style="color: #FF4D4F;">*</span></label>
+                    <select>
+                        <option>请选择专业</option>
+                        <option>机械工程</option>
+                        <option>数控技术</option>
+                        <option>模具设计与制造</option>
+                    </select>
+                </div>
+                <div class="form-item">
+                    <label>所属课程 <span style="color: #FF4D4F;">*</span></label>
+                    <select>
+                        <option>请选择课程</option>
+                        <option>机械制图</option>
+                        <option>数控加工技术</option>
+                        <option

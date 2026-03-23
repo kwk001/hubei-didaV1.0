@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>专业管理 - 教务管理端</title>
+        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        
+        .menu-item .iconfont, .menu-title .iconfont, .tree-title .iconfont {
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #F5F7FA; min-height: 100vh; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .page-title { font-size: 20px; font-weight: 600; color: #333; }
+        .btn-primary { padding: 10px 20px; background: #1890FF; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .btn-primary:hover { background: #40A9FF; }
+        .stats-bar { display: flex; gap: 10px; margin-bottom: 20px; }
+        .stat-item { background: #fff; padding: 10px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; align-items: center; gap: 12px; }
+        .stat-icon { width: 48px; height: 48px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .stat-icon.blue { background: #E6F7FF; }
+        .stat-icon.green { background: #F6FFED; }
+        .stat-number { font-size: 24px; font-weight: bold; color: #333; }
+        .stat-label { font-size: 13px; color: #666; }
+        .major-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .major-card { background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); transition: all 0.3s; }
+        .major-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(0,0,0,0.12); }
+        .major-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .major-icon { width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 24px; }
+        .major-icon.blue { background: #E6F7FF; }
+        .major-icon.green { background: #F6FFED; }
+        .major-icon.orange { background: #FFF7E6; }
+        .major-icon.purple { background: #F9F0FF; }
+        .major-name { font-size: 16px; font-weight: 600; color: #333; }
+        .major-code { font-size: 12px; color: #999; }
+        .major-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; padding: 16px 0; border-top: 1px solid #F0F0F0; border-bottom: 1px solid #F0F0F0; }
+        .major-stat { text-align: center; }
+        .major-stat-value { font-size: 18px; font-weight: bold; color: #333; }
+        .major-stat-label { font-size: 12px; color: #999; }
+        .major-actions { display: flex; gap: 8px; }
+        .btn-action { flex: 1; padding: 8px; border: 1px solid #D9D9D9; background: #fff; border-radius: 4px; cursor: pointer; font-size: 13px; color: #666; }
+        .btn-action:hover { border-color: #1890FF; color: #1890FF; }
+
+        /* 弹窗样式 */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal-overlay.active { display: flex; }
+        .modal { background: #fff; border-radius: 8px; width: 500px; max-height: 90vh; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.15); }
+        .modal-header { padding: 20px 24px; border-bottom: 1px solid #F0F0F0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 18px; font-weight: 600; color: #333; }
+        .modal-close { font-size: 24px; color: #999; cursor: pointer; background: none; border: none; }
+        .modal-close:hover { color: #333; }
+        .modal-body { padding: 10px; overflow-y: auto; max-height: 60vh; }
+        .modal-footer { padding: 10px; border-top: 1px solid #F0F0F0; display: flex; justify-content: flex-end; gap: 12px; }
+        .btn-cancel { padding: 8px 20px; background: #fff; border: 1px solid #D9D9D9; border-radius: 4px; cursor: pointer; font-size: 14px; color: #666; }
+        .btn-cancel:hover { border-color: #1890FF; color: #1890FF; }
+        .btn-confirm { padding: 8px 20px; background: #1890FF; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; color: #fff; }
+        .btn-confirm:hover { background: #40A9FF; }
+        .btn-danger { background: #FF4D4F; }
+        .btn-danger:hover { background: #FF7875; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 14px; color: #333; margin-bottom: 8px; }
+        .form-group label .required { color: #FF4D4F; margin-left: 4px; }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 12px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: #1890FF; }
+        .form-group input.error { border-color: #FF4D4F; }
+        .error-msg { font-size: 12px; color: #FF4D4F; margin-top: 4px; display: none; }
+        .error-msg.show { display: block; }
+
+        .detail-item { display: flex; padding: 12px 0; border-bottom: 1px solid #F0F0F0; }
+        .detail-item:last-child { border-bottom: none; }
+        .detail-label { width: 120px; color: #666; font-size: 14px; }
+        .detail-value { flex: 1; color: #333; font-size: 14px; }
+
+        .confirm-modal { width: 400px; }
+        .confirm-icon { font-size: 48px; text-align: center; margin-bottom: 16px; }
+        .confirm-title { font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 8px; }
+        .confirm-msg { font-size: 14px; color: #666; text-align: center; margin-bottom: 10px; }
+    
+        /* 表格容器 - 支持左右滚动 */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .table-container table {
+            width: max-content;
+            min-width: 100%;
+            border-collapse: collapse;
+        }
+        .table-container th,
+        .table-container td {
+            white-space: nowrap;
+        }
+        /* 固定列样式 */
+        .table-container th:nth-child(1),
+        .table-container td:nth-child(1),
+        .table-container th:nth-child(2),
+        .table-container td:nth-child(2) {
+            position: sticky;
+            left: 0;
+            background: #FAFAFA;
+            z-index: 10;
+        }
+        .table-container td:nth-child(1),
+        .table-container td:nth-child(2) {
+            background: #fff;
+        }
+        .table-container th:nth-child(2),
+        .table-container td:nth-child(2) {
+            left: 40px;
+        }
+        /* 固定操作栏 */
+        .table-container th:last-child,
+        .table-container td:last-child {
+            position: sticky;
+            right: 0;
+            background: #FAFAFA;
+            z-index: 10;
+        }
+        .table-container td:last-child {
+            background: #fff;
+        }
+.menu-title.collapsed
+</style>
+</head>
+<body>
+        <!-- 侧边栏导航 -->
+    <!-- 侧边栏导航容器 - 由 nav-loader-new.js 动态加载现代化导航组件 -->
+    <div id="nav-container"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <nav class="breadcrumb">
+                    <a href="./教学实训平台_教务管理端.html">教务管理</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>专业管理</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-menu-trigger">
+                        <div class="user-avatar">
+                            <span class="iconfont icon-jiaoshiguanli"></span>
+                        </div>
+                        <span class="user-name">欢迎您，教务管理员</span>
+                        <span class="iconfont icon-xiala user-dropdown-icon"></span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-dropdown-item" onclick="UserDropdown.switchTheme()">
+                            <span class="iconfont icon-zhuti"></span>
+                            <span>切换风格</span>
+                        </div>
+                        <div class="user-dropdown-divider"></div>
+                        <div class="user-dropdown-item" onclick="UserDropdown.logout()">
+                            <span class="iconfont icon-tuichu"></span>
+                            <span>退出登录</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-body">
+            <div class="page-header">
+                <h1 class="page-title">专业管理</h1>
+                <button class="btn-primary" onclick="openAddModal()">+ 新增专业</button>
+            </div>
+
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-icon blue">📖</div>
+                    <div><div class="stat-number" id="totalMajors">6</div><div class="stat-label">专业总数</div></div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-icon green">✅</div>
+                    <div><div class="stat-number" id="activeMajors">6</div><div class="stat-label">已启用</div></div>
+                </div>
+            </div>
+
+            <div class="major-grid" id="majorGrid"></div>
+        </div>
+    </div>
+
+    <!-- 新增/编辑弹窗 -->
+    <div class="modal-overlay" id="majorModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">新增专业</div>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="majorForm">
+                    <input type="hidden" id="majorId">
+                    <div class="form-group">
+                        <label>专业名称 <span class="required">*</span></label>
+                        <input type="text" id="name" placeholder="请输入专业名称">
+                        <div class="error-msg" id="nameError">请输入专业名称</div>
+                    </div>
+                    <div class="form-group">
+                        <label>专业代码 <span class="required">*</span></label>
+                        <input type="text" id="code" placeholder="请输入专业代码">
+                        <div class="error-msg" id="codeError">请输入专业代码</div>
+                    </div>
+                    <div class="form-group">
+                        <label>专业图标</label>
+                        <select id="icon">
+                            <option value="⚙️">⚙️ 机械</option>
+                            <option value="🔩">🔩 数控</option>
+                            <option value="📐">📐 模具</option>
+                            <option value="🤖">🤖 机器人</option>
+                            <option value="🔌">🔌 机电</option>
+                            <option value="🚗">🚗 汽车</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>专业简介</label>
+                        <textarea id="description" rows="3" placeholder="请输入专业简介"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeModal()">取消</button>
+                <button class="btn-confirm" onclick="saveMajor()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">专业详情</div>
+                <button class="modal-close" onclick="closeDetailModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-item"><div class="detail-label">专业名称</div><div class="detail-value" id="detailName">-</div></div>
+                <div class="detail-item"><div class="detail-label">专业代码</div><div class="detail-value" id="detailCode">-</div></div>
+                <div class="detail-item"><div class="detail-label">年级数</div><div class="detail-value" id="detailGrades">-</div></div>
+                <div class="detail-item"><div class="detail-label">班级数</div><div class="detail-value" id="detailClasses">-</div></div>
+                <div class="detail-item"><div class="detail-label">学生数</div><div class="detail-value" id="detailStudents">-</div></div>
+                <div class="detail-item"><div class="detail-label">专业简介</div><div class="detail-value" id="detailDescription">-</div></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-cancel" onclick="closeDetailModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 删除确认弹窗 -->
+    <div class="modal-overlay" id="deleteModal">
+        <div class="modal confirm-modal">
+            <div class="modal-body" style="padding: 10px;">
+                <div class="confirm-icon">⚠️</div>
+                <div class="confirm-title">确认删除</div>
+                <div class="confirm-msg">确定要删除专业 <strong id="deleteMajorName"></strong> 吗？<br>删除后不可恢复！</div>
+            </div>
+            <div class="modal-footer" style="justify-content: center;">
+                <button class="btn-cancel" onclick="closeDeleteModal()">取消</button>
+                <button class="btn-confirm btn-danger" onclick="confirmDelete()">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let majors = [
+            { id: 1, name: '机械工程', code: '460101', icon: '⚙️', iconClass: 'blue', grades: 3, classes: 6, students: 186, description: '机械工程基础专业' },
+            { id: 2, name: '数控技术', code: '460103', icon: '🔩', iconClass: 'green', grades: 3, classes: 4, students: 128, description: '数控加工技术专业' },
+            { id: 3, name: '模具设计与制造', code: '460113', icon: '📐', iconClass: 'orange', grades: 2, classes: 3, students: 96, description: '模具设计专业' },
+            { id: 4, name: '工业机器人技术', code: '460305', icon: '🤖', iconClass: 'purple', grades: 2, classes: 2, students: 64, description: '工业机器人技术专业' },
+            { id: 5, name: '机电一体化技术', code: '460301', icon: '🔌', iconClass: 'blue', grades: 3, classes: 5, students: 156, description: '机电一体化专业' },
+            { id: 6, name: '汽车制造与试验技术', code: '460701', icon: '🚗', iconClass: 'green', grades: 2, classes: 3, students: 88, description: '汽车制造专业' }
+        ];
+
+        let editingId = null;
+        let deletingId = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            renderGrid();
+            updateStats();
+        });
+
+        function renderGrid() {
+            const grid = document.getElementById('majorGrid');
+            grid.innerHTML = majors.map(major => `
+                <div class="major-card">
+                    <div class="major-header">
+                        <div class="major-icon ${major.iconClass}">${major.icon}</div>
+                        <div>
+                            <div class="major-name">${major.name}</div>
+                            <div class="major-code">专业代码：${major.code}</div>
+                        </div>
+                    </div>
+                    <div class="major-stats">
+                        <div class="major-stat"><div class="major-stat-value">${major.grades}</div><div class="major-stat-label">年级</div></div>
+                        <div class="major-stat"><div class="major-stat-value">${major.classes}</div><div class="major-stat-label">班级</div></div>
+                        <div class="major-stat"><div class="major-stat-value">${major.students}</div><div class="major-stat-label">学生</div></div>
+                    </div>
+                    <div class="major-actions">
+                        <button class="btn-action" onclick="viewMajor(${major.id})">查看详情</button>
+                        <button class="btn-action" onclick="editMajor(${major.id})">编辑</button>
+                        <button class="btn-action" onclick="deleteMajor(${major.id})">删除</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            document.getElementById('totalMajors').textContent = majors.length;
+            document.getElementById('activeMajors').textContent = majors.length;
+        }
+
+        function openAddModal() {
+            editingId = null;
+            document.getElementById('modalTitle').textContent = '新增专业';
+            document.getElementById('majorForm').reset();
+            document.getElementById('majorId').value = '';
+            clearErrors();
+            document.getElementById('majorModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('majorModal').classList.remove('active');
+        }
+
+        function viewMajor(id) {
+            const major = majors.find(m => m.id === id);
+            if (!major) return;
+
+            document.getElementById('detailName').textContent = major.name;
+            document.getElementById('detailCode').textContent = major.code;
+            document.getElementById('detailGrades').textContent = major.grades + '个';
+            document.getElementById('detailClasses').textContent = major.classes + '个';
+            document.getElementById('detailStudents').textContent = major.students + '人';
+            document.getElementById('detailDescription').textContent = major.description || '-';
+
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        function closeDetailModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        function editMajor(id) {
+            const major = majors.find(m => m.id === id);
+            if (!major) return;
+
+            editingId = id;
+            document.getElementById('modalTitle').textContent = '编辑专业';
+            document.getElementById('majorId').value = major.id;
+            document.getElementById('name').value = major.name;
+            document.getElementById('code').value = major.code;
+            document.getElementById('icon').value = major.icon;
+            document.getElementById('description').value = major.description || '';
+            clearErrors();
+            document.getElementById('majorModal').classList.add('active');
+        }
+
+        function deleteMajor(id) {
+            const major = majors.find(m => m.id === id);
+            if (!major) return;
+
+            deletingId = id;
+            document.getElementById('deleteMajorName').textContent = major.name;
+            document.getElementById('deleteModal').classList.add('active');
+        }
+
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').classList.remove('active');
+            deletingId = null;
+        }
+
+        function confirmDelete() {
+            if (!deletingId) return;
+
+            majors = majors.filter(m => m.id !== deletingId);
+            renderGrid();
+            updateStats();
+            closeDeleteModal();
+            alert('删除成功');
+        }
+
+        function saveMajor() {
+            if (!validateForm()) return;
+
+            const iconMap = { '⚙️': 'blue', '🔩': 'green', '📐': 'orange', '🤖': 'purple', '🔌': 'blue', '🚗': 'green' };
+            const majorData = {
+                name: document.getElementById('name').value.trim(),
+                code: document.getElementById('code').value.trim(),
+                icon: document.getElementById('icon').value,
+                iconClass: iconMap[document.getElementById('icon').value] || 'blue',
+                description: document.getElementById('description').value.trim(),
+                grades: 3,
+                classes: 4,
+                students: 120
+            };
+
+            if (editingId) {
+                const index = majors.findIndex(m => m.id === editingId);
+                if (index !== -1) {
+                    majors[index] = { ...majors[index], ...majorData };
+                    alert('修改成功');
+                }
+            } else {
+                const newId = Math.max(...majors.map(m => m.id), 0) + 1;
+                majors.push({ id: newId, ...majorData });
+                alert('添加成功');
+            }
+
+            renderGrid();
+            updateStats();
+            closeModal();
+        }
+
+        function validateForm() {
+            let isValid = true;
+            clearErrors();
+
+            const name = document.getElementById('name').value.trim();
+            const code = document.getElementById('code').value.trim();
+
+            if (!name) {
+                showError('name', '请输入专业名称');
+                isValid = false;
+            }
+
+            if (!code) {
+                showError('code', '请输入专业代码');
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function showError(field, msg) {
+            document.getElementById(field).classList.add('error');
+            const errorEl = document.getElementById(field + 'Error');
+            if (errorEl) {
+                errorEl.textContent = msg;
+                errorEl.classList.add('show');
+            }
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+            document.querySelectorAll('.error-msg').forEach(el => el.classList.remove('show'));
+        }
+
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        document.querySelectorAll('.modal-overlay').forEach(overlay => {
+            overlay.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.remove('active');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        
+        }
+    </script>
+
+    <script>
+        // 页面加载时自动展开包含 active 菜单项的菜单组
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            // 先收起所有菜单组
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            // 然后展开包含 active 菜单项的组
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        // 菜单展开/折叠
+        
+        }
+
+        // 页面加载时自动展开包含 active 菜单项的菜单组
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            // 先收起所有菜单组
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            // 然后展开包含 active 菜单项的组
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+            
+            // 侧边栏菜单滚动交互
+            const sidebarMenu = document.querySelector('.sidebar-menu');
+            
+            if (sidebarMenu) {
+                // 检测滚动位置并添加阴影提示
+                function updateScrollIndicators() {
+                    const scrollTop = sidebarMenu.scrollTop;
+                    const scrollHeight = sidebarMenu.scrollHeight;
+                    const clientHeight = sidebarMenu.clientHeight;
+                    const isScrollable = scrollHeight > clientHeight;
+                    
+                    // 顶部阴影
+                    if (scrollTop > 10) {
+                        sidebarMenu.classList.add('scroll-top');
+                    } else {
+                        sidebarMenu.classList.remove('scroll-top');
+                    }
+                    
+                    // 底部阴影
+                    if (isScrollable && scrollTop + clientHeight < scrollHeight - 10) {
+                        sidebarMenu.classList.add('scroll-bottom');
+                    } else {
+                        sidebarMenu.classList.remove('scroll-bottom');
+                    }
+                }
+                
+                // 监听滚动事件
+                sidebarMenu.addEventListener('scroll', updateScrollIndicators, { passive: true });
+                
+                // 初始检测
+                updateScrollIndicators();
+                
+                // 窗口大小改变时重新检测
+                window.addEventListener('resize', updateScrollIndicators, { passive: true });
+                
+                // 键盘滚动支持
+                sidebarMenu.addEventListener('keydown', function(e) {
+                    const scrollAmount = 50;
+                    
+                    switch(e.key) {
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+                            break;
+                        case 'PageDown':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                            break;
+                        case 'PageUp':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: -sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            sidebarMenu.scrollTo({ top: 0, behavior: 'smooth' });
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            sidebarMenu.scrollTo({ top: sidebarMenu.scrollHeight, behavior: 'smooth' });
+                            break;
+                    }
+                });
+                
+                // 菜单展开/收起时重新计算滚动
+                const menuTitles = document.querySelectorAll('.menu-title');
+                menuTitles.forEach(title => {
+                    title.addEventListener('click', function() {
+                        setTimeout(updateScrollIndicators, 300);
+                    });
+                });
+            }
+        });
+    </script>
+
+    <!-- 导航加载器 - 动态加载现代化导航组件 -->
+    <script src="./nav-loader-new.js"></script>
+</body>
+</html>

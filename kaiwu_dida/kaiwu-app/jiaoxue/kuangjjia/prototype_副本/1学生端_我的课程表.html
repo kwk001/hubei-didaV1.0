@@ -1,0 +1,1351 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的课程表 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        
+        .menu-item .iconfont, .menu-title .iconfont, .tree-title .iconfont {
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* 侧边栏样式 */
+        .sidebar {
+            width: 220px;
+            background: #001529;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            flex-shrink: 0;
+            height: 100vh;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* 内容区 */
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 24px;
+        }
+        
+        /* 课程表容器 */
+        .timetable-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+        
+        /* 学期和周次选择器 */
+        .term-week-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        
+        .term-selector {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .term-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #666;
+        }
+        
+        .term-select {
+            padding: 8px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .term-select:hover {
+            border-color: #1890FF;
+        }
+        
+        .week-selector {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .week-info {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .week-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .week-btn {
+            padding: 8px 20px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .week-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #F0F9FF;
+        }
+        
+        .week-btn:active {
+            transform: translateY(1px);
+        }
+        
+        .week-select {
+            padding: 8px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+            background: #fff;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .week-select:hover {
+            border-color: #1890FF;
+        }
+        
+        /* 课程表网格 */
+        .timetable-grid {
+            width: 100%;
+            overflow-x: auto;
+            background: #E8E8E8;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .timetable-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+        }
+        
+        /* 表格单元格 */
+        .timetable-table th,
+        .timetable-table td {
+            padding: 8px;
+            text-align: center;
+            border: 1px solid #E8E8E8;
+        }
+        
+        /* 表头 */
+        .timetable-table th {
+            background: #FFFFFF;
+            color: #333333;
+            font-weight: 600;
+            font-size: 13px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+        
+        /* 周次列 */
+        .timetable-table th.week-col,
+        .timetable-table td.week-col {
+            background: #FFFFFF;
+            color: #333333;
+            font-weight: 600;
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            min-width: 80px;
+        }
+        
+        /* 日期列 */
+        .timetable-table th.date-col,
+        .timetable-table td.date-col {
+            background: #FFFFFF;
+            color: #333333;
+            position: sticky;
+            left: 80px;
+            z-index: 4;
+            min-width: 120px;
+            font-weight: 600;
+            text-align: center;
+            vertical-align: middle;
+        }
+        
+        /* 日期单元格内容样式 */
+        .date-cell-content {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        
+        .date-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 14px;
+            gap: 8px;
+        }
+        
+        .month {
+            font-weight: 700;
+            color: #333333;
+            font-size: 15px;
+            min-width: 24px;
+            text-align: right;
+        }
+        
+        .date {
+            font-weight: 600;
+            color: #333333;
+            font-size: 15px;
+            min-width: 24px;
+            text-align: left;
+        }
+        
+        /* 不同月份的日期标记 */
+        .date-item.different-month {
+            opacity: 0.7;
+        }
+        
+        /* 日期分隔线 */
+        .date-separator {
+            width: 60%;
+            height: 1px;
+            background: #333333;
+            margin: 4px auto;
+            opacity: 0.3;
+        }
+        
+        /* 日期单元格悬停效果 */
+        .timetable-table td.date-col:hover {
+            background: #F5F5F5 !important;
+        }
+        
+        /* 周次单元格悬停效果 */
+        .timetable-table td.week-col:hover {
+            background: #F5F5F5 !important;
+        }
+        
+        /* 星期表头 */
+        .timetable-table th.weekday-th {
+            min-width: 120px;
+            width: 120px;
+        }
+        
+        /* 时间段表头 */
+        .timetable-table th.time-slot-th {
+            background: #FFFFFF;
+            color: #333333;
+            font-size: 11px;
+            padding: 4px;
+            min-width: 60px;
+            width: 60px;
+        }
+        
+        /* 课程单元格 */
+        .timetable-table td.course-cell {
+            background: #fff;
+            min-height: 60px;
+            vertical-align: top;
+            min-width: 60px;
+            width: 60px;
+        }
+        
+        /* 课程卡片 */
+        .timetable-course-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 6px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin: 2px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .timetable-course-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+        
+        /* 不同类型课程卡片 */
+        .timetable-course-card.theory {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .timetable-course-card.practice {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .timetable-course-card.experiment {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .timetable-course-card.training {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        /* 今日标记 */
+        .timetable-table td.today {
+            background: #FFF7E6;
+            box-shadow: inset 0 0 0 2px #FA8C16;
+        }
+        
+        /* 空单元格 */
+        .timetable-table td.empty {
+            background: #FAFAFA;
+        }
+        
+        /* 滚动条样式 */
+        .timetable-grid::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        
+        .timetable-grid::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 4px;
+        }
+        
+        .timetable-grid::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 4px;
+        }
+        
+        .timetable-grid::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        
+        /* 表格悬停效果 */
+        .timetable-table tr:hover td {
+            background: #F5F5F5 !important;
+        }
+        
+        /* 确保所有课程单元格边框一致 */
+        .timetable-table td.course-cell {
+            border: 1px solid #E8E8E8 !important;
+        }
+        
+        /* 特别针对周三列的边框修复 */
+        .timetable-table tr td:nth-child(7),
+        .timetable-table tr td:nth-child(8) {
+            border: 1px solid #E8E8E8 !important;
+        }
+        
+        /* 时间单元格 */
+        .time-cell {
+            background: #FAFAFA;
+            padding: 16px 12px;
+            text-align: center;
+            font-size: 13px;
+            color: #666;
+            font-weight: 500;
+            border-right: 1px solid #E8E8E8;
+            transition: background-color 0.3s;
+        }
+        
+        .time-cell:hover {
+            background: #F0F9FF;
+        }
+        
+        /* 星期单元格 */
+        .day-cell {
+            background: linear-gradient(135deg, #1890FF 0%, #36CFCC 100%);
+            color: #fff;
+            padding: 16px 12px;
+            text-align: center;
+            font-size: 14px;
+            font-weight: 600;
+            border-bottom: 1px solid #E8E8E8;
+            position: relative;
+        }
+        
+        .day-cell::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 20px;
+            height: 3px;
+            background: rgba(255,255,255,0.3);
+            border-radius: 2px;
+        }
+        
+        /* 今日星期单元格 */
+        .day-cell.today {
+            background: linear-gradient(135deg, #FA8C16 0%, #FF9C2E 100%);
+            box-shadow: inset 0 0 0 2px rgba(255,255,255,0.3);
+        }
+        
+        /* 课程单元格 */
+        .course-cell {
+            background: #fff;
+            padding: 10px;
+            min-height: 130px;
+            position: relative;
+            transition: background-color 0.3s;
+        }
+        
+        .course-cell:hover {
+            background: #F6FFED;
+        }
+        
+        /* 课程卡片 */
+        .course-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            padding: 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .course-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+            transform: rotate(45deg);
+            animation: shine 3s infinite;
+        }
+        
+        @keyframes shine {
+            0% { transform: translateX(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) rotate(45deg); }
+        }
+        
+        .course-card:hover {
+            transform: translateY(-4px) scale(1.02);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+        }
+        
+        /* 不同类型课程卡片 */
+        .course-card.theory {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .course-card.practice {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+        
+        .course-card.experiment {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .course-card.training {
+            background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+        }
+        
+        /* 今日课程卡片 */
+        .course-card.today-course {
+            box-shadow: 0 6px 20px rgba(250, 140, 22, 0.3);
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        .course-name {
+            font-size: 14px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            line-height: 1.3;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .course-teacher {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .course-location {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-bottom: 6px;
+            z-index: 1;
+            position: relative;
+        }
+        
+        .course-time {
+            font-size: 11px;
+            opacity: 0.8;
+            z-index: 1;
+            position: relative;
+        }
+        
+        /* 今日标记 */
+        .today-mark {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 12px;
+            height: 12px;
+            background: #FF4D4F;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(255, 77, 79, 0.3);
+            z-index: 2;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.8; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        
+        /* 空单元格 */
+        .empty-cell {
+            background: #fff;
+            position: relative;
+        }
+        
+        .empty-cell::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 40px;
+            height: 40px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%23E8E8E8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='3' width='18' height='18' rx='2' ry='2'%3E%3C/rect%3E%3Cline x1='3' y1='9' x2='21' y2='9'%3E%3C/line%3E%3Cline x1='9' y1='21' x2='9' y2='9'%3E%3C/line%3E%3C/svg%3E") no-repeat center;
+            opacity: 0.3;
+        }
+        
+        /* 空单元格 */
+        .empty-cell {
+            background: #fff;
+        }
+        
+        /* 今日标记 */
+        .today-mark {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 8px;
+            height: 8px;
+            background: #FF4D4F;
+            border-radius: 50%;
+        }
+        
+        /* 统计信息 */
+        .timetable-stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+        }
+        
+        .stat-item {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            padding: 24px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .stat-item:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.15);
+        }
+        
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #1890FF, #36CFCC);
+        }
+        
+        .stat-item:nth-child(2)::before {
+            background: linear-gradient(90deg, #FA8C16, #FF9C2E);
+        }
+        
+        .stat-item:nth-child(3)::before {
+            background: linear-gradient(90deg, #52C41A, #73D13D);
+        }
+        
+        .stat-item:nth-child(4)::before {
+            background: linear-gradient(90deg, #722ED1, #9254DE);
+        }
+        
+        .stat-icon {
+            font-size: 32px;
+            margin-bottom: 12px;
+            display: block;
+        }
+        
+        .stat-number {
+            font-size: 28px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 8px;
+            font-family: 'Arial', sans-serif;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #666;
+            font-weight: 500;
+        }
+        
+        .stat-item:hover .stat-number {
+            color: #1890FF;
+        }
+        
+        .stat-item:nth-child(2):hover .stat-number {
+            color: #FA8C16;
+        }
+        
+        .stat-item:nth-child(3):hover .stat-number {
+            color: #52C41A;
+        }
+        
+        .stat-item:nth-child(4):hover .stat-number {
+            color: #722ED1;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 1200px) {
+            .timetable-grid {
+                grid-template-columns: 100px repeat(5, 1fr);
+            }
+            
+            .course-cell {
+                min-height: 100px;
+            }
+        }
+        
+        @media (max-width: 992px) {
+            .timetable-container {
+                overflow-x: auto;
+            }
+            
+            .timetable-grid {
+                min-width: 800px;
+            }
+            
+            .timetable-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .content-body {
+                padding: 16px;
+            }
+            
+            .timetable-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .menu-title.collapsed
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo"><i class="iconfont icon-gongzuotai"></i> 教学实训平台</div>
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-shouye"></i>工作台</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教学实训平台_学生端.html'">
+                    <span><i class="iconfont icon-shouye"></i></span>
+                    <span>首页概览</span>
+                </div>
+            </div>
+        </div>
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)"><i class="iconfont icon-kechengguanli"></i>我的学习</div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./学生端_我的课程.html'">
+                    <span><i class="iconfont icon-kechengguanli"></i></span><span>我的课程</span>
+                </div>
+                <div class="menu-item active" onclick="window.location.href='./学生端_我的课程表.html'">
+                    <span><i class="iconfont icon-kechengbiao"></i></span><span>我的课程表</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./学生端_我的考试.html'">
+                    <span><i class="iconfont icon-shijuan"></i></span><span>我的考试</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./学生端_我的实训.html'">
+                    <span><i class="iconfont icon-shixun"></i></span><span>我的实训</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./学生端_错题集.html'">
+                    <span><i class="iconfont icon-baobiao"></i></span><span>错题集</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="header">
+            <div>首页 / 我的学习 / 我的课程表</div>
+            <div><i class="iconfont icon-xueshengguanli"></i> 学生：李明 | <button onclick="logout()" style="padding: 6px 16px; background: #FF4D4F; color: #fff; border: none; border-radius: 4px; cursor: pointer;">退出</button></div>
+        </div>
+
+        <div class="content-body">
+            <h1 class="page-title">我的课程表</h1>
+
+            <div class="timetable-container">
+                <div class="term-selector">
+                    <span class="term-label">学年：</span>
+                    <select class="term-select" id="yearSelect" onchange="changeTerm()">
+                        <option value="2025-2026">2025-2026学年</option>
+                        <option value="2024-2025">2024-2025学年</option>
+                        <option value="2023-2024">2023-2024学年</option>
+                    </select>
+                    <span class="term-label">学期：</span>
+                    <select class="term-select" id="termSelect" onchange="changeTerm()">
+                        <option value="1">第1学期</option>
+                        <option value="2" selected>第2学期</option>
+                    </select>
+                </div>
+
+                <div class="timetable-grid">
+                    <table class="timetable-table" id="timetableTable">
+                        <!-- 课程表内容将通过JavaScript生成 -->
+                    </table>
+                </div>
+            </div>
+
+            <div class="timetable-stats">
+                <div class="stat-item">
+                    <span class="stat-icon">📚</span>
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">本周课程数</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">⏰</span>
+                    <div class="stat-number">36</div>
+                    <div class="stat-label">本周总学时</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">🎯</span>
+                    <div class="stat-number">2</div>
+                    <div class="stat-label">今日课程数</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-icon">📈</span>
+                    <div class="stat-number">9</div>
+                    <div class="stat-label">今日学时</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 菜单展开/收起
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 课程表数据 - 按学年学期组织
+        const courseData = {
+            '2025-2026': {
+                '2': {
+                    8: [ // 第8周
+                        {
+                            day: 1, // 周一
+                            time: 1, // 第1节课
+                            name: '机械制图',
+                            teacher: '王老师',
+                            location: '机械楼301',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 1,
+                            time: 3,
+                            name: '数控加工技术',
+                            teacher: '张老师',
+                            location: '实训中心201',
+                            timeRange: '10:00-11:40',
+                            type: 'practice'
+                        },
+                        {
+                            day: 1,
+                            time: 5,
+                            name: 'CAD/CAM技术',
+                            teacher: '李老师',
+                            location: '计算机房101',
+                            timeRange: '14:00-15:40',
+                            type: 'experiment'
+                        },
+                        {
+                            day: 2,
+                            time: 1,
+                            name: '机械设计基础',
+                            teacher: '赵老师',
+                            location: '机械楼402',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 2,
+                            time: 3,
+                            name: '公差配合与测量',
+                            teacher: '刘老师',
+                            location: '机械楼302',
+                            timeRange: '10:00-11:40',
+                            type: 'experiment'
+                        },
+                        {
+                            day: 2,
+                            time: 6,
+                            name: '机械制造工艺学',
+                            teacher: '陈老师',
+                            location: '机械楼401',
+                            timeRange: '16:00-17:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 3,
+                            time: 1,
+                            name: '机械制图',
+                            teacher: '王老师',
+                            location: '机械楼301',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 3,
+                            time: 3,
+                            name: '数控加工技术',
+                            teacher: '张老师',
+                            location: '实训中心201',
+                            timeRange: '10:00-11:40',
+                            type: 'practice'
+                        },
+                        {
+                            day: 3,
+                            time: 5,
+                            name: 'CAD/CAM技术',
+                            teacher: '李老师',
+                            location: '计算机房101',
+                            timeRange: '14:00-15:40',
+                            type: 'experiment'
+                        },
+                        {
+                            day: 4,
+                            time: 1,
+                            name: '机械设计基础',
+                            teacher: '赵老师',
+                            location: '机械楼402',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 4,
+                            time: 3,
+                            name: '公差配合与测量',
+                            teacher: '刘老师',
+                            location: '机械楼302',
+                            timeRange: '10:00-11:40',
+                            type: 'experiment'
+                        },
+                        {
+                            day: 5,
+                            time: 1,
+                            name: '机械制图',
+                            teacher: '王老师',
+                            location: '机械楼301',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 5,
+                            time: 3,
+                            name: '数控加工技术',
+                            teacher: '张老师',
+                            location: '实训中心201',
+                            timeRange: '10:00-11:40',
+                            type: 'practice'
+                        }
+                    ],
+                    9: [ // 第9周（示例数据）
+                        {
+                            day: 1,
+                            time: 1,
+                            name: '机械制图',
+                            teacher: '王老师',
+                            location: '机械楼301',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 1,
+                            time: 3,
+                            name: '数控加工技术',
+                            teacher: '张老师',
+                            location: '实训中心201',
+                            timeRange: '10:00-11:40',
+                            type: 'practice'
+                        },
+                        {
+                            day: 2,
+                            time: 1,
+                            name: '机械设计基础',
+                            teacher: '赵老师',
+                            location: '机械楼402',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 2,
+                            time: 3,
+                            name: '公差配合与测量',
+                            teacher: '刘老师',
+                            location: '机械楼302',
+                            timeRange: '10:00-11:40',
+                            type: 'experiment'
+                        },
+                        {
+                            day: 3,
+                            time: 1,
+                            name: '机械制图',
+                            teacher: '王老师',
+                            location: '机械楼301',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 3,
+                            time: 3,
+                            name: '数控加工技术',
+                            teacher: '张老师',
+                            location: '实训中心201',
+                            timeRange: '10:00-11:40',
+                            type: 'practice'
+                        },
+                        {
+                            day: 4,
+                            time: 1,
+                            name: '机械设计基础',
+                            teacher: '赵老师',
+                            location: '机械楼402',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 4,
+                            time: 3,
+                            name: '公差配合与测量',
+                            teacher: '刘老师',
+                            location: '机械楼302',
+                            timeRange: '10:00-11:40',
+                            type: 'experiment'
+                        },
+                        {
+                            day: 5,
+                            time: 1,
+                            name: '机械制图',
+                            teacher: '王老师',
+                            location: '机械楼301',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 5,
+                            time: 3,
+                            name: '数控加工技术',
+                            teacher: '张老师',
+                            location: '实训中心201',
+                            timeRange: '10:00-11:40',
+                            type: 'practice'
+                        }
+                    ]
+                }
+            },
+            '2024-2025': {
+                '2': {
+                    8: [
+                        {
+                            day: 1,
+                            time: 1,
+                            name: '高等数学',
+                            teacher: '周老师',
+                            location: '教学楼101',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 1,
+                            time: 3,
+                            name: '大学物理',
+                            teacher: '吴老师',
+                            location: '教学楼102',
+                            timeRange: '10:00-11:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 2,
+                            time: 1,
+                            name: '高等数学',
+                            teacher: '周老师',
+                            location: '教学楼101',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 2,
+                            time: 3,
+                            name: '大学物理',
+                            teacher: '吴老师',
+                            location: '实验室301',
+                            timeRange: '10:00-11:40',
+                            type: 'experiment'
+                        },
+                        {
+                            day: 3,
+                            time: 1,
+                            name: '英语',
+                            teacher: '郑老师',
+                            location: '教学楼201',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 4,
+                            time: 1,
+                            name: '英语',
+                            teacher: '郑老师',
+                            location: '教学楼201',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        },
+                        {
+                            day: 5,
+                            time: 1,
+                            name: '思想品德',
+                            teacher: '黄老师',
+                            location: '教学楼301',
+                            timeRange: '08:00-09:40',
+                            type: 'theory'
+                        }
+                    ]
+                }
+            }
+        };
+
+        // 时间段
+        const timeSlots = [
+            { id: 1, name: '第1-2节', time: '08:00-09:40' },
+            { id: 2, name: '课间休息', time: '09:40-10:00' },
+            { id: 3, name: '第3-4节', time: '10:00-11:40' },
+            { id: 4, name: '午休', time: '11:40-14:00' },
+            { id: 5, name: '第5-6节', time: '14:00-15:40' },
+            { id: 6, name: '第7-8节', time: '16:00-17:40' },
+            { id: 7, name: '晚修', time: '19:00-21:00' }
+        ];
+
+        // 星期
+        const weekdays = ['周一', '周二', '周三', '周四', '周五', '周六', '周日'];
+
+        let currentYear = '2025-2026';
+        let currentTerm = '2';
+        let today = new Date().getDay(); // 0-6，0是周日
+        if (today === 0) today = 7; // 调整为1-7
+
+        // 初始化
+        function initTimetable() {
+            renderTimetable();
+        }
+
+        // 处理学期变更
+        function changeTerm() {
+            currentYear = document.getElementById('yearSelect').value;
+            currentTerm = document.getElementById('termSelect').value;
+            renderTimetable();
+        }
+
+        // 生成日期范围
+        function getWeekDateRange(weekNum) {
+            // 假设第1周从2025年9月1日开始
+            const startDate = new Date('2025-09-01');
+            const weekStart = new Date(startDate);
+            weekStart.setDate(startDate.getDate() + (weekNum - 1) * 7);
+            const weekEnd = new Date(weekStart);
+            weekEnd.setDate(weekStart.getDate() + 6);
+            
+            return {
+                start: weekStart.getDate(),
+                startMonth: weekStart.getMonth() + 1,
+                end: weekEnd.getDate(),
+                endMonth: weekEnd.getMonth() + 1
+            };
+        }
+
+        // 渲染课程表
+        function renderTimetable() {
+            const table = document.getElementById('timetableTable');
+            table.innerHTML = '';
+
+            // 创建表头
+            const thead = document.createElement('thead');
+            const headerRow1 = document.createElement('tr');
+            const headerRow2 = document.createElement('tr');
+
+            // 第一行表头
+            // 周次列
+            const weekHeader = document.createElement('th');
+            weekHeader.className = 'week-col';
+            weekHeader.rowSpan = 2;
+            weekHeader.textContent = '周';
+            headerRow1.appendChild(weekHeader);
+
+            // 日期列
+            const dateHeader = document.createElement('th');
+            dateHeader.className = 'date-col';
+            dateHeader.rowSpan = 2;
+            dateHeader.textContent = '日期';
+            headerRow1.appendChild(dateHeader);
+
+            // 星期表头
+            weekdays.forEach((day, index) => {
+                const dayHeader = document.createElement('th');
+                dayHeader.className = 'weekday-th';
+                dayHeader.colSpan = 2;
+                dayHeader.textContent = day;
+                headerRow1.appendChild(dayHeader);
+            });
+
+            // 第二行表头 - 上午/下午
+            const emptyCell1 = document.createElement('th');
+            emptyCell1.className = 'week-col';
+            emptyCell1.style.display = 'none';
+            headerRow2.appendChild(emptyCell1);
+
+            const emptyCell2 = document.createElement('th');
+            emptyCell2.className = 'date-col';
+            emptyCell2.style.display = 'none';
+            headerRow2.appendChild(emptyCell2);
+
+            weekdays.forEach(() => {
+                const morningHeader = document.createElement('th');
+                morningHeader.className = 'time-slot-th';
+                morningHeader.textContent = '上午';
+                headerRow2.appendChild(morningHeader);
+
+                const afternoonHeader = document.createElement('th');
+                afternoonHeader.className = 'time-slot-th';
+                afternoonHeader.textContent = '下午';
+                headerRow2.appendChild(afternoonHeader);
+            });
+
+            thead.appendChild(headerRow1);
+            thead.appendChild(headerRow2);
+            table.appendChild(thead);
+
+            // 创建表体
+            const tbody = document.createElement('tbody');
+
+            // 生成20周的数据
+            for (let weekNum = 1; weekNum <= 20; weekNum++) {
+                const row = document.createElement('tr');
+
+                // 周次单元格
+                const weekCell = document.createElement('td');
+                weekCell.className = 'week-col';
+                weekCell.textContent = weekNum;
+                row.appendChild(weekCell);
+
+                // 日期单元格
+                const dateRange = getWeekDateRange(weekNum);
+                const dateCell = document.createElement('td');
+                dateCell.className = 'date-col';
+                
+                const dateContent = document.createElement('div');
+                dateContent.className = 'date-cell-content';
+                
+                // 开始日期
+                const startDateItem = document.createElement('div');
+                startDateItem.className = 'date-item';
+                if (dateRange.startMonth !== dateRange.endMonth) {
+                    startDateItem.classList.add('different-month');
+                }
+                startDateItem.innerHTML = `
+                    <span class="month">${dateRange.startMonth}</span>
+                    <span class="date">${dateRange.start}</span>
+                `;
+                dateContent.appendChild(startDateItem);
+                
+                // 分隔线
+                if (dateRange.startMonth !== dateRange.endMonth) {
+                    const separator = document.createElement('div');
+                    separator.className = 'date-separator';
+                    dateContent.appendChild(separator);
+                }
+                
+                // 结束日期
+                const endDateItem = document.createElement('div');
+                endDateItem.className = 'date-item';
+                endDateItem.innerHTML = `
+                    <span class="month">${dateRange.endMonth}</span>
+                    <span class="date">${dateRange.end}</span>
+                `;
+                dateContent.appendChild(endDateItem);
+                
+                dateCell.appendChild(dateContent);
+                row.appendChild(dateCell);
+
+                // 每天的课程单元格
+                for (let day = 1; day <= 7; day++) {
+                    // 上午单元格
+                    const morningCell = document.createElement('td');
+                    morningCell.className = 'course-cell';
+                    if (day === today) {
+                        morningCell.classList.add('today');
+                    }
+
+                    // 下午单元格
+                    const afternoonCell = document.createElement('td');
+                    afternoonCell.className = 'course-cell';
+                    if (day === today) {
+                        afternoonCell.classList.add('today');
+                    }
+
+                    // 检查是否有课程
+                    const courses = courseData[currentYear]?.[currentTerm]?.[weekNum] || [];
+                    
+                    // 上午课程 (1-2节)
+                    const morningCourse = courses.find(c => c.day === day && c.time === 1);
+                    if (morningCourse) {
+                        const courseCard = document.createElement('div');
+                        courseCard.className = `timetable-course-card ${morningCourse.type}`;
+                        courseCard.innerHTML = `
+                            <div>${morningCourse.name}</div>
+                            <div style="font-size: 10px;">${morningCourse.teacher}</div>
+                            <div style="font-size: 10px;">${morningCourse.location}</div>
+                        `;
+                        courseCard.addEventListener('click', function() {
+                            showCourseDetail(morningCourse);
+                        });
+                        morningCell.appendChild(courseCard);
+                    } else {
+                        morningCell.classList.add('empty');
+                    }
+
+                    // 下午课程 (5-6节)
+                    const afternoonCourse = courses.find(c => c.day === day && c.time === 5);
+                    if (afternoonCourse) {
+                        const courseCard = document.createElement('div');
+                        courseCard.className = `timetable-course-card ${afternoonCourse.type}`;
+                        courseCard.innerHTML = `
+                            <div>${afternoonCourse.name}</div>
+                            <div style="font-size: 10px;">${afternoonCourse.teacher}</div>
+                            <div style="font-size: 10px;">${afternoonCourse.location}</div>
+                        `;
+                        courseCard.addEventListener('click', function() {
+                            showCourseDetail(afternoonCourse);
+                        });
+                        afternoonCell.appendChild(courseCard);
+                    } else {
+                        afternoonCell.classList.add('empty');
+                    }
+
+                    row.appendChild(morningCell);
+                    row.appendChild(afternoonCell);
+                }
+
+                tbody.appendChild(row);
+            }
+
+            table.appendChild(tbody);
+        }
+
+        // 显示课程详情
+        function showCourseDetail(course) {
+            alert(`课程详情：\n课程名称：${course.name}\n授课教师：${course.teacher}\n上课地点：${course.location}\n上课时间：${course.timeRange}\n课程类型：${getCourseTypeName(course.type)}`);
+        }
+
+        // 获取课程类型名称
+        function getCourseTypeName(type) {
+            const typeMap = {
+                'theory': '理论课',
+                'practice': '实践课',
+                'experiment': '实验课',
+                'training': '实训课'
+            };
+            return typeMap[type] || '未知';
+        }
+
+
+
+        // 页面加载时初始化
+        window.onload = initTimetable;
+    </script>
+</body>
+</html>

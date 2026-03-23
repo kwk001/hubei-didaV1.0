@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备稼动率监控 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        /* 统计卡片 */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            text-align: center;
+        }
+
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin: 0 auto 12px;
+        }
+
+        .stat-icon.blue { background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%); }
+        .stat-icon.green { background: linear-gradient(135deg, #F6FFED 0%, #D9F7BE 100%); }
+        .stat-icon.orange { background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%); }
+        .stat-icon.purple { background: linear-gradient(135deg, #F9F0FF 0%, #EFDBFF 100%); }
+        .stat-icon.red { background: linear-gradient(135deg, #FFF1F0 0%, #FFCCC7 100%); }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #262626;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: #8C8C8C;
+        }
+
+        /* 搜索筛选 */
+        .search-filter-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select, .date-picker {
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            min-width: 140px;
+        }
+
+        .btn-search, .btn-export {
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-export {
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            color: #666;
+        }
+
+        /* 图表容器 */
+        .chart-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chart-legend {
+            display: flex;
+            gap: 20px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .legend-dot.actual { background: #1890FF; }
+        .legend-dot.target { background: #52C41A; }
+        .legend-dot.average { background: #FAAD14; }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+        }
+
+        /* 数据表格 */
+        .table-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #E8E8E8;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .data-table tbody tr:hover {
+            background: #F5F7FA;
+        }
+
+        /* 稼动率显示 */
+        .rate-value {
+            font-weight: 600;
+        }
+
+        .rate-value.high {
+            color: #52C41A;
+        }
+
+        .rate-value.medium {
+            color: #FAAD14;
+        }
+
+        .rate-value.low {
+            color: #FF4D4F;
+        }
+
+        /* 进度条 */
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #F0F0F0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+
+        .progress-fill.high { background: #52C41A; }
+        .progress-fill.medium { background: #FAAD14; }
+        .progress-fill.low { background: #FF4D4F; }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .pagination-left {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pagination-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+<div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">报表 / 设备稼动率监控</div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <div class="content-body">
+            <!-- 统计卡片 -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon blue">⏱️</div>
+                    <div class="stat-value">328.5h</div>
+                    <div class="stat-label">运行工时</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">📅</div>
+                    <div class="stat-value">480h</div>
+                    <div class="stat-label">标准工时</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">📊</div>
+                    <div class="stat-value">68.4%</div>
+                    <div class="stat-label">稼动率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">🎯</div>
+                    <div class="stat-value">75%</div>
+                    <div class="stat-label">目标值</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">📈</div>
+                    <div class="stat-value">72.1%</div>
+                    <div class="stat-label">平均值</div>
+                </div>
+            </div>
+
+            <!-- 搜索筛选 -->
+            <div class="search-filter-card">
+                <div class="search-row">
+                    <select class="filter-select">
+                        <option value="">选择车间</option>
+                        <option value="workshop1">数控加工车间</option>
+                        <option value="workshop2">模具制造车间</option>
+                        <option value="workshop3">精密加工车间</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">选择设备</option>
+                        <option value="device1">数控车床-01</option>
+                        <option value="device2">数控车床-02</option>
+                        <option value="device3">数控铣床-01</option>
+                        <option value="device4">加工中心-01</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="day">按日统计</option>
+                        <option value="month">按月统计</option>
+                        <option value="year">按年统计</option>
+                    </select>
+                    <input type="date" class="date-picker" value="2025-01-01">
+                    <span style="color: #999; padding: 10px 0;">至</span>
+                    <input type="date" class="date-picker" value="2025-01-31">
+                    <button class="btn-search">🔍 查询</button>
+                    <button class="btn-export">📥 导出报表</button>
+                </div>
+            </div>
+
+            <!-- 稼动率趋势图 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">设备稼动率趋势（2025年1月）</div>
+                    <div class="chart-legend">
+                        <div class="legend-item">
+                            <div class="legend-dot actual"></div>
+                            <span>实际稼动率</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot target"></div>
+                            <span>目标值(75%)</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-dot average"></div>
+                            <span>平均值</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chart-container" id="jiadongChart"></div>
+            </div>
+
+            <!-- 数据表格 -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">设备稼动率明细</div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>日期</th>
+                            <th>设备名称</th>
+                            <th>运行工时(h)</th>
+                            <th>标准工时(h)</th>
+                            <th>稼动率</th>
+                            <th>目标值</th>
+                            <th>达成情况</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-01-20</td>
+                            <td>数控车床-01</td>
+                            <td>16.5</td>
+                            <td>24</td>
+                            <td>
+                                <div class="rate-value high">68.8%</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill high" style="width: 68.8%;"></div>
+                                </div>
+                            </td>
+                            <td>75%</td>
+                            <td><span style="color: #52C41A;">● 达标</span></td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-19</td>
+                            <td>数控车床-01</td>
+                            <td>15.8</td>
+                            <td>24</td>
+                            <td>
+                                <div class="rate-value medium">65.8%</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill medium" style="width: 65.8%;"></div>
+                                </div>
+                            </td>
+                            <td>75%</td>
+                            <td><span style="color: #FAAD14;">● 未达标</span></td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-18</td>
+                            <td>数控车床-01</td>
+                            <td>17.2</td>
+                            <td>24</td>
+                            <td>
+                                <div class="rate-value high">71.7%</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill high" style="width: 71.7%;"></div>
+                                </div>
+                            </td>
+                            <td>75%</td>
+                            <td><span style="color: #52C41A;">● 达标</span></td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-17</td>
+                            <td>数控车床-01</td>
+                            <td>14.5</td>
+                            <td>24</td>
+                            <td>
+                                <div class="rate-value low">60.4%</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill low" style="width: 60.4%;"></div>
+                                </div>
+                            </td>
+                            <td>75%</td>
+                            <td><span style="color: #FF4D4F;">● 未达标</span></td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-16</td>
+                            <td>数控车床-01</td>
+                            <td>16.8</td>
+                            <td>24</td>
+                            <td>
+                                <div class="rate-value high">70.0%</div>
+                                <div class="progress-bar">
+                                    <div class="progress-fill high" style="width: 70.0%;"></div>
+                                </div>
+                            </td>
+                            <td>75%</td>
+                            <td><span style="color: #52C41A;">● 达标</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- 分页 -->
+                <div class="pagination">
+                    <div class="pagination-left">显示第 1-5 条，共 31 条记录</div>
+                    <div class="pagination-right">
+                        <button class="pagination-btn" disabled>上一页</button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <button class="pagination-btn">...</button>
+                        <button class="pagination-btn">7</button>
+                        <button class="pagination-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 稼动率趋势数据
+        const jiadongData = [
+            { date: '01-01', actual: 65.2, target: 75, average: 72.1 },
+            { date: '01-02', actual: 68.5, target: 75, average: 72.1 },
+            { date: '01-03', actual: 62.8, target: 75, average: 72.1 },
+            { date: '01-04', actual: 71.3, target: 75, average: 72.1 },
+            { date: '01-05', actual: 69.7, target: 75, average: 72.1 },
+            { date: '01-06', actual: 66.4, target: 75, average: 72.1 },
+            { date: '01-07', actual: 70.2, target: 75, average: 72.1 },
+            { date: '01-08', actual: 64.9, target: 75, average: 72.1 },
+            { date: '01-09', actual: 72.5, target: 75, average: 72.1 },
+            { date: '01-10', actual: 73.8, target: 75, average: 72.1 },
+            { date: '01-11', actual: 67.3, target: 75, average: 72.1 },
+            { date: '01-12', actual: 65.9, target: 75, average: 72.1 },
+            { date: '01-13', actual: 69.4, target: 75, average: 72.1 },
+            { date: '01-14', actual: 63.7, target: 75, average: 72.1 },
+            { date: '01-15', actual: 68.6, target: 75, average: 72.1 },
+            { date: '01-16', actual: 70.0, target: 75, average: 72.1 },
+            { date: '01-17', actual: 60.4, target: 75, average: 72.1 },
+            { date: '01-18', actual: 71.7, target: 75, average: 72.1 },
+            { date: '01-19', actual: 65.8, target: 75, average: 72.1 },
+            { date: '01-20', actual: 68.8, target: 75, average: 72.1 }
+        ];
+
+        // 渲染稼动率趋势图
+        function renderJiadongChart() {
+            const container = document.getElementById('jiadongChart');
+            if (!container) return;
+
+            const width = container.clientWidth;
+            const height = 400;
+            const padding = { top: 40, right: 40, bottom: 60, left: 60 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+
+            const maxValue = 100;
+
+            // 计算坐标点
+            const actualPoints = jiadongData.map((item, index) => {
+                const x = padding.left + (index / (jiadongData.length - 1)) * chartWidth;
+                const y = padding.top + chartHeight - (item.actual / maxValue) * chartHeight;
+                return `${x},${y}`;
+            }).join(' ');
+
+            let svg = `
+                <svg width="${width}" height="${height}" style="overflow: visible;">
+                    <!-- 网格线 -->
+                    ${[0, 25, 50, 75, 100].map(val => {
+                        const y = padding.top + chartHeight - (val / maxValue) * chartHeight;
+                        return `<line stroke="#F0F0F0" stroke-width="1" stroke-dasharray="4,4" 
+                                x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" />`;
+                    }).join('')}
+                    
+                    <!-- Y轴 -->
+                    <line stroke="#D9D9D9" stroke-width="1" 
+                          x1="${padding.left}" y1="${padding.top}" x2="${padding.left}" y2="${padding.top + chartHeight}" />
+                    
+                    <!-- X轴 -->
+                    <line stroke="#D9D9D9" stroke-width="1" 
+                          x1="${padding.left}" y1="${padding.top + chartHeight}" x2="${width - padding.right}" y2="${padding.top + chartHeight}" />
+                    
+                    <!-- Y轴标签 -->
+                    ${[0, 25, 50, 75, 100].map(val => {
+                        const y = padding.top + chartHeight - (val / maxValue) * chartHeight;
+                        return `<text fill="#666" font-size="12" text-anchor="end" x="${padding.left - 10}" y="${y + 4}">${val}%</text>`;
+                    }).join('')}
+                    
+                    <!-- 目标值线 -->
+                    <line stroke="#52C41A" stroke-width="2" stroke-dasharray="6,4"
+                          x1="${padding.left}" y1="${padding.top + chartHeight - (75 / maxValue) * chartHeight}" 
+                          x2="${width - padding.right}" y2="${padding.top + chartHeight - (75 / maxValue) * chartHeight}" />
+                    <text fill="#52C41A" font-size="11" x="${width - padding.right + 5}" y="${padding.top + chartHeight - (75 / maxValue) * chartHeight - 5}">目标75%</text>
+                    
+                    <!-- 平均值线 -->
+                    <line stroke="#FAAD14" stroke-width="2" stroke-dasharray="6,4"
+                          x1="${padding.left}" y1="${padding.top + chartHeight - (72.1 / maxValue) * chartHeight}" 
+                          x2="${width - padding.right}" y2="${padding.top + chartHeight - (72.1 / maxValue) * chartHeight}" />
+                    <text fill="#FAAD14" font-size="11" x="${width - padding.right + 5}" y="${padding.top + chartHeight - (72.1 / maxValue) * chartHeight - 5}">平均72.1%</text>
+                    
+                    <!-- 实际稼动率折线 -->
+                    <polyline fill="none" stroke="#1890FF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" points="${actualPoints}" />
+                    
+                    <!-- 数据点 -->
+                    ${jiadongData.map((item, index) => {
+                        const x = padding.left + (index / (jiadongData.length - 1)) * chartWidth;
+                        const y = padding.top + chartHeight - (item.actual / maxValue) * chartHeight;
+                        const color = item.actual >= 75 ? '#52C41A' : (item.actual >= 65 ? '#FAAD14' : '#FF4D4F');
+                        return `<circle cx="${x}" cy="${y}" r="5" fill="${color}" stroke="#fff" stroke-width="2" 
+                                onmouseenter="showTooltip(event, '${item.date}', ${item.actual})" 
+                                onmouseleave="hideTooltip()" />`;
+                    }).join('')}
+                    
+                    <!-- X轴标签 -->
+                    ${jiadongData.map((item, index) => {
+                        const x = padding.left + (index / (jiadongData.length - 1)) * chartWidth;
+                        return `<text fill="#666" font-size="11" text-anchor="middle" x="${x}" y="${padding.top + chartHeight + 20}">${item.date}</text>`;
+                    }).join('')}
+                </svg>
+                
+                <!-- 提示框 -->
+                <div id="chartTooltip" style="position: absolute; background: rgba(0,0,0,0.8); color: #fff; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 100;"></div>
+            `;
+
+            container.innerHTML = svg;
+        }
+
+        // 显示提示框
+        function showTooltip(event, date, value) {
+            const tooltip = document.getElementById('chartTooltip');
+            tooltip.innerHTML = `<strong>${date}</strong><br>稼动率: ${value}%`;
+            tooltip.style.left = (event.pageX - event.target.closest('.chart-container').getBoundingClientRect().left + 10) + 'px';
+            tooltip.style.top = (event.pageY - event.target.closest('.chart-container').getBoundingClientRect().top - 30) + 'px';
+            tooltip.style.opacity = '1';
+        }
+
+        // 隐藏提示框
+        function hideTooltip() {
+            document.getElementById('chartTooltip').style.opacity = '0';
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 菜单折叠
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 页面加载完成后渲染图表
+        window.addEventListener('load', function() {
+            setTimeout(renderJiadongChart, 100);
+        });
+
+        // 窗口大小改变时重新渲染
+        window.addEventListener('resize', function() {
+            renderJiadongChart();
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+# 备份文件
+backup_*/
+*.bak
+
+# Python 脚本
+*.py
+__pycache__/
+*.pyc
+
+# 编辑器配置
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 系统文件
+.DS_Store
+Thumbs.db
+
+# 日志文件
+*.log
+
+# 测试文件
+test.html
+demo-*.html

@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>年级管理 - 教务管理端</title>
+        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        
+        .menu-item .iconfont, .menu-title .iconfont, .tree-title .iconfont {
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #F5F7FA; min-height: 100vh; }
+
+        .page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .page-title { font-size: 20px; font-weight: 600; color: #333; }
+        .btn-primary { padding: 10px 20px; background: #1890FF; color: #fff; border: none; border-radius: 4px; cursor: pointer; font-size: 14px; }
+        .grade-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+        .grade-card { background: #fff; border-radius: 12px; padding: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); text-align: center; }
+        .grade-icon { width: 64px; height: 64px; border-radius: 50%; background: #E6F7FF; display: flex; align-items: center; justify-content: center; font-size: 28px; margin: 0 auto 16px; }
+        .grade-name { font-size: 18px; font-weight: 600; color: #333; margin-bottom: 8px; }
+        .grade-meta { font-size: 14px; color: #999; margin-bottom: 16px; }
+        .grade-stats { display: flex; justify-content: center; gap: 10px; margin-bottom: 16px; }
+        .grade-stat { text-align: center; }
+        .grade-stat-value { font-size: 20px; font-weight: bold; color: #333; }
+        .grade-stat-label { font-size: 12px; color: #999; }
+        .grade-actions { display: flex; gap: 8px; }
+        .btn-action { flex: 1; padding: 8px; border: 1px solid #D9D9D9; background: #fff; border-radius: 4px; cursor: pointer; font-size: 13px; color: #666; }
+        .btn-action:hover { border-color: #1890FF; color: #1890FF; }
+    
+        /* 表格容器 - 支持左右滚动 */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .table-container table {
+            width: max-content;
+            min-width: 100%;
+            border-collapse: collapse;
+        }
+        .table-container th,
+        .table-container td {
+            white-space: nowrap;
+        }
+        /* 固定列样式 */
+        .table-container th:nth-child(1),
+        .table-container td:nth-child(1),
+        .table-container th:nth-child(2),
+        .table-container td:nth-child(2) {
+            position: sticky;
+            left: 0;
+            background: #FAFAFA;
+            z-index: 10;
+        }
+        .table-container td:nth-child(1),
+        .table-container td:nth-child(2) {
+            background: #fff;
+        }
+        .table-container th:nth-child(2),
+        .table-container td:nth-child(2) {
+            left: 40px;
+        }
+        /* 固定操作栏 */
+        .table-container th:last-child,
+        .table-container td:last-child {
+            position: sticky;
+            right: 0;
+            background: #FAFAFA;
+            z-index: 10;
+        }
+        .table-container td:last-child {
+            background: #fff;
+        }
+.menu-title.collapsed
+</style>
+</head>
+<body>
+        <!-- 侧边栏导航 -->
+    <!-- 侧边栏导航容器 - 由 nav-loader-new.js 动态加载现代化导航组件 -->
+    <div id="nav-container"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <nav class="breadcrumb">
+                    <a href="./教学实训平台_教务管理端.html">教务管理</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>年级管理</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div id="user-menu-container"></div>
+            </div>
+        </div>
+        <div class="content-body">
+            <div class="page-header">
+                <h1 class="page-title">年级管理</h1>
+                <button class="btn-primary">+ 新增年级</button>
+            </div>
+            <div class="grade-grid">
+                <div class="grade-card">
+                    <div class="grade-icon">🎓</div>
+                    <div class="grade-name">2023级</div>
+                    <div class="grade-meta">入学年份：2023年</div>
+                    <div class="grade-stats">
+                        <div class="grade-stat"><div class="grade-stat-value">12</div><div class="grade-stat-label">班级</div></div>
+                        <div class="grade-stat"><div class="grade-stat-value">386</div><div class="grade-stat-label">学生</div></div>
+                    </div>
+                    <div class="grade-actions"><button class="btn-action">查看</button><button class="btn-action">编辑</button></div>
+                </div>
+                <div class="grade-card">
+                    <div class="grade-icon" style="background: #F6FFED;">🎓</div>
+                    <div class="grade-name">2024级</div>
+                    <div class="grade-meta">入学年份：2024年</div>
+                    <div class="grade-stats">
+                        <div class="grade-stat"><div class="grade-stat-value">10</div><div class="grade-stat-label">班级</div></div>
+                        <div class="grade-stat"><div class="grade-stat-value">320</div><div class="grade-stat-label">学生</div></div>
+                    </div>
+                    <div class="grade-actions"><button class="btn-action">查看</button><button class="btn-action">编辑</button></div>
+                </div>
+                <div class="grade-card">
+                    <div class="grade-icon" style="background: #FFF7E6;">🎓</div>
+                    <div class="grade-name">2025级</div>
+                    <div class="grade-meta">入学年份：2025年</div>
+                    <div class="grade-stats">
+                        <div class="grade-stat"><div class="grade-stat-value">8</div><div class="grade-stat-label">班级</div></div>
+                        <div class="grade-stat"><div class="grade-stat-value">256</div><div class="grade-stat-label">学生</div></div>
+                    </div>
+                    <div class="grade-actions"><button class="btn-action">查看</button><button class="btn-action">编辑</button></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>function logout() { localStorage.removeItem('iBodaoUser'); window.location.href = './教学实训平台_登录.html'; }</script>
+
+    <script>
+        
+        }
+    </script>
+
+    <script>
+        // 页面加载时自动展开包含 active 菜单项的菜单组
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            // 先收起所有菜单组
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            // 然后展开包含 active 菜单项的组
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        // 菜单展开/折叠
+        
+        }
+
+        // 页面加载时自动展开包含 active 菜单项的菜单组
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            // 先收起所有菜单组
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            // 然后展开包含 active 菜单项的组
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+            
+            // 侧边栏菜单滚动交互
+            const sidebarMenu = document.querySelector('.sidebar-menu');
+            
+            if (sidebarMenu) {
+                // 检测滚动位置并添加阴影提示
+                function updateScrollIndicators() {
+                    const scrollTop = sidebarMenu.scrollTop;
+                    const scrollHeight = sidebarMenu.scrollHeight;
+                    const clientHeight = sidebarMenu.clientHeight;
+                    const isScrollable = scrollHeight > clientHeight;
+                    
+                    // 顶部阴影
+                    if (scrollTop > 10) {
+                        sidebarMenu.classList.add('scroll-top');
+                    } else {
+                        sidebarMenu.classList.remove('scroll-top');
+                    }
+                    
+                    // 底部阴影
+                    if (isScrollable && scrollTop + clientHeight < scrollHeight - 10) {
+                        sidebarMenu.classList.add('scroll-bottom');
+                    } else {
+                        sidebarMenu.classList.remove('scroll-bottom');
+                    }
+                }
+                
+                // 监听滚动事件
+                sidebarMenu.addEventListener('scroll', updateScrollIndicators, { passive: true });
+                
+                // 初始检测
+                updateScrollIndicators();
+                
+                // 窗口大小改变时重新检测
+                window.addEventListener('resize', updateScrollIndicators, { passive: true });
+                
+                // 键盘滚动支持
+                sidebarMenu.addEventListener('keydown', function(e) {
+                    const scrollAmount = 50;
+                    
+                    switch(e.key) {
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+                            break;
+                        case 'PageDown':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                            break;
+                        case 'PageUp':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: -sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            sidebarMenu.scrollTo({ top: 0, behavior: 'smooth' });
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            sidebarMenu.scrollTo({ top: sidebarMenu.scrollHeight, behavior: 'smooth' });
+                            break;
+                    }
+                });
+                
+                // 菜单展开/收起时重新计算滚动
+                const menuTitles = document.querySelectorAll('.menu-title');
+                menuTitles.forEach(title => {
+                    title.addEventListener('click', function() {
+                        setTimeout(updateScrollIndicators, 300);
+                    });
+                });
+            }
+        });
+    </script>
+    <script src="./user-menu-component.js"></script>
+</body>
+</html>

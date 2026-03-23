@@ -1,0 +1,764 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>备刀任务单 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .page-header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .page-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: #1890FF;
+            border-radius: 2px;
+        }
+        
+        .toolbar {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-item label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .filter-item input,
+        .filter-item select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 140px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: #1890FF; color: #fff; }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success { background: #52C41A; color: #fff; }
+        .btn-success:hover { background: #73D13D; }
+        .btn-default { background: #fff; color: #666; border: 1px solid #D9D9D9; }
+        .btn-default:hover { border-color: #1890FF; color: #1890FF; }
+        .btn-warning { background: #FAAD14; color: #fff; }
+        .btn-warning:hover { background: #FFC53D; }
+        .btn-sm { padding: 4px 12px; font-size: 12px; }
+        .btn-disabled { background: #F5F5F5; color: #BFBFBF; cursor: not-allowed; border: 1px solid #D9D9D9; }
+        .btn-disabled:hover { background: #F5F5F5; color: #BFBFBF; }
+        
+        .content-body {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+        }
+        
+        /* 统计卡片 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px 20px;
+            border: 1px solid #E8E8E8;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-icon.blue { background: #E6F7FF; }
+        .stat-icon.orange { background: #FFF7E6; }
+        .stat-icon.green { background: #F6FFED; }
+        .stat-icon.red { background: #FFF1F0; }
+        .stat-info h3 {
+            font-size: 13px;
+            color: #666;
+            font-weight: normal;
+            margin-bottom: 4px;
+        }
+        .stat-info .number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            overflow: auto;
+            position: relative;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        .data-table th:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background: #FAFAFA;
+        }
+        .data-table th:last-child {
+            position: sticky;
+            right: 0;
+            z-index: 20;
+            background: #FAFAFA;
+        }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #F0F0F0;
+            background: #fff;
+            white-space: nowrap;
+        }
+        .data-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 15;
+            background: #fff;
+            box-shadow: 2px 0 4px rgba(0,0,0,0.05);
+        }
+        .data-table td:last-child {
+            position: sticky;
+            right: 0;
+            z-index: 15;
+            background: #fff;
+            box-shadow: -2px 0 4px rgba(0,0,0,0.05);
+        }
+        .data-table tbody tr:hover td { background: #F6FFFE; }
+        .data-table tbody tr:hover td:first-child { background: #F6FFFE; }
+        .data-table tbody tr:hover td:last-child { background: #F6FFFE; }
+        
+        .status-tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-waiting { background: #FFFBE6; color: #FAAD14; border: 1px solid #FFE58F; }
+        .status-preparing { background: #E6F7FF; color: #1890FF; border: 1px solid #91D5FF; }
+        .status-delivering { background: #F6FFED; color: #52C41A; border: 1px solid #B7EB8F; }
+        .status-completed { background: #F5F5F5; color: #666; border: 1px solid #D9D9D9; }
+        .status-return { background: #F9F0FF; color: #722ED1; border: 1px solid #D3ADF7; }
+        .status-scrap { background: #FFF1F0; color: #FF4D4F; border: 1px solid #FFA39E; }
+        
+        .action-group { display: flex; gap: 8px; }
+        
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 20px;
+            gap: 8px;
+            background: #fff;
+            border-top: 1px solid #E8E8E8;
+        }
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .pagination-btn:hover { border-color: #1890FF; color: #1890FF; }
+        .pagination-btn.active { background: #1890FF; color: #fff; border-color: #1890FF; }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">备刀任务单</div>
+        </div>
+        
+        <div class="toolbar">
+            <div class="filter-group">
+                <div class="filter-item">
+                    <label>任务单号</label>
+                    <input type="text" placeholder="请输入任务单号">
+                </div>
+                <div class="filter-item">
+                    <label>生产工单</label>
+                    <input type="text" placeholder="请输入工单号">
+                </div>
+                <div class="filter-item">
+                    <label>状态</label>
+                    <select>
+                        <option value="">全部</option>
+                        <option value="waiting">待备刀</option>
+                        <option value="preparing">备刀中</option>
+                        <option value="delivering">配送中</option>
+                        <option value="completed">已完成</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary">
+                    <i class="iconfont icon-sousuo"></i> 查询
+                </button>
+                <button class="btn btn-default">重置</button>
+            </div>
+        </div>
+        
+        <div class="content-body">
+            <!-- 统计卡片 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📋</div>
+                    <div class="stat-info">
+                        <h3>待备刀</h3>
+                        <div class="number">12</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📦</div>
+                    <div class="stat-info">
+                        <h3>备刀中</h3>
+                        <div class="number">5</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">🚚</div>
+                    <div class="stat-info">
+                        <h3>配送中</h3>
+                        <div class="number">8</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">⏰</div>
+                    <div class="stat-info">
+                        <h3>待归还</h3>
+                        <div class="number">3</div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>任务单号</th>
+                            <th>生产工单号</th>
+                            <th>刀具需求信息</th>
+                            <th>刀具需求数量</th>
+                            <th>需求时间段</th>
+                            <th>操作栏</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><strong>BD20250115001</strong></td>
+                            <td>WO2025011501</td>
+                            <td><a href="javascript:void(0)" onclick="showToolInfo('立铣刀', 'Φ10mm', '把', '5', '铣削-001', '铣床-XK01', '2026-03-03 09:00-11:00', '待备刀', 'status-waiting')" style="color: #1890FF; text-decoration: none;">查看</a></td>
+                            <td>5</td>
+                            <td>2026-03-03 09:00-11:00</td>
+                            <td>
+                                <div class="action-group">
+                                    <a href="./教师端_备刀任务单_备刀完成.html" class="btn btn-primary btn-sm" style="text-decoration: none;">备刀完成</a>
+                                    <button class="btn btn-success btn-sm btn-disabled" disabled>配送</button>
+                                    <button class="btn btn-warning btn-sm btn-disabled" disabled>归还确认</button>
+                                    <a href="./教师端_备刀任务单_查看.html" class="btn btn-default btn-sm" style="text-decoration: none;">查看详情</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>BD20250115002</strong></td>
+                            <td>WO2025011502</td>
+                            <td><a href="javascript:void(0)" onclick="showToolInfo('外圆车刀', '20×20mm', '把', '4', '车削-001', '车床-CL03', '2026-03-04 14:00-16:00', '待配送', 'status-preparing')" style="color: #1890FF; text-decoration: none;">查看</a></td>
+                            <td>4</td>
+                            <td>2026-03-04 14:00-16:00</td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm btn-disabled" disabled>备刀完成</button>
+                                    <a href="./教师端_备刀任务单_配送.html" class="btn btn-success btn-sm" style="text-decoration: none;">配送</a>
+                                    <button class="btn btn-warning btn-sm btn-disabled" disabled>归还确认</button>
+                                    <a href="./教师端_备刀任务单_查看.html" class="btn btn-default btn-sm" style="text-decoration: none;">查看详情</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>BD20250115003</strong></td>
+                            <td>WO2025011501</td>
+                            <td><a href="javascript:void(0)" onclick="showToolInfo('麻花钻', 'Φ8mm', '把', '2', '钻孔-001', '钻床-ZX01', '2026-03-03 09:00-11:00', '配送中', 'status-delivering')" style="color: #1890FF; text-decoration: none;">查看</a></td>
+                            <td>2</td>
+                            <td>2026-03-03 09:00-11:00</td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm btn-disabled" disabled>备刀完成</button>
+                                    <button class="btn btn-success btn-sm btn-disabled" disabled>配送</button>
+                                    <button class="btn btn-warning btn-sm btn-disabled" disabled>归还确认</button>
+                                    <a href="./教师端_备刀任务单_查看.html" class="btn btn-default btn-sm" style="text-decoration: none;">查看详情</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>BD20250114005</strong></td>
+                            <td>WO2025011405</td>
+                            <td><a href="javascript:void(0)" onclick="showToolInfo('内孔刀', 'Φ12mm', '把', '3', '镗孔-001', '镗床-TQ02', '2026-03-02 14:00-16:00', '待归还', 'status-return')" style="color: #1890FF; text-decoration: none;">查看</a></td>
+                            <td>3</td>
+                            <td>2026-03-02 14:00-16:00</td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm btn-disabled" disabled>备刀完成</button>
+                                    <button class="btn btn-success btn-sm btn-disabled" disabled>配送</button>
+                                    <a href="./教师端_备刀任务单_归还确认.html" class="btn btn-warning btn-sm" style="text-decoration: none;">归还确认</a>
+                                    <a href="./教师端_备刀任务单_查看.html" class="btn btn-default btn-sm" style="text-decoration: none;">查看详情</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>BD20250114001</strong></td>
+                            <td>WO2025011401</td>
+                            <td><a href="javascript:void(0)" onclick="showToolInfo('精车刀', '16×16mm', '把', '6', '精车-001', '车床-CL05', '2026-03-02 09:00-11:00', '归还完成', 'status-completed')" style="color: #1890FF; text-decoration: none;">查看</a></td>
+                            <td>6</td>
+                            <td>2026-03-02 09:00-11:00</td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm btn-disabled" disabled>备刀完成</button>
+                                    <button class="btn btn-success btn-sm btn-disabled" disabled>配送</button>
+                                    <button class="btn btn-warning btn-sm btn-disabled" disabled>归还确认</button>
+                                    <a href="./教师端_备刀任务单_查看.html" class="btn btn-default btn-sm" style="text-decoration: none;">查看详情</a>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><strong>BD20250114002</strong></td>
+                            <td>WO2025011402</td>
+                            <td><a href="javascript:void(0)" onclick="showToolInfo('丝锥', 'M6', '把', '3', '攻丝-001', '攻丝机-GS01', '2026-03-01 10:00-12:00', '报废', 'status-scrap')" style="color: #1890FF; text-decoration: none;">查看</a></td>
+                            <td>3</td>
+                            <td>2026-03-01 10:00-12:00</td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm btn-disabled" disabled>备刀完成</button>
+                                    <button class="btn btn-success btn-sm btn-disabled" disabled>配送</button>
+                                    <button class="btn btn-warning btn-sm btn-disabled" disabled>归还确认</button>
+                                    <a href="./教师端_备刀任务单_查看.html" class="btn btn-default btn-sm" style="text-decoration: none;">查看详情</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <span style="font-size: 13px; color: #666; margin-right: 16px;">共 28 条记录</span>
+                    <button class="pagination-btn">上一页</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">3</button>
+                    <button class="pagination-btn">...</button>
+                    <button class="pagination-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 刀具需求信息对话框 -->
+    <div id="toolInfoModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center;">
+        <div class="modal-content" style="background: #fff; border-radius: 8px; width: 900px; max-width: 95%; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+            <div class="modal-header" style="padding: 16px 20px; border-bottom: 1px solid #F0F0F0; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="font-size: 16px; font-weight: 600; color: #333;">刀具需求信息</h3>
+                <button onclick="closeToolInfoModal()" style="background: none; border: none; font-size: 20px; color: #999; cursor: pointer;">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 20px;">
+                <div class="table-container" style="overflow-x: auto;">
+                    <table class="data-table" style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="background: #FAFAFA;">
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #F0F0F0; font-size: 13px; font-weight: 600; color: #333;">刀具名称</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #F0F0F0; font-size: 13px; font-weight: 600; color: #333;">规格型号</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #F0F0F0; font-size: 13px; font-weight: 600; color: #333;">单位</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #F0F0F0; font-size: 13px; font-weight: 600; color: #333;">使用工序</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #F0F0F0; font-size: 13px; font-weight: 600; color: #333;">使用设备</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #F0F0F0; font-size: 13px; font-weight: 600; color: #333;">需求时间段</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #F0F0F0; font-size: 13px; font-weight: 600; color: #333; width: 280px;">刀具使用进度</th>
+                                <th style="padding: 12px; text-align: left; border-bottom: 1px solid #F0F0F0; font-size: 13px; font-weight: 600; color: #333;">报废数量</th>
+                            </tr>
+                        </thead>
+                        <tbody id="modalTableBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer" style="padding: 12px 20px; border-top: 1px solid #F0F0F0; display: flex; justify-content: flex-end;">
+                <button onclick="closeToolInfoModal()" class="btn btn-default" style="padding: 6px 16px; font-size: 13px;">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 显示刀具需求信息对话框
+        function showToolInfo(toolName, toolSpec, unit, qty, process, equipment, timeRange, status, statusClass) {
+            // 准备示例数据 - 根据点击的刀具生成相关数据
+            const toolData = [
+                {
+                    name: toolName,
+                    spec: toolSpec,
+                    unit: unit,
+                    qty: qty,
+                    process: process,
+                    equipment: equipment,
+                    timeRange: timeRange,
+                    status: status,
+                    statusClass: statusClass
+                }
+            ];
+            
+            // 为数据添加数量统计
+            toolData.forEach(tool => {
+                const totalQty = parseInt(tool.qty);
+                // 根据状态设置各阶段数量
+                switch(tool.status) {
+                    case '待备刀':
+                        tool.preparedQty = 0;
+                        tool.pendingPrepareQty = totalQty;
+                        tool.deliveredQty = 0;
+                        tool.pendingDeliverQty = 0;
+                        tool.receivedQty = 0;
+                        tool.pendingReceiveQty = 0;
+                        tool.returnedQty = 0;
+                        tool.pendingReturnQty = 0;
+                        tool.scrapQty = 0;
+                        break;
+                    case '待配送':
+                        tool.preparedQty = totalQty;
+                        tool.pendingPrepareQty = 0;
+                        tool.deliveredQty = 0;
+                        tool.pendingDeliverQty = totalQty;
+                        tool.receivedQty = 0;
+                        tool.pendingReceiveQty = 0;
+                        tool.returnedQty = 0;
+                        tool.pendingReturnQty = 0;
+                        tool.scrapQty = 0;
+                        break;
+                    case '配送中':
+                        tool.preparedQty = totalQty;
+                        tool.pendingPrepareQty = 0;
+                        tool.deliveredQty = 0;
+                        tool.pendingDeliverQty = totalQty;
+                        tool.receivedQty = 0;
+                        tool.pendingReceiveQty = totalQty;
+                        tool.returnedQty = 0;
+                        tool.pendingReturnQty = 0;
+                        tool.scrapQty = 0;
+                        break;
+                    case '待归还':
+                        tool.preparedQty = totalQty;
+                        tool.pendingPrepareQty = 0;
+                        tool.deliveredQty = totalQty;
+                        tool.pendingDeliverQty = 0;
+                        tool.receivedQty = totalQty;
+                        tool.pendingReceiveQty = 0;
+                        tool.returnedQty = 0;
+                        tool.pendingReturnQty = totalQty;
+                        tool.scrapQty = 0;
+                        break;
+                    case '归还完成':
+                        tool.preparedQty = totalQty;
+                        tool.pendingPrepareQty = 0;
+                        tool.deliveredQty = totalQty;
+                        tool.pendingDeliverQty = 0;
+                        tool.receivedQty = totalQty;
+                        tool.pendingReceiveQty = 0;
+                        tool.returnedQty = totalQty;
+                        tool.pendingReturnQty = 0;
+                        tool.scrapQty = 0;
+                        break;
+                    case '报废':
+                        tool.preparedQty = totalQty;
+                        tool.pendingPrepareQty = 0;
+                        tool.deliveredQty = totalQty;
+                        tool.pendingDeliverQty = 0;
+                        tool.receivedQty = 0;
+                        tool.pendingReceiveQty = 0;
+                        tool.returnedQty = 0;
+                        tool.pendingReturnQty = 0;
+                        tool.scrapQty = totalQty;
+                        break;
+                    default:
+                        tool.preparedQty = 0;
+                        tool.pendingPrepareQty = totalQty;
+                        tool.deliveredQty = 0;
+                        tool.pendingDeliverQty = 0;
+                        tool.receivedQty = 0;
+                        tool.pendingReceiveQty = 0;
+                        tool.returnedQty = 0;
+                        tool.pendingReturnQty = 0;
+                        tool.scrapQty = 0;
+                }
+            });
+            
+            // 根据刀具类型添加相关刀具数据
+            if (toolName === '立铣刀') {
+                const additionalData = [
+                    { name: '立铣刀', spec: 'Φ8mm', unit: '把', qty: '3', process: '铣削-002', equipment: '铣床-XK02', timeRange: '2026-03-03 09:00-11:00', status: '待备刀', statusClass: 'status-waiting', preparedQty: 0, pendingPrepareQty: 3, deliveredQty: 0, pendingDeliverQty: 0, receivedQty: 0, pendingReceiveQty: 0, returnedQty: 0, pendingReturnQty: 0, scrapQty: 0 },
+                    { name: '球头铣刀', spec: 'R5mm', unit: '把', qty: '2', process: '精铣-001', equipment: '铣床-XK03', timeRange: '2026-03-03 09:00-11:00', status: '待备刀', statusClass: 'status-waiting', preparedQty: 0, pendingPrepareQty: 2, deliveredQty: 0, pendingDeliverQty: 0, receivedQty: 0, pendingReceiveQty: 0, returnedQty: 0, pendingReturnQty: 0, scrapQty: 0 }
+                ];
+                toolData.push(...additionalData);
+            } else if (toolName === '外圆车刀') {
+                const additionalData = [
+                    { name: '外圆车刀', spec: '16×16mm', unit: '把', qty: '2', process: '车削-002', equipment: '车床-CL04', timeRange: '2026-03-04 14:00-16:00', status: '待配送', statusClass: 'status-preparing', preparedQty: 2, pendingPrepareQty: 0, deliveredQty: 0, pendingDeliverQty: 2, receivedQty: 0, pendingReceiveQty: 0, returnedQty: 0, pendingReturnQty: 0, scrapQty: 0 },
+                    { name: '切槽刀', spec: '4mm', unit: '把', qty: '1', process: '切槽-001', equipment: '车床-CL03', timeRange: '2026-03-04 14:00-16:00', status: '待配送', statusClass: 'status-preparing', preparedQty: 1, pendingPrepareQty: 0, deliveredQty: 0, pendingDeliverQty: 1, receivedQty: 0, pendingReceiveQty: 0, returnedQty: 0, pendingReturnQty: 0, scrapQty: 0 }
+                ];
+                toolData.push(...additionalData);
+            } else if (toolName === '麻花钻') {
+                const additionalData = [
+                    { name: '麻花钻', spec: 'Φ6mm', unit: '把', qty: '3', process: '钻孔-002', equipment: '钻床-ZX02', timeRange: '2026-03-03 09:00-11:00', status: '配送中', statusClass: 'status-delivering', preparedQty: 3, pendingPrepareQty: 0, deliveredQty: 0, pendingDeliverQty: 3, receivedQty: 0, pendingReceiveQty: 3, returnedQty: 0, pendingReturnQty: 0, scrapQty: 0 },
+                    { name: '中心钻', spec: 'Φ2.5mm', unit: '把', qty: '2', process: '打中心孔-001', equipment: '钻床-ZX01', timeRange: '2026-03-03 09:00-11:00', status: '配送中', statusClass: 'status-delivering', preparedQty: 2, pendingPrepareQty: 0, deliveredQty: 0, pendingDeliverQty: 2, receivedQty: 0, pendingReceiveQty: 2, returnedQty: 0, pendingReturnQty: 0, scrapQty: 0 }
+                ];
+                toolData.push(...additionalData);
+            } else if (toolName === '内孔刀') {
+                const additionalData = [
+                    { name: '内孔刀', spec: 'Φ10mm', unit: '把', qty: '2', process: '镗孔-002', equipment: '镗床-TQ03', timeRange: '2026-03-02 14:00-16:00', status: '待归还', statusClass: 'status-return', preparedQty: 2, pendingPrepareQty: 0, deliveredQty: 2, pendingDeliverQty: 0, receivedQty: 2, pendingReceiveQty: 0, returnedQty: 0, pendingReturnQty: 2, scrapQty: 0 }
+                ];
+                toolData.push(...additionalData);
+            } else if (toolName === '精车刀') {
+                const additionalData = [
+                    { name: '精车刀', spec: '12×12mm', unit: '把', qty: '3', process: '精车-002', equipment: '车床-CL06', timeRange: '2026-03-02 09:00-11:00', status: '归还完成', statusClass: 'status-completed', preparedQty: 3, pendingPrepareQty: 0, deliveredQty: 3, pendingDeliverQty: 0, receivedQty: 3, pendingReceiveQty: 0, returnedQty: 3, pendingReturnQty: 0, scrapQty: 0 }
+                ];
+                toolData.push(...additionalData);
+            } else if (toolName === '丝锥') {
+                const additionalData = [
+                    { name: '丝锥', spec: 'M8', unit: '把', qty: '2', process: '攻丝-002', equipment: '攻丝机-GS02', timeRange: '2026-03-01 10:00-12:00', status: '报废', statusClass: 'status-scrap', preparedQty: 2, pendingPrepareQty: 0, deliveredQty: 2, pendingDeliverQty: 0, receivedQty: 0, pendingReceiveQty: 0, returnedQty: 0, pendingReturnQty: 0, scrapQty: 2 }
+                ];
+                toolData.push(...additionalData);
+            }
+            
+            // 生成流程进度条HTML
+            function generateProgressBar(tool) {
+                const total = parseInt(tool.qty);
+                const stages = [
+                    { name: '需求', qty: total, field: 'qty' },
+                    { name: '备刀', qty: tool.preparedQty, field: 'preparedQty' },
+                    { name: '配送', qty: tool.deliveredQty, field: 'deliveredQty' },
+                    { name: '签收', qty: tool.receivedQty, field: 'receivedQty' },
+                    { name: '归还', qty: tool.returnedQty, field: 'returnedQty' }
+                ];
+                
+                // 确定当前进行中的阶段
+                let currentStageIndex = 0;
+                for (let i = stages.length - 1; i >= 0; i--) {
+                    if (stages[i].qty > 0) {
+                        currentStageIndex = i;
+                        break;
+                    }
+                }
+                
+                let progressHtml = `<div style="display: flex; align-items: center; gap: 8px;">`;
+                
+                stages.forEach((stage, index) => {
+                    const isCompleted = index < currentStageIndex || (index === 0 && stage.qty === total);
+                    const isCurrent = index === currentStageIndex && stage.qty > 0;
+                    const isPending = index > currentStageIndex;
+                    
+                    // 计算当前阶段的进度比例
+                    const progressRatio = isCurrent ? stage.qty / total : (isCompleted ? 1 : 0);
+                    const percentage = Math.round(progressRatio * 100);
+                    
+                    // 生成饼图背景
+                    let circleBg = '';
+                    if (isCompleted) {
+                        // 已完成 - 绿色实心
+                        circleBg = 'background: #52C41A;';
+                    } else if (isCurrent && progressRatio < 1) {
+                        // 进行中 - 饼图样式
+                        circleBg = `background: conic-gradient(#52C41A 0deg, #52C41A ${percentage * 3.6}deg, #E8E8E8 ${percentage * 3.6}deg, #E8E8E8 360deg);`;
+                    } else {
+                        // 未开始 - 灰色
+                        circleBg = 'background: #E8E8E8;';
+                    }
+                    
+                    // 生成圆形内容
+                    let circleContent = '';
+                    if (isCompleted) {
+                        circleContent = `<svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                            <path d="M4 8L7 11L12 5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>`;
+                    } else if (isCurrent) {
+                        // 进行中显示当前数量
+                        circleContent = `<span style="font-size: 10px; color: #333; font-weight: 600;">${stage.qty}</span>`;
+                    } else {
+                        // 未开始显示0
+                        circleContent = `<span style="font-size: 10px; color: #999;">0</span>`;
+                    }
+                    
+                    // 生成数量显示文本
+                    let qtyText = '';
+                    if (isCompleted) {
+                        qtyText = `<span style="color: #52C41A; font-weight: 600;">${stage.qty}/${total}</span>`;
+                    } else if (isCurrent) {
+                        qtyText = `<span style="color: #333;">${stage.qty}/${total}</span>`;
+                    } else {
+                        qtyText = `<span style="color: #999;">0/${total}</span>`;
+                    }
+                    
+                    progressHtml += `
+                        <div style="display: flex; flex-direction: column; align-items: center; gap: 4px;">
+                            <span style="font-size: 11px; color: #666; white-space: nowrap;">${stage.name}</span>
+                            <div style="width: 32px; height: 32px; border-radius: 50%; ${circleBg} display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                                ${circleContent}
+                            </div>
+                            <span style="font-size: 10px; white-space: nowrap;">${qtyText}</span>
+                        </div>
+                    `;
+                    
+                    // 添加连接箭头（除了最后一个）
+                    if (index < stages.length - 1) {
+                        progressHtml += `
+                            <div style="display: flex; align-items: center; color: #D9D9D9; font-size: 12px; margin-top: 12px;">
+                                <span>&gt;&gt;</span>
+                            </div>
+                        `;
+                    }
+                });
+                
+                progressHtml += `</div>`;
+                
+                return progressHtml;
+            }
+            
+            // 生成表格HTML
+            const tbody = document.getElementById('modalTableBody');
+            tbody.innerHTML = toolData.map(tool => `
+                <tr>
+                    <td style="padding: 12px; border-bottom: 1px solid #F0F0F0; font-size: 13px; color: #333;">${tool.name}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #F0F0F0; font-size: 13px; color: #333;">${tool.spec}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #F0F0F0; font-size: 13px; color: #333;">${tool.unit}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #F0F0F0; font-size: 13px; color: #333;">${tool.process}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #F0F0F0; font-size: 13px; color: #333;">${tool.equipment}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #F0F0F0; font-size: 13px; color: #333;">${tool.timeRange}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #F0F0F0; font-size: 13px; color: #333;">${generateProgressBar(tool)}</td>
+                    <td style="padding: 12px; border-bottom: 1px solid #F0F0F0; font-size: 13px; color: #333;">${tool.scrapQty}</td>
+                </tr>
+            `).join('');
+            
+            document.getElementById('toolInfoModal').style.display = 'flex';
+        }
+
+        // 关闭刀具需求信息对话框
+        function closeToolInfoModal() {
+            document.getElementById('toolInfoModal').style.display = 'none';
+        }
+
+        // 点击模态框背景关闭
+        document.getElementById('toolInfoModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeToolInfoModal();
+            }
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.classList.remove('collapsed');
+                    }
+                }
+            }
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

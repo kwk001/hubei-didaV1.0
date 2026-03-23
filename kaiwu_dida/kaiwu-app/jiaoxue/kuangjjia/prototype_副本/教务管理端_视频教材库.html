@@ -1,0 +1,2912 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频教材库 - 教务管理端</title>
+        <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <link rel="stylesheet" href="./components.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #f59e0b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+            --bg-primary: #f8fafc;
+            --bg-secondary: #f1f5f9;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-light: #e2e8f0;
+            --border-medium: #cbd5e1;
+            --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 24px;
+        }
+        
+        .menu-item .iconfont, .menu-title .iconfont, .tree-title .iconfont {
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #F5F7FA; min-height: 100vh; }
+
+        /* 左右布局 */
+        .content-wrapper {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+        }
+        
+        /* 左侧树状图 - 使用 components.css 统一样式 */
+        
+        /* 树状图头部 - 使用 components.css 统一样式 */
+        
+        .tree-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: #1a1a2e;
+            letter-spacing: -0.3px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .tree-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 2px;
+        }
+        
+        /* 操作按钮 - 极简胶囊设计 */
+        .tree-actions {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .tree-btn {
+            padding: 6px 14px;
+            border: none;
+            background: rgba(99,102,241,0.08);
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 11px;
+            font-weight: 600;
+            color: #6366f1;
+            letter-spacing: 0.3px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .tree-btn:hover {
+            background: #6366f1;
+            color: #fff;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(99,102,241,0.3);
+        }
+        
+        /* 搜索框 - 现代输入框设计 */
+        .tree-search {
+            padding: 16px 20px;
+            background: transparent;
+        }
+        
+        .tree-search input {
+            width: 100%;
+            padding: 12px 16px 12px 42px;
+            border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 12px;
+            font-size: 13px;
+            background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23999' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E") no-repeat 14px center;
+            transition: all 0.25s ease;
+            color: #333;
+        }
+        
+        .tree-search input::placeholder {
+            color: #999;
+        }
+        
+        .tree-search input:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+        }
+        
+        /* 树状图内容区 */
+        .tree-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 8px 12px;
+        }
+        
+        /* 树状图节点 - 精致卡片设计 */
+        .tree-node {
+            user-select: none;
+            margin-bottom: 4px;
+        }
+        
+        .tree-node-content {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            border-radius: 12px;
+            margin: 0 4px;
+        }
+        
+        .tree-node-content::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 0;
+            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 0 2px 2px 0;
+            transition: height 0.25s ease;
+        }
+        
+        .tree-node-content:hover {
+            background: rgba(99,102,241,0.04);
+        }
+        
+        .tree-node-content:hover::before {
+            height: 60%;
+        }
+        
+        .tree-node-content.active {
+            background: linear-gradient(90deg, rgba(99,102,241,0.08) 0%, rgba(99,102,241,0.02) 100%);
+            color: #4f46e5;
+        }
+        
+        .tree-node-content.active::before {
+            height: 70%;
+        }
+        
+        /* 展开/收起指示器 */
+        .tree-toggle {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-size: 10px;
+            color: #9ca3af;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 4px;
+        }
+        
+        .tree-toggle:hover {
+            background: rgba(0,0,0,0.04);
+            color: #6366f1;
+        }
+        
+        .tree-toggle.expanded {
+            transform: rotate(90deg);
+            color: #6366f1;
+        }
+        
+        /* 图标样式 */
+        .tree-icon {
+            margin-right: 10px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            background: rgba(0,0,0,0.03);
+            transition: all 0.2s ease;
+        }
+        
+        .tree-node-content:hover .tree-icon {
+            background: rgba(99,102,241,0.1);
+            transform: scale(1.05);
+        }
+        
+        .tree-node-content.active .tree-icon {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+        }
+        
+        /* 标签文字 */
+        .tree-label {
+            font-size: 13px;
+            font-weight: 500;
+            flex: 1;
+            color: #374151;
+            letter-spacing: -0.2px;
+        }
+        
+        .tree-node-content.active .tree-label {
+            color: #4f46e5;
+            font-weight: 600;
+        }
+        
+        /* 计数徽章 - 现代胶囊设计 */
+        .tree-count {
+            font-size: 11px;
+            font-weight: 600;
+            color: #6b7280;
+            background: rgba(0,0,0,0.04);
+            padding: 4px 10px;
+            border-radius: 20px;
+            min-width: 28px;
+            text-align: center;
+            transition: all 0.2s ease;
+        }
+        
+        .tree-node-content:hover .tree-count {
+            background: rgba(99,102,241,0.1);
+            color: #6366f1;
+        }
+        
+        .tree-node-content.active .tree-count {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.3);
+        }
+        
+        /* 子节点容器 - 流畅展开动画 */
+        .tree-children {
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(-10px);
+            transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                        opacity 0.25s ease,
+                        transform 0.3s ease;
+        }
+        
+        .tree-children.expanded {
+            max-height: 1000px;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 层级缩进 - 渐进式缩进 */
+        .tree-level-1 > .tree-node-content { padding-left: 16px; }
+        .tree-level-2 > .tree-node-content { padding-left: 44px; }
+        .tree-level-3 > .tree-node-content { padding-left: 72px; }
+        
+        /* 子节点连接线 */
+        .tree-level-2 .tree-node-content::after,
+        .tree-level-3 .tree-node-content::after {
+            content: '';
+            position: absolute;
+            left: 28px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(180deg, rgba(0,0,0,0.06) 0%, rgba(0,0,0,0.02) 100%);
+        }
+        
+        /* 滚动条美化 */
+        .tree-content::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .tree-content::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        
+        .tree-content::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,0.1);
+            border-radius: 3px;
+        }
+        
+        .tree-content::-webkit-scrollbar-thumb:hover {
+            background: rgba(0,0,0,0.15);
+        }
+        
+        /* 右侧内容区 - 使用 common.css 统一样式 */
+        
+        /* 覆盖 content-area 的 padding，调整为16px */
+        .content-area {
+            padding: 16px !important;
+        }
+        
+        /* 覆盖 content-body 的 padding，与题库页保持一致 */
+        .content-area .content-body {
+            padding: 0;
+            background: transparent;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .btn-primary {
+            padding: 10px 20px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary:hover {
+            background: #40A9FF;
+        }
+        
+        /* 搜索栏 */
+        .search-bar {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .search-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        
+        /* 表格UI优化 - 参考教师端综合试卷管理页样式 */
+        .data-table {
+            width: 100%;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow-x: auto;
+        }
+        .data-table table {
+            width: 100%;
+            border-collapse: collapse;
+            table-layout: auto;
+            font-size: 14px;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+            white-space: nowrap;
+        }
+        .data-table td {
+            padding: 16px !important;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .data-table tr:hover {
+            background: #F5F7FA;
+        }
+        /* 固定第一列（序号列） */
+        .data-table th:first-child,
+        .data-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            background: #fff;
+            padding: 16px !important;
+        }
+        .data-table th:first-child {
+            z-index: 20;
+            background: #FAFAFA;
+        }
+        /* 固定最后一列（操作列） */
+        .data-table th:last-child,
+        .data-table td:last-child {
+            position: sticky;
+            right: 0;
+            z-index: 10;
+            background: #fff;
+            padding: 16px !important;
+        }
+        .data-table th:last-child {
+            z-index: 20;
+            background: #FAFAFA;
+        }
+        
+        /* 表格分页容器 - 白色背景 */
+        .table-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .table-section .data-table {
+            border-radius: 12px;
+            box-shadow: none;
+        }
+        .table-section .pagination {
+            border-top: 1px solid #F0F0F0;
+            background: transparent;
+            padding: 16px 0 0 0;
+            margin-top: 16px;
+        }
+        
+        /* 标签样式优化 */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 500;
+            margin-right: 6px;
+            border: 1px solid transparent;
+        }
+        .tag-blue { 
+            background: #E6F7FF; 
+            color: #1890FF; 
+            border-color: #91D5FF;
+        }
+        .tag-green { 
+            background: #F6FFED; 
+            color: #52C41A; 
+            border-color: #B7EB8F;
+        }
+        .tag-orange { 
+            background: #FFF7E6; 
+            color: #FA8C16; 
+            border-color: #FFD591;
+        }
+        .tag-purple { 
+            background: #F9F0FF; 
+            color: #722ED1; 
+            border-color: #D3ADF7;
+        }
+        .tag-red { 
+            background: #FFF1F0; 
+            color: #FF4D4F; 
+            border-color: #FFA39E;
+        }
+        
+        /* 操作按钮优化 - 参考教师管理页面规范 */
+        .action-btns {
+            display: flex;
+            gap: 16px;
+            white-space: nowrap;
+            flex-wrap: nowrap;
+        }
+        .action-btns button {
+            padding: 0;
+            border: none;
+            background: transparent;
+            color: #6366f1;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            border-radius: 0;
+            transition: color 0.3s;
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .action-btns button:hover {
+            text-decoration: underline;
+            color: #4f46e5;
+        }
+        
+        /* 视频缩略图 */
+        .video-thumb {
+            width: 120px;
+            height: 68px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .video-duration {
+            position: absolute;
+            bottom: 4px;
+            right: 4px;
+            background: rgba(0,0,0,0.7);
+            color: #fff;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        /* 视频名称交互样式 */
+        .video-name {
+            color: #333;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+        .video-name:hover {
+            color: #1890FF;
+        }
+        
+        /* 标签样式 */
+        .tag {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-blue { background: #E6F7FF; color: #1890FF; }
+        .tag-green { background: #F6FFED; color: #52C41A; }
+        .tag-orange { background: #FFF7E6; color: #FA8C16; }
+        
+        /* 统计卡片 - 参考教师管理页面 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%);
+        }
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px -8px rgba(99, 102, 241, 0.25);
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: #fff;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover .stat-icon {
+            transform: scale(1.1) rotate(5deg);
+        }
+        .stat-info h3 {
+            font-size: 13px;
+            color: #64748b;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        .stat-info .number {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1e293b;
+            line-height: 1;
+        }
+        /* 不同状态的统计卡片颜色 */
+        .stat-card.success::before { background: linear-gradient(180deg, #10b981 0%, #34d399 100%); }
+        .stat-card.success .stat-icon { background: linear-gradient(135deg, #10b981 0%, #34d399 100%); }
+        .stat-card.warning::before { background: linear-gradient(180deg, #f59e0b 0%, #fbbf24 100%); }
+        .stat-card.warning .stat-icon { background: linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%); }
+        .stat-card.danger::before { background: linear-gradient(180deg, #ef4444 0%, #f87171 100%); }
+        .stat-card.danger .stat-icon { background: linear-gradient(135deg, #ef4444 0%, #f87171 100%); }
+        
+        /* 筛选区域优化 */
+        .filter-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s ease;
+        }
+        .filter-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .filter-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        .filter-row {
+            display: flex;
+            gap: 16px;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            max-height: 70px;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .filter-row.expanded {
+            max-height: 400px;
+        }
+        .filter-item-extra {
+            display: none;
+        }
+        .filter-row.expanded .filter-item-extra {
+            display: flex;
+        }
+        /* filter-actions始终显示，不受expanded影响 */
+        .filter-row .filter-actions,
+        .filter-row.expanded .filter-actions {
+            display: flex !important;
+        }
+        .filter-actions {
+            display: flex;
+            gap: 16px;
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(99,102,241,0.06);
+            width: 100%;
+            justify-content: flex-end;
+        }
+        .btn-search {
+            padding: 10px 24px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(99,102,241,0.2);
+        }
+        .btn-search:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(99,102,241,0.3);
+        }
+        .btn-reset {
+            padding: 10px 24px;
+            background: #fff;
+            color: #64748b;
+            border: 1px solid rgba(99,102,241,0.2);
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        .btn-reset:hover {
+            background: rgba(99,102,241,0.04);
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+        .filter-item {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: calc(25% - 18px);
+            min-width: 180px;
+        }
+        .filter-item label {
+            font-size: 12px;
+            color: #64748b;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            text-transform: uppercase;
+        }
+        .filter-item input,
+        .filter-item select {
+            height: 36px;
+            padding: 0 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            transition: all 0.2s;
+            min-width: 140px;
+        }
+        .filter-item input:focus,
+        .filter-item select:focus {
+            outline: none;
+            border-color: #6366f1;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+        .filter-toggle {
+            margin-left: auto;
+            padding: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6366f1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: color 0.3s ease;
+        }
+        .filter-toggle:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+        .filter-toggle .toggle-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 12px;
+            height: 12px;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+        .filter-toggle.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+        
+        /* 操作按钮 - 文字型 */
+
+        /* 面包屑 */
+        .breadcrumb span:hover {
+            text-decoration: underline;
+        }
+
+        /* 空状态提示 - frontend-design */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 40px;
+            background: linear-gradient(135deg, rgba(248, 250, 252, 0.8) 0%, rgba(241, 245, 249, 0.6) 100%);
+            border-radius: 16px;
+            margin: 20px;
+            animation: emptyFadeIn 0.4s ease;
+        }
+
+        @keyframes emptyFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .empty-state-icon {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 16px;
+            animation: emptyFloat 3s ease-in-out infinite;
+        }
+
+        @keyframes emptyFloat {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+
+        .empty-state-icon svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0 8px 24px rgba(99, 102, 241, 0.2));
+        }
+
+        .empty-state-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 8px 0;
+            text-align: center;
+        }
+
+        .empty-state-desc {
+            font-size: 14px;
+            color: #64748b;
+            margin: 0 0 10px 0;
+            text-align: center;
+            line-height: 1.5;
+        }
+
+        .empty-state-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .empty-btn {
+            padding: 10px 24px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+            border: none;
+            outline: none;
+        }
+
+        .empty-btn.primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .empty-btn.primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .empty-btn.secondary {
+            background: #fff;
+            color: #475569;
+            border: 1px solid #e2e8f0;
+        }
+
+        .empty-btn.secondary:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #6366f1;
+        }
+
+        /* 分页 - 与综合试卷管理页保持一致 */
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 20px;
+            gap: 8px;
+            border-top: 1px solid var(--border-light);
+            background: var(--bg-card);
+        }
+        .pagination button, .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid var(--border-light);
+            background: var(--bg-card);
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text-secondary);
+            transition: all 0.2s ease;
+            min-width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .pagination button:hover:not(:disabled), .pagination-btn:hover:not(:disabled) {
+            border-color: var(--primary);
+            color: var(--primary);
+            background: rgba(99, 102, 241, 0.05);
+        }
+        .pagination button.active, .pagination-btn.active {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+            color: #fff;
+            border-color: var(--primary);
+            box-shadow: 0 4px 6px -1px rgba(99, 102, 241, 0.3);
+        }
+        .pagination button:disabled, .pagination-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+            background: var(--bg-secondary);
+        }
+        .pagination span {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-right: 12px;
+        }
+        .pagination-info,
+        .pagination .page-info {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-right: 16px;
+        }
+        .pagination .page-size-selector {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-right: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+        .pagination .page-size-selector select {
+            padding: 4px 8px;
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-md);
+            background: var(--bg-card);
+            color: var(--text-primary);
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .pagination .page-size-selector select:hover {
+            border-color: var(--primary);
+        }
+        .pagination .page-size-selector select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        /* 视频播放对话框 - 极简影院风格 */
+        .video-dialog {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #0a0a0f;
+            z-index: 1200;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.5s ease;
+        }
+        .video-dialog.active {
+            display: flex;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .video-dialog-content {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #0a0a0f;
+        }
+        
+        /* 顶部标题栏 - 极简 */
+        .video-dialog-header {
+            height: 64px;
+            padding: 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 10, 15, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .video-dialog-title {
+            font-size: 16px;
+            font-weight: 500;
+            color: #fff;
+            letter-spacing: 0.5px;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .video-dialog-close {
+            width: 40px;
+            height: 40px;
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+            font-size: 18px;
+            transition: all 0.3s ease;
+        }
+        .video-dialog-close:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+        
+        /* 视频播放区域 - 全屏沉浸 */
+        .video-player {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 0 48px;
+            position: relative;
+        }
+        .video-player-area {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            aspect-ratio: 16/9;
+            background: #000;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 80px rgba(139, 92, 246, 0.15);
+        }
+        
+        /* 播放按钮 - 霓虹脉冲效果 */
+        .play-button-large {
+            width: 80px;
+            height: 80px;
+            background: #8b5cf6;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: #fff;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 10;
+        }
+        .play-button-large::before {
+            content: '';
+            position: absolute;
+            top: -8px;
+            left: -8px;
+            right: -8px;
+            bottom: -8px;
+            border-radius: 50%;
+            background: rgba(139, 92, 246, 0.3);
+            animation: pulse 2s ease-out infinite;
+            z-index: -1;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        .play-button-large:hover {
+            transform: scale(1.05);
+            background: #9f75ff;
+            box-shadow: 0 0 40px rgba(139, 92, 246, 0.5);
+        }
+        .play-button-large:active {
+            transform: scale(0.95);
+        }
+        
+        /* 视频信息面板 - 底部玻璃拟态 */
+        .video-info-panel {
+            padding: 24px 48px 32px;
+            background: linear-gradient(to top, rgba(10, 10, 15, 0.98) 0%, rgba(10, 10, 15, 0.8) 60%, transparent 100%);
+        }
+        .video-meta {
+            display: flex;
+            gap: 32px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .video-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.5);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        .video-meta-item span:first-child {
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        .video-meta-item strong {
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 500;
+        }
+        
+        /* 控制栏 - 玻璃拟态 */
+        .video-controls {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 16px 24px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        .control-btn {
+            width: 36px;
+            height: 36px;
+            background: transparent;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 16px;
+            transition: all 0.2s ease;
+        }
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: #fff;
+        }
+        
+        /* 进度条 - 极简 */
+        .progress-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .time-display {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            font-variant-numeric: tabular-nums;
+            min-width: 40px;
+            font-family: 'SF Mono', Monaco, monospace;
+        }
+        .progress-bar-container {
+            flex: 1;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+        }
+        .progress-bar-container:hover {
+            height: 6px;
+        }
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: #8b5cf6;
+            border-radius: 2px;
+            transition: width 0.1s linear;
+            position: relative;
+        }
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            right: -5px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            box-shadow: 0 0 10px rgba(139, 92, 246, 0.5);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+        .progress-bar-container:hover .progress-bar::after {
+            opacity: 1;
+        }
+        
+        /* 音量控制 */
+        .volume-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 2px;
+            overflow: hidden;
+            cursor: pointer;
+        }
+        .volume-level {
+            height: 100%;
+            width: 70%;
+            background: #8b5cf6;
+            border-radius: 2px;
+        }
+    
+        /* 表格容器 - 参考教师管理页样式 */
+        .table-container {
+            background: var(--bg-card);
+            border-radius: 12px;
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+            overflow-x: auto;
+        }
+        .table-container table {
+            width: 100%;
+            min-width: 1200px;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: auto;
+        }
+        .table-container th {
+            background: #f1f5f9;
+            padding: 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #334155;
+            border-bottom: 1px solid #cbd5e1;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+            position: relative;
+        }
+        .table-container td {
+            padding: 16px;
+            font-size: 14px;
+            color: var(--text-secondary);
+            border-bottom: 1px solid var(--border-light);
+            transition: background-color 0.2s, border-color 0.2s;
+            white-space: nowrap;
+            background: var(--bg-card);
+        }
+        /* 固定第一列 */
+        .table-container th:nth-child(1),
+        .table-container td:nth-child(1) {
+            position: sticky;
+            left: 0;
+            z-index: 10;
+            width: 50px;
+            min-width: 50px;
+            max-width: 50px;
+            text-align: center;
+            vertical-align: middle;
+        }
+        .table-container th:nth-child(1) {
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+            z-index: 20;
+        }
+        .table-container td:nth-child(1) {
+            background: var(--bg-card);
+        }
+        .table-container tr:hover td:nth-child(1) {
+            background: rgba(99, 102, 241, 0.03);
+        }
+        /* 固定最后一列（操作列） */
+        .table-container th:last-child,
+        .table-container td:last-child {
+            position: sticky;
+            right: 0;
+            z-index: 10;
+            width: auto;
+            min-width: fit-content;
+        }
+        .table-container th:last-child {
+            background: linear-gradient(180deg, #f1f5f9 0%, #e2e8f0 100%);
+            z-index: 20;
+        }
+        .table-container td:last-child {
+            background: var(--bg-card);
+        }
+        .table-container tr:hover td:last-child {
+            background: rgba(99, 102, 241, 0.03);
+        }
+        /* 固定列阴影效果 */
+        .table-container th:nth-child(1)::after,
+        .table-container td:nth-child(1)::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -5px;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.05), transparent);
+            pointer-events: none;
+        }
+        .table-container th:last-child::before,
+        .table-container td:last-child::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -5px;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to left, rgba(0,0,0,0.05), transparent);
+            pointer-events: none;
+        }
+        .table-container tr:hover td {
+            background: rgba(99, 102, 241, 0.03);
+        }
+        .table-container tbody tr:last-child td {
+            border-bottom: none;
+        }
+        .menu-title.collapsed {
+            justify-content: center;
+        }
+        /* 触摸优化 */
+        .btn-search,
+        .btn-reset {
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+        }
+</style>
+</head>
+<body>
+    <!-- 侧边栏导航容器 - 由 nav-loader-new.js 动态加载现代化导航组件 -->
+    <div id="nav-container"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <nav class="breadcrumb">
+                    <a href="./教学实训平台_教务管理端.html">教务管理</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>视频教材库</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div id="user-menu-container"></div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- 左侧树状图 -->
+            <div class="tree-sidebar" style="display: none;">
+                <div class="tree-header">
+                    <span class="tree-title">分类目录</span>
+                    <div class="tree-actions">
+                        <button class="tree-btn" onclick="expandAll()">展开</button>
+                        <button class="tree-btn" onclick="collapseAll()">收起</button>
+                    </div>
+                </div>
+                <!-- 树状图搜索框 -->
+                <div class="tree-search">
+                    <input type="text" id="treeSearch" placeholder="搜索专业、课程或文件夹..." oninput="filterTree()">
+                </div>
+                <div class="tree-content" id="treeContent">
+                    <!-- 机械工程专业 -->
+                    <div class="tree-node tree-level-1">
+                        <div class="tree-node-content" onclick="toggleNode(this)">
+                            <span class="tree-toggle">▶</span>
+                            <span class="tree-icon">⚙️</span>
+                            <span class="tree-label">机械工程</span>
+                            <span class="tree-count">86</span>
+                        </div>
+                        <div class="tree-children">
+                            <!-- 机械制图课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">机械制图</span>
+                                    <span class="tree-count">32</span>
+                                </div>
+                            </div>
+                            <!-- 数控加工技术课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">数控加工技术</span>
+                                    <span class="tree-count">28</span>
+                                </div>
+                            </div>
+                            <!-- CAD/CAM技术课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">CAD/CAM技术</span>
+                                    <span class="tree-count">26</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 数控技术专业 -->
+                    <div class="tree-node tree-level-1">
+                        <div class="tree-node-content" onclick="toggleNode(this)">
+                            <span class="tree-toggle">▶</span>
+                            <span class="tree-icon">🔩</span>
+                            <span class="tree-label">数控技术</span>
+                            <span class="tree-count">64</span>
+                        </div>
+                        <div class="tree-children">
+                            <!-- 数控车床课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">数控车床</span>
+                                    <span class="tree-count">24</span>
+                                </div>
+                            </div>
+                            <!-- 数控铣床课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">数控铣床</span>
+                                    <span class="tree-count">20</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 模具设计与制造专业 -->
+                    <div class="tree-node tree-level-1">
+                        <div class="tree-node-content" onclick="toggleNode(this)">
+                            <span class="tree-toggle">▶</span>
+                            <span class="tree-icon">📐</span>
+                            <span class="tree-label">模具设计与制造</span>
+                            <span class="tree-count">48</span>
+                        </div>
+                        <div class="tree-children">
+                            <!-- 模具设计课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">模具设计</span>
+                                    <span class="tree-count">28</span>
+                                </div>
+                            </div>
+                            <!-- 注塑模具课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">注塑模具</span>
+                                    <span class="tree-count">20</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 工业机器人技术专业 -->
+                    <div class="tree-node tree-level-1">
+                        <div class="tree-node-content" onclick="toggleNode(this)">
+                            <span class="tree-toggle">▶</span>
+                            <span class="tree-icon">🤖</span>
+                            <span class="tree-label">工业机器人技术</span>
+                            <span class="tree-count">32</span>
+                        </div>
+                        <div class="tree-children">
+                            <!-- 机器人编程课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">机器人编程</span>
+                                    <span class="tree-count">18</span>
+                                </div>
+                            </div>
+                            <!-- 机器人操作课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">机器人操作</span>
+                                    <span class="tree-count">14</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 机电一体化技术专业 -->
+                    <div class="tree-node tree-level-1">
+                        <div class="tree-node-content" onclick="toggleNode(this)">
+                            <span class="tree-toggle">▶</span>
+                            <span class="tree-icon">🔌</span>
+                            <span class="tree-label">机电一体化技术</span>
+                            <span class="tree-count">56</span>
+                        </div>
+                        <div class="tree-children">
+                            <!-- 电气控制课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">电气控制</span>
+                                    <span class="tree-count">22</span>
+                                </div>
+                            </div>
+                            <!-- PLC编程课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">PLC编程</span>
+                                    <span class="tree-count">18</span>
+                                </div>
+                            </div>
+                            <!-- 液压气动课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">液压气动</span>
+                                    <span class="tree-count">16</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 汽车制造与试验技术专业 -->
+                    <div class="tree-node tree-level-1">
+                        <div class="tree-node-content" onclick="toggleNode(this)">
+                            <span class="tree-toggle">▶</span>
+                            <span class="tree-icon">🚗</span>
+                            <span class="tree-label">汽车制造与试验技术</span>
+                            <span class="tree-count">40</span>
+                        </div>
+                        <div class="tree-children">
+                            <!-- 汽车构造课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">汽车构造</span>
+                                    <span class="tree-count">20</span>
+                                </div>
+                            </div>
+                            <!-- 汽车检测课程 -->
+                            <div class="tree-node tree-level-2">
+                                <div class="tree-node-content" onclick="selectNode(this)">
+                                    <span class="tree-icon">📂</span>
+                                    <span class="tree-label">汽车检测</span>
+                                    <span class="tree-count">16</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧内容区 -->
+            <div class="content-area">
+                <div class="breadcrumb">
+                    当前位置：<span>机械工程</span> / <span>机械制图</span> / 基础理论
+                </div>
+                <div class="content-body">
+                    <!-- 统计卡片 -->
+                    <div class="stats-row">
+                        <div class="stat-card">
+                            <div class="stat-icon">🎬</div>
+                            <div class="stat-info">
+                                <h3>视频总数</h3>
+                                <div class="number">326</div>
+                            </div>
+                        </div>
+                        <div class="stat-card danger">
+                            <div class="stat-icon">📈</div>
+                            <div class="stat-info">
+                                <h3>本周新增</h3>
+                                <div class="number">15</div>
+                            </div>
+                        </div>
+                        <div class="stat-card info">
+                            <div class="stat-icon">📅</div>
+                            <div class="stat-info">
+                                <h3>本月新增</h3>
+                                <div class="number">42</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 筛选区域 -->
+                    <div class="filter-section">
+                        <div class="filter-header">
+                            <span class="filter-title">筛选条件</span>
+                            <button class="filter-toggle" id="filterToggle" onclick="toggleFilter(this)">
+                                <span class="toggle-text">展开</span>
+                                <span class="toggle-icon">
+                                    <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </span>
+                            </button>
+                        </div>
+                        <div class="filter-row" id="filterRow">
+                            <div class="filter-item">
+                                <label>视频名称</label>
+                                <input type="text" placeholder="请输入视频名称">
+                            </div>
+
+                            <div class="filter-item">
+                                <label>所属课程</label>
+                                <select id="filterCourse">
+                                    <option value="">全部课程</option>
+                                    <option value="机械制图">机械制图</option>
+                                    <option value="数控加工">数控加工技术</option>
+                                    <option value="CAD/CAM">CAD/CAM技术</option>
+                                    <option value="模具设计">模具设计</option>
+                                    <option value="机器人编程">机器人编程</option>
+                                </select>
+                            </div>
+                            <div class="filter-item">
+                                <label>文件格式</label>
+                                <select>
+                                    <option value="">全部格式</option>
+                                    <option value="MP4">MP4</option>
+                                    <option value="AVI">AVI</option>
+                                    <option value="WMV">WMV</option>
+                                    <option value="MKV">MKV</option>
+                                </select>
+                            </div>
+                            <div class="filter-item filter-item-extra">
+                                <label>更新人</label>
+                                <select>
+                                    <option value="">全部</option>
+                                    <option value="张老师">张老师</option>
+                                    <option value="李老师">李老师</option>
+                                    <option value="王老师">王老师</option>
+                                    <option value="刘老师">刘老师</option>
+                                    <option value="陈老师">陈老师</option>
+                                </select>
+                            </div>
+                            <div class="filter-item filter-item-extra">
+                                <label>更新日期</label>
+                                <input type="date" placeholder="选择日期">
+                            </div>
+                            <div class="filter-item filter-item-extra">
+                                <label>视频标签</label>
+                                <select>
+                                    <option value="">全部标签</option>
+                                    <option value="理论">理论</option>
+                                    <option value="实操">实操</option>
+                                    <option value="基础">基础</option>
+                                    <option value="进阶">进阶</option>
+                                </select>
+                            </div>
+                            <div class="filter-actions">
+                                <button class="btn-search" onclick="searchVideos()">
+                                    查询
+                                </button>
+                                <button class="btn-reset" onclick="resetFilter()">重置</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 隐藏区域：page-header和search-bar -->
+                    <div class="page-header" style="display: none;">
+                        <div>
+                            <h1 class="page-title">基础理论 - 共 12 个视频</h1>
+                        </div>
+                    </div>
+
+                    <div class="search-bar" style="display: none;">
+                        <input type="text" class="search-input" placeholder="搜索视频名称、关键词...">
+                        <button class="btn-search"><i class="iconfont icon-shixun"></i> 查询</button>
+                    </div>
+
+                    <!-- 表格展示 -->
+                    <div class="table-section">
+                        <div class="data-table">
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="width: 60px;">序号</th>
+                                        <th style="width: 140px;">视频缩略图</th>
+                                        <th>视频名称</th>
+                                        <th style="width: 120px;">所属课程</th>
+                                    <th style="width: 80px;">视频格式</th>
+                                    <th style="width: 100px;">视频大小</th>
+                                    <th style="width: 100px;">视频时长</th>
+                                    <!-- <th style="width: 100px;">浏览次数</th> -->
+                                    <th style="width: 100px;">更新人</th>
+                                    <th style="width: 120px;">更新时间</th>
+                                    <th style="width: 100px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr data-major="机械工程" data-course="机械制图">
+                                    <td style="text-align: center; color: #999;">1</td>
+                                    <td>
+                                        <div class="video-thumb" onclick="playVideo('video1')">
+                                            🎬
+                                            <span class="video-duration">15:30</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong class="video-name" onclick="playVideo('video1')">第1章 制图基本知识与技能</strong>
+                                    </td>
+                                    <td>机械制图</td>
+                                    <td>MP4</td>
+                                    <td>156MB</td>
+                                    <td>15:30</td>
+                                    <!-- <td>1,234次</td> -->
+                                    <td>张老师</td>
+                                    <td>2025-01-15 09:30:15</td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="playVideo('video1')">播放</button>
+                                            <button onclick="downloadVideo('video1')">下载</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr data-major="机械工程" data-course="机械制图">
+                                    <td style="text-align: center; color: #999;">2</td>
+                                    <td>
+                                        <div class="video-thumb" onclick="playVideo('video2')">
+                                            🎬
+                                            <span class="video-duration">22:45</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong class="video-name" onclick="playVideo('video2')">第2章 正投影法基础</strong>
+                                    </td>
+                                    <td>机械制图</td>
+                                    <td>MP4</td>
+                                    <td>234MB</td>
+                                    <td>22:45</td>
+                                    <!-- <td>986次</td> -->
+                                    <td>李老师</td>
+                                    <td>2025-01-14 14:22:08</td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="playVideo('video2')">播放</button>
+                                            <button onclick="downloadVideo('video2')">下载</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr data-major="机械工程" data-course="机械制图">
+                                    <td style="text-align: center; color: #999;">3</td>
+                                    <td>
+                                        <div class="video-thumb" onclick="playVideo('video3')">
+                                            🎬
+                                            <span class="video-duration">18:20</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong class="video-name" onclick="playVideo('video3')">第3章 点、线、面的投影</strong>
+                                    </td>
+                                    <td>机械制图</td>
+                                    <td>MP4</td>
+                                    <td>189MB</td>
+                                    <td>18:20</td>
+                                    <!-- <td>856次</td> -->
+                                    <td>王老师</td>
+                                    <td>2025-01-13 11:15:33</td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="playVideo('video3')">播放</button>
+                                            <button onclick="downloadVideo('video3')">下载</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr data-major="机械工程" data-course="机械制图">
+                                    <td style="text-align: center; color: #999;">4</td>
+                                    <td>
+                                        <div class="video-thumb" onclick="playVideo('video4')">
+                                            🎬
+                                            <span class="video-duration">25:10</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong class="video-name" onclick="playVideo('video4')">第4章 基本体的投影</strong>
+                                    </td>
+                                    <td>机械制图</td>
+                                    <td>MP4</td>
+                                    <td>267MB</td>
+                                    <td>25:10</td>
+                                    <!-- <td>743次</td> -->
+                                    <td>张老师</td>
+                                    <td>2025-01-12 16:45:52</td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="playVideo('video4')">播放</button>
+                                            <button onclick="downloadVideo('video4')">下载</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr data-major="机械工程" data-course="机械制图">
+                                    <td style="text-align: center; color: #999;">5</td>
+                                    <td>
+                                        <div class="video-thumb" onclick="playVideo('video5')">
+                                            🎬
+                                            <span class="video-duration">20:35</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong class="video-name" onclick="playVideo('video5')">第5章 立体表面的交线</strong>
+                                    </td>
+                                    <td>机械制图</td>
+                                    <td>MP4</td>
+                                    <td>198MB</td>
+                                    <td>20:35</td>
+                                    <!-- <td>692次</td> -->
+                                    <td>刘老师</td>
+                                    <td>2025-01-11 08:55:18</td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="playVideo('video5')">播放</button>
+                                            <button onclick="downloadVideo('video5')">下载</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr data-major="机械工程" data-course="机械制图">
+                                    <td style="text-align: center; color: #999;">6</td>
+                                    <td>
+                                        <div class="video-thumb" onclick="playVideo('video6')">
+                                            🎬
+                                            <span class="video-duration">28:50</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <strong class="video-name" onclick="playVideo('video6')">第6章 组合体的画法</strong>
+                                    </td>
+                                    <td>机械制图</td>
+                                    <td>MP4</td>
+                                    <td>312MB</td>
+                                    <td>28:50</td>
+                                    <!-- <td>628次</td> -->
+                                    <td>陈老师</td>
+                                    <td>2025-01-10 13:08:47</td>
+                                    <td>
+                                        <div class="action-btns">
+                                            <button onclick="playVideo('video6')">播放</button>
+                                            <button onclick="downloadVideo('video6')">下载</button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <!-- 空状态提示 -->
+                        <div class="empty-state" id="emptyState" style="display: none;">
+                            <div class="empty-state-icon">
+                                <svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="60" cy="60" r="50" fill="url(#emptyGradient)" opacity="0.1"/>
+                                    <circle cx="60" cy="60" r="40" fill="url(#emptyGradient)" opacity="0.15"/>
+                                    <path d="M45 50 L60 65 L75 50" stroke="url(#emptyGradient)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <rect x="35" y="40" width="50" height="40" rx="8" stroke="url(#emptyGradient)" stroke-width="3" fill="none"/>
+                                    <circle cx="75" cy="55" r="3" fill="url(#emptyGradient)"/>
+                                    <defs>
+                                        <linearGradient id="emptyGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stop-color="#6366f1"/>
+                                            <stop offset="100%" stop-color="#4f46e5"/>
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+                            </div>
+                            <h3 class="empty-state-title">暂无相关视频</h3>
+                            <p class="empty-state-desc">当前筛选条件下没有找到匹配的视频数据</p>
+                            <div class="empty-state-actions">
+                                <button class="empty-btn primary" onclick="resetFilter()">重置筛选</button>
+                                <button class="empty-btn secondary" onclick="showAllVideos()">查看全部</button>
+                            </div>
+                        </div>
+                        </div>
+
+                        <div class="pagination">
+                            <span class="page-info">共 12 条记录</span>
+                        <div class="page-size-selector">
+                            <span>每页</span>
+                            <select>
+                                <option value="10">10</option>
+                                <option value="20" selected>20</option>
+                                <option value="50">50</option>
+                                <option value="100">100</option>
+                            </select>
+                            <span>条</span>
+                        </div>
+                            <button class="pagination-btn" disabled>上一页</button>
+                            <button class="pagination-btn active">1</button>
+                            <button class="pagination-btn">2</button>
+                            <button class="pagination-btn">下一页</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 视频播放对话框 -->
+    <div id="videoDialog" class="video-dialog">
+        <div class="video-dialog-content">
+            <div class="video-dialog-header">
+                <h3 class="video-dialog-title" id="playVideoTitle">视频播放</h3>
+                <button class="video-dialog-close" onclick="closeVideoDialog()">✕</button>
+            </div>
+            <div class="video-player">
+                <div class="video-player-area">
+                    <button class="play-button-large" id="playBtn" onclick="togglePlay()">▶</button>
+                </div>
+            </div>
+            <div class="video-info-panel">
+                <div class="video-meta">
+                    <div class="video-meta-item">
+                        <span>📁</span>
+                        <span>所属课程：<strong id="playVideoCourse">机械制图</strong></span>
+                    </div>
+                    <div class="video-meta-item">
+                        <span>👤</span>
+                        <span>讲师：<strong id="playVideoTeacher">张老师</strong></span>
+                    </div>
+                    <div class="video-meta-item">
+                        <span>📊</span>
+                        <span>格式：<strong id="playVideoFormat">MP4</strong></span>
+                    </div>
+                    <div class="video-meta-item">
+                        <span>💾</span>
+                        <span>大小：<strong id="playVideoSize">156MB</strong></span>
+                    </div>
+                </div>
+                <div class="video-controls">
+                    <button class="control-btn" id="playControlBtn" onclick="togglePlay()">▶</button>
+                    <div class="progress-container">
+                        <span class="time-display" id="currentTime">00:00</span>
+                        <div class="progress-bar-container" onclick="seekVideo(event)">
+                            <div class="progress-bar" id="progressBar"></div>
+                        </div>
+                        <span class="time-display" id="totalTime">15:30</span>
+                    </div>
+                    <div class="volume-container">
+                        <button class="control-btn" onclick="toggleMute()">🔊</button>
+                        <div class="volume-slider" onclick="setVolume(event)">
+                            <div class="volume-level" id="volumeLevel"></div>
+                        </div>
+                    </div>
+                    <button class="control-btn" onclick="toggleFullscreen()">⛶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 树状图展开/收起
+        function toggleNode(element) {
+            const children = element.nextElementSibling;
+            const toggle = element.querySelector('.tree-toggle');
+
+            if (children && children.classList.contains('tree-children')) {
+                children.classList.toggle('expanded');
+                toggle.classList.toggle('expanded');
+            }
+
+            // 选中当前节点（专业级别）
+            selectNode(element, 'major');
+        }
+
+        // 选中节点
+        function selectNode(element, type = 'course') {
+            document.querySelectorAll('.tree-node-content').forEach(node => {
+                node.classList.remove('active');
+            });
+            element.classList.add('active');
+
+            // 获取节点名称
+            const nodeName = element.querySelector('.tree-label').textContent;
+
+            // 获取父级专业名称
+            let majorName = '';
+            const parentChildren = element.closest('.tree-children');
+            if (parentChildren) {
+                const parentNode = parentChildren.previousElementSibling;
+                if (parentNode) {
+                    majorName = parentNode.querySelector('.tree-label')?.textContent || '';
+                }
+            }
+
+            // 筛选表格数据
+            if (type === 'major') {
+                filterTable(nodeName, '');
+                updateFilterSelects(nodeName, '');
+            } else {
+                filterTable(majorName, nodeName);
+                updateFilterSelects(majorName, nodeName);
+            }
+
+            // 更新面包屑
+            updateBreadcrumb(element, type);
+        }
+
+        // 筛选表格
+        function filterTable(major, course) {
+            const rows = document.querySelectorAll('tbody tr');
+            const table = document.querySelector('table');
+            const emptyState = document.getElementById('emptyState');
+            let visibleCount = 0;
+
+            rows.forEach(row => {
+                const rowMajor = row.getAttribute('data-major');
+                const rowCourse = row.getAttribute('data-course');
+
+                let shouldShow = true;
+
+                if (major && rowMajor !== major) {
+                    shouldShow = false;
+                }
+
+                if (course && rowCourse !== course) {
+                    shouldShow = false;
+                }
+
+                if (shouldShow) {
+                    row.style.display = '';
+                    visibleCount++;
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+
+            // 显示/隐藏空状态
+            if (visibleCount === 0) {
+                if (table) table.style.display = 'none';
+                if (emptyState) emptyState.style.display = 'flex';
+            } else {
+                if (table) table.style.display = '';
+                if (emptyState) emptyState.style.display = 'none';
+            }
+
+            // 更新记录数显示
+            const pageInfo = document.querySelector('.page-info');
+            if (pageInfo) {
+                pageInfo.textContent = `共 ${visibleCount} 条记录`;
+            }
+        }
+
+        // 重置筛选
+        function resetFilter() {
+            // 重置筛选下拉框
+            const majorSelect = document.getElementById('filterMajor');
+            const courseSelect = document.getElementById('filterCourse');
+            if (majorSelect) majorSelect.value = '';
+            if (courseSelect) courseSelect.value = '';
+
+            // 重置树状图选中状态
+            document.querySelectorAll('.tree-node-content').forEach(node => {
+                node.classList.remove('active');
+            });
+
+            // 显示所有数据
+            filterTable('', '');
+
+            // 更新面包屑
+            const breadcrumb = document.querySelector('.breadcrumb');
+            if (breadcrumb) {
+                breadcrumb.innerHTML = '当前位置：首页 / 知识库 / 视频教材库';
+            }
+        }
+
+        // 查看全部视频
+        function showAllVideos() {
+            resetFilter();
+        }
+
+        // 更新筛选下拉框
+        function updateFilterSelects(major, course) {
+            const majorSelect = document.getElementById('filterMajor');
+            const courseSelect = document.getElementById('filterCourse');
+
+            if (majorSelect) {
+                majorSelect.value = major || '';
+            }
+
+            if (courseSelect) {
+                courseSelect.value = course || '';
+            }
+        }
+
+        // 更新面包屑
+        function updateBreadcrumb(element, type = 'course') {
+            const path = [];
+            let current = element;
+
+            while (current) {
+                const label = current.querySelector('.tree-label');
+                if (label) {
+                    path.unshift(label.textContent);
+                }
+                current = current.closest('.tree-children')?.previousElementSibling;
+            }
+
+            const breadcrumb = document.querySelector('.breadcrumb');
+            if (breadcrumb) {
+                if (path.length > 0) {
+                    const last = path.pop();
+                    breadcrumb.innerHTML = '当前位置：' + path.map(p => `<span>${p}</span>`).join(' / ') + ' / ' + last;
+                } else {
+                    breadcrumb.innerHTML = '当前位置：首页 / 知识库 / 视频教材库';
+                }
+            }
+        }
+
+        // 展开全部
+        function expandAll() {
+            document.querySelectorAll('.tree-children').forEach(child => {
+                child.classList.add('expanded');
+            });
+            document.querySelectorAll('.tree-toggle').forEach(toggle => {
+                toggle.classList.add('expanded');
+            });
+        }
+
+        // 收起全部
+        function collapseAll() {
+            document.querySelectorAll('.tree-children').forEach(child => {
+                child.classList.remove('expanded');
+            });
+            document.querySelectorAll('.tree-toggle').forEach(toggle => {
+                toggle.classList.remove('expanded');
+            });
+        }
+
+        // 筛选区域展开/收起
+        function toggleFilter(btn) {
+            const filterSection = btn.closest('.filter-section');
+            const filterRow = filterSection.querySelector('.filter-row');
+            const toggleText = btn.querySelector('.toggle-text');
+            const toggleIcon = btn.querySelector('.toggle-icon');
+            const isExpanded = filterRow.classList.contains('expanded');
+
+            // 添加点击动画效果
+            btn.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                btn.style.transform = '';
+            }, 150);
+
+            if (isExpanded) {
+                // 收起动画
+                toggleText.textContent = '展开';
+                btn.classList.remove('expanded');
+                filterRow.classList.remove('expanded');
+                
+                // 图标旋转动画
+                toggleIcon.style.transform = 'rotate(0deg)';
+            } else {
+                // 展开动画
+                toggleText.textContent = '收起';
+                btn.classList.add('expanded');
+                filterRow.classList.add('expanded');
+                
+                // 图标旋转动画
+                toggleIcon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // 查询视频
+        function searchVideos() {
+            // 获取所有筛选条件的值
+            const filterInputs = document.querySelectorAll('.filter-item input, .filter-item select');
+            const filters = {};
+
+            filterInputs.forEach((input, index) => {
+                const label = input.previousElementSibling?.textContent || `条件${index + 1}`;
+                if (input.value) {
+                    filters[label] = input.value;
+                }
+            });
+
+            console.log('查询条件:', filters);
+            // 这里可以添加实际的查询逻辑
+            alert('查询功能已触发，请查看控制台输出的筛选条件');
+        }
+
+        // 重置筛选条件
+        function resetFilter() {
+            const filterInputs = document.querySelectorAll('.filter-item input, .filter-item select');
+
+            filterInputs.forEach(input => {
+                if (input.tagName === 'SELECT') {
+                    input.selectedIndex = 0;
+                } else {
+                    input.value = '';
+                }
+            });
+
+            console.log('筛选条件已重置');
+        }
+
+        // 树状图搜索
+        function filterTree() {
+            const keyword = document.getElementById('treeSearch').value.toLowerCase();
+            if (!keyword) {
+                // 如果搜索框为空，显示所有节点
+                document.querySelectorAll('.tree-node').forEach(node => {
+                    node.style.display = 'block';
+                });
+                return;
+            }
+            
+            // 简单的搜索过滤逻辑
+            document.querySelectorAll('.tree-node-content').forEach(content => {
+                const label = content.querySelector('.tree-label');
+                if (label) {
+                    const text = label.textContent.toLowerCase();
+                    const node = content.closest('.tree-node');
+                    if (text.includes(keyword)) {
+                        node.style.display = 'block';
+                        // 展开父节点
+                        let parent = node.parentElement;
+                        while (parent) {
+                            if (parent.classList.contains('tree-children')) {
+                                parent.classList.add('expanded');
+                                const parentToggle = parent.previousElementSibling?.querySelector('.tree-toggle');
+                                if (parentToggle) parentToggle.classList.add('expanded');
+                            }
+                            parent = parent.parentElement;
+                        }
+                    } else {
+                        node.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // 播放视频
+        let isPlaying = false;
+        let currentProgress = 0;
+        let progressInterval = null;
+
+        function playVideo(videoId) {
+            const dialog = document.getElementById('videoDialog');
+            const title = document.getElementById('playVideoTitle');
+            const course = document.getElementById('playVideoCourse');
+            const teacher = document.getElementById('playVideoTeacher');
+            const format = document.getElementById('playVideoFormat');
+            const size = document.getElementById('playVideoSize');
+            const totalTime = document.getElementById('totalTime');
+
+            // 视频数据
+            const videoData = {
+                'video1': { name: '第1章 制图基本知识与技能', course: '机械制图', teacher: '张老师', format: 'MP4', size: '156MB', duration: '15:30' },
+                'video2': { name: '第2章 正投影法基础', course: '机械制图', teacher: '李老师', format: 'MP4', size: '234MB', duration: '22:45' },
+                'video3': { name: '第3章 点、线、面的投影', course: '机械制图', teacher: '王老师', format: 'MP4', size: '189MB', duration: '18:20' },
+                'video4': { name: '第4章 基本体的投影', course: '机械制图', teacher: '张老师', format: 'MP4', size: '267MB', duration: '25:10' },
+                'video5': { name: '第5章 立体表面的交线', course: '机械制图', teacher: '刘老师', format: 'MP4', size: '198MB', duration: '20:35' },
+                'video6': { name: '第6章 组合体的画法', course: '机械制图', teacher: '陈老师', format: 'MP4', size: '312MB', duration: '28:50' }
+            };
+
+            const data = videoData[videoId] || videoData['video1'];
+            title.textContent = data.name;
+            course.textContent = data.course;
+            teacher.textContent = data.teacher;
+            format.textContent = data.format;
+            size.textContent = data.size;
+            totalTime.textContent = data.duration;
+
+            // 重置播放状态
+            isPlaying = false;
+            currentProgress = 0;
+            updatePlayButton();
+            updateProgressBar();
+
+            dialog.classList.add('active');
+        }
+
+        // 关闭视频对话框
+        function closeVideoDialog() {
+            const dialog = document.getElementById('videoDialog');
+            dialog.classList.remove('active');
+            stopProgress();
+        }
+
+        // 切换播放/暂停
+        function togglePlay() {
+            isPlaying = !isPlaying;
+            updatePlayButton();
+
+            if (isPlaying) {
+                startProgress();
+            } else {
+                stopProgress();
+            }
+        }
+
+        // 更新播放按钮状态
+        function updatePlayButton() {
+            const playBtn = document.getElementById('playBtn');
+            const playControlBtn = document.getElementById('playControlBtn');
+            const icon = isPlaying ? '⏸' : '▶';
+
+            playBtn.textContent = icon;
+            playControlBtn.textContent = icon;
+        }
+
+        // 开始进度
+        function startProgress() {
+            progressInterval = setInterval(() => {
+                currentProgress += 0.5;
+                if (currentProgress >= 100) {
+                    currentProgress = 100;
+                    isPlaying = false;
+                    updatePlayButton();
+                    stopProgress();
+                }
+                updateProgressBar();
+                updateCurrentTime();
+            }, 100);
+        }
+
+        // 停止进度
+        function stopProgress() {
+            if (progressInterval) {
+                clearInterval(progressInterval);
+                progressInterval = null;
+            }
+        }
+
+        // 更新进度条
+        function updateProgressBar() {
+            const progressBar = document.getElementById('progressBar');
+            progressBar.style.width = currentProgress + '%';
+        }
+
+        // 更新当前时间
+        function updateCurrentTime() {
+            const currentTimeEl = document.getElementById('currentTime');
+            const totalTime = document.getElementById('totalTime').textContent;
+            const [totalMin, totalSec] = totalTime.split(':').map(Number);
+            const totalSeconds = totalMin * 60 + totalSec;
+            const currentSeconds = Math.floor((currentProgress / 100) * totalSeconds);
+            const min = Math.floor(currentSeconds / 60);
+            const sec = currentSeconds % 60;
+            currentTimeEl.textContent = `${min.toString().padStart(2, '0')}:${sec.toString().padStart(2, '0')}`;
+        }
+
+        // 拖动进度
+        function seekVideo(event) {
+            const container = event.currentTarget;
+            const rect = container.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const percentage = (x / rect.width) * 100;
+            currentProgress = Math.max(0, Math.min(100, percentage));
+            updateProgressBar();
+            updateCurrentTime();
+        }
+
+        // 切换静音
+        let isMuted = false;
+        function toggleMute() {
+            isMuted = !isMuted;
+            const btn = event.target;
+            btn.textContent = isMuted ? '🔇' : '🔊';
+        }
+
+        // 设置音量
+        function setVolume(event) {
+            const slider = event.currentTarget;
+            const rect = slider.getBoundingClientRect();
+            const x = event.clientX - rect.left;
+            const percentage = (x / rect.width) * 100;
+            const volumeLevel = document.getElementById('volumeLevel');
+            volumeLevel.style.width = Math.max(0, Math.min(100, percentage)) + '%';
+        }
+
+        // 切换全屏
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen();
+            } else {
+                document.exitFullscreen();
+            }
+        }
+
+        // ESC键关闭
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeVideoDialog();
+            }
+        });
+
+        // 查看视频详情
+        function downloadVideo(videoId) {
+            showDownloadModal(videoId);
+        }
+
+        // 初始化展开第一层
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelectorAll('.tree-level-1 > .tree-node-content').forEach(node => {
+                const children = node.nextElementSibling;
+                const toggle = node.querySelector('.tree-toggle');
+                if (children) {
+                    children.classList.add('expanded');
+                    toggle.classList.add('expanded');
+                }
+            });
+        });
+    </script>
+
+    <script>
+        // 页面加载时自动展开包含 active 菜单项的菜单组
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            // 先收起所有菜单组
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            // 然后展开包含 active 菜单项的组
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+        });
+    </script>
+    <script>
+        // 页面加载时自动展开包含 active 菜单项的菜单组
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            // 先收起所有菜单组
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            // 然后展开包含 active 菜单项的组
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+            
+            // 侧边栏菜单滚动交互
+            const sidebarMenu = document.querySelector('.sidebar-menu');
+            
+            if (sidebarMenu) {
+                // 检测滚动位置并添加阴影提示
+                function updateScrollIndicators() {
+                    const scrollTop = sidebarMenu.scrollTop;
+                    const scrollHeight = sidebarMenu.scrollHeight;
+                    const clientHeight = sidebarMenu.clientHeight;
+                    const isScrollable = scrollHeight > clientHeight;
+                    
+                    // 顶部阴影
+                    if (scrollTop > 10) {
+                        sidebarMenu.classList.add('scroll-top');
+                    } else {
+                        sidebarMenu.classList.remove('scroll-top');
+                    }
+                    
+                    // 底部阴影
+                    if (isScrollable && scrollTop + clientHeight < scrollHeight - 10) {
+                        sidebarMenu.classList.add('scroll-bottom');
+                    } else {
+                        sidebarMenu.classList.remove('scroll-bottom');
+                    }
+                }
+                
+                // 监听滚动事件
+                sidebarMenu.addEventListener('scroll', updateScrollIndicators, { passive: true });
+                
+                // 初始检测
+                updateScrollIndicators();
+                
+                // 窗口大小改变时重新检测
+                window.addEventListener('resize', updateScrollIndicators, { passive: true });
+                
+                // 键盘滚动支持
+                sidebarMenu.addEventListener('keydown', function(e) {
+                    const scrollAmount = 50;
+                    
+                    switch(e.key) {
+                        case 'ArrowDown':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: scrollAmount, behavior: 'smooth' });
+                            break;
+                        case 'ArrowUp':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: -scrollAmount, behavior: 'smooth' });
+                            break;
+                        case 'PageDown':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                            break;
+                        case 'PageUp':
+                            e.preventDefault();
+                            sidebarMenu.scrollBy({ top: -sidebarMenu.clientHeight * 0.8, behavior: 'smooth' });
+                            break;
+                        case 'Home':
+                            e.preventDefault();
+                            sidebarMenu.scrollTo({ top: 0, behavior: 'smooth' });
+                            break;
+                        case 'End':
+                            e.preventDefault();
+                            sidebarMenu.scrollTo({ top: sidebarMenu.scrollHeight, behavior: 'smooth' });
+                            break;
+                    }
+                });
+                
+                // 菜单展开/收起时重新计算滚动
+                const menuTitles = document.querySelectorAll('.menu-title');
+                menuTitles.forEach(title => {
+                    title.addEventListener('click', function() {
+                        setTimeout(updateScrollIndicators, 300);
+                    });
+                });
+            }
+        });
+    </script>
+
+    <!-- 下载模态框 -->
+    <div class="download-modal" id="downloadModal">
+        <div class="download-modal-content">
+            <div class="download-modal-header">
+                <h3>下载视频</h3>
+                <button class="modal-close" onclick="closeDownloadModal()">
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+                        <path d="M15 5L5 15M5 5L15 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="download-modal-body">
+                <div class="video-info">
+                    <div class="video-icon">🎬</div>
+                    <div class="video-details">
+                        <h4 id="downloadVideoName">视频名称</h4>
+                        <p id="downloadVideoInfo">MP4 · 156MB · 15:30</p>
+                    </div>
+                </div>
+                <div class="download-progress" id="downloadProgress" style="display: none;">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span class="progress-text" id="progressText">0%</span>
+                </div>
+            </div>
+            <div class="download-modal-footer">
+                <button class="btn-secondary" onclick="closeDownloadModal()">取消</button>
+                <button class="btn-primary" id="downloadBtn" onclick="startDownload()">
+                    <span class="btn-icon">⬇️</span>
+                    <span>开始下载</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast 提示 -->
+    <div class="toast" id="toast"></div>
+
+    <style>
+        /* 下载模态框 - 现代玻璃态设计 */
+        .download-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            animation: modalFadeIn 0.3s ease;
+        }
+        .download-modal.active {
+            display: flex;
+        }
+        @keyframes modalFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .download-modal-content {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            width: 100%;
+            max-width: 480px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25), 0 0 0 1px rgba(255,255,255,0.5) inset;
+            overflow: hidden;
+            animation: modalSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        @keyframes modalSlideIn {
+            from { 
+                opacity: 0;
+                transform: translateY(30px) scale(0.95);
+            }
+            to { 
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+        .download-modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        .download-modal-header h3 {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(99, 102, 241, 0.08);
+            border-radius: 12px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #64748b;
+            transition: all 0.25s ease;
+        }
+        .modal-close:hover {
+            background: rgba(99, 102, 241, 0.15);
+            color: #6366f1;
+            transform: rotate(90deg);
+        }
+        .download-modal-body {
+            padding: 16px;
+        }
+        .video-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.05) 0%, rgba(79, 70, 229, 0.03) 100%);
+            border-radius: 12px;
+            margin-bottom: 16px;
+        }
+        .video-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+        .video-details h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 4px 0;
+        }
+        .video-details p {
+            font-size: 13px;
+            color: #64748b;
+            margin: 0;
+        }
+        .download-progress {
+            margin-top: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #e2e8f0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 3px;
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+        .progress-text {
+            font-size: 13px;
+            font-weight: 600;
+            color: #6366f1;
+            min-width: 36px;
+            text-align: right;
+        }
+        .download-modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 16px;
+            padding: 16px;
+            border-top: 1px solid rgba(99, 102, 241, 0.1);
+        }
+        .btn-secondary {
+            padding: 10px 20px;
+            border: 1px solid #e2e8f0;
+            background: #fff;
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            color: #64748b;
+            transition: all 0.2s ease;
+        }
+        .btn-secondary:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #475569;
+        }
+        .btn-primary {
+            padding: 10px 20px;
+            border: none;
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+            border-radius: 12px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.25s ease;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+        .btn-icon {
+            font-size: 16px;
+        }
+
+        /* Toast 提示 */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: #fff;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 2000;
+            pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+        .toast.success {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        }
+    </style>
+
+    <script>
+        // 显示下载模态框
+        function showDownloadModal(videoId) {
+            const modal = document.getElementById('downloadModal');
+            const videoName = document.getElementById('downloadVideoName');
+            const videoInfo = document.getElementById('downloadVideoInfo');
+            
+            // 根据 videoId 设置视频信息
+            const videoData = {
+                'video1': { name: '第1章 制图基本知识与技能', info: 'MP4 · 156MB · 15:30' },
+                'video2': { name: '第2章 正投影法基础', info: 'MP4 · 234MB · 22:45' },
+                'video3': { name: '第3章 点、线、面的投影', info: 'MP4 · 189MB · 18:20' },
+                'video4': { name: '第4章 基本体的投影', info: 'MP4 · 267MB · 25:10' },
+                'video5': { name: '第5章 立体表面的交线', info: 'MP4 · 198MB · 20:35' },
+                'video6': { name: '第6章 组合体的画法', info: 'MP4 · 312MB · 28:50' }
+            };
+            
+            const data = videoData[videoId] || { name: '未知视频', info: 'MP4' };
+            videoName.textContent = data.name;
+            videoInfo.textContent = data.info;
+            
+            // 重置下载状态
+            document.getElementById('downloadProgress').style.display = 'none';
+            document.getElementById('downloadBtn').disabled = false;
+            document.getElementById('downloadBtn').innerHTML = '<span class="btn-icon">⬇️</span><span>开始下载</span>';
+            
+            modal.classList.add('active');
+        }
+
+        // 关闭下载模态框
+        function closeDownloadModal() {
+            const modal = document.getElementById('downloadModal');
+            modal.classList.remove('active');
+        }
+
+        // 开始下载
+        function startDownload() {
+            const btn = document.getElementById('downloadBtn');
+            const progressDiv = document.getElementById('downloadProgress');
+            const progressFill = document.getElementById('progressFill');
+            const progressText = document.getElementById('progressText');
+            
+            btn.disabled = true;
+            btn.innerHTML = '<span class="btn-icon">⏳</span><span>下载中...</span>';
+            progressDiv.style.display = 'flex';
+            
+            let progress = 0;
+            const interval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(interval);
+                    
+                    setTimeout(() => {
+                        closeDownloadModal();
+                        showToast('下载完成！', 'success');
+                    }, 500);
+                }
+                progressFill.style.width = progress + '%';
+                progressText.textContent = Math.round(progress) + '%';
+            }, 200);
+        }
+
+        // 显示 Toast
+        function showToast(message, type = '') {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast ' + type;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // 格式选项切换
+        document.querySelectorAll('.format-option').forEach(option => {
+            option.addEventListener('click', function() {
+                document.querySelectorAll('.format-option').forEach(o => o.classList.remove('active'));
+                this.classList.add('active');
+                this.querySelector('input').checked = true;
+            });
+        });
+
+        // 点击模态框外部关闭
+        document.getElementById('downloadModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeDownloadModal();
+            }
+        });
+
+        // ESC 键关闭模态框
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeDownloadModal();
+            }
+        });
+    </script>
+    <!-- 导航加载器 - 动态加载现代化导航组件 -->
+    <script src="./nav-loader-new.js"></script>
+    <!-- 组件库 -->
+    <script src="./components.js"></script>
+    <script src="./user-menu-component.js"></script>
+</body>
+</html>

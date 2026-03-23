@@ -1,0 +1,1567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的课程 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .page-header {
+            display: none;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* 内容区域 */
+        .content-body {
+            padding: 20px;
+            background: #F0F2F5;
+            min-height: calc(100vh - 60px);
+        }
+
+        /* 统计卡片 - 教务端风格 */
+        .stats-bar {
+            display: none;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            transition: all 0.3s ease;
+        }
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-icon.blue { background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%); }
+        .stat-icon.green { background: linear-gradient(135deg, #F6FFED 0%, #D9F7BE 100%); }
+        .stat-icon.orange { background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%); }
+        .stat-icon.purple { background: linear-gradient(135deg, #F9F0FF 0%, #EFDBFF 100%); }
+        .stat-content { flex: 1; }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #262626;
+            line-height: 1.2;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #8C8C8C;
+            margin-top: 4px;
+        }
+        .stat-trend {
+            font-size: 12px;
+            color: #52C41A;
+            margin-top: 4px;
+        }
+        .stat-trend.down { color: #FF4D4F; }
+        
+        /* 搜索筛选区 - 卡片式布局 */
+        .search-filter-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .search-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .search-row:last-child {
+            margin-bottom: 0;
+        }
+        .search-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .search-input:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #E8E8E8;
+            border-radius: 6px;
+            font-size: 13px;
+            color: #333;
+            background: #fff;
+            cursor: pointer;
+            min-width: 120px;
+        }
+        .filter-select:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        .btn-search {
+            padding: 12px 28px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-search:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+        .btn-reset {
+            padding: 12px 20px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+        .btn-reset:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        
+        /* 表格样式 */
+        .data-table {
+            width: 100%;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+            overflow-x: auto;
+            border: 1px solid #F0F0F0;
+        }
+        .data-table table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            table-layout: auto;
+            min-width: 800px;
+        }
+        .data-table th {
+            background: linear-gradient(180deg, #FAFAFA 0%, #F5F7FA 100%);
+            padding: 16px 16px;
+            text-align: left;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #E8E8E8;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            white-space: nowrap;
+        }
+        .data-table th:first-child {
+            border-radius: 12px 0 0 0;
+            position: sticky;
+            left: 0;
+            z-index: 20;
+            background: linear-gradient(180deg, #FAFAFA 0%, #F5F7FA 100%);
+            width: auto;
+            min-width: 60px;
+        }
+        .data-table th:last-child {
+            border-radius: 0 12px 0 0;
+            position: sticky;
+            right: 0;
+            z-index: 20;
+            background: linear-gradient(180deg, #FAFAFA 0%, #F5F7FA 100%);
+            width: auto;
+            min-width: 80px;
+        }
+        .data-table td {
+            padding: 18px 16px;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.2s;
+            background: #fff;
+        }
+        .data-table td:first-child {
+            position: sticky;
+            left: 0;
+            z-index: 15;
+            background: #fff;
+            width: auto;
+            min-width: 60px;
+            text-align: center;
+        }
+        .data-table td:last-child {
+            position: sticky;
+            right: 0;
+            z-index: 15;
+            background: #fff;
+            width: auto;
+            min-width: 80px;
+        }
+        .data-table tbody tr:hover td:first-child,
+        .data-table tbody tr:hover td:last-child {
+            background: linear-gradient(90deg, #F6FFED 0%, #E6F7FF 100%);
+        }
+        .data-table td:nth-child(4),
+        .data-table td:nth-child(5) {
+            white-space: normal;
+            max-width: 200px;
+        }
+        .data-table tbody tr {
+            transition: all 0.3s;
+        }
+        .data-table tbody tr:hover {
+            background: linear-gradient(90deg, #F6FFED 0%, #E6F7FF 100%);
+            transform: scale(1.002);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .data-table tr:last-child td:first-child {
+            border-radius: 0 0 0 12px;
+        }
+        .data-table tr:last-child td:last-child {
+            border-radius: 0 0 12px 0;
+        }
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* 课程名称样式 */
+        .course-name {
+            color: #1f1f1f;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            display: inline-block;
+        }
+        .course-name::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: linear-gradient(90deg, #1890FF 0%, #36CFC9 100%);
+            transition: width 0.3s;
+        }
+        .course-name:hover {
+            color: #1890FF;
+        }
+        .course-name:hover::after {
+            width: 100%;
+        }
+        
+        /* 标签样式 */
+        .tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+        .tag::before {
+            content: '';
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .tag-green { 
+            background: linear-gradient(135deg, #F6FFED 0%, #D9F7BE 100%);
+            color: #52C41A;
+            border: 1px solid #B7EB8F;
+        }
+        .tag-green::before { background: #52C41A; }
+        .tag-orange { 
+            background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%);
+            color: #FA8C16;
+            border: 1px solid #FFD591;
+        }
+        .tag-orange::before { background: #FA8C16; }
+        .tag-gray { 
+            background: linear-gradient(135deg, #F5F5F5 0%, #E8E8E8 100%);
+            color: #999;
+            border: 1px solid #D9D9D9;
+        }
+        .tag-gray::before { background: #999; }
+        .tag-blue {
+            background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%);
+            color: #1890FF;
+            border: 1px solid #91D5FF;
+        }
+        .tag-blue::before { background: #1890FF; }
+
+        /* 操作按钮 */
+        .action-btns {
+            display: flex;
+            gap: 8px;
+        }
+        .action-btns button {
+            padding: 6px 14px;
+            border: 1px solid #1890FF;
+            background: #fff;
+            cursor: pointer;
+            color: #1890FF;
+            font-size: 13px;
+            border-radius: 6px;
+            transition: all 0.3s;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .action-btns button:hover {
+            background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%);
+            color: #fff;
+            border-color: transparent;
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+            transform: translateY(-1px);
+        }
+        
+        /* 分页 - 优化样式 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding: 16px 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+        .pagination-left {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        .pagination-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 1px solid #E8E8E8;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #595959;
+            transition: all 0.3s;
+            min-width: 36px;
+            text-align: center;
+        }
+        .pagination-btn:hover:not(:disabled) {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background: #F5F5F5;
+        }
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+            font-weight: 500;
+        }
+        .pagination-info {
+            font-size: 14px;
+            color: #8C8C8C;
+        }
+        .pagination-total {
+            font-size: 14px;
+            color: #262626;
+            font-weight: 500;
+        }
+        .pagination-jump {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-left: 16px;
+            font-size: 13px;
+            color: #666;
+        }
+        .pagination-jump input {
+            width: 48px;
+            padding: 6px 8px;
+            border: 1px solid #E8E8E8;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 13px;
+        }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+        /* 弹窗样式 - 精美设计 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+        .modal {
+            background: linear-gradient(145deg, #ffffff 0%, #f8fafc 100%);
+            border-radius: 20px;
+            width: 90%;
+            max-width: 700px;
+            max-height: 85vh;
+            overflow: hidden;
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.5) inset;
+            transform: scale(0.9) translateY(20px);
+            transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .modal-overlay.active .modal {
+            transform: scale(1) translateY(0);
+        }
+        .modal-header {
+            padding: 24px 28px;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .modal-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(56, 189, 248, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%);
+            pointer-events: none;
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            position: relative;
+            z-index: 1;
+        }
+        .modal-title-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+        }
+        .modal-close {
+            width: 36px;
+            height: 36px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: #fff;
+            transform: rotate(90deg);
+        }
+        .modal-body {
+            padding: 0;
+            overflow-y: auto;
+            max-height: 60vh;
+        }
+        .modal-footer {
+            padding: 20px 28px;
+            background: #f1f5f9;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+        }
+        .btn {
+            padding: 10px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        .btn-default {
+            background: #fff;
+            border: 1px solid #cbd5e1;
+            color: #64748b;
+        }
+        .btn-default:hover {
+            border-color: #94a3b8;
+            color: #475569;
+            background: #f8fafc;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+        }
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            color: #fff;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+        }
+        
+        /* 数据表格样式 */
+        .modal-table-container {
+            padding: 24px 28px;
+        }
+        .modal-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: #fff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+        .modal-table thead {
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+        }
+        .modal-table th {
+            padding: 16px 20px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #475569;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .modal-table th:first-child {
+            padding-left: 24px;
+        }
+        .modal-table th:last-child {
+            padding-right: 24px;
+        }
+        .modal-table td {
+            padding: 16px 20px;
+            font-size: 14px;
+            color: #334155;
+            border-bottom: 1px solid #f1f5f9;
+            transition: all 0.2s ease;
+        }
+        .modal-table td:first-child {
+            padding-left: 24px;
+        }
+        .modal-table td:last-child {
+            padding-right: 24px;
+        }
+        .modal-table tbody tr {
+            transition: all 0.2s ease;
+        }
+        .modal-table tbody tr:hover {
+            background: linear-gradient(90deg, #eff6ff 0%, #eef2ff 100%);
+        }
+        .modal-table tbody tr:last-child td {
+            border-bottom: none;
+        }
+        
+        /* 学生信息卡片 */
+        .student-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-weight: 600;
+            font-size: 14px;
+            margin-right: 12px;
+        }
+        .student-name-cell {
+            display: flex;
+            align-items: center;
+        }
+        .student-class-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 12px;
+            background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+            color: #1e40af;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        /* 时间信息样式 */
+        .time-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            color: #92400e;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .date-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+            color: #065f46;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        
+        /* 统计信息 */
+        .modal-stats {
+            display: flex;
+            gap: 16px;
+            padding: 20px 28px;
+            background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .modal-stat-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 20px;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        .modal-stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+        }
+        .modal-stat-icon.blue {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+        }
+        .modal-stat-icon.green {
+            background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+        }
+        .modal-stat-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: #1e293b;
+        }
+        .modal-stat-label {
+            font-size: 12px;
+            color: #64748b;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            padding: 60px 40px;
+            text-align: center;
+            color: #94a3b8;
+        }
+        .empty-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+        .empty-state-text {
+            font-size: 16px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">首页 / 我的教学 / 我的课程</div>
+            <div>👨‍🏫 教师：张三 | <button onclick="logout()" class="logout-btn">退出登录</button></div>
+        </div>
+
+        <div class="content-body">
+            <div class="page-header">
+                <h1 class="page-title">我的课程</h1>
+            </div>
+
+            <!-- 统计卡片 -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📚</div>
+                    <div class="stat-content">
+                        <div class="stat-value">8</div>
+                        <div class="stat-label">授课课程</div>
+                        <div class="stat-trend">本学期</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">👨‍🏫</div>
+                    <div class="stat-content">
+                        <div class="stat-value">1</div>
+                        <div class="stat-label">任课教师</div>
+                        <div class="stat-trend">张三</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">👥</div>
+                    <div class="stat-content">
+                        <div class="stat-value">395</div>
+                        <div class="stat-label">参与人数</div>
+                        <div class="stat-trend">累计人次</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon purple">🏫</div>
+                    <div class="stat-content">
+                        <div class="stat-value">4</div>
+                        <div class="stat-label">上课教室</div>
+                        <div class="stat-trend">本周使用</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 搜索筛选 -->
+            <div class="search-filter-card">
+                <div class="search-row">
+                    <input type="text" class="search-input" placeholder="搜索课程名称...">
+                    <button class="btn-search">🔍 查询</button>
+                    <button class="btn-reset">重置</button>
+                </div>
+                <div class="search-row">
+                    <div class="filter-group">
+                        <div class="filter-item">
+                            <span class="filter-label">学年：</span>
+                            <select class="filter-select">
+                                <option>全部学年</option>
+                                <option>2024-2025学年</option>
+                                <option>2023-2024学年</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">学期：</span>
+                            <select class="filter-select">
+                                <option>全部学期</option>
+                                <option>第一学期</option>
+                                <option>第二学期</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <span class="filter-label">状态：</span>
+                            <select class="filter-select">
+                                <option>全部状态</option>
+                                <option>进行中</option>
+                                <option>待开课</option>
+                                <option>已结课</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 课程表格 -->
+            <div class="data-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 60px; min-width: 60px; white-space: nowrap;">序号</th>
+                            <th style="min-width: 120px;">课程名称</th>
+                            <th style="width: 80px; min-width: 80px; white-space: nowrap;">任课教师</th>
+                            <th style="width: 90px; min-width: 90px; white-space: nowrap;">参与人数</th>
+                            <th style="width: 90px; min-width: 90px; white-space: nowrap;">上课时间</th>
+                            <th style="min-width: 100px;">上课教室</th>
+                            <th style="width: 80px; min-width: 80px; white-space: nowrap;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: center; color: #999;">1</td>
+                            <td>
+                                <strong class="course-name" onclick="enterCourse('机械制图')">机械制图</strong>
+                            </td>
+                            <td>
+                                <div style="font-size: 13px; color: #333; font-weight: 500;">张三</div>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" onclick="showStudentModal()" style="color: #1890FF; text-decoration: none; cursor: pointer;">86人</a>
+                            </td>
+                            <td>
+                                <a href="javascript:void(0)" onclick="showScheduleModal()" style="color: #1890FF; text-decoration: none; cursor: pointer;">查看</a>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-gray" style="font-size: 11px; padding: 2px 8px;">A101</span>
+                                    <span class="tag tag-gray" style="font-size: 11px; padding: 2px 8px;">B203</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button onclick="enterCourse('机械制图')">进入</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; color: #999;">2</td>
+                            <td>
+                                <strong class="course-name" onclick="enterCourse('数控加工技术')">数控加工技术</strong>
+                            </td>
+                            <td>
+                                <div style="font-size: 13px; color: #333; font-weight: 500;">张三</div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-orange" style="font-size: 11px; padding: 2px 8px;">数控2301班</span>
+                                </div>
+                            </td>
+                            <td>28人</td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-blue" style="font-size: 11px; padding: 2px 8px;">周二</span>
+                                    <span class="tag tag-blue" style="font-size: 11px; padding: 2px 8px;">周四</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-green" style="font-size: 11px; padding: 2px 8px;">10:00-11:40</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-gray" style="font-size: 11px; padding: 2px 8px;">实训中心A</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button onclick="enterCourse('数控加工技术')">进入</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; color: #999;">3</td>
+                            <td>
+                                <strong class="course-name" onclick="enterCourse('CAD/CAM技术')">CAD/CAM技术</strong>
+                            </td>
+                            <td>
+                                <div style="font-size: 13px; color: #333; font-weight: 500;">张三</div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-orange" style="font-size: 11px; padding: 2px 8px;">机械2301班</span>
+                                    <span class="tag tag-orange" style="font-size: 11px; padding: 2px 8px;">数控2301班</span>
+                                </div>
+                            </td>
+                            <td>63人</td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-blue" style="font-size: 11px; padding: 2px 8px;">周一</span>
+                                    <span class="tag tag-blue" style="font-size: 11px; padding: 2px 8px;">周四</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-green" style="font-size: 11px; padding: 2px 8px;">14:00-15:40</span>
+                                    <span class="tag tag-green" style="font-size: 11px; padding: 2px 8px;">16:00-17:40</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-gray" style="font-size: 11px; padding: 2px 8px;">机房C301</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button onclick="enterCourse('CAD/CAM技术')">进入</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; color: #999;">4</td>
+                            <td>
+                                <strong class="course-name" onclick="enterCourse('模具设计')">模具设计</strong>
+                            </td>
+                            <td>
+                                <div style="font-size: 13px; color: #333; font-weight: 500;">张三</div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-orange" style="font-size: 11px; padding: 2px 8px;">模具2301班</span>
+                                    <span class="tag tag-orange" style="font-size: 11px; padding: 2px 8px;">机械2301班</span>
+                                </div>
+                            </td>
+                            <td>56人</td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-blue" style="font-size: 11px; padding: 2px 8px;">周二</span>
+                                    <span class="tag tag-blue" style="font-size: 11px; padding: 2px 8px;">周五</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-green" style="font-size: 11px; padding: 2px 8px;">08:00-09:40</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-gray" style="font-size: 11px; padding: 2px 8px;">A102</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button onclick="enterCourse('模具设计')">进入</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; color: #999;">5</td>
+                            <td>
+                                <strong class="course-name" onclick="enterCourse('数控车床编程')">数控车床编程</strong>
+                            </td>
+                            <td>
+                                <div style="font-size: 13px; color: #333; font-weight: 500;">张三</div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-orange" style="font-size: 11px; padding: 2px 8px;">数控2301班</span>
+                                    <span class="tag tag-orange" style="font-size: 11px; padding: 2px 8px;">机械2301班</span>
+                                </div>
+                            </td>
+                            <td>58人</td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-blue" style="font-size: 11px; padding: 2px 8px;">周三</span>
+                                    <span class="tag tag-blue" style="font-size: 11px; padding: 2px 8px;">周五</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-green" style="font-size: 11px; padding: 2px 8px;">10:00-11:40</span>
+                                    <span class="tag tag-green" style="font-size: 11px; padding: 2px 8px;">14:00-15:40</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-gray" style="font-size: 11px; padding: 2px 8px;">实训中心B</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button onclick="enterCourse('数控车床编程')">进入</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center; color: #999;">6</td>
+                            <td>
+                                <strong class="course-name" onclick="enterCourse('机械设计基础')">机械设计基础</strong>
+                            </td>
+                            <td>
+                                <div style="font-size: 13px; color: #333; font-weight: 500;">张三</div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-orange" style="font-size: 11px; padding: 2px 8px;">机械2301班</span>
+                                    <span class="tag tag-orange" style="font-size: 11px; padding: 2px 8px;">模具2301班</span>
+                                </div>
+                            </td>
+                            <td>62人</td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-blue" style="font-size: 11px; padding: 2px 8px;">周一</span>
+                                    <span class="tag tag-blue" style="font-size: 11px; padding: 2px 8px;">周三</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-green" style="font-size: 11px; padding: 2px 8px;">16:00-17:40</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                                    <span class="tag tag-gray" style="font-size: 11px; padding: 2px 8px;">A103</span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="action-btns">
+                                    <button onclick="enterCourse('机械设计基础')">进入</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 分页 -->
+            <div class="pagination">
+                <div class="pagination-left">
+                    <span class="pagination-info">显示第 <span id="startRecord">1</span>-<span id="endRecord">6</span> 条，共 <span class="pagination-total" id="totalRecords">6</span> 条记录</span>
+                </div>
+                <div class="pagination-right">
+                    <button class="pagination-btn" id="prevBtn" onclick="goToPage(currentPage - 1)" disabled>上一页</button>
+                    <button class="pagination-btn active" id="page1" onclick="goToPage(1)">1</button>
+                    <button class="pagination-btn" id="page2" onclick="goToPage(2)">2</button>
+                    <button class="pagination-btn" id="nextBtn" onclick="goToPage(currentPage + 1)">下一页</button>
+                    <div class="pagination-jump">
+                        <span>跳至</span>
+                        <input type="number" min="1" id="jumpPage" value="1">
+                        <span>页</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 查看课程弹窗 -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">课程信息</div>
+                <button class="modal-close" onclick="closeViewModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- 动态内容 -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeViewModal()">关闭</button>
+                <button class="btn btn-primary" onclick="enterCourseFromModal()">进入课程</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 学生数据
+        const studentData = [
+            { name: '张三', studentId: '2023010101', className: '机械2301班' },
+            { name: '李四', studentId: '2023010102', className: '机械2301班' },
+            { name: '王五', studentId: '2023010103', className: '机械2301班' },
+            { name: '赵六', studentId: '2023010104', className: '机械2302班' },
+            { name: '钱七', studentId: '2023010105', className: '机械2302班' },
+            { name: '孙八', studentId: '2023010106', className: '数控2301班' },
+            { name: '周九', studentId: '2023010107', className: '数控2301班' },
+            { name: '吴十', studentId: '2023010108', className: '模具2301班' }
+        ];
+
+        // 上课时间数据
+        const scheduleData = [
+            { date: '2026-03-10', time: '08:00-09:40' },
+            { date: '2026-03-12', time: '10:00-11:40' },
+            { date: '2026-03-14', time: '14:00-15:40' },
+            { date: '2026-03-17', time: '08:00-09:40' },
+            { date: '2026-03-19', time: '10:00-11:40' }
+        ];
+
+        // 课程数据 - 支持一门课程多个专业和多个班级
+        const courseData = [
+            { id: 1, name: '机械制图', icon: '⚙️', majors: ['机械工程', '数控技术', '模具设计与制造'], classes: ['机械2301班', '机械2302班', '数控2301班', '模具2301班'], students: 86, hours: 64, status: '进行中', year: '2024-2025学年', semester: '第一学期', updateTime: '2025-01-15', date: '2026-03-10' },
+            { id: 2, name: '数控加工技术', icon: '🔩', majors: ['数控技术'], classes: ['数控2301班'], students: 28, hours: 96, status: '进行中', year: '2024-2025学年', semester: '第一学期', updateTime: '2025-01-14', date: '2026-03-11' },
+            { id: 3, name: 'CAD/CAM技术', icon: '💻', majors: ['机械工程', '数控技术'], classes: ['机械2301班', '数控2301班'], students: 63, hours: 64, status: '进行中', year: '2024-2025学年', semester: '第一学期', updateTime: '2025-01-13', date: '2026-03-12' },
+            { id: 4, name: '模具设计', icon: '📐', majors: ['模具设计与制造', '机械工程'], classes: ['模具2301班', '机械2301班'], students: 56, hours: 80, status: '进行中', year: '2024-2025学年', semester: '第二学期', updateTime: '2025-01-12', date: '2026-03-13' },
+            { id: 5, name: '数控车床编程', icon: '🚗', majors: ['数控技术', '机械工程'], classes: ['数控2301班', '机械2301班'], students: 58, hours: 64, status: '待开课', year: '2024-2025学年', semester: '第二学期', updateTime: '2025-01-11', date: '2026-03-14' },
+            { id: 6, name: '机械设计基础', icon: '📏', majors: ['机械工程', '模具设计与制造'], classes: ['机械2301班', '模具2301班'], students: 62, hours: 48, status: '待开课', year: '2024-2025学年', semester: '第二学期', updateTime: '2025-01-10', date: '2026-03-15' },
+            { id: 7, name: '工程力学', icon: '⚖️', majors: ['机械工程', '数控技术', '模具设计与制造'], classes: ['机械2301班', '数控2301班', '模具2301班'], students: 95, hours: 56, status: '已结课', year: '2023-2024学年', semester: '第一学期', updateTime: '2024-07-15', date: '2024-06-10' },
+            { id: 8, name: '材料成型工艺', icon: '🔧', majors: ['模具设计与制造'], classes: ['模具2301班'], students: 22, hours: 72, status: '已结课', year: '2023-2024学年', semester: '第二学期', updateTime: '2024-07-10', date: '2024-06-15' }
+        ];
+
+        let currentPage = 1;
+        const pageSize = 6;
+        let filteredData = [...courseData];
+        let currentViewCourse = null;
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            renderTable();
+            updatePagination();
+        });
+
+        // 渲染表格
+        function renderTable() {
+            const tbody = document.querySelector('.data-table tbody');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredData.slice(start, end);
+
+            tbody.innerHTML = pageData.map((course, index) => `
+                <tr>
+                    <td style="text-align: center; color: #999;">${start + index + 1}</td>
+                    <td>
+                        <strong class="course-name" onclick="enterCourse('${course.name}', '${course.icon}')">${course.name}</strong>
+                    </td>
+                    <td>
+                        <div style="font-size: 13px; color: #333; font-weight: 500;">张三</div>
+                    </td>
+                    <td>
+                        <a href="javascript:void(0)" onclick="showStudentModal(${course.id})" style="color: #1890FF; text-decoration: none; cursor: pointer;">${course.students}人</a>
+                    </td>
+                    <td>
+                        <a href="javascript:void(0)" onclick="showScheduleModal(${course.id})" style="color: #1890FF; text-decoration: none; cursor: pointer;">查看</a>
+                    </td>
+                    <td>
+                        <div style="display: flex; flex-wrap: wrap; gap: 4px;">
+                            <span class="tag tag-gray" style="font-size: 11px; padding: 2px 8px;">A101</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="action-btns">
+                            <button onclick="enterCourse('${course.name}', '${course.icon}')">进入</button>
+                        </div>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // 获取图标颜色
+        function getIconColor(id) {
+            const colors = [
+                '#1890FF 0%, #36CFC9 100%',
+                '#52C41A 0%, #95DE64 100%',
+                '#722ED1 0%, #B37FEB 100%',
+                '#FA8C16 0%, #FFC53D 100%',
+                '#13C2C2 0%, #5CDBD3 100%',
+                '#EB2F96 0%, #FF85C0 100%'
+            ];
+            return colors[(id - 1) % colors.length];
+        }
+
+        // 筛选功能
+        function applyFilters() {
+            const keyword = document.querySelector('.filter-input').value.toLowerCase();
+            const year = document.querySelectorAll('.filter-select')[0].value;
+            const semester = document.querySelectorAll('.filter-select')[1].value;
+            const status = document.querySelectorAll('.filter-select')[2].value;
+
+            filteredData = courseData.filter(course => {
+                const matchKeyword = course.name.toLowerCase().includes(keyword) ||
+                                   course.majors.some(major => major.toLowerCase().includes(keyword));
+                const matchYear = year === '全部学年' || course.year === year;
+                const matchSemester = semester === '全部学期' || course.semester === semester;
+                const matchStatus = status === '全部状态' || course.status === status;
+
+                return matchKeyword && matchYear && matchSemester && matchStatus;
+            });
+
+            currentPage = 1;
+            renderTable();
+            updatePagination();
+        }
+
+        // 重置筛选
+        function resetFilters() {
+            document.querySelector('.filter-input').value = '';
+            document.querySelectorAll('.filter-select').forEach(select => select.selectedIndex = 0);
+            filteredData = [...courseData];
+            currentPage = 1;
+            renderTable();
+            updatePagination();
+        }
+
+        // 更新分页
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            const totalRecords = filteredData.length;
+            const startRecord = (currentPage - 1) * pageSize + 1;
+            const endRecord = Math.min(currentPage * pageSize, totalRecords);
+            
+            document.getElementById('startRecord').textContent = startRecord;
+            document.getElementById('endRecord').textContent = endRecord;
+            document.getElementById('totalRecords').textContent = totalRecords;
+            
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const page1 = document.getElementById('page1');
+            const page2 = document.getElementById('page2');
+            const jumpPage = document.getElementById('jumpPage');
+            
+            prevBtn.disabled = currentPage === 1;
+            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
+            
+            // 更新跳转页码输入框的最大值
+            jumpPage.max = totalPages;
+            jumpPage.value = currentPage;
+
+            // 更新页码按钮
+            page1.textContent = currentPage;
+            page2.textContent = currentPage + 1;
+            
+            if (currentPage === 1) {
+                page1.classList.add('active');
+                page2.classList.remove('active');
+            } else {
+                page1.classList.remove('active');
+                page2.classList.add('active');
+            }
+
+            page2.style.display = currentPage < totalPages ? 'inline-block' : 'none';
+        }
+
+        // 跳转页面
+        function goToPage(page) {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            if (page < 1 || page > totalPages) return;
+            
+            currentPage = page;
+            renderTable();
+            updatePagination();
+        }
+
+        // 跳转页码输入框事件监听
+        document.getElementById('jumpPage').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const page = parseInt(this.value);
+                goToPage(page);
+            }
+        });
+
+        // 进入课程
+        function enterCourse(courseName, courseIcon) {
+            window.location.href = `./教师端_课程详情.html?name=${encodeURIComponent(courseName)}&icon=${encodeURIComponent(courseIcon || '⚙️')}`;
+        }
+
+        // 查看课程
+        function viewCourse(courseName) {
+            const course = courseData.find(c => c.name === courseName);
+            if (!course) return;
+            
+            currentViewCourse = course;
+            const modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = `
+                <div class="detail-item">
+                    <div class="detail-label">课程名称</div>
+                    <div class="detail-value">${course.name}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">所属专业</div>
+                    <div class="detail-value">${course.major}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">学年学期</div>
+                    <div class="detail-value">${course.year} ${course.semester}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">学生人数</div>
+                    <div class="detail-value">${course.students}人</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">学时</div>
+                    <div class="detail-value">${course.hours}学时</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">课程状态</div>
+                    <div class="detail-value"><span class="tag ${course.status === '进行中' ? 'tag-green' : course.status === '待开课' ? 'tag-orange' : 'tag-gray'}">${course.status}</span></div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">更新时间</div>
+                    <div class="detail-value">${course.updateTime}</div>
+                </div>
+            `;
+            
+            document.getElementById('viewModal').classList.add('active');
+        }
+
+        // 从弹窗进入课程
+        function enterCourseFromModal() {
+            if (currentViewCourse) {
+                enterCourse(currentViewCourse.name, currentViewCourse.icon);
+            }
+        }
+
+        // 关闭查看弹窗
+        function closeViewModal() {
+            document.getElementById('viewModal').classList.remove('active');
+            currentViewCourse = null;
+        }
+
+        // 显示学生信息弹窗
+        function showStudentModal(courseId) {
+            // 创建遮罩层
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay active';
+            overlay.id = 'studentModalOverlay';
+            overlay.onclick = function(e) {
+                if (e.target === overlay) closeStudentModal();
+            };
+            
+            // 计算统计数据
+            const totalStudents = studentData.length;
+            const classCount = new Set(studentData.map(s => s.className)).size;
+            
+            overlay.innerHTML = `
+                <div class="modal" style="max-width: 750px;">
+                    <div class="modal-header">
+                        <div class="modal-title">
+                            <div class="modal-title-icon">👨‍🎓</div>
+                            <span>学生信息</span>
+                        </div>
+                        <button class="modal-close" onclick="closeStudentModal()">&times;</button>
+                    </div>
+                    <div class="modal-stats">
+                        <div class="modal-stat-item">
+                            <div class="modal-stat-icon blue">👥</div>
+                            <div>
+                                <div class="modal-stat-value">${totalStudents}</div>
+                                <div class="modal-stat-label">总人数</div>
+                            </div>
+                        </div>
+                        <div class="modal-stat-item">
+                            <div class="modal-stat-icon green">🏫</div>
+                            <div>
+                                <div class="modal-stat-value">${classCount}</div>
+                                <div class="modal-stat-label">班级数</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-table-container">
+                            <table class="modal-table">
+                                <thead>
+                                    <tr>
+                                        <th>姓名</th>
+                                        <th>学号</th>
+                                        <th>所属班级</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${studentData.map(student => `
+                                        <tr>
+                                            <td>
+                                                <div class="student-name-cell">
+                                                    <div class="student-avatar">${student.name.charAt(0)}</div>
+                                                    <span style="font-weight: 500; color: #1e293b;">${student.name}</span>
+                                                </div>
+                                            </td>
+                                            <td style="font-family: 'SF Mono', monospace; color: #64748b;">${student.studentId}</td>
+                                            <td>
+                                                <span class="student-class-badge">${student.className}</span>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="closeStudentModal()">确定</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        // 关闭学生信息弹窗
+        function closeStudentModal() {
+            const overlay = document.getElementById('studentModalOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                setTimeout(() => overlay.remove(), 300);
+            }
+        }
+
+        // 显示上课时间弹窗
+        function showScheduleModal(courseId) {
+            // 创建遮罩层
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay active';
+            overlay.id = 'scheduleModalOverlay';
+            overlay.onclick = function(e) {
+                if (e.target === overlay) closeScheduleModal();
+            };
+            
+            // 计算统计数据
+            const totalSessions = scheduleData.length;
+            const uniqueDates = new Set(scheduleData.map(s => s.date)).size;
+            
+            overlay.innerHTML = `
+                <div class="modal" style="max-width: 650px;">
+                    <div class="modal-header">
+                        <div class="modal-title">
+                            <div class="modal-title-icon">📅</div>
+                            <span>上课时间信息</span>
+                        </div>
+                        <button class="modal-close" onclick="closeScheduleModal()">&times;</button>
+                    </div>
+                    <div class="modal-stats">
+                        <div class="modal-stat-item">
+                            <div class="modal-stat-icon blue">📚</div>
+                            <div>
+                                <div class="modal-stat-value">${totalSessions}</div>
+                                <div class="modal-stat-label">总课时</div>
+                            </div>
+                        </div>
+                        <div class="modal-stat-item">
+                            <div class="modal-stat-icon green">📆</div>
+                            <div>
+                                <div class="modal-stat-value">${uniqueDates}</div>
+                                <div class="modal-stat-label">上课天数</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-body">
+                        <div class="modal-table-container">
+                            <table class="modal-table">
+                                <thead>
+                                    <tr>
+                                        <th>上课日期</th>
+                                        <th>上课时间段</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${scheduleData.map((schedule, index) => `
+                                        <tr>
+                                            <td>
+                                                <span class="date-badge">
+                                                    <span>📅</span>
+                                                    <span>${schedule.date}</span>
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <span class="time-badge">
+                                                    <span>⏰</span>
+                                                    <span>${schedule.time}</span>
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-primary" onclick="closeScheduleModal()">确定</button>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(overlay);
+        }
+
+        // 关闭上课时间弹窗
+        function closeScheduleModal() {
+            const overlay = document.getElementById('scheduleModalOverlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+                setTimeout(() => overlay.remove(), 300);
+            }
+        }
+
+        // 菜单展开/收起
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 绑定筛选事件
+        document.querySelector('.btn-search').addEventListener('click', applyFilters);
+        document.querySelectorAll('.filter-select').forEach(select => {
+            select.addEventListener('change', applyFilters);
+        });
+        document.querySelector('.filter-input').addEventListener('input', applyFilters);
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

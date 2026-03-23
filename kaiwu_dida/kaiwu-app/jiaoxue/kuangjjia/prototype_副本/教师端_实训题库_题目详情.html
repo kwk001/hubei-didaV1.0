@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>题目详情</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            padding: 24px;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+        .btn-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #F5F7FA;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 18px;
+            color: #999;
+        }
+        .btn-close:hover {
+            background: #E8E8E8;
+        }
+        .detail-container {
+            background: #fff;
+            border-radius: 8px;
+            padding: 24px;
+        }
+        .detail-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 24px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .detail-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+        .detail-meta {
+            display: flex;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #666;
+        }
+        .meta-label {
+            color: #999;
+        }
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .tag-design { background: #F6FFED; color: #52C41A; }
+        .tag-programming { background: #E6F7FF; color: #1890FF; }
+        .tag-process { background: #FFF7E6; color: #FA8C16; }
+        .tag-machining { background: #F9F0FF; color: #722ED1; }
+        .tag-inspection { background: #FFF1F0; color: #FF4D4F; }
+        .tag-easy { background: #F6FFED; color: #52C41A; }
+        .tag-medium { background: #FFF7E6; color: #FA8C16; }
+        .tag-hard { background: #FFF1F0; color: #FF4D4F; }
+        
+        .detail-section {
+            margin-bottom: 24px;
+        }
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            padding-left: 12px;
+            border-left: 4px solid #1890FF;
+        }
+        .section-content {
+            background: #FAFAFA;
+            padding: 16px;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: #333;
+        }
+        .file-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .file-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #FAFAFA;
+            border-radius: 4px;
+        }
+        .file-icon {
+            width: 40px;
+            height: 40px;
+            background: #E6F7FF;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .file-info {
+            flex: 1;
+        }
+        .file-name {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+        .file-size {
+            font-size: 12px;
+            color: #999;
+        }
+        .btn-download {
+            padding: 6px 16px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .btn-download:hover {
+            background: #40A9FF;
+        }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .stat-card {
+            background: #FAFAFA;
+            padding: 16px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .stat-value {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1890FF;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 12px;
+            color: #666;
+        }
+        .action-bar {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #E8E8E8;
+        }
+        .btn {
+            padding: 10px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+        }
+        .btn-default {
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            color: #666;
+        }
+        .btn-primary {
+            background: #1890FF;
+            color: #fff;
+        }
+        .btn-primary:hover {
+            background: #40A9FF;
+        }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+    </style>
+</head>
+<body>
+    <div class="modal-header">
+        <h2 class="modal-title">📋 题目详情</h2>
+        <button class="btn-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="detail-container">
+        <div class="detail-header">
+            <div>
+                <h1 class="detail-title">数控车床G代码编程-外圆车削</h1>
+                <div class="detail-meta">
+                    <div class="meta-item">
+                        <span class="meta-label">题型：</span>
+                        <span class="tag tag-programming">编程类</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">难度：</span>
+                        <span class="tag tag-medium">中等</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">所属题库：</span>
+                        <span>数控车床基础实训</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">创建时间：</span>
+                        <span>2024-01-15</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-label">使用次数：</span>
+                        <span>15次</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3 class="section-title">题目描述</h3>
+            <div class="section-content">
+                编写数控车床加工程序，完成阶梯轴零件的外圆车削加工。零件材料为45#钢，毛坯尺寸为Φ50×100mm。
+                要求：
+                1. 使用G71粗车循环指令
+                2. 使用G70精车循环指令
+                3. 表面粗糙度Ra3.2
+                4. 尺寸精度IT8
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3 class="section-title">编程要求</h3>
+            <div class="section-content">
+                <p><strong>编程语言：</strong>G代码</p>
+                <p><strong>加工内容：</strong></p>
+                <ul style="margin-left: 20px; margin-top: 8px;">
+                    <li>端面车削</li>
+                    <li>外圆粗车</li>
+                    <li>外圆精车</li>
+                    <li>切槽</li>
+                    <li>车螺纹</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3 class="section-title">参考程序</h3>
+            <div class="section-content" style="font-family: 'Consolas', monospace; background: #1E1E1E; color: #D4D4D4;">
+O0001;<br>
+G99 G21 G40;<br>
+T0101;<br>
+M03 S800;<br>
+G00 X52.0 Z2.0;<br>
+G71 U2.0 R1.0;<br>
+G71 P10 Q20 U0.5 W0.1 F0.2;<br>
+N10 G00 X20.0;<br>
+G01 Z0 F0.1;<br>
+X24.0 Z-2.0;<br>
+Z-30.0;<br>
+X30.0;<br>
+Z-50.0;<br>
+X52.0;<br>
+N20 Z-80.0;<br>
+G70 P10 Q20 F0.1;<br>
+G00 X100.0 Z100.0;<br>
+M30;<br>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3 class="section-title">参考答案</h3>
+            <div class="section-content">
+                <p><strong>评分标准：</strong></p>
+                <ul style="margin-left: 20px; margin-top: 8px;">
+                    <li>程序结构正确（20分）</li>
+                    <li>坐标设置正确（20分）</li>
+                    <li>循环指令使用正确（30分）</li>
+                    <li>刀具路径合理（20分）</li>
+                    <li>切削参数选择恰当（10分）</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3 class="section-title">附件资料</h3>
+            <div class="file-list">
+                <div class="file-item">
+                    <div class="file-icon">📄</div>
+                    <div class="file-info">
+                        <div class="file-name">阶梯轴零件图.pdf</div>
+                        <div class="file-size">2.5 MB</div>
+                    </div>
+                    <button class="btn-download">下载</button>
+                </div>
+                <div class="file-item">
+                    <div class="file-icon">🎬</div>
+                    <div class="file-info">
+                        <div class="file-name">加工演示视频.mp4</div>
+                        <div class="file-size">15.8 MB</div>
+                    </div>
+                    <button class="btn-download">下载</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="detail-section">
+            <h3 class="section-title">统计信息</h3>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">使用次数</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">92%</div>
+                    <div class="stat-label">合格率</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">4.5</div>
+                    <div class="stat-label">平均得分</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">45min</div>
+                    <div class="stat-label">平均用时</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value">32</div>
+                    <div class="stat-label">完成人数</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-bar">
+            <button class="btn btn-default" onclick="closeModal()">关闭</button>
+            <button class="btn btn-primary" onclick="editQuestion()">编辑题目</button>
+        </div>
+    </div>
+
+    <script>
+        // 获取URL参数
+        function getQueryParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        // 加载题目数据
+        function loadQuestionData(id) {
+            // 这里应该根据ID从服务器获取数据
+            console.log('加载题目ID:', id);
+        }
+
+        // 编辑题目
+        function editQuestion() {
+            const id = getQueryParam('id');
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'editQuestion', id: id }, '*');
+            }
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            if (window.parent && window.parent !== window) {
+                window.parent.postMessage({ type: 'closeModal' }, '*');
+            } else {
+                window.close();
+            }
+        }
+
+        // 页面加载时获取数据
+        document.addEventListener('DOMContentLoaded', function() {
+            const id = getQueryParam('id');
+            if (id) {
+                loadQuestionData(id);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>报工数据校核 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        /* 统计卡片 */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.blue { background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%); }
+        .stat-icon.green { background: linear-gradient(135deg, #F6FFED 0%, #D9F7BE 100%); }
+        .stat-icon.orange { background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%); }
+        .stat-icon.red { background: linear-gradient(135deg, #FFF1F0 0%, #FFCCC7 100%); }
+
+        .stat-content { flex: 1; }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #262626;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #8C8C8C;
+            margin-top: 4px;
+        }
+
+        /* 搜索筛选 */
+        .search-filter-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .search-row:last-child { margin-bottom: 0; }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .filter-select {
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            min-width: 140px;
+        }
+
+        .btn-search, .btn-export {
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-export {
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            color: #666;
+        }
+
+        /* 数据表格 */
+        .table-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #E8E8E8;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .data-table tbody tr:hover {
+            background: #F5F7FA;
+        }
+
+        /* 匹配状态 */
+        .match-status {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .match-status.matched {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        .match-status.unmatched {
+            background: #FFF2F0;
+            color: #FF4D4F;
+        }
+
+        .match-status.warning {
+            background: #FFF7E6;
+            color: #FA8C16;
+        }
+
+        /* 差异值 */
+        .diff-value {
+            font-weight: 600;
+        }
+
+        .diff-value.positive {
+            color: #52C41A;
+        }
+
+        .diff-value.negative {
+            color: #FF4D4F;
+        }
+
+        /* 学生信息 */
+        .student-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .student-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #1890FF, #096DD9);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .student-detail {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .student-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .student-id {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 设备信息 */
+        .device-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .device-name {
+            font-weight: 500;
+            color: #333;
+        }
+
+        .device-code {
+            font-size: 12px;
+            color: #999;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .pagination-left {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pagination-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+        }
+
+        /* 详情弹窗 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 700px;
+            max-height: 80vh;
+            overflow-y: auto;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #F5F7FA;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #999;
+        }
+
+        .modal-body {
+            padding: 24px;
+        }
+
+        .detail-section {
+            margin-bottom: 24px;
+        }
+
+        .detail-section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+            padding-left: 12px;
+            border-left: 4px solid #1890FF;
+        }
+
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+        }
+
+        .detail-item {
+            padding: 16px;
+            background: #F5F7FA;
+            border-radius: 8px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .detail-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .detail-value.highlight {
+            color: #1890FF;
+        }
+
+        .detail-value.warning {
+            color: #FA8C16;
+        }
+
+        .detail-value.error {
+            color: #FF4D4F;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">报表 / 报工数据校核</div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <div class="content-body">
+            <!-- 统计卡片 -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📊</div>
+                    <div class="stat-content">
+                        <div class="stat-value">1,256</div>
+                        <div class="stat-label">总报工记录</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-value">1,180</div>
+                        <div class="stat-label">数据匹配</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">⚠️</div>
+                    <div class="stat-content">
+                        <div class="stat-value">58</div>
+                        <div class="stat-label">差异警告</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">❌</div>
+                    <div class="stat-content">
+                        <div class="stat-value">18</div>
+                        <div class="stat-label">异常不匹配</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 搜索筛选 -->
+            <div class="search-filter-card">
+                <div class="search-row">
+                    <input type="text" class="search-input" placeholder="搜索学生姓名/学号/设备名称...">
+                    <select class="filter-select">
+                        <option value="">全部状态</option>
+                        <option value="matched">数据匹配</option>
+                        <option value="warning">差异警告</option>
+                        <option value="unmatched">异常不匹配</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">全部设备</option>
+                        <option value="lathe">数控车床</option>
+                        <option value="mill">数控铣床</option>
+                        <option value="center">加工中心</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">全部课程</option>
+                        <option value="course1">数控车床编程</option>
+                        <option value="course2">数控铣床操作</option>
+                        <option value="course3">加工中心实训</option>
+                    </select>
+                    <button class="btn-search">🔍 查询</button>
+                    <button class="btn-export">📥 导出</button>
+                </div>
+            </div>
+
+            <!-- 数据表格 -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">报工数据校核列表</div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>学生信息</th>
+                            <th>设备信息</th>
+                            <th>课程/工序</th>
+                            <th>学生报工工时</th>
+                            <th>设备采集工时</th>
+                            <th>差异值</th>
+                            <th>匹配状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <div class="student-info">
+                                    <div class="student-avatar">张</div>
+                                    <div class="student-detail">
+                                        <div class="student-name">张三</div>
+                                        <div class="student-id">2023010101</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="device-info">
+                                    <div class="device-name">数控车床-01</div>
+                                    <div class="device-code">DEV-CK-001</div>
+                                </div>
+                            </td>
+                            <td>数控车床编程 / 外圆车削</td>
+                            <td>2小时35分</td>
+                            <td>2小时32分</td>
+                            <td><span class="diff-value positive">-3分</span></td>
+                            <td><span class="match-status matched">✓ 匹配</span></td>
+                            <td><a href="#" onclick="showDetail(1)">查看详情</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="student-info">
+                                    <div class="student-avatar">李</div>
+                                    <div class="student-detail">
+                                        <div class="student-name">李四</div>
+                                        <div class="student-id">2023010102</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="device-info">
+                                    <div class="device-name">数控铣床-02</div>
+                                    <div class="device-code">DEV-XC-002</div>
+                                </div>
+                            </td>
+                            <td>数控铣床操作 / 平面铣削</td>
+                            <td>3小时20分</td>
+                            <td>2小时45分</td>
+                            <td><span class="diff-value negative">+35分</span></td>
+                            <td><span class="match-status warning">⚠ 差异警告</span></td>
+                            <td><a href="#" onclick="showDetail(2)">查看详情</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="student-info">
+                                    <div class="student-avatar">王</div>
+                                    <div class="student-detail">
+                                        <div class="student-name">王五</div>
+                                        <div class="student-id">2023010103</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="device-info">
+                                    <div class="device-name">加工中心-01</div>
+                                    <div class="device-code">DEV-JG-001</div>
+                                </div>
+                            </td>
+                            <td>加工中心实训 / 钻孔加工</td>
+                            <td>4小时10分</td>
+                            <td>1小时30分</td>
+                            <td><span class="diff-value negative">+2小时40分</span></td>
+                            <td><span class="match-status unmatched">✗ 异常不匹配</span></td>
+                            <td><a href="#" onclick="showDetail(3)">查看详情</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="student-info">
+                                    <div class="student-avatar">赵</div>
+                                    <div class="student-detail">
+                                        <div class="student-name">赵六</div>
+                                        <div class="student-id">2023010104</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="device-info">
+                                    <div class="device-name">数控车床-03</div>
+                                    <div class="device-code">DEV-CK-003</div>
+                                </div>
+                            </td>
+                            <td>数控车床编程 / 螺纹加工</td>
+                            <td>1小时50分</td>
+                            <td>1小时48分</td>
+                            <td><span class="diff-value positive">-2分</span></td>
+                            <td><span class="match-status matched">✓ 匹配</span></td>
+                            <td><a href="#" onclick="showDetail(4)">查看详情</a></td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <div class="student-info">
+                                    <div class="student-avatar">刘</div>
+                                    <div class="student-detail">
+                                        <div class="student-name">刘七</div>
+                                        <div class="student-id">2023010105</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="device-info">
+                                    <div class="device-name">数控铣床-01</div>
+                                    <div class="device-code">DEV-XC-001</div>
+                                </div>
+                            </td>
+                            <td>数控铣床操作 / 轮廓铣削</td>
+                            <td>2小时15分</td>
+                            <td>2小时20分</td>
+                            <td><span class="diff-value positive">+5分</span></td>
+                            <td><span class="match-status matched">✓ 匹配</span></td>
+                            <td><a href="#" onclick="showDetail(5)">查看详情</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- 分页 -->
+                <div class="pagination">
+                    <div class="pagination-left">
+                        显示第 1-5 条，共 <strong>1,256</strong> 条记录
+                    </div>
+                    <div class="pagination-right">
+                        <button class="pagination-btn" disabled>上一页</button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <button class="pagination-btn">...</button>
+                        <button class="pagination-btn">252</button>
+                        <button class="pagination-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 详情弹窗 -->
+    <div class="modal-overlay" id="detailModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">报工数据校核详情</div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-section">
+                    <div class="detail-section-title">学生报工信息</div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">报工时间</div>
+                            <div class="detail-value">2025-01-20 14:30</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">报工工时</div>
+                            <div class="detail-value highlight">3小时20分</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">工序内容</div>
+                            <div class="detail-value">平面铣削加工</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">完成数量</div>
+                            <div class="detail-value">15件</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">设备采集信息</div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">设备开机时间</div>
+                            <div class="detail-value">2025-01-20 14:35</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">设备运行工时</div>
+                            <div class="detail-value highlight">2小时45分</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">设备待机时间</div>
+                            <div class="detail-value warning">25分钟</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">实际加工时间</div>
+                            <div class="detail-value">2小时20分</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <div class="detail-section-title">差异分析</div>
+                    <div class="detail-grid">
+                        <div class="detail-item">
+                            <div class="detail-label">工时差异</div>
+                            <div class="detail-value error">+35分钟</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">差异率</div>
+                            <div class="detail-value error">17.5%</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">可能原因</div>
+                            <div class="detail-value">学生报工包含准备时间</div>
+                        </div>
+                        <div class="detail-item">
+                            <div class="detail-label">处理建议</div>
+                            <div class="detail-value warning">核实后确认</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 菜单折叠
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 显示详情
+        function showDetail(id) {
+            document.getElementById('detailModal').classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.getElementById('detailModal').classList.remove('active');
+        }
+
+        // 点击遮罩关闭
+        document.getElementById('detailModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

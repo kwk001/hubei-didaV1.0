@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实训准备 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+<link rel="stylesheet" href="./common.css?v=2">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .prepare-container {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 600px;
+            width: 100%;
+            padding: 40px;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .prepare-header {
+            text-align: center;
+            margin-bottom: 32px;
+        }
+
+        .prepare-icon {
+            width: 80px;
+            height: 80px;
+            background: linear-gradient(135deg, #FA8C16 0%, #FF6B35 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            color: #fff;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .prepare-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .prepare-subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .task-info-card {
+            background: #F5F7FA;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+        }
+
+        .task-name {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 12px;
+        }
+
+        .task-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .task-meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .checklist {
+            margin-bottom: 24px;
+        }
+
+        .checklist-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            background: #fff;
+            border: 2px solid #E8E8E8;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .checklist-item:hover {
+            border-color: #FA8C16;
+            background: #FFF7E6;
+        }
+
+        .checklist-item.checked {
+            border-color: #52C41A;
+            background: #F6FFED;
+        }
+
+        .checklist-checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #D9D9D9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.3s;
+        }
+
+        .checklist-item.checked .checklist-checkbox {
+            background: #52C41A;
+            border-color: #52C41A;
+            color: #fff;
+        }
+
+        .checklist-content {
+            flex: 1;
+        }
+
+        .checklist-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .checklist-desc {
+            font-size: 12px;
+            color: #666;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            flex: 1;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+        }
+
+        .btn-secondary {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #E8E8E8;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FA8C16 0%, #FF6B35 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(250, 140, 22, 0.4);
+        }
+
+        .btn-primary:disabled {
+            background: #D9D9D9;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #F0F0F0;
+            border-radius: 3px;
+            margin-bottom: 24px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #52C41A 0%, #73D13D 100%);
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            text-align: center;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="prepare-container">
+        <div class="prepare-header">
+            <div class="prepare-icon">🎯</div>
+            <div class="prepare-title">实训准备</div>
+            <div class="prepare-subtitle">请完成以下准备工作，确保实训顺利进行</div>
+        </div>
+
+        <div class="task-info-card">
+            <div class="task-name" id="taskName">数控车床编程与操作：外圆车削加工</div>
+            <div class="task-meta">
+                <div class="task-meta-item">
+                    <i class="iconfont icon-gongzuotai"></i>
+                    <span>数控加工技术</span>
+                </div>
+                <div class="task-meta-item">
+                    <i class="iconfont icon-shijian"></i>
+                    <span>预计用时：45分钟</span>
+                </div>
+                <div class="task-meta-item">
+                    <i class="iconfont icon-jiaoshiguanli"></i>
+                    <span>指导教师：张老师</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="progress-text">准备进度：<span id="progressText">0</span>/5</div>
+        <div class="progress-bar">
+            <div class="progress-fill" id="progressBar" style="width: 0%"></div>
+        </div>
+
+        <div class="checklist">
+            <div class="checklist-title">
+                <i class="iconfont icon-renwu"></i>
+                准备事项
+            </div>
+            
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checklist-checkbox">
+                    <i class="iconfont icon-duihao" style="display: none;"></i>
+                </div>
+                <div class="checklist-content">
+                    <div class="checklist-label">阅读实训指导书</div>
+                    <div class="checklist-desc">了解实训目标、操作步骤和安全注意事项</div>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checklist-checkbox">
+                    <i class="iconfont icon-duihao" style="display: none;"></i>
+                </div>
+                <div class="checklist-content">
+                    <div class="checklist-label">检查个人防护装备</div>
+                    <div class="checklist-desc">佩戴安全帽、防护眼镜、工作服等防护装备</div>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checklist-checkbox">
+                    <i class="iconfont icon-duihao" style="display: none;"></i>
+                </div>
+                <div class="checklist-content">
+                    <div class="checklist-label">确认设备状态正常</div>
+                    <div class="checklist-desc">检查设备是否处于正常运行状态，无报警信息</div>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checklist-checkbox">
+                    <i class="iconfont icon-duihao" style="display: none;"></i>
+                </div>
+                <div class="checklist-content">
+                    <div class="checklist-label">准备所需工具和材料</div>
+                    <div class="checklist-desc">根据实训要求准备刀具、量具、毛坯等材料</div>
+                </div>
+            </div>
+
+            <div class="checklist-item" onclick="toggleCheck(this)">
+                <div class="checklist-checkbox">
+                    <i class="iconfont icon-duihao" style="display: none;"></i>
+                </div>
+                <div class="checklist-content">
+                    <div class="checklist-label">确认网络连接正常</div>
+                    <div class="checklist-desc">确保能够正常访问实训平台和提交数据</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <button class="btn btn-secondary" onclick="goBack()">返回列表</button>
+            <button class="btn btn-primary" id="startBtn" onclick="startTraining()" disabled>开始实训</button>
+        </div>
+    </div>
+
+    <script>
+        let checkedCount = 0;
+        const totalItems = 5;
+
+        // 切换勾选状态
+        function toggleCheck(element) {
+            element.classList.toggle('checked');
+            const checkbox = element.querySelector('.checklist-checkbox i');
+            checkbox.style.display = element.classList.contains('checked') ? 'block' : 'none';
+            
+            updateProgress();
+        }
+
+        // 更新进度
+        function updateProgress() {
+            checkedCount = document.querySelectorAll('.checklist-item.checked').length;
+            const progress = (checkedCount / totalItems) * 100;
+            
+            document.getElementById('progressText').textContent = checkedCount;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            // 启用/禁用开始按钮
+            document.getElementById('startBtn').disabled = checkedCount < totalItems;
+        }
+
+        // 返回列表
+        function goBack() {
+            if (confirm('确定要返回实训列表吗？准备进度将不会保存。')) {
+                window.location.href = './学生端_我的实训.html';
+            }
+        }
+
+        // 开始实训
+        function startTraining() {
+            if (checkedCount < totalItems) {
+                alert('请完成所有准备事项后再开始实训！');
+                return;
+            }
+            
+            // 显示加载动画
+            document.getElementById('startBtn').innerHTML = '<i class="iconfont icon-jiazaizhong"></i> 启动中...';
+            document.getElementById('startBtn').disabled = true;
+            
+            // 获取任务类型
+            const urlParams = new URLSearchParams(window.location.search);
+            const taskType = urlParams.get('type') || 'default';
+            
+            // 根据类型跳转到不同的进行页面
+            const typePageMap = {
+                'machining': './学生端_实训进行中_加工.html',
+                'design': './学生端_实训进行中_设计.html',
+                'program': './学生端_实训进行中_编程.html',
+                'process': './学生端_实训进行中_工艺.html',
+                'test': './学生端_实训进行中_测试.html',
+                'default': './学生端_实训进行中.html'
+            };
+            
+            const targetPage = typePageMap[taskType] || typePageMap['default'];
+            
+            // 模拟启动过程
+            setTimeout(() => {
+                window.location.href = targetPage;
+            }, 1500);
+        }
+
+        // 页面加载时获取任务信息
+        window.onload = function() {
+            // 可以从URL参数或localStorage获取任务信息
+            const urlParams = new URLSearchParams(window.location.search);
+            const taskName = urlParams.get('task');
+            if (taskName) {
+                document.getElementById('taskName').textContent = decodeURIComponent(taskName);
+            }
+        };
+    
+        
+            if (arrow) {
+                arrow.style.transform = isExpanded ? 'rotate(0deg)' : 'rotate(180deg)';
+            }</script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-student.js"></script>
+</body>
+</html>

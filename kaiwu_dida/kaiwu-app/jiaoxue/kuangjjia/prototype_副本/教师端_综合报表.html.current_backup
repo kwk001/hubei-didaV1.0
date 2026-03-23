@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>综合报表 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        /* 标签页 */
+        .tabs-container {
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+
+        .tabs-header {
+            display: flex;
+            border-bottom: 1px solid #F0F0F0;
+            background: #FAFAFA;
+        }
+
+        .tab-item {
+            padding: 16px 32px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .tab-item:hover {
+            color: #1890FF;
+            background: #F0F7FF;
+        }
+
+        .tab-item.active {
+            color: #1890FF;
+            border-bottom-color: #1890FF;
+            background: #fff;
+            font-weight: 500;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 24px;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* 搜索筛选 */
+        .search-filter {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .search-input, .filter-select, .date-picker {
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .search-input {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .filter-select, .date-picker {
+            min-width: 140px;
+        }
+
+        .btn-search, .btn-export {
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-export {
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            color: #666;
+        }
+
+        /* 图表容器 */
+        .chart-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid #F0F0F0;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 400px;
+        }
+
+        /* 时序图样式 */
+        .timeline-chart {
+            width: 100%;
+            height: 450px;
+            overflow-x: auto;
+            position: relative;
+            background: #FAFAFA;
+            border-radius: 8px;
+        }
+
+        .timeline-container {
+            min-width: 1400px;
+            height: 100%;
+            padding: 20px;
+        }
+
+        .timeline-row {
+            display: flex;
+            align-items: center;
+            height: 60px;
+            margin-bottom: 8px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .timeline-label {
+            width: 180px;
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .timeline-bar {
+            flex: 1;
+            height: 40px;
+            position: relative;
+            background: #F5F5F5;
+            border-radius: 4px;
+        }
+
+        .timeline-segment {
+            position: absolute;
+            height: 100%;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .timeline-segment:hover {
+            transform: scaleY(1.1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+
+        .timeline-segment.baogong { background: #1890FF; }
+        .timeline-segment.caiji { background: #52C41A; }
+        .timeline-segment.idle { background: #FAAD14; }
+        .timeline-segment.offline { background: #999; }
+
+        /* 数据表格 */
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #E8E8E8;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .data-table tbody tr:hover {
+            background: #F5F7FA;
+        }
+
+        /* 对比样式 */
+        .compare-value {
+            font-weight: 600;
+        }
+
+        .compare-value.positive {
+            color: #52C41A;
+        }
+
+        .compare-value.negative {
+            color: #FF4D4F;
+        }
+
+        /* 双稼动率图表 */
+        .dual-chart-container {
+            width: 100%;
+            height: 400px;
+        }
+
+        /* 图例 */
+        .legend {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: #666;
+        }
+
+        .legend-color {
+            width: 16px;
+            height: 16px;
+            border-radius: 4px;
+        }
+
+        .legend-color.baogong { background: #1890FF; }
+        .legend-color.caiji { background: #52C41A; }
+        .legend-color.target { background: #FAAD14; }
+        .legend-color.idle { background: #FAAD14; }
+        .legend-color.offline { background: #999999; }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .pagination-left {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pagination-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

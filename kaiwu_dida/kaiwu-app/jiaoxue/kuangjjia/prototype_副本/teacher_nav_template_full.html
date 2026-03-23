@@ -1,0 +1,487 @@
+<!-- 教师端完整导航模板 - 包含所有页面 -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <div class="logo-icon">
+                📚
+                <span class="logo-badge"></span>
+            </div>
+            <div class="logo-text">
+                <div class="logo-title">教学实训平台</div>
+                <div class="logo-subtitle">教师端</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sidebar-menu">
+        <!-- 工作台 -->
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-shouye"></i>
+                <span>工作台</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教学实训平台_教师端.html'">
+                    <i class="iconfont icon-shouye"></i>
+                    <span>首页概览</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 考试管理 -->
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-shijuan"></i>
+                <span>考试管理</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷管理.html'">
+                    <i class="iconfont icon-shijuan"></i>
+                    <span>普通任务</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_添加试卷.html'">
+                    <i class="iconfont icon-add"></i>
+                    <span>添加试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷管理_新增.html'">
+                    <i class="iconfont icon-add"></i>
+                    <span>新增试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷管理_编辑.html'">
+                    <i class="iconfont icon-edit"></i>
+                    <span>编辑试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷管理_查看.html'">
+                    <i class="iconfont icon-view"></i>
+                    <span>查看试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷批阅.html'">
+                    <i class="iconfont icon-piyue"></i>
+                    <span>普通任务批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_普通试卷查看.html'">
+                    <i class="iconfont icon-view"></i>
+                    <span>普通试卷查看</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_普通试卷批阅.html'">
+                    <i class="iconfont icon-piyue"></i>
+                    <span>普通试卷批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷批阅_学生列表.html'">
+                    <i class="iconfont icon-list"></i>
+                    <span>批阅学生列表</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_错题集库.html'">
+                    <i class="iconfont icon-cuoti"></i>
+                    <span>错题集库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_错题详情.html'">
+                    <i class="iconfont icon-detail"></i>
+                    <span>错题详情</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_错题学生列表.html'">
+                    <i class="iconfont icon-list"></i>
+                    <span>错题学生列表</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 知识库 -->
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-p008zhishiku"></i>
+                <span>知识库</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_视频教材.html'">
+                    <i class="iconfont icon-shipin"></i>
+                    <span>视频教材</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_视频教材_修复版.html'">
+                    <i class="iconfont icon-shipin"></i>
+                    <span>视频教材(修复版)</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_视频播放.html'">
+                    <i class="iconfont icon-play"></i>
+                    <span>视频播放</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_辅导教材.html'">
+                    <i class="iconfont icon-jiaocai"></i>
+                    <span>辅导教材</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_资料预览.html'">
+                    <i class="iconfont icon-preview"></i>
+                    <span>资料预览</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_题库.html'">
+                    <i class="iconfont icon-tiku"></i>
+                    <span>题库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_题库_新增题目.html'">
+                    <i class="iconfont icon-add"></i>
+                    <span>新增题目</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_题库_编辑题目.html'">
+                    <i class="iconfont icon-edit"></i>
+                    <span>编辑题目</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_题库_题目详情.html'">
+                    <i class="iconfont icon-detail"></i>
+                    <span>题目详情</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_题库_考题编辑.html'">
+                    <i class="iconfont icon-edit"></i>
+                    <span>考题编辑</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 教学管理 -->
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-jiaoxueguanli"></i>
+                <span>教学管理</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_我的课程.html'">
+                    <i class="iconfont icon-kecheng"></i>
+                    <span>我的课程</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_课程详情.html'">
+                    <i class="iconfont icon-detail"></i>
+                    <span>课程详情</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_专业教学课程.html'">
+                    <i class="iconfont icon-zhuanye"></i>
+                    <span>专业教学课程</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训任务管理.html'">
+                    <i class="iconfont icon-renwu"></i>
+                    <span>实训任务管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训任务进度.html'">
+                    <i class="iconfont icon-progress"></i>
+                    <span>实训任务进度</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_学生任务总览.html'">
+                    <i class="iconfont icon-overview"></i>
+                    <span>学生任务总览</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_学生详情.html'">
+                    <i class="iconfont icon-detail"></i>
+                    <span>学生详情</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目管理.html'">
+                    <i class="iconfont icon-xiangmu"></i>
+                    <span>项目管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目看板.html'">
+                    <i class="iconfont icon-kanban"></i>
+                    <span>项目看板</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目甘特图.html'">
+                    <i class="iconfont icon-gantt"></i>
+                    <span>项目甘特图</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_项目模板管理.html'">
+                    <i class="iconfont icon-template"></i>
+                    <span>项目模板管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_阶段模板管理.html'">
+                    <i class="iconfont icon-template"></i>
+                    <span>阶段模板管理</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 实训题库 -->
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-shixuntiku"></i>
+                <span>实训题库</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库.html'">
+                    <i class="iconfont icon-shixun"></i>
+                    <span>实训题库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_列表.html'">
+                    <i class="iconfont icon-list"></i>
+                    <span>题库列表</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_题目列表.html'">
+                    <i class="iconfont icon-list"></i>
+                    <span>题目列表</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_design.html'">
+                    <i class="iconfont icon-design"></i>
+                    <span>设计题库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_machining.html'">
+                    <i class="iconfont icon-machining"></i>
+                    <span>加工题库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_programming.html'">
+                    <i class="iconfont icon-code"></i>
+                    <span>编程题库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_process.html'">
+                    <i class="iconfont icon-process"></i>
+                    <span>工艺题库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_inspection.html'">
+                    <i class="iconfont icon-inspection"></i>
+                    <span>检测题库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_新增题目.html'">
+                    <i class="iconfont icon-add"></i>
+                    <span>新增题目</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_题目详情.html'">
+                    <i class="iconfont icon-detail"></i>
+                    <span>题目详情</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训题库_新增题库.html'">
+                    <i class="iconfont icon-add"></i>
+                    <span>新增题库</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 实训任务 -->
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-shixunshijuan"></i>
+                <span>实训任务</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_实训试卷库.html'">
+                    <i class="iconfont icon-shixun"></i>
+                    <span>实训试卷库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_添加实训试卷.html'">
+                    <i class="iconfont icon-add"></i>
+                    <span>添加实训试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训试卷_新增.html'">
+                    <i class="iconfont icon-add"></i>
+                    <span>新增实训试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训试卷编辑.html'">
+                    <i class="iconfont icon-edit"></i>
+                    <span>编辑实训试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训试卷查看.html'">
+                    <i class="iconfont icon-view"></i>
+                    <span>查看实训试卷</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训试卷批阅.html'">
+                    <i class="iconfont icon-piyue"></i>
+                    <span>实训试卷批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训批阅.html'">
+                    <i class="iconfont icon-piyue"></i>
+                    <span>实训任务批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_试卷批阅_综合.html'">
+                    <i class="iconfont icon-piyue"></i>
+                    <span>试卷批阅</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_实训批阅_学生列表.html'">
+                    <i class="iconfont icon-list"></i>
+                    <span>批阅学生列表</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 设备刀具 -->
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-shebei"></i>
+                <span>设备刀具</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_设备刀具库.html'">
+                    <i class="iconfont icon-daoju"></i>
+                    <span>设备刀具库</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具档案管理.html'">
+                    <i class="iconfont icon-dangan"></i>
+                    <span>刀具档案管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具档案_查看详情.html'">
+                    <i class="iconfont icon-detail"></i>
+                    <span>档案查看详情</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具档案_履历.html'">
+                    <i class="iconfont icon-history"></i>
+                    <span>刀具档案履历</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具库存管理.html'">
+                    <i class="iconfont icon-kucun"></i>
+                    <span>刀具库存管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具类型管理.html'">
+                    <i class="iconfont icon-type"></i>
+                    <span>刀具类型管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具BOM管理.html'">
+                    <i class="iconfont icon-bom"></i>
+                    <span>刀具BOM管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具保养管理.html'">
+                    <i class="iconfont icon-baoyang"></i>
+                    <span>刀具保养管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_保养项管理.html'">
+                    <i class="iconfont icon-item"></i>
+                    <span>保养项管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_保养方案管理.html'">
+                    <i class="iconfont icon-fangan"></i>
+                    <span>保养方案管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具需求计划.html'">
+                    <i class="iconfont icon-plan"></i>
+                    <span>刀具需求计划</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具需求计划_教师.html'">
+                    <i class="iconfont icon-plan"></i>
+                    <span>教师需求计划</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具需求计划_查看.html'">
+                    <i class="iconfont icon-view"></i>
+                    <span>查看需求计划</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具需求计划_学生.html'">
+                    <i class="iconfont icon-plan"></i>
+                    <span>学生需求计划</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具申领.html'">
+                    <i class="iconfont icon-apply"></i>
+                    <span>刀具申领</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具签收.html'">
+                    <i class="iconfont icon-sign"></i>
+                    <span>刀具签收</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具更换.html'">
+                    <i class="iconfont icon-replace"></i>
+                    <span>刀具更换</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_换刀记录.html'">
+                    <i class="iconfont icon-record"></i>
+                    <span>换刀记录</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具报废与申领.html'">
+                    <i class="iconfont icon-scrap"></i>
+                    <span>刀具报废与申领</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具报废记录.html'">
+                    <i class="iconfont icon-record"></i>
+                    <span>刀具报废记录</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具实时定位.html'">
+                    <i class="iconfont icon-location"></i>
+                    <span>刀具实时定位</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_刀具统计分析.html'">
+                    <i class="iconfont icon-statistics"></i>
+                    <span>刀具统计分析</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 备刀任务 -->
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-beidao"></i>
+                <span>备刀任务</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_备刀任务单.html'">
+                    <i class="iconfont icon-task"></i>
+                    <span>备刀任务单</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_备刀任务单_查看.html'">
+                    <i class="iconfont icon-view"></i>
+                    <span>查看任务单</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_备刀任务单_配送.html'">
+                    <i class="iconfont icon-delivery"></i>
+                    <span>任务单配送</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_备刀任务单_备刀完成.html'">
+                    <i class="iconfont icon-complete"></i>
+                    <span>备刀完成</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_备刀任务单_刀具签收.html'">
+                    <i class="iconfont icon-sign"></i>
+                    <span>刀具签收</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_备刀任务单_刀具签还.html'">
+                    <i class="iconfont icon-return"></i>
+                    <span>刀具签还</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_备刀任务单_归还确认.html'">
+                    <i class="iconfont icon-confirm"></i>
+                    <span>归还确认</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 生产工单 -->
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-gongdan"></i>
+                <span>生产工单</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_生产工单管理.html'">
+                    <i class="iconfont icon-gongdan"></i>
+                    <span>生产工单管理</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_生产工单管理_V2.html'">
+                    <i class="iconfont icon-gongdan"></i>
+                    <span>生产工单V2</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_生产工单管理_增强版.html'">
+                    <i class="iconfont icon-gongdan"></i>
+                    <span>生产工单增强版</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./教师端_排产策略管理.html'">
+                    <i class="iconfont icon-strategy"></i>
+                    <span>排产策略管理</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 系统管理 -->
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-system"></i>
+                <span>系统管理</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教师端_预警配置.html'">
+                    <i class="iconfont icon-warning"></i>
+                    <span>预警配置</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sidebar-footer">
+        <div class="version-info">版本 v2.0.0</div>
+    </div>
+</div>

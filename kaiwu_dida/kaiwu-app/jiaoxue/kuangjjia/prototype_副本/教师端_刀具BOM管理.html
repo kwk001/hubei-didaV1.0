@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刀具BOM管理 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .page-header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .page-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: #1890FF;
+            border-radius: 2px;
+        }
+        
+        .toolbar {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+        .filter-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .filter-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .filter-item label {
+            font-size: 13px;
+            color: #666;
+            white-space: nowrap;
+        }
+        .filter-item input,
+        .filter-item select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            min-width: 140px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-primary { background: #1890FF; color: #fff; }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success { background: #52C41A; color: #fff; }
+        .btn-success:hover { background: #73D13D; }
+        .btn-default { background: #fff; color: #666; border: 1px solid #D9D9D9; }
+        .btn-default:hover { border-color: #1890FF; color: #1890FF; }
+        .btn-sm { padding: 4px 12px; font-size: 12px; }
+        
+        .content-body {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+        }
+        
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            overflow: hidden;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        .data-table td {
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #666;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .data-table tbody tr:hover { background: #F6FFFE; }
+        
+        .expand-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            cursor: pointer;
+            color: #999;
+            transition: all 0.3s;
+        }
+        .expand-icon.expanded { transform: rotate(90deg); }
+        
+        .detail-row {
+            background: #FAFAFA;
+            display: none;
+        }
+        .detail-row.show { display: table-row; }
+        .detail-content {
+            padding: 16px;
+        }
+        .detail-table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            border-radius: 6px;
+            overflow: hidden;
+        }
+        .detail-table th,
+        .detail-table td {
+            padding: 10px 12px;
+            text-align: left;
+            font-size: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .detail-table th {
+            background: #F5F5F5;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .action-group { display: flex; gap: 8px; }
+        
+        .pagination {
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            padding: 16px 20px;
+            gap: 8px;
+            background: #fff;
+            border-top: 1px solid #E8E8E8;
+        }
+        .pagination-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .pagination-btn:hover { border-color: #1890FF; color: #1890FF; }
+        .pagination-btn.active { background: #1890FF; color: #fff; border-color: #1890FF; }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal.active { display: flex; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 90vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: slideUp 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+        @keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .modal-header {
+            padding: 20px 24px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .modal-close {
+            font-size: 24px;
+            color: rgba(255,255,255,0.8);
+            cursor: pointer;
+            background: none;
+            border: none;
+            transition: all 0.3s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+        }
+        .modal-close:hover { color: #fff; background: rgba(255,255,255,0.2); }
+        .modal-body {
+            padding: 24px;
+            overflow-y: auto;
+            flex: 1;
+        }
+        .modal-footer {
+            padding: 16px 24px;
+            border-top: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            background: #FAFAFA;
+        }
+        
+        .form-item { margin-bottom: 20px; }
+        .form-item label {
+            display: block;
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        .form-item label span { color: #FF4D4F; }
+        .form-item input,
+        .form-item select {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: all 0.3s;
+            background: #FAFAFA;
+        }
+        .form-item input:focus,
+        .form-item select:focus {
+            outline: none;
+            border-color: #1890FF;
+            background: #fff;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+        .form-row { display: flex; gap: 20px; }
+        .form-row .form-item { flex: 1; }
+        
+        .section-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1890FF;
+            margin: 24px 0 16px;
+            padding-left: 12px;
+            border-left: 4px solid #1890FF;
+        }
+        .section-title:first-of-type { margin-top: 0; }
+        
+        .tool-list {
+            border: 1px solid #E8E8E8;
+            border-radius: 6px;
+            padding: 16px;
+            background: #FAFAFA;
+        }
+        .tool-item {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            padding: 12px;
+            background: #fff;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        .tool-item:last-child { margin-bottom: 0; }
+        .tool-item select,
+        .tool-item input {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+        }
+        .tool-item .btn-danger {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="page-header">
+            <div class="page-title">刀具BOM管理</div>
+        </div>
+        
+        <div class="toolbar">
+            <div class="filter-group">
+                <div class="filter-item">
+                    <label>产品编码</label>
+                    <input type="text" placeholder="请输入产品编码">
+                </div>
+                <div class="filter-item">
+                    <label>产品名称</label>
+                    <input type="text" placeholder="请输入产品名称">
+                </div>
+                <div class="filter-item">
+                    <label>工艺路线</label>
+                    <select>
+                        <option value="">全部</option>
+                        <option value="che">车削工艺</option>
+                        <option value="xi">铣削工艺</option>
+                        <option value="fu">复合工艺</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary">
+                    <i class="iconfont icon-sousuo"></i> 查询
+                </button>
+                <button class="btn btn-default">重置</button>
+            </div>
+            <div class="action-group">
+                <button class="btn btn-success" onclick="openModal()">
+                    <i class="iconfont icon-add"></i> 新增BOM
+                </button>
+                <button class="btn btn-default">
+                    <i class="iconfont icon-daoru"></i> 导入
+                </button>
+            </div>
+        </div>
+        
+        <div class="content-body">
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"></th>
+                            <th>产品编码</th>
+                            <th>产品名称</th>
+                            <th>工艺路线</th>
+                            <th>工序数</th>
+                            <th>刀具种类</th>
+                            <th>版本</th>
+                            <th>状态</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <span class="expand-icon" onclick="toggleDetail(this)">▶</span>
+                            </td>
+                            <td><strong>P001</strong></td>
+                            <td>轴类零件A</td>
+                            <td>车削工艺</td>
+                            <td>3</td>
+                            <td>5</td>
+                            <td>V1.0</td>
+                            <td><span class="status-tag status-enabled">启用</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm">编辑</button>
+                                    <button class="btn btn-default btn-sm">复制</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr class="detail-row">
+                            <td colspan="9">
+                                <div class="detail-content">
+                                    <table class="detail-table">
+                                        <thead>
+                                            <tr>
+                                                <th>工序</th>
+                                                <th>工序名称</th>
+                                                <th>设备</th>
+                                                <th>刀具编码</th>
+                                                <th>刀具名称</th>
+                                                <th>规格</th>
+                                                <th>数量</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>10</td>
+                                                <td>粗车</td>
+                                                <td>C001</td>
+                                                <td>T010</td>
+                                                <td>外圆车刀</td>
+                                                <td>20×20mm</td>
+                                                <td>2</td>
+                                            </tr>
+                                            <tr>
+                                                <td>20</td>
+                                                <td>精车</td>
+                                                <td>C001</td>
+                                                <td>T012</td>
+                                                <td>精车刀</td>
+                                                <td>16×16mm</td>
+                                                <td>1</td>
+                                            </tr>
+                                            <tr>
+                                                <td>30</td>
+                                                <td>切槽</td>
+                                                <td>C001</td>
+                                                <td>T011</td>
+                                                <td>切槽刀</td>
+                                                <td>3mm</td>
+                                                <td>1</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="expand-icon" onclick="toggleDetail(this)">▶</span>
+                            </td>
+                            <td><strong>P002</strong></td>
+                            <td>盘类零件B</td>
+                            <td>铣削工艺</td>
+                            <td>4</td>
+                            <td>6</td>
+                            <td>V1.0</td>
+                            <td><span class="status-tag status-enabled">启用</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm">编辑</button>
+                                    <button class="btn btn-default btn-sm">复制</button>
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <span class="expand-icon" onclick="toggleDetail(this)">▶</span>
+                            </td>
+                            <td><strong>P003</strong></td>
+                            <td>箱体零件C</td>
+                            <td>复合工艺</td>
+                            <td>6</td>
+                            <td>8</td>
+                            <td>V2.0</td>
+                            <td><span class="status-tag status-enabled">启用</span></td>
+                            <td>
+                                <div class="action-group">
+                                    <button class="btn btn-primary btn-sm">编辑</button>
+                                    <button class="btn btn-default btn-sm">复制</button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <span style="font-size: 13px; color: #666; margin-right: 16px;">共 15 条记录</span>
+                    <button class="pagination-btn">上一页</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 新增BOM模态框 -->
+    <div class="modal" id="bomModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">
+                    <i class="iconfont icon-BOM"></i>
+                    <span>新增刀具BOM</span>
+                </div>
+                <button class="modal-close" onclick="closeModal()">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="section-title">产品信息</div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>产品编码 <span>*</span></label>
+                        <input type="text" placeholder="请输入产品编码">
+                    </div>
+                    <div class="form-item">
+                        <label>产品名称 <span>*</span></label>
+                        <input type="text" placeholder="请输入产品名称">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>工艺路线 <span>*</span></label>
+                        <select>
+                            <option value="">请选择</option>
+                            <option value="che">车削工艺</option>
+                            <option value="xi">铣削工艺</option>
+                            <option value="fu">复合工艺</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>版本号</label>
+                        <input type="text" placeholder="V1.0" value="V1.0">
+                    </div>
+                </div>
+                
+                <div class="section-title">工序及刀具配置</div>
+                <div class="tool-list">
+                    <div class="tool-item">
+                        <select style="width: 80px;">
+                            <option>工序</option>
+                            <option>10</option>
+                            <option>20</option>
+                            <option>30</option>
+                        </select>
+                        <input type="text" placeholder="工序名称" style="width: 120px;">
+                        <select style="width: 120px;">
+                            <option>选择设备</option>
+                            <option>C001</option>
+                            <option>M001</option>
+                        </select>
+                        <select style="width: 150px;">
+                            <option>选择刀具</option>
+                            <option>T001 立铣刀</option>
+                            <option>T010 车刀</option>
+                        </select>
+                        <input type="number" placeholder="数量" style="width: 80px;">
+                        <button class="btn btn-danger">删除</button>
+                    </div>
+                    <div class="tool-item">
+                        <select style="width: 80px;">
+                            <option>工序</option>
+                            <option>10</option>
+                            <option>20</option>
+                            <option>30</option>
+                        </select>
+                        <input type="text" placeholder="工序名称" style="width: 120px;">
+                        <select style="width: 120px;">
+                            <option>选择设备</option>
+                            <option>C001</option>
+                            <option>M001</option>
+                        </select>
+                        <select style="width: 150px;">
+                            <option>选择刀具</option>
+                            <option>T001 立铣刀</option>
+                            <option>T010 车刀</option>
+                        </select>
+                        <input type="number" placeholder="数量" style="width: 80px;">
+                        <button class="btn btn-danger">删除</button>
+                    </div>
+                </div>
+                <button class="btn btn-default" style="margin-top: 12px; width: 100%;">
+                    <i class="iconfont icon-add"></i> 添加工序
+                </button>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal()">取消</button>
+                <button class="btn btn-primary">确定</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.classList.remove('collapsed');
+                    }
+                }
+            }
+        });
+
+        function toggleDetail(icon) {
+            icon.classList.toggle('expanded');
+            const row = icon.closest('tr');
+            const detailRow = row.nextElementSibling;
+            if (detailRow && detailRow.classList.contains('detail-row')) {
+                detailRow.classList.toggle('show');
+            }
+        }
+
+        function openModal() {
+            document.getElementById('bomModal').classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('bomModal').classList.remove('active');
+        }
+
+        document.getElementById('bomModal').addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModal();
+            }
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

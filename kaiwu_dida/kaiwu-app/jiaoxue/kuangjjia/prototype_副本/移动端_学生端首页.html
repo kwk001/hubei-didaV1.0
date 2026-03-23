@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>教学实训平台 - 移动端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <style>
+        /* iconfont 图标样式 */
+        .menu-item .iconfont, .menu-title .iconfont, .tree-title .iconfont {
+            width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+        }
+        .logo .iconfont {
+            margin-right: 8px;
+            font-size: 20px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            min-height: 100vh;
+            padding-bottom: 70px;
+        }
+        .mobile-header {
+            background: linear-gradient(135deg, #FA8C16 0%, #FF9C2E 100%);
+            padding: 20px;
+            color: #fff;
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .user-name {
+            font-size: 18px;
+            font-weight: 600;
+        }
+        .user-class {
+            font-size: 13px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        .quick-stats {
+            display: flex;
+            gap: 12px;
+        }
+        .stat-item {
+            flex: 1;
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 20px;
+            font-weight: bold;
+        }
+        .stat-label {
+            font-size: 12px;
+            opacity: 0.9;
+            margin-top: 4px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            padding: 16px 16px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .view-all {
+            font-size: 13px;
+            color: #FA8C16;
+        }
+        .task-list {
+            padding: 0 16px;
+        }
+        .task-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .task-title {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+            flex: 1;
+            margin-right: 8px;
+        }
+        .task-tag {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            white-space: nowrap;
+        }
+        .tag-exam {
+            background: #E6F7FF;
+            color: #1890FF;
+        }
+        .tag-practice {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+        .tag-urgent {
+            background: #FFF1F0;
+            color: #FF4D4F;
+        }
+        .task-info {
+            font-size: 13px;
+            color: #999;
+            margin-bottom: 12px;
+        }
+        .task-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .task-time {
+            font-size: 12px;
+            color: #FA8C16;
+        }
+        .task-btn {
+            padding: 8px 20px;
+            background: #FA8C16;
+            color: #fff;
+            border: none;
+            border-radius: 20px;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            padding: 0 16px;
+        }
+        .course-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .course-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-bottom: 12px;
+        }
+        .course-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+        .course-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: #F0F0F0;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #FA8C16;
+            border-radius: 3px;
+        }
+        .progress-text {
+            font-size: 12px;
+            color: #999;
+        }
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-top: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 100;
+        }
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 16px;
+            cursor: pointer;
+        }
+        .nav-item.active {
+            color: #FA8C16;
+        }
+        .nav-icon {
+            font-size: 24px;
+        }
+        .nav-label {
+            font-size: 11px;
+        }
+    
+        /* 菜单组展开收起 */
+        .menu-group {
+            padding: 0;
+        }
+        .menu-title {
+            padding: 10px 24px;
+            color: rgba(255,255,255,0.45);
+            font-size: 12px;
+            text-transform: uppercase;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+        .menu-title:hover {
+            color: rgba(255,255,255,0.85);
+            background: rgba(255,255,255,0.05);
+        }
+        .menu-title { user-select: none; }
+        .menu-title .iconfont { margin-right: 8px; font-size: 16px; }
+        .menu-arrow { font-size: 10px; transition: transform 0.3s; margin-left: auto; }
+        .menu-title.collapsed .menu-arrow { transform: rotate(-90deg); }
+        
+        
+        .menu-items {
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            max-height: 1000px;
+        }
+        .menu-items.collapsed {
+            max-height: 0;
+        }
+</style>
+</head>
+<body>
+    <!-- 头部信息 -->
+    <div class="mobile-header">
+        <div class="user-info">
+            <div class="avatar">👨‍🎓</div>
+            <div>
+                <div class="user-name">李明</div>
+                <div class="user-class">2023级机械工程1班</div>
+            </div>
+        </div>
+        <div class="quick-stats">
+            <div class="stat-item">
+                <div class="stat-number">3</div>
+                <div class="stat-label">待考试</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">2</div>
+                <div class="stat-label">待实训</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">8</div>
+                <div class="stat-label">我的课程</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 待完成任务 -->
+    <div class="section-title">
+        <span>待完成任务</span>
+        <span class="view-all">查看全部 →</span>
+    </div>
+    <div class="task-list">
+        <div class="task-card">
+            <div class="task-header">
+                <div class="task-title">《机械制图》期末考试</div>
+                <span class="task-tag tag-urgent">紧急</span>
+            </div>
+            <div class="task-info">机械制图 · 120分钟</div>
+            <div class="task-footer">
+                <span class="task-time">⏰ 截止：01-15 23:59</span>
+                <button class="task-btn">去考试</button>
+            </div>
+        </div>
+        <div class="task-card">
+            <div class="task-header">
+                <div class="task-title">数控加工-实训任务三</div>
+                <span class="task-tag tag-practice">实训</span>
+            </div>
+            <div class="task-info">数控加工技术 · 加工类</div>
+            <div class="task-footer">
+                <span class="task-time">⏰ 截止：01-18 23:59</span>
+                <button class="task-btn">去实训</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 我的课程 -->
+    <div class="section-title">
+        <span>我的课程</span>
+        <span class="view-all">查看全部 →</span>
+    </div>
+    <div class="course-grid">
+        <div class="course-card">
+            <div class="course-icon" style="background: #E6F7FF;">⚙️</div>
+            <div class="course-name">机械制图</div>
+            <div class="course-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%"></div>
+                </div>
+                <span class="progress-text">75%</span>
+            </div>
+        </div>
+        <div class="course-card">
+            <div class="course-icon" style="background: #F6FFED;">🔩</div>
+            <div class="course-name">数控加工技术</div>
+            <div class="course-progress">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 45%"></div>
+                </div>
+                <span class="progress-text">45%</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 底部导航 -->
+    <div class="bottom-nav">
+        <div class="nav-item active">
+            <span class="nav-icon"><i class="iconfont icon-shouye"></i></span>
+            <span class="nav-label">首页</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-icon"><i class="iconfont icon-kechengguanli"></i></span>
+            <span class="nav-label">课程</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-icon"><i class="iconfont icon-shijuan"></i></span>
+            <span class="nav-label">考试</span>
+        </div>
+        <div class="nav-item">
+            <span class="nav-icon"><i class="iconfont icon-xueshengguanli"></i></span>
+            <span class="nav-label">我的</span>
+        </div>
+    </div>
+<script>
+        // 菜单展开/收起
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+    </script>
+</body>
+</html>

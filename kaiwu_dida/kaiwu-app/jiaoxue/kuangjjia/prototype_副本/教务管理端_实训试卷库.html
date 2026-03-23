@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实训任务库 - 教务管理端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <link rel="stylesheet" href="./components.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #F5F7FA; min-height: 100vh; }
+
+        /* 页面特定样式 - 实训类型标签 */
+        .training-type-tag { 
+            display: inline-flex; 
+            align-items: center;
+            padding: 3px 10px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+        .type-project { background: #E6F7FF; color: #1890FF; border-color: #91D5FF; }
+        .type-skill { background: #F6FFED; color: #52C41A; border-color: #B7EB8F; }
+        .type-comprehensive { background: #FFF7E6; color: #FA8C16; border-color: #FFD591; }
+        .type-assessment { background: #F9F0FF; color: #722ED1; border-color: #D3ADF7; }
+        
+        /* 难度标签 */
+        .difficulty-tag { 
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .difficulty-easy { background: #F6FFED; color: #52C41A; }
+        .difficulty-medium { background: #FFF7E6; color: #FA8C16; }
+        .difficulty-hard { background: #FFF1F0; color: #FF4D4F; }
+
+        /* 状态标签 */
+        .status-tag {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .status-published { background: #F6FFED; color: #52C41A; }
+        .status-draft { background: #FFF7E6; color: #FA8C16; }
+
+        /* 批量操作栏 */
+        .batch-operation-bar {
+            background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(99,102,241,0.02) 100%);
+            border: 1px solid rgba(99,102,241,0.15);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .batch-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .batch-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #1e293b;
+        }
+        .batch-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+        .batch-info strong {
+            color: #6366f1;
+            font-weight: 600;
+        }
+        .batch-right {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-batch {
+            padding: 6px 14px;
+            border: 1px solid rgba(99,102,241,0.2);
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #64748b;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-batch:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+            background: rgba(99,102,241,0.04);
+            transform: translateY(-1px);
+        }
+        .btn-batch.danger:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: rgba(239,68,68,0.04);
+        }
+
+        /* 页面切换 */
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* 筛选区域展开/收起按钮样式 */
+        .filter-toggle {
+            margin-left: auto;
+            padding: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #6366f1;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.25s ease;
+        }
+
+        .filter-toggle:hover {
+            color: #4f46e5;
+            text-decoration: underline;
+        }
+
+        .filter-toggle .toggle-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 12px;
+            height: 12px;
+            transition: transform 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        .filter-toggle.expanded .toggle-icon {
+            transform: rotate(180deg);
+        }
+
+        /* 页面样式覆盖 - 统一间距和布局 */
+        .content-area {
+            padding: 16px !important;
+        }
+
+        /* 表格分页容器 - 白色背景 */
+        .table-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+            overflow: hidden;
+        }
+        .table-section .data-table {
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+        }
+        .table-section .pagination {
+            border-top: 1px solid #F0F0F0;
+            background: transparent;
+            padding: 16px 0 0 0;
+            margin-top: 16px;
+        }
+
+        /* 筛选条件模块间距调整 */
+        .filter-section {
+            margin-bottom: 16px !important;
+            padding: 16px !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏导航容器 - 由 nav-loader-new.js 动态加载现代化导航组件 -->
+    <div id="nav-container"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <nav class="breadcrumb">
+                    <a href="./教学实训平台_教务管理端.html">教务管理</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>实训试卷库</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div class="user-menu">
+                    <div class="user-menu-trigger">
+                        <div class="user-avatar">
+                            <span class="iconfont icon-jiaoshiguanli"></span>
+                        </div>
+                        <span class="user-name">欢迎您，教务管理员</span>
+                        <span class="iconfont icon-xiala user-dropdown-icon"></span>
+                    </div>
+                    <div class="user-dropdown" id="userDropdown">
+                        <div class="user-dropdown-item" onclick="UserDropdown.switchTheme()">
+                            <span class="iconfont icon-zhuti"></span>
+                            <span>切换风格</span>
+                        </div>
+                        <div class="user-dropdown-divider"></div>
+                        <div class="user-dropdown-item" onclick="UserDropdown.logout()">
+                            <span class="iconfont icon-tuichu"></span>
+                            <span>退出登录</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- 左侧树状图 -->
+            <div class="tree-sidebar" style="display: none;">
+                <div class="tree-header">
+                    <span class="tree-title">分类目录</span>
+                    <div class="tree-actions">
+                        <button class="tree-btn" onclick="TreeSidebar.expandAll()">展开</button>
+                        <button class="tree-btn" onclick="TreeSidebar.collapseAll()">收起</button>
+                    </div>
+                </div>
+                <div class="tree-search">
+                    <input type="text" placeholder="搜索专业、课程或文件夹..." id="treeSearch" oninput="TreeSidebar.filter(this.value)">
+                </div>
+                <div class="tree-content" id="treeContent"></div>
+            </div>
+
+            <!-- 右侧内容区 -->
+            <div class="content-area">
+                <!-- 统计卡片 -->
+                <div class="stats-row">
+                    <div class="stat-card">
+                        <div class="stat-icon">🎯</div>
+                        <div class="stat-info">
+                            <h3>试卷总数</h3>
+                            <div class="number" id="totalPapers">10</div>
+                        </div>
+                    </div>
+                    <div class="stat-card success">
+                        <div class="stat-icon">✓</div>
+                        <div class="stat-info">
+                            <h3>已发布</h3>
+                            <div class="number" id="publishedCount">7</div>
+                        </div>
+                    </div>
+                    <div class="stat-card warning">
+                        <div class="stat-icon">📝</div>
+                        <div class="stat-info">
+                            <h3>草稿箱</h3>
+                            <div class="number" id="draftCount">3</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 筛选区域 -->
+                <div class="filter-section">
+                    <div class="filter-header">
+                        <div class="filter-title">
+                            <i class="iconfont icon-shaixuan"></i>
+                            筛选条件
+                        </div>
+                        <button class="filter-toggle" id="filterToggle" onclick="FilterSection.toggle(this)">
+                            <span class="toggle-text">收起</span>
+                            <span class="toggle-icon">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div id="filterRow" class="filter-row">
+                        <!-- 筛选字段由 JS 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 批量操作栏 -->
+                <div class="batch-operation-bar" style="display: none;">
+                    <div class="batch-left">
+                        <label class="batch-checkbox">
+                            <input type="checkbox" id="selectAllTraining" onchange="toggleSelectAllTraining()">
+                            <span>全选</span>
+                        </label>
+                        <span class="batch-info">已选择 <strong id="selectedCount">0</strong> 项</span>
+                    </div>
+                    <div class="batch-right">
+                        <button class="btn-batch" onclick="batchExport()">
+                            <i class="iconfont icon-xiazai"></i> 批量导出
+                        </button>
+                        <button class="btn-batch" onclick="batchAssign()">
+                            <i class="iconfont icon-fabu"></i> 批量分配
+                        </button>
+                        <button class="btn-batch danger" onclick="batchDelete()">
+                            <i class="iconfont icon-shanchu"></i> 批量删除
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 数据表格 -->
+                <!-- 数据表格容器 -->
+                <div class="table-section">
+                    <div id="dataTable" class="data-table"></div>
+
+                    <!-- 分页 -->
+                    <div id="pagination" class="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./components.js"></script>
+    <script>
+        // ==================== 树状图数据 ====================
+        const treeData = [
+            {
+                id: '1',
+                label: '计算机科学与技术',
+                icon: '📁',
+                count: 12,
+                expanded: true,
+                children: [
+                    {
+                        id: '1-1',
+                        label: 'Java程序设计',
+                        icon: '📂',
+                        count: 4,
+                        children: [
+                            { id: '1-1-1', label: '项目实训', icon: '📄', count: 3 },
+                            { id: '1-1-2', label: '技能实训', icon: '📄', count: 2 },
+                            { id: '1-1-3', label: '综合实训', icon: '📄', count: 1 }
+                        ]
+                    },
+                    {
+                        id: '1-2',
+                        label: 'Web前端开发',
+                        icon: '📂',
+                        count: 3,
+                        children: [
+                            { id: '1-2-1', label: '项目实训', icon: '📄', count: 2 },
+                            { id: '1-2-2', label: '技能实训', icon: '📄', count: 2 }
+                        ]
+                    },
+                    {
+                        id: '1-3',
+                        label: '数据库技术',
+                        icon: '📂',
+                        count: 2,
+                        children: [
+                            { id: '1-3-1', label: '综合实训', icon: '📄', count: 2 }
+                        ]
+                    }
+                ]
+            },
+            {
+                id: '2',
+                label: '软件工程',
+                icon: '📁',
+                count: 8,
+                children: [
+                    {
+                        id: '2-1',
+                        label: '软件测试',
+                        icon: '📂',
+                        count: 3,
+                        children: [
+                            { id: '2-1-1', label: '项目实训', icon: '📄', count: 2 },
+                            { id: '2-1-2', label: '技能实训', icon: '📄', count: 1 }
+                        ]
+                    },
+                    { id: '2-2', label: '项目管理', icon: '📄', count: 2 }
+                ]
+            },
+            {
+                id: '3',
+                label: '人工智能',
+                icon: '📁',
+                count: 6,
+                expanded: true,
+                children: [
+                    { id: '3-1', label: '机器学习', icon: '📄', count: 3 },
+                    { id: '3-2', label: '深度学习', icon: '📄', count: 2 }
+                ]
+            }
+        ];
+
+        // ==================== 实训试卷表格数据 ====================
+        const trainingTableData = [
+            { id: 1, name: 'Java企业级项目开发实训', type: '项目实训', typeCode: 'project', major: '计算机科学与技术', course: 'Java程序设计', path: '计算机科学与技术 / Java程序设计', difficulty: '困难', difficultyCode: 'hard', tasks: 8, duration: 480, score: 100, students: 45, status: '已发布', statusCode: 'published', updater: '张教授', updateTime: '2025-03-02 15:33:23', 'data-category': '1-1' },
+            { id: 2, name: 'SpringBoot微服务架构实训', type: '技能实训', typeCode: 'skill', major: '计算机科学与技术', course: 'Java程序设计', path: '计算机科学与技术 / Java程序设计', difficulty: '中等', difficultyCode: 'medium', tasks: 6, duration: 360, score: 100, students: 42, status: '已发布', statusCode: 'published', updater: '李讲师', updateTime: '2025-03-02 14:25:18', 'data-category': '1-1' },
+            { id: 3, name: 'Vue.js前端项目开发实训', type: '项目实训', typeCode: 'project', major: '计算机科学与技术', course: 'Web前端开发', path: '计算机科学与技术 / Web前端开发', difficulty: '中等', difficultyCode: 'medium', tasks: 7, duration: 400, score: 100, students: 38, status: '已发布', statusCode: 'published', updater: '王教授', updateTime: '2025-03-02 13:18:45', 'data-category': '1-2' },
+            { id: 4, name: 'React组件开发技能实训', type: '技能实训', typeCode: 'skill', major: '计算机科学与技术', course: 'Web前端开发', path: '计算机科学与技术 / Web前端开发', difficulty: '简单', difficultyCode: 'easy', tasks: 5, duration: 240, score: 100, students: 40, status: '草稿', statusCode: 'draft', updater: '赵讲师', updateTime: '2025-03-02 12:10:32', 'data-category': '1-2' },
+            { id: 5, name: 'MySQL数据库设计综合实训', type: '综合实训', typeCode: 'comprehensive', major: '计算机科学与技术', course: '数据库技术', path: '计算机科学与技术 / 数据库技术', difficulty: '中等', difficultyCode: 'medium', tasks: 6, duration: 320, score: 100, students: 43, status: '已发布', statusCode: 'published', updater: '陈教授', updateTime: '2025-03-02 11:05:28', 'data-category': '1-3' },
+            { id: 6, name: '软件测试自动化实训', type: '技能实训', typeCode: 'skill', major: '软件工程', course: '软件测试', path: '软件工程 / 软件测试', difficulty: '中等', difficultyCode: 'medium', tasks: 5, duration: 280, score: 100, students: 35, status: '草稿', statusCode: 'draft', updater: '刘讲师', updateTime: '2025-03-02 10:00:15', 'data-category': '2-1' },
+            { id: 7, name: '机器学习算法实现实训', type: '项目实训', typeCode: 'project', major: '人工智能', course: '机器学习', path: '人工智能 / 机器学习', difficulty: '困难', difficultyCode: 'hard', tasks: 10, duration: 600, score: 100, students: 30, status: '已发布', statusCode: 'published', updater: '周教授', updateTime: '2025-03-02 09:45:38', 'data-category': '3-1' },
+            { id: 8, name: '深度学习图像识别实训', type: '综合实训', typeCode: 'comprehensive', major: '人工智能', course: '深度学习', path: '人工智能 / 深度学习', difficulty: '困难', difficultyCode: 'hard', tasks: 8, duration: 480, score: 100, students: 28, status: '已发布', statusCode: 'published', updater: '吴讲师', updateTime: '2025-03-02 08:30:22', 'data-category': '3-2' },
+            { id: 9, name: '敏捷开发项目管理实训', type: '综合实训', typeCode: 'comprehensive', major: '软件工程', course: '项目管理', path: '软件工程 / 项目管理', difficulty: '中等', difficultyCode: 'medium', tasks: 6, duration: 360, score: 100, students: 36, status: '草稿', statusCode: 'draft', updater: '郑教授', updateTime: '2025-03-02 07:15:45', 'data-category': '2-2' },
+            { id: 10, name: 'API接口设计与开发实训', type: '技能实训', typeCode: 'skill', major: '计算机科学与技术', course: 'Java程序设计', path: '计算机科学与技术 / Java程序设计', difficulty: '简单', difficultyCode: 'easy', tasks: 4, duration: 200, score: 100, students: 44, status: '已发布', statusCode: 'published', updater: '钱讲师', updateTime: '2025-03-02 06:00:12', 'data-category': '1-1' }
+        ];
+
+        // ==================== 筛选字段配置 ====================
+        const filterFields = [
+            { type: 'text', label: '实训名称', name: 'name', placeholder: '请输入实训名称' },
+            { 
+                type: 'select', 
+                label: '实训类型', 
+                name: 'type',
+                options: [
+                    { value: '', label: '全部类型' },
+                    { value: 'project', label: '项目实训' },
+                    { value: 'skill', label: '技能实训' },
+                    { value: 'comprehensive', label: '综合实训' },
+                    { value: 'assessment', label: '考核实训' }
+                ]
+            },
+            { 
+                type: 'select', 
+                label: '难度', 
+                name: 'difficulty',
+                options: [
+                    { value: '', label: '全部难度' },
+                    { value: 'easy', label: '简单' },
+                    { value: 'medium', label: '中等' },
+                    { value: 'hard', label: '困难' }
+                ]
+            },
+            { 
+                type: 'select', 
+                label: '时间范围', 
+                name: 'time',
+                options: [
+                    { value: '', label: '全部时间' },
+                    { value: 'today', label: '今天' },
+                    { value: 'week', label: '本周' },
+                    { value: 'month', label: '本月' }
+                ]
+            }
+        ];
+
+        // ==================== 实训试卷表格列配置 ====================
+        const trainingColumns = [
+            { title: '序号', dataIndex: 'id' },
+            {
+                title: '实训任务名称',
+                dataIndex: 'name',
+                render: (val, row) => `<span class="material-name-text" onclick="viewTraining(${row.id})">${val}</span>`
+            },
+            { title: '所属课程', dataIndex: 'course' },
+            {
+                title: '难度',
+                dataIndex: 'difficulty',
+                render: (val) => {
+                    const difficultyClass = {
+                        '简单': 'difficulty-easy',
+                        '中等': 'difficulty-medium',
+                        '困难': 'difficulty-hard'
+                    }[val] || 'difficulty-medium';
+                    return `<span class="difficulty-tag ${difficultyClass}">${val}</span>`;
+                }
+            },
+            { title: '任务数', dataIndex: 'tasks' },
+            { title: '总分', dataIndex: 'score' },
+            { title: '参与人数', dataIndex: 'students', render: (val, row) => `<span class="clickable-number" onclick="showStudentList(${row.id}, '${row.name}')">${val}</span>` },
+            {
+                title: '状态',
+                dataIndex: 'status',
+                render: (val) => {
+                    const statusClass = val === '已发布' ? 'status-published' : 'status-draft';
+                    return `<span class="status-tag ${statusClass}">${val}</span>`;
+                }
+            },
+            { title: '更新人', dataIndex: 'updater' },
+            { title: '更新日期', dataIndex: 'updateTime' },
+            {
+                title: '操作',
+                dataIndex: 'action',
+                render: (val, row) => `
+                    <div class="action-btns">
+                        <button onclick="viewTraining(${row.id})">查看</button>
+                    </div>
+                `
+            }
+        ];
+
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化树状图
+            TreeSidebar.render(treeData, {
+                containerId: 'treeContent',
+                onSelect: (nodeData) => {
+                    console.log('选中节点:', nodeData);
+                    filterByCategory(nodeData.id);
+                }
+            });
+
+            // 初始化筛选组件
+            FilterSection.init({
+                containerId: 'filterRow',
+                fields: filterFields,
+                onSearch: (values) => {
+                    console.log('筛选条件:', values);
+                    filterTraining(values);
+                },
+                onReset: () => {
+                    DataTable.setData(trainingTableData);
+                }
+            });
+
+            // 初始化实训试卷表格
+            DataTable.init({
+                containerId: 'dataTable',
+                columns: trainingColumns,
+                data: trainingTableData,
+                fixedFirstColumn: true,
+                fixedLastColumn: true
+            });
+
+            // 初始化分页
+            Pagination.init({
+                containerId: 'pagination',
+                total: trainingTableData.length,
+                pageSize: 10,
+                current: 1,
+                onChange: (page, pageSize) => {
+                    console.log('页码变化:', page, pageSize);
+                }
+            });
+
+            // 初始化菜单状态
+            initMenuState();
+        });
+
+        // ==================== 菜单状态初始化 ====================
+        function initMenuState() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            const allMenuTitles = document.querySelectorAll('.menu-title');
+            
+            allMenuTitles.forEach(title => {
+                const items = title.nextElementSibling;
+                if (items && items.classList.contains('menu-items')) {
+                    title.setAttribute('aria-expanded', 'false');
+                    title.classList.add('collapsed');
+                    items.setAttribute('hidden', '');
+                }
+            });
+            
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.setAttribute('aria-expanded', 'true');
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.removeAttribute('hidden');
+                    }
+                }
+            }
+        }
+
+        // ==================== 筛选功能 ====================
+        function filterByCategory(categoryId) {
+            const filtered = trainingTableData.filter(item => {
+                return item['data-category'].startsWith(categoryId);
+            });
+            DataTable.setData(filtered.length > 0 ? filtered : trainingTableData);
+        }
+
+        function filterTraining(values) {
+            let filtered = trainingTableData;
+            
+            if (values.name) {
+                filtered = filtered.filter(item => item.name.includes(values.name));
+            }
+            if (values.type) {
+                filtered = filtered.filter(item => item.typeCode === values.type);
+            }
+            if (values.difficulty) {
+                filtered = filtered.filter(item => item.difficultyCode === values.difficulty);
+            }
+            
+            DataTable.setData(filtered);
+        }
+
+        // ==================== 全选功能 ====================
+        function toggleSelectAllTraining() {
+            const selectAll = document.getElementById('selectAllTraining').checked;
+            const checkboxes = document.querySelectorAll('.training-checkbox');
+            checkboxes.forEach(cb => cb.checked = selectAll);
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const count = document.querySelectorAll('.training-checkbox:checked').length;
+            document.getElementById('selectedCount').textContent = count;
+        }
+
+        // ==================== 批量操作 ====================
+        function batchExport() {
+            alert('批量导出功能开发中...');
+        }
+
+        function batchAssign() {
+            const count = document.querySelectorAll('.training-checkbox:checked').length;
+            if (count === 0) {
+                alert('请先选择要分配的实训试卷');
+                return;
+            }
+            alert(`批量分配 ${count} 个实训试卷成功`);
+        }
+
+        function batchDelete() {
+            const count = document.querySelectorAll('.training-checkbox:checked').length;
+            if (count === 0) {
+                alert('请先选择要删除的实训试卷');
+                return;
+            }
+            if (confirm(`确定要删除选中的 ${count} 个实训试卷吗？`)) {
+                alert('批量删除成功');
+            }
+        }
+
+        // ==================== 实训试卷操作 ====================
+        function viewTraining(id) {
+            alert('查看实训试卷 ID: ' + id);
+        }
+
+        function editTraining(id) {
+            alert('编辑实训试卷 ID: ' + id);
+        }
+
+        function deleteTraining(id) {
+            if (confirm('确定要删除该实训试卷吗？')) {
+                alert('删除成功');
+            }
+        }
+
+        // ==================== 退出登录 ====================
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                window.location.href = './login.html';
+            }
+        }
+    </script>
+
+    <!-- 学生列表对话框 -->
+    <div id="studentListModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 700px;">
+            <div class="modal-header">
+                <h3 id="studentListTitle">参与学生列表</h3>
+                <span class="close-btn" onclick="closeStudentList()">&times;</span>
+            </div>
+            <div class="modal-body">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px;">序号</th>
+                            <th style="width: 120px;">姓名</th>
+                            <th style="width: 150px;">学号</th>
+                            <th>所属班级</th>
+                        </tr>
+                    </thead>
+                    <tbody id="studentListBody">
+                        <!-- 学生列表数据 -->
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeStudentList()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 12px;
+            width: 90%;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .modal-header h3 {
+            margin: 0;
+            font-size: 18px;
+            color: #1e293b;
+        }
+        .close-btn {
+            font-size: 24px;
+            cursor: pointer;
+            color: #64748b;
+            line-height: 1;
+        }
+        .close-btn:hover {
+            color: #1e293b;
+        }
+        .modal-body {
+            padding: 20px 24px;
+            max-height: 50vh;
+            overflow-y: auto;
+        }
+        .modal-footer {
+            padding: 10px;
+            border-top: 1px solid #e2e8f0;
+            text-align: right;
+        }
+        .student-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .student-table th {
+            background: #f8fafc;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            color: #475569;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .student-table td {
+            padding: 12px;
+            border-bottom: 1px solid #f1f5f9;
+            color: #334155;
+        }
+        .student-table tr:hover td {
+            background: #f8fafc;
+        }
+        .clickable-number {
+            color: #6366f1;
+            cursor: pointer;
+            text-decoration: underline;
+            font-weight: 600;
+        }
+        .clickable-number:hover {
+            color: #4f46e5;
+        }
+        .btn-secondary {
+            padding: 10px 24px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #64748b;
+            transition: all 0.2s;
+        }
+        .btn-secondary:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+        }
+    </style>
+
+    <script>
+        // 模拟学生数据
+        const studentData = {
+            1: [
+                { name: '张三', studentNo: '202301001', className: '计算机科学与技术1班' },
+                { name: '李四', studentNo: '202301002', className: '计算机科学与技术1班' },
+                { name: '王五', studentNo: '202301003', className: '计算机科学与技术2班' },
+                { name: '赵六', studentNo: '202301004', className: '计算机科学与技术1班' },
+                { name: '钱七', studentNo: '202301005', className: '计算机科学与技术2班' }
+            ],
+            2: [
+                { name: '张三', studentNo: '202301001', className: '计算机科学与技术1班' },
+                { name: '李四', studentNo: '202301002', className: '计算机科学与技术1班' },
+                { name: '王五', studentNo: '202301003', className: '计算机科学与技术2班' }
+            ],
+            3: [
+                { name: '赵六', studentNo: '202301004', className: '计算机科学与技术1班' },
+                { name: '钱七', studentNo: '202301005', className: '计算机科学与技术2班' },
+                { name: '孙八', studentNo: '202301006', className: '软件工程1班' }
+            ],
+            4: [
+                { name: '周九', studentNo: '202301007', className: '软件工程1班' },
+                { name: '吴十', studentNo: '202301008', className: '软件工程2班' }
+            ],
+            5: [
+                { name: '郑十一', studentNo: '202301009', className: '人工智能1班' },
+                { name: '陈十二', studentNo: '202301010', className: '人工智能1班' }
+            ],
+            6: [
+                { name: '刘十三', studentNo: '202301011', className: '人工智能2班' }
+            ],
+            7: [
+                { name: '张三', studentNo: '202301001', className: '计算机科学与技术1班' },
+                { name: '李四', studentNo: '202301002', className: '计算机科学与技术1班' }
+            ],
+            8: [
+                { name: '王五', studentNo: '202301003', className: '软件工程1班' },
+                { name: '赵六', studentNo: '202301004', className: '软件工程2班' }
+            ],
+            9: [
+                { name: '钱七', studentNo: '202301005', className: '计算机科学与技术2班' },
+                { name: '孙八', studentNo: '202301006', className: '计算机科学与技术1班' }
+            ],
+            10: [
+                { name: '周九', studentNo: '202301007', className: '计算机科学与技术1班' },
+                { name: '吴十', studentNo: '202301008', className: '计算机科学与技术2班' }
+            ]
+        };
+
+        // 显示学生列表
+        function showStudentList(trainingId, trainingName) {
+            const modal = document.getElementById('studentListModal');
+            const title = document.getElementById('studentListTitle');
+            const tbody = document.getElementById('studentListBody');
+            
+            title.textContent = `「${trainingName}」参与学生列表`;
+            
+            const students = studentData[trainingId] || [];
+            tbody.innerHTML = students.map((student, index) => `
+                <tr>
+                    <td>${index + 1}</td>
+                    <td>${student.name}</td>
+                    <td>${student.studentNo}</td>
+                    <td>${student.className}</td>
+                </tr>
+            `).join('');
+            
+            if (students.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4" style="text-align: center; color: #999; padding: 40px;">暂无学生数据</td></tr>';
+            }
+            
+            modal.style.display = 'flex';
+        }
+
+        // 关闭学生列表
+        function closeStudentList() {
+            document.getElementById('studentListModal').style.display = 'none';
+        }
+
+        // 点击模态框外部关闭
+        document.getElementById('studentListModal')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeStudentList();
+            }
+        });
+    </script>
+
+    <!-- 导航加载器 - 动态加载现代化导航组件 -->
+    <script src="./nav-loader-new.js"></script>
+</body>
+</html>

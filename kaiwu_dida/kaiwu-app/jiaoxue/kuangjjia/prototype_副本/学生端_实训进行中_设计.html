@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设计类实训 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <!-- 实训进行中页面不加载导航样式，保持沉浸式体验 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            min-height: 100vh;
+        }
+
+        .header {
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .back-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: #F5F5F5;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .back-btn:hover {
+            background: #E8E8E8;
+        }
+
+        .header-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .header-info {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%);
+            border-radius: 8px;
+            color: #1890FF;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            background: #E6F7FF;
+            color: #1890FF;
+            border-radius: 4px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .container {
+            width: calc(100% - 220px);
+            margin-left: 220px;
+            margin-right: 0;
+            padding: 24px;
+            display: flex;
+            flex-direction: row;
+            gap: 24px;
+            box-sizing: border-box;
+            min-height: calc(100vh - 64px);
+        }
+
+        .main-panel {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            min-width: 0;
+        }
+
+        .sidebar-panel {
+            width: 400px;
+            flex-shrink: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        .panel-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .panel-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* 设计要求区域 - 合并显示 */
+        .design-requirements {
+            background: linear-gradient(135deg, #F0F7FF 0%, #E6F7FF 100%);
+            border-radius: 12px;
+            padding: 24px;
+            border-left: 4px solid #1890FF;
+            display: none;
+        }
+
+        .requirements-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1890FF;
+            margin-bottom: 16px;
+        }
+
+        .requirements-content {
+            background: #fff;
+            border-radius: 8px;
+            padding: 16px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        /* 参考图纸区域 - 附件列表形式 */
+        .reference-drawings {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .attachment-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #FAFAFA;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attachment-item:hover {
+            background: #F0F7FF;
+            border-color: #1890FF;
+        }
+
+        .attachment-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .attachment-icon.dwg {
+            background: #E6F7FF;
+        }
+
+        .attachment-icon.step {
+            background: #F6FFED;
+        }
+
+        .attachment-icon.pdf {
+            background: #FFF2F0;
+        }
+
+        .attachment-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .attachment-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .attachment-meta {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .attachment-preview {
+            padding: 6px 12px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .attachment-preview:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        /* 答题区域 - 合并文件上传 */
+        .answer-section {
+            margin-top: 20px;
+        }
+
+        .answer-item {
+            margin-bottom: 20px;
+            padding: 16px;
+            background: #F5F7FA;
+            border-radius: 8px;
+        }
+
+        .answer-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .answer-input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .answer-input:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24, 144, 255, 0.1);
+        }
+
+        /* 附件上传区域 */
+        .attachment-area {
+            margin-top: 16px;
+            padding: 16px;
+            background: #F0F7FF;
+            border-radius: 8px;
+            border: 2px dashed #1890FF;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attachment-area:hover {
+            background: #E6F7FF;
+        }
+
+        .attachment-icon {
+            font-size: 32px;
+            color: #1890FF;
+            margin-bottom: 8px;
+        }
+
+        .attachment-text {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .attachment-hint {
+            font-size: 12px;
+            color: #999;
+        }
+
+
+
+        /* 工单信息 */
+        .workorder-info {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .workorder-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .workorder-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #F5F5F5;
+        }
+
+        .workorder-item:last-child {
+            border-bottom: none;
+        }
+
+        .workorder-label {
+            font-size: 13px;
+            color: #666;
+        }
+
+        .workorder-value {
+            font-size: 13px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        /* 加工要求区域 - 文本内容方式 */
+        .process-requirements {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .requirements-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .requirements-content {
+            font-size: 14px;
+            color: #333;
+            line-height: 1.8;
+        }
+
+        .requirements-content p {
+            margin-bottom: 12px;
+        }
+
+        .requirements-content strong {
+            color: #1890FF;
+            font-weight: 600;
+        }
+
+        /* 附件列表 - 白色卡片 */
+        .process-attachments {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            border: 1px solid #E8E8E8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+
+        .attachments-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .attachment-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .attachment-file {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #FAFAFA;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .attachment-file:hover {
+            background: #F0F7FF;
+            border-color: #1890FF;
+        }
+
+        .attachment-file-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .attachment-file-icon.dwg {
+            background: #E6F7FF;
+        }
+
+        .attachment-file-icon.pdf {
+            background: #FFF2F0;
+        }
+
+        .attachment-file-icon.img {
+            background: #F6FFED;
+        }
+
+        .attachment-file-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .attachment-file-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .attachment-file-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 12px;
+            color: #999;
+        }
+
+        .attachment-file-preview {
+            padding: 6px 12px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            flex-shrink: 0;
+        }
+
+        .attachment-file-preview:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        /* 操作按钮 */
+        .action-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+            border: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(24, 144, 255, 0.4);
+        }
+
+        .btn-secondary {
+            background: #F5F5F5;
+            color: #666;
+        }
+
+        .btn-secondary:hover {
+            background: #E8E8E8;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+            color: #fff;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(82, 196, 26, 0.4);
+        }
+
+        /* 按钮组 - 放在内容填写区域下方 */
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn-group button {
+            flex: 1;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-group button i {
+            font-size: 16px;
+        }
+
+        /* 保存按钮 */
+        .save-btn {
+            background: linear-gradient(135deg, #F0F0F0 0%, #E0E0E0 100%);
+            color: #666;
+            border: 1px solid #D0D0D0;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+        }
+
+        .save-btn:hover {
+            background: linear-gradient(135deg, #E8E8E8 0%, #D8D8D8 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+        }
+
+        /* 提交按钮 */
+        .submit-btn {
+            background: linear-gradient(135deg, #52C41A 0%, #73D13D 100%);
+            color: #fff;
+            box-shadow: 0 4px 12px rgba(82, 196, 26, 0.3);
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #45B34A 0%, #63C13D 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(82, 196, 26, 0.4);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            padding: 32px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="header-left">
+            <button class="back-btn" onclick="confirmExit()">
+                <i class="iconfont icon-fanhui"></i>
+            </button>
+            <div class="header-title">CAD制图-零件设计：轴承座三维建模</div>
+        </div>
+        <div class="header-info">
+            <div class="timer">
+                <i class="iconfont icon-shijian"></i>
+                <span id="timer">00:00:00</span>
+            </div>
+            <div class="status-badge">设计中</div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="main-panel">
+            <!-- 设计要求 - 合并显示 -->
+            <div class="design-requirements">
+                <div class="requirements-title">📋 设计要求</div>
+                <div class="requirements-content">
+                    设计对象：轴承座零件（用于支撑传动轴）<br>
+                    设计内容：完成轴承座的三维建模和二维工程图<br>
+                    技术要求：尺寸准确、结构合理、符合GB制图标准<br>
+                    材料选择：HT200灰铸铁<br>
+                    交付成果：三维模型文件、二维工程图、设计说明文档
+                </div>
+            </div>
+
+            <!-- 参考图纸 - 附件列表形式 -->
+            <div class="panel-card" style="display: none;">
+                <div class="panel-title">
+                    <i class="iconfont icon-fujian"></i>
+                    参考图纸
+                    <span style="margin-left: 8px; font-size: 12px; color: #999; font-weight: normal;">共 4 个附件</span>
+                </div>
+                <div class="reference-drawings">
+                    <!-- 装配图 -->
+                    <div class="attachment-item" onclick="previewAttachment('assembly')">
+                        <div class="attachment-icon dwg">📐</div>
+                        <div class="attachment-info">
+                            <div class="attachment-name">轴承座装配图.dwg</div>
+                            <div class="attachment-meta">
+                                <span>DWG</span>
+                                <span>1.2MB</span>
+                                <span>版本: V1.2</span>
+                            </div>
+                        </div>
+                        <div class="attachment-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    
+                    <!-- 零件图 -->
+                    <div class="attachment-item" onclick="previewAttachment('part')">
+                        <div class="attachment-icon dwg">📏</div>
+                        <div class="attachment-info">
+                            <div class="attachment-name">轴承座零件图.dwg</div>
+                            <div class="attachment-meta">
+                                <span>DWG</span>
+                                <span>856KB</span>
+                                <span>版本: V1.0</span>
+                            </div>
+                        </div>
+                        <div class="attachment-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    
+                    <!-- 三维模型 -->
+                    <div class="attachment-item" onclick="previewAttachment('3d')">
+                        <div class="attachment-icon step">🎨</div>
+                        <div class="attachment-info">
+                            <div class="attachment-name">轴承座三维模型.step</div>
+                            <div class="attachment-meta">
+                                <span>STEP</span>
+                                <span>2.5MB</span>
+                                <span>3D模型</span>
+                            </div>
+                        </div>
+                        <div class="attachment-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    
+                    <!-- 技术要求 -->
+                    <div class="attachment-item" onclick="previewAttachment('tech')">
+                        <div class="attachment-icon pdf">📋</div>
+                        <div class="attachment-info">
+                            <div class="attachment-name">设计技术要求说明.pdf</div>
+                            <div class="attachment-meta">
+                                <span>PDF</span>
+                                <span>320KB</span>
+                                <span>3页</span>
+                            </div>
+                        </div>
+                        <div class="attachment-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 设计内容填写 - 合并附件上传 -->
+            <div class="panel-card">
+                <div class="panel-title">
+                    <i class="iconfont icon-bianji"></i>
+                    设计内容填写
+                </div>
+                <div class="answer-section">
+                    <div class="answer-item">
+                        <div class="answer-label">请根据设计要求和参考图纸，完成轴承座的设计，并填写设计说明：</div>
+                        <textarea class="answer-input" placeholder="请填写设计说明，包括：
+1. 轴承座的主要结构组成（底座、轴承孔、安装孔等）
+2. 轴承孔的尺寸设计依据（轴承型号选择、配合关系等）
+3. 底座安装孔的布置方案（数量、位置和尺寸）
+4. 设计过程中的工艺注意事项（铸造工艺、加工工艺等）
+5. 其他需要说明的设计要点..."></textarea>
+                        
+                        <!-- 附件上传 -->
+                        <div class="attachment-area" onclick="selectFile()">
+                            <div class="attachment-icon">📎</div>
+                            <div class="attachment-text">点击上传附件</div>
+                            <div class="attachment-hint">支持 .prt, .sldprt, .step, .dwg, .pdf, .doc 格式</div>
+                        </div>
+
+                        <!-- 保存和提交按钮 -->
+                        <div class="btn-group">
+                            <button class="save-btn" onclick="saveAnswer()">
+                                <i class="iconfont icon-baocun"></i>
+                                保存
+                            </button>
+                            <button class="submit-btn" onclick="submitDesign()">
+                                <i class="iconfont icon-shangchuan"></i>
+                                提交
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sidebar-panel">
+            <!-- 工单信息 -->
+            <div class="workorder-info">
+                <div class="workorder-title">📋 工单信息</div>
+                <div class="workorder-item">
+                    <span class="workorder-label">工单编号</span>
+                    <span class="workorder-value">WO-2024-001</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">物料名称</span>
+                    <span class="workorder-value">轴承座设计</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">规格型号</span>
+                    <span class="workorder-value">定制</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">计划数量</span>
+                    <span class="workorder-value">1 件</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">操作员</span>
+                    <span class="workorder-value">张伟</span>
+                </div>
+                <div class="workorder-item">
+                    <span class="workorder-label">起始时间段</span>
+                    <span class="workorder-value">2026-02-28 09:00-11:00</span>
+                </div>
+            </div>
+
+            <!-- 加工要求 -->
+            <div class="process-requirements">
+                <div class="requirements-title">
+                    <i class="iconfont icon-yaoqiu"></i>
+                    设计要求
+                </div>
+                <div class="requirements-content">
+                    <p><strong>设计任务：</strong>完成轴承座的三维建模和二维工程图设计</p>
+                    <p><strong>材料要求：</strong>HT200灰铸铁</p>
+                    <p><strong>精度等级：</strong>IT8级</p>
+                    <p><strong>表面粗糙度：</strong>Ra6.3</p>
+                    <p><strong>技术要求：</strong>保证轴承孔与底座的垂直度，安装孔位置精度符合装配要求。</p>
+                </div>
+            </div>
+
+            <!-- 参考附件 -->
+            <div class="process-attachments">
+                <div class="attachments-title">
+                    <i class="iconfont icon-fujian"></i>
+                    参考附件
+                    <span style="margin-left: 8px; font-size: 12px; color: #999; font-weight: normal;">共 3 个</span>
+                </div>
+                <div class="attachment-list">
+                    <div class="attachment-file" onclick="previewAttachment('drawing')">
+                        <div class="attachment-file-icon dwg">📐</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">轴承座装配图.dwg</div>
+                            <div class="attachment-file-meta">
+                                <span>DWG</span>
+                                <span>1.2MB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    <div class="attachment-file" onclick="previewAttachment('process')">
+                        <div class="attachment-file-icon pdf">📋</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">设计规范.pdf</div>
+                            <div class="attachment-file-meta">
+                                <span>PDF</span>
+                                <span>280KB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                    <div class="attachment-file" onclick="previewAttachment('photo')">
+                        <div class="attachment-file-icon img">🖼️</div>
+                        <div class="attachment-file-info">
+                            <div class="attachment-file-name">实物参考图.jpg</div>
+                            <div class="attachment-file-meta">
+                                <span>JPG</span>
+                                <span>450KB</span>
+                            </div>
+                        </div>
+                        <div class="attachment-file-preview">
+                            <i class="iconfont icon-yulan"></i>预览
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 确认退出弹窗 -->
+    <div class="modal-overlay" id="exitModal">
+        <div class="modal-content">
+            <div style="font-size: 48px; margin-bottom: 16px;">⚠️</div>
+            <div style="font-size: 20px; font-weight: 600; color: #333; margin-bottom: 12px;">确认退出？</div>
+            <div style="font-size: 14px; color: #666; margin-bottom: 24px;">退出后答题进度将自动保存，您可以稍后继续。是否确认退出？</div>
+            <div style="display: flex; gap: 12px;">
+                <button class="btn btn-secondary" onclick="closeModal()" style="flex: 1;">取消</button>
+                <button class="btn btn-primary" onclick="exitTraining()" style="flex: 1;">确认退出</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let startTime = new Date();
+        let timerInterval;
+
+        // 启动计时器
+        function startTimer() {
+            timerInterval = setInterval(() => {
+                const now = new Date();
+                const diff = now - startTime;
+                const hours = Math.floor(diff / 3600000);
+                const minutes = Math.floor((diff % 3600000) / 60000);
+                const seconds = Math.floor((diff % 60000) / 1000);
+                
+                document.getElementById('timer').textContent = 
+                    String(hours).padStart(2, '0') + ':' +
+                    String(minutes).padStart(2, '0') + ':' +
+                    String(seconds).padStart(2, '0');
+            }, 1000);
+        }
+
+        // 确认退出
+        function confirmExit() {
+            document.getElementById('exitModal').classList.add('active');
+        }
+
+        // 关闭弹窗
+        function closeModal() {
+            document.querySelectorAll('.modal-overlay').forEach(modal => {
+                modal.classList.remove('active');
+            });
+        }
+
+        // 退出实训
+        function exitTraining() {
+            clearInterval(timerInterval);
+            window.location.href = './学生端_我的实训.html';
+        }
+
+        // 预览附件
+        function previewAttachment(type) {
+            const attachments = {
+                'assembly': { 
+                    name: '轴承座装配图.dwg', 
+                    type: 'CAD图纸',
+                    desc: '整体装配关系和配合尺寸，包含所有零件的装配顺序和定位要求'
+                },
+                'part': { 
+                    name: '轴承座零件图.dwg', 
+                    type: 'CAD图纸',
+                    desc: '详细尺寸标注、公差要求和表面粗糙度等技术参数'
+                },
+                '3d': { 
+                    name: '轴承座三维模型.step', 
+                    type: '3D模型',
+                    desc: '三维建模参考文件，包含完整的几何特征和参数信息，支持旋转、缩放、剖切查看'
+                },
+                'tech': { 
+                    name: '设计技术要求说明.pdf', 
+                    type: 'PDF文档',
+                    desc: '材料选择、热处理要求、表面处理、检验标准等技术规范，共3页'
+                }
+            };
+            const file = attachments[type];
+            alert(`正在预览：${file.name}\n\n类型：${file.type}\n说明：${file.desc}\n\n点击确定打开预览窗口...`);
+        }
+
+        // 保存答案
+        function saveAnswer() {
+            alert('答案已保存！');
+        }
+
+        // 预览成果
+        function previewResult() {
+            alert('预览设计成果');
+        }
+
+        // 提交设计
+        function submitDesign() {
+            if (confirm('确定要提交设计成果吗？提交后将无法修改。')) {
+                alert('设计成果已提交！');
+                window.location.href = './学生端_我的实训.html';
+            }
+        }
+
+        // 选择文件
+        function selectFile() {
+            alert('请选择要上传的文件');
+        }
+
+        // 页面加载
+        window.onload = function() {
+            startTimer();
+        };
+    </script>
+    <!-- 实训进行中页面不加载导航栏，保持沉浸式体验 -->
+</body>
+</html>

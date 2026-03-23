@@ -1,0 +1,796 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>教学实训平台 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F0F2F5;
+            display: flex;
+            height: 100vh;
+        }
+        .menu-item:hover, .menu-item.active {
+            background: #1890FF;
+            color: #fff;
+        }
+        
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        /* 顶部区域 */
+        .header-section {
+            background: #fff;
+            padding: 20px 24px;
+            border-bottom: 1px solid #E8E8E8;
+        }
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .welcome-text {
+            font-size: 18px;
+            color: #333;
+        }
+        .welcome-text span {
+            color: #1890FF;
+            font-weight: 500;
+        }
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+        .header-btn {
+            padding: 8px 16px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            color: #666;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .header-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .header-btn.primary {
+            background: #1890FF;
+            border-color: #1890FF;
+            color: #fff;
+        }
+        .header-btn.primary:hover {
+            background: #40A9FF;
+        }
+        
+        /* 统计指标 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .stat-card {
+            background: #FAFAFA;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: all 0.3s;
+        }
+        .stat-card:hover {
+            border-color: #1890FF;
+            box-shadow: 0 2px 8px rgba(24,144,255,0.1);
+        }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-icon.blue { background: #E6F7FF; }
+        .stat-icon.green { background: #F6FFED; }
+        .stat-icon.orange { background: #FFF7E6; }
+        .stat-icon.red { background: #FFF1F0; }
+        .stat-info h3 {
+            font-size: 13px;
+            color: #666;
+            font-weight: normal;
+            margin-bottom: 4px;
+        }
+        .stat-info .number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        /* 内容主体 */
+        .content-body {
+            flex: 1;
+            padding: 24px;
+            overflow-y: auto;
+        }
+        
+        /* 两栏布局 */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 1.8fr 1fr;
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        /* 右侧栏 */
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        /* 卡片样式 */
+        .card {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            overflow: hidden;
+        }
+        .card-header {
+            padding: 16px 20px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card-title::before {
+            content: '';
+            width: 4px;
+            height: 16px;
+            background: #1890FF;
+            border-radius: 2px;
+        }
+        .card-more {
+            font-size: 13px;
+            color: #1890FF;
+            cursor: pointer;
+        }
+        .card-body {
+            padding: 20px;
+        }
+        
+        /* 待办任务 */
+        .todo-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .todo-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 16px;
+            background: #FAFAFA;
+            border-radius: 6px;
+            border-left: 3px solid #1890FF;
+            transition: all 0.3s;
+        }
+        .todo-item:hover {
+            background: #F0F5FF;
+        }
+        .todo-item.urgent {
+            border-left-color: #FF4D4F;
+            background: #FFF2F0;
+        }
+        .todo-item.urgent:hover {
+            background: #FFCCC7;
+        }
+        .todo-item.warning {
+            border-left-color: #FAAD14;
+            background: #FFFBE6;
+        }
+        .todo-item.warning:hover {
+            background: #FFE58F;
+        }
+        .todo-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-right: 14px;
+            flex-shrink: 0;
+            background: #fff;
+        }
+        .todo-item.urgent .todo-icon { color: #FF4D4F; }
+        .todo-item.warning .todo-icon { color: #FAAD14; }
+        .todo-item.normal .todo-icon { color: #1890FF; }
+        .todo-content {
+            flex: 1;
+        }
+        .todo-title {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .todo-meta {
+            font-size: 12px;
+            color: #999;
+            line-height: 1.6;
+        }
+        .todo-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+        .todo-badge.urgent { background: #FF4D4F; color: #fff; }
+        .todo-badge.warning { background: #FAAD14; color: #fff; }
+        .todo-badge.normal { background: #1890FF; color: #fff; }
+        .todo-action {
+            padding: 6px 16px;
+            background: #1890FF;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 12px;
+            transition: all 0.3s;
+            white-space: nowrap;
+        }
+        .todo-action:hover {
+            background: #40A9FF;
+        }
+        
+        /* 图表区域 */
+        .chart-container {
+            text-align: center;
+            padding: 10px 0;
+        }
+        .ring-chart {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 12px;
+        }
+        .ring {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: conic-gradient(#1890FF 0% 65%, #F0F0F0 65% 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .ring::before {
+            content: '';
+            width: 85px;
+            height: 85px;
+            background: #fff;
+            border-radius: 50%;
+        }
+        .ring-text {
+            position: absolute;
+            text-align: center;
+        }
+        .ring-number {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1890FF;
+        }
+        .ring-label {
+            font-size: 11px;
+            color: #999;
+        }
+        .chart-legend {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            color: #666;
+        }
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 2px;
+        }
+        
+        /* 进度条 */
+        .progress-list {
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+        .progress-item {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            font-size: 13px;
+        }
+        .progress-name { color: #333; }
+        .progress-value { color: #666; }
+        .progress-bar {
+            height: 8px;
+            background: #F0F0F0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #1890FF, #40A9FF);
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        
+        /* 最近动态 */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .activity-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 10px;
+            padding: 10px;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        .activity-item:hover {
+            background: #F5F7FA;
+        }
+        .activity-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .activity-icon.submit { background: #E6F7FF; color: #1890FF; }
+        .activity-icon.system { background: #F6FFED; color: #52C41A; }
+        .activity-icon.course { background: #FFF7E6; color: #FA8C16; }
+        .activity-content {
+            flex: 1;
+        }
+        .activity-text {
+            font-size: 13px;
+            color: #333;
+            line-height: 1.5;
+            margin-bottom: 2px;
+        }
+        .activity-text strong {
+            color: #1890FF;
+            font-weight: 500;
+        }
+        .activity-time {
+            font-size: 11px;
+            color: #999;
+        }
+        
+        /* 快捷入口 */
+        .quick-section {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            padding: 20px;
+        }
+        .quick-grid {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 12px;
+        }
+        .quick-item {
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            padding: 10px 6px;
+            border-radius: 6px;
+        }
+        .quick-item:hover {
+            background: #F0F5FF;
+        }
+        .quick-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            margin: 0 auto 6px;
+            background: #F5F7FA;
+            transition: all 0.3s;
+        }
+        .quick-item:hover .quick-icon {
+            transform: translateY(-2px);
+        }
+        .quick-name {
+            font-size: 12px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <!-- 顶部区域 -->
+        <div class="header-section">
+            <div class="header-top">
+                <div class="welcome-text">👋 欢迎回来，<span>张老师</span>！祝您今天教学顺利</div>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <div class="header-actions" style="display: none;">
+                        <button class="header-btn" onclick="window.location.href='./教师端_试卷批阅.html'">📋 待批阅 36</button>
+                        <button class="header-btn primary" onclick="alert('功能开发中...')">+ 发布试卷</button>
+                    </div>
+                    <div id="user-menu-teacher-container"></div>
+                </div>
+            </div>
+            
+            <!-- 统计指标 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon blue">📖</div>
+                    <div class="stat-info">
+                        <h3>我的课程</h3>
+                        <div class="number">6</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">👨‍🎓</div>
+                    <div class="stat-info">
+                        <h3>授课学生</h3>
+                        <div class="number">186</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">📝</div>
+                    <div class="stat-info">
+                        <h3>待批阅试卷</h3>
+                        <div class="number">24</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">🔧</div>
+                    <div class="stat-info">
+                        <h3>待批阅实训</h3>
+                        <div class="number">12</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 内容区 -->
+        <div class="content-body">
+            <!-- 两栏布局 -->
+            <div class="dashboard-grid">
+                <!-- 左侧：待办任务 -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title">待办任务</div>
+                        <div class="card-more">查看全部 →</div>
+                    </div>
+                    <div class="card-body">
+                        <div class="todo-list">
+                            <div class="todo-item urgent">
+                                <div class="todo-icon">📝</div>
+                                <div class="todo-content">
+                                    <div class="todo-title">
+                                        《机械制图》期末考试批阅
+                                        <span class="todo-badge urgent">紧急</span>
+                                    </div>
+                                    <div class="todo-meta">
+                                        截止时间：2025-01-15 23:59 | 待批阅：18份 | 课程：机械制图
+                                    </div>
+                                </div>
+                                <button class="todo-action" onclick="window.location.href='./教师端_试卷批阅.html'">去批阅</button>
+                            </div>
+                            <div class="todo-item warning">
+                                <div class="todo-icon">🔧</div>
+                                <div class="todo-content">
+                                    <div class="todo-title">
+                                        《数控加工》实训任务评分
+                                        <span class="todo-badge warning">即将截止</span>
+                                    </div>
+                                    <div class="todo-meta">
+                                        截止时间：2025-01-18 23:59 | 待批阅：12份 | 课程：数控加工
+                                    </div>
+                                </div>
+                                <button class="todo-action" onclick="window.location.href='./教师端_实训批阅.html'">去批阅</button>
+                            </div>
+                            <div class="todo-item normal">
+                                <div class="todo-icon">📊</div>
+                                <div class="todo-content">
+                                    <div class="todo-title">
+                                        《机械设计基础》期中成绩分析
+                                        <span class="todo-badge normal">待查看</span>
+                                    </div>
+                                    <div class="todo-meta">
+                                        已生成分析报告 | 涉及学生：45人 | 平均分：78.5
+                                    </div>
+                                </div>
+                                <button class="todo-action" onclick="window.location.href='./图表_成绩分析.html'">查看</button>
+                            </div>
+                            <div class="todo-item normal">
+                                <div class="todo-icon">❓</div>
+                                <div class="todo-content">
+                                    <div class="todo-title">
+                                        《CAD制图》章节测试发布
+                                        <span class="todo-badge normal">待发布</span>
+                                    </div>
+                                    <div class="todo-meta">
+                                        计划发布时间：2025-01-20 08:00 | 试卷：CAD制图第三章测试
+                                    </div>
+                                </div>
+                                <button class="todo-action" onclick="window.location.href='./教师端_试卷管理.html'">去发布</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 右侧：数据统计 + 最近动态 -->
+                <div class="right-column">
+                    <!-- 数据统计 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">数据统计</div>
+                        </div>
+                        <div class="card-body">
+                            <!-- 成绩分布 -->
+                            <div style="margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                                    <span style="font-size: 13px; color: #666;">成绩分布</span>
+                                    <select id="timeFilter" style="padding: 4px 8px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 12px; color: #666; cursor: pointer;">
+                                        <option value="semester" selected>本学期</option>
+                                        <option value="month">本月</option>
+                                        <option value="week">本周</option>
+                                        <option value="all">全部</option>
+                                    </select>
+                                </div>
+                                <div class="chart-container">
+                                    <div class="ring-chart">
+                                        <div class="ring">
+                                            <div class="ring-text">
+                                                <div class="ring-number">85%</div>
+                                                <div class="ring-label">及格率</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="chart-legend">
+                                        <div class="legend-item">
+                                            <div class="legend-dot" style="background: #1890FF;"></div>
+                                            <span>及格 158人</span>
+                                        </div>
+                                        <div class="legend-item">
+                                            <div class="legend-dot" style="background: #F0F0F0;"></div>
+                                            <span>不及格 28人</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 本周任务进度 -->
+                            <div>
+                                <div style="font-size: 13px; color: #666; margin-bottom: 12px;">本周任务进度</div>
+                                <div class="progress-list">
+                                    <div class="progress-item">
+                                        <div class="progress-header">
+                                            <span class="progress-name">试卷批阅</span>
+                                            <span class="progress-value">18/24</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 75%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="progress-item">
+                                        <div class="progress-header">
+                                            <span class="progress-name">实训评分</span>
+                                            <span class="progress-value">8/12</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 67%;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="progress-item" style="display: none;">
+                                        <div class="progress-header">
+                                            <span class="progress-name">课程资料更新</span>
+                                            <span class="progress-value">5/6</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill" style="width: 83%;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 最近动态 -->
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">最近动态</div>
+                            <div class="card-more">更多</div>
+                        </div>
+                        <div class="card-body">
+                            <div class="activity-list">
+                                <div class="activity-item">
+                                    <div class="activity-icon submit">📝</div>
+                                    <div class="activity-content">
+                                        <div class="activity-text">
+                                            <strong>李明</strong> 提交了《机械制图》作业
+                                        </div>
+                                        <div class="activity-time">10分钟前</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon submit">📝</div>
+                                    <div class="activity-content">
+                                        <div class="activity-text">
+                                            <strong>王芳</strong> 提交了《数控加工》实训报告
+                                        </div>
+                                        <div class="activity-time">25分钟前</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon system">📢</div>
+                                    <div class="activity-content">
+                                        <div class="activity-text">
+                                            系统通知：期末考试安排已发布
+                                        </div>
+                                        <div class="activity-time">1小时前</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon course">📚</div>
+                                    <div class="activity-content">
+                                        <div class="activity-text">
+                                            <strong>《CAD制图》</strong> 课程资料已更新
+                                        </div>
+                                        <div class="activity-time">2小时前</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon submit">📝</div>
+                                    <div class="activity-content">
+                                        <div class="activity-text">
+                                            <strong>张伟</strong> 等5人提交了作业
+                                        </div>
+                                        <div class="activity-time">3小时前</div>
+                                    </div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon system">🎯</div>
+                                    <div class="activity-content">
+                                        <div class="activity-text">
+                                            本周教学任务完成度达到85%
+                                        </div>
+                                        <div class="activity-time">今天 08:00</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 快捷入口 -->
+            <div class="quick-section">
+                <div class="quick-grid">
+                    <div class="quick-item" onclick="window.location.href='./教师端_试卷批阅.html'">
+                        <div class="quick-icon" style="color: #1890FF;">✅</div>
+                        <div class="quick-name">试卷批阅</div>
+                    </div>
+                    <div class="quick-item" onclick="window.location.href='./教师端_实训批阅.html'">
+                        <div class="quick-icon" style="color: #52C41A;">🔍</div>
+                        <div class="quick-name">实训批阅</div>
+                    </div>
+                    <div class="quick-item" onclick="window.location.href='./教师端_错题集库.html'">
+                        <div class="quick-icon" style="color: #FA8C16;">📊</div>
+                        <div class="quick-name">错题集库</div>
+                    </div>
+                    <div class="quick-item" onclick="window.location.href='./教师端_题库.html'">
+                        <div class="quick-icon" style="color: #722ED1;">❓</div>
+                        <div class="quick-name">题库管理</div>
+                    </div>
+                    <div class="quick-item" onclick="window.location.href='./教师端_视频教材.html'">
+                        <div class="quick-icon" style="color: #13C2C2;">🎥</div>
+                        <div class="quick-name">视频教材</div>
+                    </div>
+                    <div class="quick-item" onclick="window.location.href='./教师端_生产工单管理_V2.html'">
+                        <div class="quick-icon" style="color: #EB2F96;">📋</div>
+                        <div class="quick-name">生产工单</div>
+                    </div>
+                    <div class="quick-item" onclick="window.location.href='./图表_成绩分析.html'">
+                        <div class="quick-icon" style="color: #F5222D;">📈</div>
+                        <div class="quick-name">成绩分析</div>
+                    </div>
+                    <div class="quick-item" onclick="window.location.href='./教师端_项目看板.html'">
+                        <div class="quick-icon" style="color: #FAAD14;">📌</div>
+                        <div class="quick-name">项目看板</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 检查登录状态
+        const user = JSON.parse(localStorage.getItem('iBodaoUser') || '{}');
+        if (!user.username) {
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+    
+        // 菜单展开/收起
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 页面加载时自动展开包含 active 菜单项的菜单组
+        document.addEventListener('DOMContentLoaded', function() {
+            const activeMenuItem = document.querySelector('.menu-item.active');
+            if (activeMenuItem) {
+                const menuItems = activeMenuItem.closest('.menu-items');
+                if (menuItems) {
+                    const menuTitle = menuItems.previousElementSibling;
+                    if (menuTitle && menuTitle.classList.contains('menu-title')) {
+                        menuTitle.classList.remove('collapsed');
+                        menuItems.classList.remove('collapsed');
+                    }
+                }
+            }
+        });
+    </script>
+    <script src="./user-menu-teacher-component.js"></script>
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

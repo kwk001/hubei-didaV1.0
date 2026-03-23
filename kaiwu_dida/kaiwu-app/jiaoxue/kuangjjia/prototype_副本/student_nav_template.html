@@ -1,0 +1,79 @@
+<!-- 学生端导航模板 - 统一使用教务端风格 -->
+<div class="sidebar">
+    <div class="sidebar-header">
+        <div class="logo">
+            <div class="logo-icon">
+                📚
+                <span class="logo-badge"></span>
+            </div>
+            <div class="logo-text">
+                <div class="logo-title">教学实训平台</div>
+                <div class="logo-subtitle">学生端</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sidebar-menu">
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-shouye"></i>
+                <span>工作台</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./教学实训平台_学生端.html'">
+                    <i class="iconfont icon-shouye"></i>
+                    <span>首页概览</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-kechengguanli"></i>
+                <span>我的学习</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./学生端_我的课程.html'">
+                    <i class="iconfont icon-kecheng"></i>
+                    <span>我的课程</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./学生端_我的考试.html'">
+                    <i class="iconfont icon-kaoshi"></i>
+                    <span>我的考试</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./学生端_我的实训.html'">
+                    <i class="iconfont icon-shixun"></i>
+                    <span>我的实训</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./学生端_错题集.html'">
+                    <i class="iconfont icon-cuoti"></i>
+                    <span>错题集</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="menu-group">
+            <div class="menu-title" onclick="toggleMenu(this)" aria-expanded="false">
+                <i class="iconfont icon-p008zhishiku"></i>
+                <span>知识库</span>
+                <span class="arrow">▼</span>
+            </div>
+            <div class="menu-items">
+                <div class="menu-item" onclick="window.location.href='./学生端_视频学习.html'" style="display: none;">
+                    <i class="iconfont icon-shipin"></i>
+                    <span>视频学习</span>
+                </div>
+                <div class="menu-item" onclick="window.location.href='./学生端_工艺管理.html'">
+                    <i class="iconfont icon-gongyi"></i>
+                    <span>工艺管理</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="sidebar-footer">
+        <div class="version-info">版本 v2.0.0</div>
+    </div>
+</div>

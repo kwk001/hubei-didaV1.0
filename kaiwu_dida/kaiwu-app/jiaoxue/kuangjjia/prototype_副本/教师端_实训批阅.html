@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实训批阅 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .user-info { display: flex; align-items: center; gap: 20px; }
+        .user-info span { color: #666; font-size: 14px; }
+
+        /* 统计卡片 */
+        .stats-row {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+        .stat-card {
+            background: #fff;
+            border-radius: 8px;
+            padding: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-icon.blue { background: #E6F7FF; }
+        .stat-icon.green { background: #E6F7FF; }
+        .stat-icon.orange { background: #FFF7E6; }
+        .stat-icon.red { background: #FFF1F0; }
+        .stat-info h3 { font-size: 14px; color: #666; font-weight: normal; margin-bottom: 4px; }
+        .stat-info .number { font-size: 28px; font-weight: bold; color: #333; }
+        
+        /* 搜索区域 */
+        .search-area {
+            background: #fff;
+            padding: 20px 24px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .search-form {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            align-items: center;
+        }
+        .form-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .form-item label { color: #666; font-size: 14px; white-space: nowrap; }
+        .form-item input, .form-item select {
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 14px;
+            min-width: 180px;
+        }
+        .form-item input:focus, .form-item select:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        .search-btn, .reset-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+        .search-btn { background: #1890FF; color: #fff; }
+        .search-btn:hover { background: #40A9FF; }
+        .reset-btn { background: #F5F5F5; color: #666; border: 1px solid #D9D9D9; }
+        .reset-btn:hover { border-color: #1890FF; color: #1890FF; }
+        
+        /* 表格区域 */
+        .table-container {
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            overflow: hidden;
+        }
+        .table-header {
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .table-title { font-size: 16px; font-weight: 600; color: #333; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 14px 16px;
+            text-align: left;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+        }
+        th {
+            background: #FAFAFA;
+            font-weight: 600;
+            color: #333;
+        }
+        td { color: #666; }
+        tr:hover { background: #F5F7FA; }
+        
+        .tag {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+        .tag-green { background: #E6F7FF; color: #1890FF; border: 1px solid #91D5FF; }
+        .tag-blue { background: #E6F7FF; color: #1890FF; border: 1px solid #91D5FF; }
+        .tag-orange { background: #FFF7E6; color: #FA8C16; border: 1px solid #FFD591; }
+        .tag-red { background: #FFF1F0; color: #FF4D4F; border: 1px solid #FFA39E; }
+        .tag-gray { background: #F5F5F5; color: #999; border: 1px solid #D9D9D9; }
+        
+        .action-btns { display: flex; gap: 8px; }
+        .action-btn {
+            padding: 4px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+        .action-btn.primary { background: #1890FF; color: #fff; }
+        .action-btn.primary:hover { background: #40A9FF; }
+        .action-btn.link { background: transparent; color: #1890FF; }
+        .action-btn.link:hover { color: #40A9FF; }
+        
+        /* 分页 */
+        .pagination {
+            padding: 16px 24px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            gap: 12px;
+            border-top: 1px solid #F0F0F0;
+        }
+        .page-btn {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #666;
+        }
+        .page-btn:hover:not(:disabled) { border-color: #1890FF; color: #1890FF; }
+        .page-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .page-btn.active { background: #1890FF; color: #fff; border-color: #1890FF; }
+        .page-info { color: #666; font-size: 13px; }
+        
+        /* 批阅进度 */
+        .review-progress {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .progress-bar {
+            width: 80px;
+            height: 8px;
+            background: #F0F0F0;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .progress-fill {
+            height: 100%;
+            background: #1890FF;
+            border-radius: 4px;
+            transition: width 0.3s;
+        }
+        .progress-text { font-size: 12px; color: #666; }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+        /* 对话框样式 */
+        .student-list-modal, .schedule-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .student-list-modal .modal-overlay, .schedule-modal .modal-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .student-list-modal .modal-content, .schedule-modal .modal-content {
+            position: relative;
+            background: #fff;
+            border-radius: 12px;
+            width: 500px;
+            max-height: 80vh;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            z-index: 1001;
+        }
+
+        .student-list-modal .modal-header, .schedule-modal .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            border-bottom: 1px solid #F0F0F0;
+            background: #FAFAFA;
+        }
+
+        .student-list-modal .modal-header h3, .schedule-modal .modal-header h3 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin: 0;
+        }
+
+        .student-list-modal .modal-close, .schedule-modal .modal-close {
+            background: none;
+            border: none;
+            font-size: 24px;
+            color: #999;
+            cursor: pointer;
+            padding: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+
+        .student-list-modal .modal-close:hover, .schedule-modal .modal-close:hover {
+            background: #F0F0F0;
+            color: #666;
+        }
+
+        .student-list-modal .modal-body, .schedule-modal .modal-body {
+            padding: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .student-table, .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .student-table th, .student-table td, .schedule-table th, .schedule-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .student-table th, .schedule-table th {
+            background: #FAFAFA;
+            font-weight: 600;
+            color: #333;
+            font-size: 14px;
+        }
+
+        .student-table td, .schedule-table td {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .student-table tr:hover td, .schedule-table tr:hover td {
+            background: #F5F7FA;
+        }
+
+        /* 表格固定列样式 */
+        .table-scroll-wrapper {
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .table-scroll-wrapper table {
+            min-width: 1200px;
+            table-layout: auto;
+        }
+
+        /* 固定第一列（序号） */
+        th:first-child,
+        td:first-child {
+            position: sticky;
+            left: 0;
+            background: #FAFAFA;
+            z-index: 10;
+            width: 60px;
+            min-width: 60px;
+            max-width: 60px;
+        }
+
+        td:first-child {
+            background: #fff;
+        }
+
+        tr:hover td:first-child {
+            background: #F5F7FA;
+        }
+
+        /* 固定最后一列（操作栏） */
+        th:last-child,
+        td:last-child {
+            position: sticky;
+            right: 0;
+            background: #FAFAFA;
+            z-index: 10;
+            width: 150px;
+            min-width: 150px;
+            max-width: 150px;
+        }
+
+        td:last-child {
+            background: #fff;
+        }
+
+        tr:hover td:last-child {
+            background: #F5F7FA;
+        }
+
+        /* 添加阴影效果 */
+        th:first-child::after,
+        td:first-child::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: -5px;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to right, rgba(0,0,0,0.05), transparent);
+            pointer-events: none;
+        }
+
+        th:last-child::before,
+        td:last-child::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -5px;
+            width: 5px;
+            height: 100%;
+            background: linear-gradient(to left, rgba(0,0,0,0.05), transparent);
+            pointer-events: none;
+        }
+
+        /* 其他列自适应宽度 */
+        th:not(:first-child):not(:last-child),
+        td:not(:first-child):not(:last-child) {
+            white-space: nowrap;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">首页 <span>/</span> 考试管理 <span>/</span> 实训批阅</div>
+            <div class="user-info">
+                <span>👨‍🏫 教师：张三</span>
+                <button class="logout-btn" onclick="logout()">退出登录</button>
+            </div>
+        </div>
+
+        <div class="content-body">
+            <!-- 统计卡片 -->
+            <div class="stats-row">
+                <div class="stat-card">
+                    <div class="stat-icon blue">🔧</div>
+                    <div class="stat-info">
+                        <h3>待批阅实训</h3>
+                        <div class="number">12</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">⏳</div>
+                    <div class="stat-info">
+                        <h3>批阅中</h3>
+                        <div class="number">5</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">✅</div>
+                    <div class="stat-info">
+                        <h3>已完成批阅</h3>
+                        <div class="number">89</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon red">🔥</div>
+                    <div class="stat-info">
+                        <h3>今日截止</h3>
+                        <div class="number">2</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 搜索区域 -->
+            <div class="search-area">
+                <div class="search-form">
+                    <div class="form-item">
+                        <label>实训任务名称：</label>
+                        <input type="text" placeholder="请输入实训任务名称" id="taskName">
+                    </div>
+                    <div class="form-item">
+                        <label>课程名称：</label>
+                        <input type="text" placeholder="请输入课程名称" id="courseName">
+                    </div>
+                    <div class="form-item">
+                        <label>批阅状态：</label>
+                        <select id="reviewStatus">
+                            <option value="">全部状态</option>
+                            <option value="pending">待批阅</option>
+                            <option value="reviewing">批阅中</option>
+                            <option value="completed">已完成</option>
+                        </select>
+                    </div>
+                    <div class="form-item">
+                        <label>班级：</label>
+                        <select id="className">
+                            <option value="">全部班级</option>
+                            <option value="2026级计算机1班">2026级计算机1班</option>
+                            <option value="2026级计算机2班">2026级计算机2班</option>
+                            <option value="2025级计算机1班">2025级计算机1班</option>
+                        </select>
+                    </div>
+                    <button class="search-btn" onclick="search()">🔍 查询</button>
+                    <button class="reset-btn" onclick="reset()">重置</button>
+                </div>
+            </div>
+
+            <!-- 表格区域 -->
+            <div class="table-container">
+                <div class="table-header">
+                    <div class="table-title">实训批阅列表</div>
+                </div>
+                <div class="table-scroll-wrapper">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th style="width: 60px;">序号</th>
+                                <th>任务名称</th>
+                                <th>分数</th>
+                                <th>所属课程</th>
+                                <th>任课教师</th>
+                                <th>参加人数</th>
+                                <th>上课时间信息</th>
+                                <th>上课教室</th>
+                                <th>提交/总数</th>
+                                <th>批阅进度</th>
+                                <th>状态</th>
+                                <th style="width: 150px;">操作</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody">
+                            <!-- 动态生成 -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagination">
+                    <span class="page-info">共 <span id="totalCount">0</span> 条记录</span>
+                    <button class="page-btn" onclick="prevPage()" id="prevBtn">上一页</button>
+                    <button class="page-btn active" id="page1">1</button>
+                    <button class="page-btn" id="page2">2</button>
+                    <button class="page-btn" id="page3">3</button>
+                    <button class="page-btn" onclick="nextPage()" id="nextBtn">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 模拟数据
+        const mockData = [
+            { id: 1, taskName: '数控加工中心操作实训', score: 100, courseName: '数控加工技术', teacherName: '张老师', studentCount: 40, classSchedules: [{classDate: '2025-01-15', classTime: '08:00-10:00'}, {classDate: '2025-01-17', classTime: '14:00-16:00'}], classroom: '实训中心A101', submitCount: 38, totalCount: 40, reviewedCount: 25, status: 'reviewing', deadline: '2025-01-18 23:59' },
+            { id: 2, taskName: 'PLC编程基础实训', score: 100, courseName: '电气控制技术', teacherName: '李老师', studentCount: 35, classSchedules: [{classDate: '2025-01-10', classTime: '14:00-15:30'}], classroom: '实训中心B201', submitCount: 35, totalCount: 35, reviewedCount: 35, status: 'completed', deadline: '2025-01-12 23:59' },
+            { id: 3, taskName: '机械制图CAD实训', score: 100, courseName: '机械制图', teacherName: '王老师', studentCount: 42, classSchedules: [{classDate: '2025-01-20', classTime: '08:00-10:00'}], classroom: '计算机房C301', submitCount: 42, totalCount: 42, reviewedCount: 0, status: 'pending', deadline: '2025-01-22 23:59' },
+            { id: 4, taskName: '焊接技术实训', score: 100, courseName: '焊接工艺', teacherName: '赵老师', studentCount: 30, classSchedules: [{classDate: '2025-01-08', classTime: '13:00-16:00'}, {classDate: '2025-01-09', classTime: '13:00-16:00'}], classroom: '焊接车间D101', submitCount: 28, totalCount: 30, reviewedCount: 28, status: 'completed', deadline: '2025-01-10 23:59' },
+            { id: 5, taskName: '工业机器人操作实训', score: 100, courseName: '机器人技术', teacherName: '刘老师', studentCount: 32, classSchedules: [{classDate: '2025-01-18', classTime: '09:00-11:30'}], classroom: '机器人实训室E101', submitCount: 32, totalCount: 32, reviewedCount: 15, status: 'reviewing', deadline: '2025-01-20 23:59' },
+            { id: 6, taskName: '3D打印技术实训', score: 100, courseName: '增材制造技术', teacherName: '陈老师', studentCount: 38, classSchedules: [{classDate: '2025-01-22', classTime: '08:00-10:00'}], classroom: '3D打印室F201', submitCount: 36, totalCount: 38, reviewedCount: 0, status: 'pending', deadline: '2025-01-25 23:59' },
+            { id: 7, taskName: '电工电子基础实训', score: 100, courseName: '电工电子技术', teacherName: '周老师', studentCount: 40, classSchedules: [{classDate: '2025-01-05', classTime: '10:00-11:30'}], classroom: '电工实训室G101', submitCount: 40, totalCount: 40, reviewedCount: 40, status: 'completed', deadline: '2025-01-08 23:59' },
+            { id: 8, taskName: '模具设计与制造实训', score: 100, courseName: '模具设计', teacherName: '吴老师', studentCount: 32, classSchedules: [{classDate: '2025-01-16', classTime: '13:00-16:00'}], classroom: '模具实训室H101', submitCount: 30, totalCount: 32, reviewedCount: 10, status: 'reviewing', deadline: '2025-01-19 23:59' },
+        ];
+
+        let currentPage = 1;
+        const pageSize = 10;
+        let filteredData = [...mockData];
+
+        function renderTable() {
+            const tbody = document.getElementById('tableBody');
+            const start = (currentPage - 1) * pageSize;
+            const end = start + pageSize;
+            const pageData = filteredData.slice(start, end);
+
+            tbody.innerHTML = pageData.map((item, index) => {
+                const progress = Math.round((item.reviewedCount / item.submitCount) * 100) || 0;
+                const scheduleCount = item.classSchedules ? item.classSchedules.length : 0;
+                return `
+                    <tr>
+                        <td>${start + index + 1}</td>
+                        <td><strong>${item.taskName}</strong></td>
+                        <td>${item.score}分</td>
+                        <td>${item.courseName}</td>
+                        <td>${item.teacherName}</td>
+                        <td><a href="javascript:void(0)" onclick="showStudentList(${item.id})" style="color: #1890FF; text-decoration: none;">${item.studentCount}人</a></td>
+                        <td><a href="javascript:void(0)" onclick="showClassScheduleList(${item.id})" style="color: #1890FF; text-decoration: none;">${scheduleCount}个时间段</a></td>
+                        <td>${item.classroom}</td>
+                        <td>${item.reviewedCount}/${item.submitCount}</td>
+                        <td>
+                            <div class="review-progress">
+                                <div class="progress-bar">
+                                    <div class="progress-fill" style="width: ${progress}%; background: ${progress === 100 ? '#1890FF' : '#1890FF'}"></div>
+                                </div>
+                                <span class="progress-text">${progress}%</span>
+                            </div>
+                        </td>
+                        <td>${renderStatus(item.status)}</td>
+                        <td>
+                            <div class="action-btns">
+                                ${item.status === 'completed'
+                                    ? `<button class="action-btn" disabled style="background: #f5f5f5; color: #999; cursor: not-allowed;">批阅</button>`
+                                    : `<button class="action-btn primary" onclick="startReview(${item.id})">批阅</button>`
+                                }
+                                <button class="action-btn link" onclick="viewDetail(${item.id})">详情</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+
+            document.getElementById('totalCount').textContent = filteredData.length;
+            updatePagination();
+        }
+
+        function renderStatus(status) {
+            const statusMap = {
+                'pending': '<span class="tag tag-orange">待批阅</span>',
+                'reviewing': '<span class="tag tag-blue">批阅中</span>',
+                'completed': '<span class="tag tag-green">已完成</span>'
+            };
+            return statusMap[status] || status;
+        }
+
+        function updatePagination() {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            document.getElementById('prevBtn').disabled = currentPage === 1;
+            document.getElementById('nextBtn').disabled = currentPage === totalPages || totalPages === 0;
+        }
+
+        function search() {
+            const taskName = document.getElementById('taskName').value.toLowerCase();
+            const courseName = document.getElementById('courseName').value.toLowerCase();
+            const reviewStatus = document.getElementById('reviewStatus').value;
+            const className = document.getElementById('className').value;
+
+            filteredData = mockData.filter(item => {
+                return (!taskName || item.taskName.toLowerCase().includes(taskName)) &&
+                       (!courseName || item.courseName.toLowerCase().includes(courseName)) &&
+                       (!reviewStatus || item.status === reviewStatus) &&
+                       (!className || item.className === className);
+            });
+
+            currentPage = 1;
+            renderTable();
+        }
+
+        function reset() {
+            document.getElementById('taskName').value = '';
+            document.getElementById('courseName').value = '';
+            document.getElementById('reviewStatus').value = '';
+            document.getElementById('className').value = '';
+            filteredData = [...mockData];
+            currentPage = 1;
+            renderTable();
+        }
+
+        function prevPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                renderTable();
+            }
+        }
+
+        function nextPage() {
+            const totalPages = Math.ceil(filteredData.length / pageSize);
+            if (currentPage < totalPages) {
+                currentPage++;
+                renderTable();
+            }
+        }
+
+        function startReview(id) {
+            const task = mockData.find(item => item.id === id);
+            // 先跳转到二级页面（学生列表）
+            window.location.href = `./教师端_实训批阅_学生列表.html?taskId=${id}&taskName=${encodeURIComponent(task.taskName)}`;
+        }
+
+        function viewDetail(id) {
+            const task = mockData.find(item => item.id === id);
+            // 先跳转到二级页面（学生列表），与批阅保持一致
+            window.location.href = `./教师端_实训批阅_学生列表.html?taskId=${id}&taskName=${encodeURIComponent(task.taskName)}&mode=detail`;
+        }
+
+        // 显示学生列表对话框
+        function showStudentList(taskId) {
+            const task = mockData.find(item => item.id === taskId);
+            if (!task) return;
+
+            // 模拟学生数据
+            const students = [
+                { name: '张三', studentNo: '2023010101', className: '2023级机械1班' },
+                { name: '李四', studentNo: '2023010102', className: '2023级机械1班' },
+                { name: '王五', studentNo: '2023010103', className: '2023级机械2班' },
+                { name: '赵六', studentNo: '2023010104', className: '2023级机械2班' },
+                { name: '钱七', studentNo: '2023010105', className: '2023级机械1班' }
+            ];
+
+            // 创建对话框
+            const modal = document.createElement('div');
+            modal.className = 'student-list-modal';
+            modal.innerHTML = `
+                <div class="modal-overlay" onclick="closeStudentList()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>学生列表 - ${task.taskName}</h3>
+                        <button class="modal-close" onclick="closeStudentList()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="student-table">
+                            <thead>
+                                <tr>
+                                    <th>姓名</th>
+                                    <th>学号</th>
+                                    <th>所属班级</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${students.map(student => `
+                                    <tr>
+                                        <td>${student.name}</td>
+                                        <td>${student.studentNo}</td>
+                                        <td>${student.className}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // 关闭学生列表对话框
+        function closeStudentList() {
+            const modal = document.querySelector('.student-list-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 显示上课时间列表对话框
+        function showClassScheduleList(taskId) {
+            const task = mockData.find(item => item.id === taskId);
+            if (!task || !task.classSchedules) return;
+
+            // 创建对话框
+            const modal = document.createElement('div');
+            modal.className = 'schedule-modal';
+            modal.innerHTML = `
+                <div class="modal-overlay" onclick="closeClassScheduleList()"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>上课时间信息 - ${task.taskName}</h3>
+                        <button class="modal-close" onclick="closeClassScheduleList()">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>上课日期</th>
+                                    <th>上课时间段</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${task.classSchedules.map(schedule => `
+                                    <tr>
+                                        <td>${schedule.classDate}</td>
+                                        <td>${schedule.classTime}</td>
+                                    </tr>
+                                `).join('')}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // 关闭上课时间列表对话框
+        function closeClassScheduleList() {
+            const modal = document.querySelector('.schedule-modal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 初始化
+        renderTable();
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

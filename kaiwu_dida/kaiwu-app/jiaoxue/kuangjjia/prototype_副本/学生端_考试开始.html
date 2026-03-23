@@ -1,0 +1,2674 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>考试开始 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./nav-styles.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+                /* 有导航栏时的布局 */
+        body.has-nav-sidebar {
+            display: flex;
+        }
+
+        body.has-nav-sidebar .main-content {
+            flex: 1;
+            margin-left: 260px; /* 导航栏宽度 */
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-left: 0;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .logo {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .menu-group {
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .menu-title {
+            padding: 12px 24px;
+            color: rgba(255,255,255,0.65);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item {
+            padding: 12px 24px 12px 48px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.65);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: #1890FF;
+            color: #fff;
+        }
+
+        .header {
+            height: 64px;
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: #595959;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .btn-text:hover {
+            color: #1890ff;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin: 0;
+        }
+
+        .exam-timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: #fff;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #ff4d4f;
+        }
+
+        .exam-container {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 200px);
+        }
+
+        .question-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .question-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            flex: 1;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .question-number {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1890ff;
+        }
+
+        .question-type {
+            font-size: 13px;
+            color: #8c8c8c;
+            padding: 4px 12px;
+            background: #f5f5f5;
+            border-radius: 4px;
+        }
+
+        .question-source {
+            font-size: 12px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .question-source.normal {
+            background: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #91d5ff;
+        }
+
+        .question-source.practice {
+            background: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+
+        /* 加工类 - 紫色 */
+        .question-source.machining {
+            background: #f9f0ff;
+            color: #722ed1;
+            border: 1px solid #d3adf7;
+        }
+
+        /* 检测类 - 青色 */
+        .question-source.inspection {
+            background: #e6fffb;
+            color: #13c2c2;
+            border: 1px solid #87e8de;
+        }
+
+        /* 设计类 - 绿色 */
+        .question-source.design {
+            background: #f6ffed;
+            color: #52c41a;
+            border: 1px solid #b7eb8f;
+        }
+
+        /* 工艺类 - 橙色 */
+        .question-source.process {
+            background: #fff7e6;
+            color: #fa8c16;
+            border: 1px solid #ffd591;
+        }
+
+        /* 编程类 - 蓝色 */
+        .question-source.programming {
+            background: #e6f7ff;
+            color: #1890ff;
+            border: 1px solid #91d5ff;
+        }
+
+        .question-text {
+            font-size: 16px;
+            color: #1f1f1f;
+            line-height: 1.6;
+            margin-bottom: 24px;
+        }
+
+        .options-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .option-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-item:hover {
+            border-color: #1890ff;
+            background: #e6f7ff;
+        }
+
+        .option-item input[type="radio"] {
+            display: none;
+        }
+
+        .option-label {
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f5f5f5;
+            border-radius: 50%;
+            font-size: 14px;
+            font-weight: 600;
+            color: #595959;
+        }
+
+        .option-item input[type="radio"]:checked + .option-label {
+            background: #1890ff;
+            color: #fff;
+        }
+
+        .option-text {
+            font-size: 14px;
+            color: #1f1f1f;
+        }
+
+        .question-actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-primary {
+            background: #1890ff;
+            color: #fff;
+        }
+
+        .btn-default {
+            background: #fff;
+            color: #595959;
+            border: 1px solid #d9d9d9;
+        }
+
+        .exam-sidebar {
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sidebar-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin-bottom: 16px;
+        }
+
+        .answer-sheet {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .answer-item {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #d9d9d9;
+            border-radius: 4px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: #fff;
+            color: #333;
+        }
+
+        .answer-item:hover {
+            border-color: #1890ff;
+            color: #1890ff;
+            transform: scale(1.1);
+        }
+
+        .answer-item.answered {
+            background: #52c41a;
+            border-color: #52c41a;
+            color: #fff;
+        }
+
+        .answer-item.current {
+            background: #1890ff;
+            border-color: #1890ff;
+            color: #fff;
+        }
+
+        .btn-danger {
+            background: #ff4d4f;
+            color: #fff;
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        /* 图例样式 - 参考特殊_在线考试界面.html */
+        .card-legend {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: #666;
+        }
+        .legend-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+
+
+    </style>
+</head>
+<body>
+    <div class="main-content">
+        <div class="header">
+            <div>首页 / 我的学习 / 考试</div>
+            <div><i class="iconfont icon-xueshengguanli"></i> 学生：李明 | <button onclick="logout()" style="padding: 6px 16px; background: #FF4D4F; color: #fff; border: none; border-radius: 4px; cursor: pointer;">退出</button></div>
+        </div>
+
+        <div class="content-body">
+            <!-- 顶部区域已隐藏 -->
+            <div class="page-header" style="display: none;">
+                <div class="header-left">
+                    <button class="btn btn-text" onclick="goBack()">
+                        <i class="iconfont icon-fanhui"></i> 返回课程
+                    </button>
+                    <h1 class="page-title" id="examTitle">考试</h1>
+                </div>
+                <div class="exam-timer">
+                    <i class="iconfont icon-shijian"></i>
+                    <span id="timer">30:00</span>
+                </div>
+            </div>
+
+            <div class="exam-container">
+                <div class="question-section">
+                    <div class="question-card">
+                        <div class="question-header">
+                            <span class="question-number">第1题 / 共20题</span>
+                            <div>
+                                <span class="question-type">单选题</span>
+                                <span class="question-source normal" id="questionSource">普通题目</span>
+                            </div>
+                        </div>
+                        <div class="question-content">
+                            <!-- 题目内容区域已隐藏 -->
+                            <p class="question-text" style="display: none;">机械制图中，三视图是指哪三个视图？</p>
+                            <div class="options-list">
+                                <label class="option-item">
+                                    <input type="radio" name="answer" value="A">
+                                    <span class="option-label">A</span>
+                                    <span class="option-text">主视图、俯视图、左视图</span>
+                                </label>
+                                <label class="option-item">
+                                    <input type="radio" name="answer" value="B">
+                                    <span class="option-label">B</span>
+                                    <span class="option-text">主视图、俯视图、右视图</span>
+                                </label>
+                                <label class="option-item">
+                                    <input type="radio" name="answer" value="C">
+                                    <span class="option-label">C</span>
+                                    <span class="option-text">前视图、俯视图、左视图</span>
+                                </label>
+                                <label class="option-item">
+                                    <input type="radio" name="answer" value="D">
+                                    <span class="option-label">D</span>
+                                    <span class="option-text">主视图、仰视图、左视图</span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="question-actions">
+                        <button class="btn btn-default" onclick="prevQuestion()">
+                            <i class="iconfont icon-shangyiye"></i> 上一题
+                        </button>
+                        <button class="btn btn-primary" onclick="nextQuestion()">
+                            下一题 <i class="iconfont icon-xiayiye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="exam-sidebar">
+                    <!-- 答题卡 -->
+                    <div class="sidebar-section">
+                        <div class="section-title">题目导航</div>
+                        <div class="answer-sheet" id="answerSheet">
+                            <!-- 动态生成答题卡 -->
+                        </div>
+                        <div class="card-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #1890ff;"></div>
+                                <span>当前题目</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #52c41a;"></div>
+                                <span>已作答</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #fff; border: 1px solid #d9d9d9;"></div>
+                                <span>未作答</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 提交按钮 -->
+                    <button class="btn btn-danger btn-block" onclick="submitExam()">
+                        <i class="iconfont icon-tijiao"></i> 提交试卷
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        window.onload = function() {
+            const examName = getUrlParam('examName');
+            if (examName) {
+                document.getElementById('examTitle').textContent = examName;
+            }
+            startTimer();
+            initQuestions();
+        };
+
+        function startTimer() {
+            let minutes = 30;
+            let seconds = 0;
+            
+            const timer = setInterval(() => {
+                if (seconds === 0) {
+                    if (minutes === 0) {
+                        clearInterval(timer);
+                        alert('考试时间到！');
+                        submitExam();
+                        return;
+                    }
+                    minutes--;
+                    seconds = 59;
+                } else {
+                    seconds--;
+                }
+                
+                const minStr = minutes.toString().padStart(2, '0');
+                const secStr = seconds.toString().padStart(2, '0');
+                document.getElementById('timer').textContent = minStr + ':' + secStr;
+            }, 1000);
+        }
+
+        function goBack() {
+            if (confirm('确定要退出考试吗？退出后已作答的题目将保存，但计时不会暂停。')) {
+                window.location.href = './学生端_课程详情.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 题目数据 - 包含普通题目和实训题目
+        const questions = [
+            {
+                id: 1,
+                type: '单选题',
+                source: 'normal',
+                sourceText: '普通题目',
+                question: '机械制图中，三视图是指哪三个视图？',
+                options: ['主视图、俯视图、左视图', '主视图、俯视图、右视图', '前视图、俯视图、左视图', '主视图、仰视图、左视图'],
+                answer: 'A'
+            },
+            {
+                id: 2,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'machining',
+                sourceText: '加工类',
+                question: '数控车床编程与操作：外圆车削加工',
+                workOrder: {
+                    number: 'WO-2024-001',
+                    material: '传动轴毛坯',
+                    specification: 'Φ55×200mm',
+                    quantity: '1件',
+                    operator: '张伟',
+                    timeSlot: '2026-02-28 09:00-11:00'
+                },
+                processRoute: '轴类零件加工 | 8道工序',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: 'Φ55×120mm',
+                    precision: 'IT7级',
+                    roughness: 'Ra3.2',
+                    description: '完成轴类零件的外圆车削加工，保证尺寸精度和表面质量要求。加工过程中注意刀具选择、切削参数设定和测量检验。'
+                },
+                processSteps: [
+                    { id: 1, name: '下料', desc: '根据工艺要求，将原材料切割至指定长度', params: ['切割长度', '端面平整度'], tips: '使用锯床进行切割，确保端面平整，无毛刺。切割长度公差控制在±0.5mm以内。' },
+                    { id: 2, name: '车端面', desc: '车削工件两端面，保证端面与轴线垂直', params: ['主轴转速', '进给速度', '端面粗糙度'], tips: '装夹时注意校正，车刀对准工件中心。端面车削后粗糙度应达到Ra3.2。' },
+                    { id: 3, name: '钻中心孔', desc: '在工件两端钻中心孔，为后续加工定位', params: ['钻头直径', '钻孔深度', '主轴转速'], tips: '中心钻对准工件中心，钻孔深度适中，不宜过深。注意冷却液的使用。' },
+                    { id: 4, name: '粗车外圆', desc: '粗车各段外圆，留有余量供精加工', params: ['主轴转速', '进给速度', '切削深度', '留量'], tips: '粗车采用较大的切削深度和进给量，提高加工效率。各段外圆留0.5mm精加工余量。' },
+                    { id: 5, name: '精车外圆', desc: '精车各段外圆至图纸要求尺寸', params: ['主轴转速', '进给速度', '切削深度', '表面粗糙度'], tips: '精车采用较小的切削深度和进给量，保证加工精度。表面粗糙度达到Ra1.6。' },
+                    { id: 6, name: '切槽', desc: '加工各退刀槽和密封槽', params: ['槽宽', '槽深', '主轴转速'], tips: '切槽刀安装要牢固，切削深度逐渐加大，避免刀具损坏。注意槽的尺寸精度。' },
+                    { id: 7, name: '车螺纹', desc: '加工连接螺纹', params: ['螺距', '螺纹深度', '主轴转速', '进给速度'], tips: '螺纹车刀对准工件中心，检查螺距设置。采用分刀切削，最后一刀光整加工。' },
+                    { id: 8, name: '检验入库', desc: '全面检验工件尺寸，合格后入库', params: ['外径尺寸', '长度尺寸', '表面粗糙度', '螺纹精度'], tips: '使用游标卡尺、千分尺等工具全面检验。填写检验记录单，合格品办理入库。' }
+                ],
+                attachments: [
+                    { name: '轴类零件加工图纸.dwg', type: 'DWG', size: '1.5MB' },
+                    { name: '加工工艺卡.pdf', type: 'PDF', size: '280KB' },
+                    { name: '毛坯实物参考图.jpg', type: 'JPG', size: '450KB' }
+                ],
+                taskRequirements: [
+                    '按8道工序完成轴类零件加工',
+                    '每道工序填写加工参数',
+                    '同步设备数据并记录',
+                    '完成工序后提交检验',
+                    '上传加工完成的零件照片',
+                    '提交工序参数记录表'
+                ],
+                scoringCriteria: [
+                    '工序完整性（30分）：完成全部8道工序',
+                    '尺寸精度（30分）：达到IT7级精度要求',
+                    '表面质量（20分）：表面粗糙度Ra3.2',
+                    '操作规范（20分）：安全操作，参数记录完整'
+                ],
+                submitType: 'file'
+            },
+            {
+                id: 3,
+                type: '单选题',
+                source: 'normal',
+                sourceText: '普通题目',
+                question: '下列哪种材料不属于金属材料？',
+                options: ['碳钢', '铝合金', '聚氯乙烯', '铜合金'],
+                answer: 'C'
+            },
+            {
+                id: 4,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'inspection',
+                sourceText: '检测类',
+                question: '精密检测-实训任务一：轴承座零件三坐标测量',
+                workOrder: {
+                    number: 'WO-INSP-001',
+                    material: '轴承座零件',
+                    specification: 'HT200铸件',
+                    quantity: '1件',
+                    operator: '赵检测',
+                    timeSlot: '2026-02-28 14:00-17:00'
+                },
+                processRoute: '精密检测 | 6个检测阶段',
+                requirements: {
+                    material: 'HT200灰铸铁',
+                    blankSize: '铸件毛坯',
+                    precision: 'IT7级',
+                    roughness: 'Ra3.2',
+                    description: '使用三坐标测量机对轴承座零件进行全面精度检测，包括尺寸精度、形位公差、表面粗糙度等。检测项目：外径Φ50±0.02mm、内径Φ30±0.02mm、同轴度≤0.03mm、垂直度≤0.05mm。'
+                },
+                processSteps: [
+                    { id: 1, name: '检测准备', desc: '准备检测设备和被测零件', params: ['设备校准', '零件清洁', '环境检查'], tips: '开机预热三坐标测量机30分钟，校准测头。清洁被测零件表面，去除油污和毛刺。检查实验室温湿度。' },
+                    { id: 2, name: '基准建立', desc: '建立零件坐标系', params: ['基准面', '基准轴', '坐标原点'], tips: '以轴承座底面为Z轴基准，轴承孔轴线为Z轴，建立右手坐标系。使用3-2-1法确定坐标系。' },
+                    { id: 3, name: '尺寸测量', desc: '测量各关键尺寸', params: ['外径测量', '内径测量', '长度测量'], tips: '使用触发式测头测量外径、内径、孔距等尺寸。每个尺寸测量3次取平均值，记录测量结果。' },
+                    { id: 4, name: '形位公差', desc: '测量形位公差项目', params: ['同轴度', '垂直度', '平行度'], tips: '测量轴承孔与外圆的同轴度，底面与侧面的垂直度。使用最佳拟合算法计算形位误差。' },
+                    { id: 5, name: '粗糙度检测', desc: '检测表面粗糙度', params: ['Ra值', 'Rz值', '测量位置'], tips: '使用粗糙度仪检测关键表面的粗糙度。在加工表面选取3个位置测量，记录Ra和Rz值。' },
+                    { id: 6, name: '报告出具', desc: '生成检测报告', params: ['数据处理', '合格判定', '报告编制'], tips: '整理测量数据，与图纸要求对比判定合格性。生成三坐标测量报告，包括测量点云、误差分析、合格结论。' }
+                ],
+                attachments: [
+                    { name: '轴承座检测图纸.pdf', type: 'PDF', size: '380KB' },
+                    { name: '三坐标操作手册.pdf', type: 'PDF', size: '1.5MB' },
+                    { name: '公差标准GB/T1804.pdf', type: 'PDF', size: '680KB' }
+                ]
+            },
+            {
+                id: 5,
+                type: '单选题',
+                source: 'normal',
+                sourceText: '普通题目',
+                question: '机械传动中，齿轮传动的主要优点是什么？',
+                options: ['传动比准确', '结构简单', '成本低', '无噪音'],
+                answer: 'A'
+            },
+            {
+                id: 6,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'design',
+                sourceText: '设计类',
+                question: '机械设计-实训任务一：轴承座三维建模与工程图设计',
+                workOrder: {
+                    number: 'WO-DESIGN-001',
+                    material: '轴承座零件',
+                    specification: 'HT200铸铁',
+                    quantity: '1件',
+                    operator: '李设计',
+                    timeSlot: '2026-02-28 09:00-12:00'
+                },
+                processRoute: '轴承座设计 | 6个设计阶段',
+                requirements: {
+                    material: 'HT200灰铸铁',
+                    blankSize: '铸件毛坯',
+                    precision: 'IT8级',
+                    roughness: 'Ra3.2-6.3',
+                    description: '完成轴承座的三维建模和二维工程图设计，包含底座、轴承孔、安装孔、加强筋等结构。轴承孔直径Φ50H7，安装孔4×Φ10，底座尺寸120×80×25mm。'
+                },
+                processSteps: [
+                    { id: 1, name: '需求分析', desc: '分析轴承座的功能要求和设计约束', params: ['载荷分析', '材料选择', '结构方案'], tips: '确定轴承座承受的径向载荷和轴向载荷，选择合适的材料和结构形式。' },
+                    { id: 2, name: '三维建模', desc: '使用SolidWorks创建轴承座三维模型', params: ['底座建模', '轴承孔', '安装孔', '加强筋'], tips: '按照从简单到复杂的顺序建模。先创建底座，再添加轴承孔凸台，最后添加安装孔和加强筋。' },
+                    { id: 3, name: '装配设计', desc: '将轴承座与轴承、轴进行装配', params: ['轴承选型', '配合设计', '装配约束'], tips: '选择合适的滚动轴承型号，设置轴承与轴承座的配合关系，完成装配体设计。' },
+                    { id: 4, name: '工程图设计', desc: '生成二维工程图并标注尺寸', params: ['视图布局', '尺寸标注', '公差标注'], tips: '创建主视图、俯视图、左视图，标注所有关键尺寸和形位公差。轴承孔标注Φ50H7。' },
+                    { id: 5, name: '强度校核', desc: '对轴承座进行强度分析', params: ['应力分析', '变形分析', '安全系数'], tips: '使用Simulation进行静力学分析，校核轴承座在最大载荷下的强度和刚度。' },
+                    { id: 6, name: '出图审核', desc: '完善图纸并提交审核', params: ['技术要求', '标题栏', '审核签字'], tips: '填写完整的技术要求，包括材料、热处理、表面处理等。检查图纸规范性后提交审核。' }
+                ],
+                attachments: [
+                    { name: '轴承座设计任务书.pdf', type: 'PDF', size: '320KB' },
+                    { name: '轴承座参考图纸.dwg', type: 'DWG', size: '850KB' },
+                    { name: 'SolidWorks模板文件.zip', type: 'ZIP', size: '2.1MB' }
+                ]
+            },
+            {
+                id: 7,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'process',
+                sourceText: '工艺类',
+                question: '机械制造工艺-实训任务一：轴类零件工艺规程编制',
+                workOrder: {
+                    number: 'WO-PROC-001',
+                    material: '45#钢传动轴',
+                    specification: 'Φ55×220mm',
+                    quantity: '1件',
+                    operator: '张工艺',
+                    timeSlot: '2026-02-28 08:00-12:00'
+                },
+                processRoute: '工艺设计 | 6个工艺阶段',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: 'Φ60×230mm锻件',
+                    precision: 'IT7级',
+                    roughness: 'Ra1.6-3.2',
+                    description: '编制轴类零件的完整工艺规程，包括工艺路线设计、工序内容确定、切削参数选择、工艺装备设计等。零件需进行调质处理HRC28-32，关键表面粗糙度Ra1.6。'
+                },
+                processSteps: [
+                    { id: 1, name: '图纸分析', desc: '分析零件图纸和技术要求', params: ['尺寸精度', '形位公差', '表面质量', '材料性能'], tips: '仔细阅读零件图纸，识别关键尺寸和精度要求。该轴有多个直径尺寸，同轴度要求≤0.03mm，表面粗糙度Ra1.6-3.2。' },
+                    { id: 2, name: '毛坯设计', desc: '确定毛坯类型和尺寸', params: ['毛坯类型', '加工余量', '材料定额'], tips: '根据零件材料45#钢和形状特点，选择锻件毛坯。毛坯直径留5mm余量，长度留10mm余量。' },
+                    { id: 3, name: '基准选择', desc: '确定定位基准和装夹方案', params: ['粗基准', '精基准', '装夹方式'], tips: '粗加工采用外圆表面作为定位基准，精加工采用中心孔作为定位基准。使用三爪卡盘和顶尖装夹。' },
+                    { id: 4, name: '工艺路线', desc: '编制加工工艺路线', params: ['加工阶段', '工序顺序', '热处理'], tips: '工艺路线：下料→锻造→正火→粗车→调质→半精车→铣键槽→淬火→磨削。合理安排热处理工序位置。' },
+                    { id: 5, name: '工序设计', desc: '设计各工序的加工内容', params: ['工序内容', '切削用量', '工时定额'], tips: '为每道工序确定加工内容、选择机床设备、设计工艺装备、计算切削参数和工时定额。' },
+                    { id: 6, name: '工艺文件', desc: '编制工艺卡片和技术文件', params: ['工艺卡片', '工序图', '检验规范'], tips: '填写机械加工工艺过程卡片和工序卡片，绘制工序简图，编制检验规程和质量控制计划。' }
+                ],
+                attachments: [
+                    { name: '轴类零件图纸.pdf', type: 'PDF', size: '520KB' },
+                    { name: '工艺设计手册.pdf', type: 'PDF', size: '2.8MB' },
+                    { name: '切削用量参考表.xlsx', type: 'XLSX', size: '120KB' }
+                ]
+            },
+            {
+                id: 8,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'programming',
+                sourceText: '编程类',
+                question: '数控编程-实训任务一：轴类零件车削程序编制',
+                workOrder: {
+                    number: 'WO-PROG-001',
+                    material: '45#钢轴类零件',
+                    specification: 'Φ50×150mm',
+                    quantity: '1件',
+                    operator: '王编程',
+                    timeSlot: '2026-02-28 13:00-16:00'
+                },
+                processRoute: '数控编程 | 5个编程阶段',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: 'Φ55×160mm',
+                    precision: 'IT7级',
+                    roughness: 'Ra1.6-3.2',
+                    description: '编写轴类零件的数控车床加工程序，使用G71粗车循环和G70精车循环，完成外圆、端面、切槽、螺纹等加工。程序需包含刀具补偿和安全指令。'
+                },
+                processSteps: [
+                    { id: 1, name: '工艺分析', desc: '分析零件图纸，确定加工工艺路线', params: ['加工内容', '刀具选择', '切削参数'], tips: '分析零件的结构特点和加工要求，确定加工顺序：车端面→粗车外圆→精车外圆→切槽→车螺纹。' },
+                    { id: 2, name: '程序框架', desc: '建立程序基本框架和坐标系', params: ['程序号', '坐标设定', '刀具调用'], tips: '编写程序头，设置工件坐标系G54，调用1号外圆刀T0101，设置主轴转速和进给速度。' },
+                    { id: 3, name: '粗车循环', desc: '编写G71粗车循环程序', params: ['G71指令', '切削深度', '留量设置'], tips: '使用G71 U_R_指令设置切削深度和退刀量，使用G71 P_Q_U_W_F_设置精加工轮廓和余量。' },
+                    { id: 4, name: '精车循环', desc: '编写G70精车循环程序', params: ['G70指令', '精车路径', '表面质量'], tips: '使用G70 P_Q_F_指令进行精加工，设置较小的进给速度保证表面质量。精车余量U0.3 W0.1。' },
+                    { id: 5, name: '程序调试', desc: '程序验证和模拟运行', params: ['语法检查', '刀路模拟', '程序优化'], tips: '在数控仿真软件中进行程序验证，检查刀路是否正确，优化切削参数，确保程序无误后上传至机床。' }
+                ],
+                attachments: [
+                    { name: '轴类零件图纸.pdf', type: 'PDF', size: '450KB' },
+                    { name: '数控编程手册.pdf', type: 'PDF', size: '1.2MB' },
+                    { name: 'G代码参考表.xlsx', type: 'XLSX', size: '85KB' }
+                ]
+            },
+            {
+                id: 9,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'machining',
+                sourceText: '加工类',
+                question: '数控车床编程与操作：复杂轴类零件加工',
+                workOrder: {
+                    number: 'WO-2024-009',
+                    material: '阶梯轴毛坯',
+                    specification: 'Φ60×250mm',
+                    quantity: '1件',
+                    operator: '李明',
+                    timeSlot: '2026-03-15 09:00-12:00'
+                },
+                processRoute: '阶梯轴零件加工 | 8道工序',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: 'Φ60×250mm',
+                    precision: 'IT7级',
+                    roughness: 'Ra3.2',
+                    description: '完成阶梯轴零件的车削加工，包含外圆车削、切槽加工、螺纹加工。保证尺寸精度和表面质量要求，编制数控加工程序并完成零件装夹与对刀操作。'
+                },
+                processSteps: [
+                    { id: 1, name: '下料', desc: '根据工艺要求，将原材料切割至指定长度', params: ['切割长度', '端面平整度'], tips: '使用锯床进行切割，确保端面平整，无毛刺。切割长度公差控制在±0.5mm以内。' },
+                    { id: 2, name: '车端面', desc: '车削工件两端面，保证端面与轴线垂直', params: ['主轴转速', '进给速度', '端面粗糙度'], tips: '装夹时注意校正，车刀对准工件中心。端面车削后粗糙度应达到Ra3.2。' },
+                    { id: 3, name: '钻中心孔', desc: '在工件两端钻中心孔，为后续加工定位', params: ['钻头直径', '钻孔深度', '主轴转速'], tips: '中心钻对准工件中心，钻孔深度适中，不宜过深。注意冷却液的使用。' },
+                    { id: 4, name: '粗车外圆', desc: '粗车各段外圆，留有余量供精加工', params: ['主轴转速', '进给速度', '切削深度', '留量'], tips: '粗车采用较大的切削深度和进给量，提高加工效率。各段外圆留0.5mm精加工余量。' },
+                    { id: 5, name: '精车外圆', desc: '精车各段外圆至图纸要求尺寸', params: ['主轴转速', '进给速度', '切削深度', '表面粗糙度'], tips: '精车采用较小的切削深度和进给量，保证加工精度。表面粗糙度达到Ra1.6。' },
+                    { id: 6, name: '切槽', desc: '加工各退刀槽和密封槽', params: ['槽宽', '槽深', '主轴转速'], tips: '切槽刀安装要牢固，切削深度逐渐加大，避免刀具损坏。注意槽的尺寸精度。' },
+                    { id: 7, name: '车螺纹', desc: '加工连接螺纹', params: ['螺距', '螺纹深度', '主轴转速', '进给速度'], tips: '螺纹车刀对准工件中心，检查螺距设置。采用分刀切削，最后一刀光整加工。' },
+                    { id: 8, name: '检验入库', desc: '全面检验工件尺寸，合格后入库', params: ['外径尺寸', '长度尺寸', '表面粗糙度', '螺纹精度'], tips: '使用游标卡尺、千分尺等工具全面检验。填写检验记录单，合格品办理入库。' }
+                ],
+                attachments: [
+                    { name: '阶梯轴零件加工图纸.dwg', type: 'DWG', size: '1.8MB' },
+                    { name: '加工工艺卡.pdf', type: 'PDF', size: '320KB' },
+                    { name: '数控程序参考.txt', type: 'TXT', size: '15KB' }
+                ],
+                taskRequirements: [
+                    '按8道工序完成阶梯轴零件加工',
+                    '每道工序填写加工参数',
+                    '同步设备数据并记录',
+                    '完成工序后提交检验',
+                    '上传加工完成的零件照片',
+                    '提交工序参数记录表'
+                ],
+                scoringCriteria: [
+                    '工序完整性（30分）：完成全部8道工序',
+                    '尺寸精度（30分）：达到IT7级精度要求',
+                    '表面质量（20分）：表面粗糙度Ra3.2',
+                    '操作规范（20分）：安全操作，参数记录完整'
+                ],
+                submitType: 'file'
+            },
+            {
+                id: 10,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'programming',
+                sourceText: '编程类',
+                question: '数控编程-实训任务二：螺纹加工程序编制',
+                workOrder: {
+                    number: 'WO-PROG-002',
+                    material: '45#钢螺纹轴',
+                    specification: 'M24×2螺纹',
+                    quantity: '1件',
+                    operator: '王编程',
+                    timeSlot: '2026-03-02 08:00-11:00'
+                },
+                processRoute: '螺纹编程 | 4个编程阶段',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: 'Φ30×100mm',
+                    precision: '6H级',
+                    roughness: 'Ra3.2',
+                    description: '编写M24×2螺纹的数控车床加工程序，使用G76螺纹切削循环。螺纹长度30mm，需进行4次粗切和1次精切。程序需包含螺纹刀补偿和退刀槽加工。'
+                },
+                processSteps: [
+                    { id: 1, name: '螺纹分析', desc: '分析螺纹参数和加工要求', params: ['螺距', '牙型', '精度', '切削次数'], tips: 'M24×2表示公称直径24mm，螺距2mm的普通螺纹。6H精度等级，需分4次粗切和1次精切完成。' },
+                    { id: 2, name: '程序编制', desc: '编写螺纹加工程序', params: ['G76指令', '切削深度', '退刀量'], tips: '使用G76 P_Q_R_设置螺纹参数，G76 X_Z_P_Q_F_设置切削参数。每次切深递减，最后一次精切。' },
+                    { id: 3, name: '刀补设置', desc: '设置刀具补偿和零点', params: ['刀补号', '螺纹刀对刀', 'Z向零点'], tips: '螺纹刀对刀时以刀尖为基准，设置刀具补偿值。注意螺纹刀的刀尖角度和安装方向。' },
+                    { id: 4, name: '程序验证', desc: '模拟运行和程序优化', params: ['刀路检查', '切削参数', '程序优化'], tips: '在仿真软件中验证螺纹刀路，检查切削深度是否合理。优化进给速度和主轴转速，确保螺纹质量。' }
+                ],
+                attachments: [
+                    { name: '螺纹加工图纸.pdf', type: 'PDF', size: '280KB' },
+                    { name: '螺纹切削参数表.pdf', type: 'PDF', size: '150KB' },
+                    { name: 'G76指令详解.docx', type: 'DOCX', size: '95KB' }
+                ]
+            },
+            {
+                id: 11,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'inspection',
+                sourceText: '检测类',
+                question: '精密检测-实训任务二：轴类零件综合检测',
+                workOrder: {
+                    number: 'WO-INSP-002',
+                    material: '45#钢阶梯轴',
+                    specification: 'Φ50/Φ40×150mm',
+                    quantity: '1件',
+                    operator: '赵检测',
+                    timeSlot: '2026-03-02 13:00-16:00'
+                },
+                processRoute: '综合检测 | 5个检测阶段',
+                requirements: {
+                    material: '45#钢调质',
+                    blankSize: '锻件',
+                    precision: 'IT7级',
+                    roughness: 'Ra1.6-3.2',
+                    description: '对阶梯轴零件进行全面精度检测，包括直径尺寸、长度尺寸、同轴度、圆度、圆柱度、表面粗糙度等。使用游标卡尺、千分尺、百分表、粗糙度仪等量具。'
+                },
+                processSteps: [
+                    { id: 1, name: '量具准备', desc: '选择和校准测量工具', params: ['量具选择', '校准证书', '精度确认'], tips: '根据零件精度要求选择量具：外径用千分尺(0.001mm)，长度用游标卡尺(0.02mm)，形位公差用百分表(0.01mm)。' },
+                    { id: 2, name: '尺寸测量', desc: '测量直径和长度尺寸', params: ['外径测量', '长度测量', '圆度检查'], tips: '在多个截面测量外径，每个截面测量2个方向。长度尺寸测量3次取平均。记录所有测量数据。' },
+                    { id: 3, name: '形位公差', desc: '测量同轴度和圆柱度', params: ['同轴度', '圆柱度', '测量方法'], tips: '使用V形块支撑，百分表测量径向跳动，换算同轴度。在全长范围内测量圆柱度误差。' },
+                    { id: 4, name: '粗糙度检测', desc: '检测表面粗糙度', params: ['Ra测量', '测量位置', '取样长度'], tips: '在加工表面选取3个位置测量粗糙度。设置取样长度0.8mm，评定长度4mm，记录Ra值。' },
+                    { id: 5, name: '报告编制', desc: '整理数据出具报告', params: ['数据整理', '合格判定', '检测证书'], tips: '整理所有测量数据，与图纸要求对比，判定合格性。出具检测报告，包括测量值、公差、结论。' }
+                ],
+                attachments: [
+                    { name: '阶梯轴检测图纸.pdf', type: 'PDF', size: '320KB' },
+                    { name: '量具使用手册.pdf', type: 'PDF', size: '980KB' },
+                    { name: '检测记录表.xlsx', type: 'XLSX', size: '45KB' }
+                ]
+            },
+            {
+                id: 12,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'design',
+                sourceText: '设计类',
+                question: '机械设计-实训任务二：齿轮减速器装配设计',
+                workOrder: {
+                    number: 'WO-DESIGN-002',
+                    material: '齿轮减速器',
+                    specification: '单级圆柱齿轮',
+                    quantity: '1套',
+                    operator: '李设计',
+                    timeSlot: '2026-03-01 08:00-12:00'
+                },
+                processRoute: '装配设计 | 5个设计阶段',
+                requirements: {
+                    material: '合金钢/铸铁',
+                    blankSize: '标准件+自制件',
+                    precision: 'IT7级',
+                    roughness: 'Ra1.6-3.2',
+                    description: '完成单级圆柱齿轮减速器的装配设计，包括齿轮、轴、轴承、箱体等零部件设计。传动比i=4，输入功率P=5.5kW，输入转速n=1440r/min。'
+                },
+                processSteps: [
+                    { id: 1, name: '传动设计', desc: '计算传动参数和齿轮尺寸', params: ['传动比', '模数', '齿数', '中心距'], tips: '根据传动比i=4，选择小齿轮齿数z1=20，大齿轮齿数z2=80，模数m=2mm，计算中心距a=100mm。' },
+                    { id: 2, name: '齿轮设计', desc: '设计大齿轮和小齿轮', params: ['分度圆', '齿顶圆', '齿根圆', '轮毂'], tips: '计算齿轮几何尺寸，设计齿轮结构。小齿轮与轴做成齿轮轴，大齿轮采用腹板式结构。' },
+                    { id: 3, name: '轴系设计', desc: '设计输入轴和输出轴', params: ['轴径', '轴承', '键槽', '轴肩'], tips: '按扭转强度估算轴径，设计轴的结构。输入轴最小直径d≥25mm，选用6205轴承，设计键槽和轴肩定位。' },
+                    { id: 4, name: '箱体设计', desc: '设计减速器箱体', params: ['箱座', '箱盖', '轴承座', '螺栓'], tips: '设计剖分式箱体，确定壁厚δ=8mm，设计轴承座和螺栓布置。箱体应有足够的刚度和强度。' },
+                    { id: 5, name: '装配验证', desc: '完成装配体并验证', params: ['装配约束', '干涉检查', '运动仿真'], tips: '在SolidWorks中完成装配体设计，添加配合约束，进行干涉检查和运动仿真，验证设计正确性。' }
+                ],
+                attachments: [
+                    { name: '减速器设计任务书.pdf', type: 'PDF', size: '450KB' },
+                    { name: '机械设计手册.pdf', type: 'PDF', size: '5.2MB' },
+                    { name: '齿轮计算软件.exe', type: 'EXE', size: '2.8MB' }
+                ]
+            },
+            {
+                id: 13,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'process',
+                sourceText: '工艺类',
+                question: '机械制造工艺-实训任务二：专用夹具设计',
+                workOrder: {
+                    number: 'WO-PROC-002',
+                    material: '轴类零件夹具',
+                    specification: '车床专用夹具',
+                    quantity: '1套',
+                    operator: '张工艺',
+                    timeSlot: '2026-03-01 13:00-17:00'
+                },
+                processRoute: '夹具设计 | 5个设计阶段',
+                requirements: {
+                    material: '45#钢/铸铁',
+                    blankSize: '标准型材',
+                    precision: 'IT6级',
+                    roughness: 'Ra1.6',
+                    description: '设计车床专用夹具用于轴类零件加工。零件直径Φ30-Φ50mm，长度100-200mm。夹具需保证定位精度≤0.02mm，夹紧可靠，操作方便。'
+                },
+                processSteps: [
+                    { id: 1, name: '需求分析', desc: '分析加工要求和夹具功能', params: ['零件分析', '工序要求', '定位基准'], tips: '分析轴类零件的结构特点和加工要求，确定夹具的功能需求：定位、夹紧、导向。选择中心孔和外圆作为定位基准。' },
+                    { id: 2, name: '定位方案', desc: '设计定位元件和定位方式', params: ['定位元件', '定位误差', '重复精度'], tips: '采用一夹一顶的定位方式。卡盘夹持外圆，顶尖顶中心孔。设计V形块作为辅助定位，保证同轴度≤0.02mm。' },
+                    { id: 3, name: '夹紧机构', desc: '设计夹紧装置和夹紧力', params: ['夹紧力', '夹紧机构', '操作方式'], tips: '采用螺旋夹紧机构，计算所需夹紧力。夹紧力应能克服切削力，但不宜过大以免变形。设计快换机构提高效率。' },
+                    { id: 4, name: '夹具体设计', desc: '设计夹具体和辅助装置', params: ['夹具体', '导向装置', '对刀装置'], tips: '设计夹具体结构，保证足够的刚度和强度。安装导向套保证刀具导向，设计对刀块方便对刀。考虑排屑和冷却。' },
+                    { id: 5, name: '图纸绘制', desc: '绘制夹具装配图和零件图', params: ['装配图', '零件图', '技术要求'], tips: '绘制夹具总装配图，标注装配尺寸和技术要求。绘制关键零件图，包括V形块、夹紧螺杆等。编制零件明细表。' }
+                ],
+                attachments: [
+                    { name: '夹具设计任务书.pdf', type: 'PDF', size: '380KB' },
+                    { name: '机床夹具设计手册.pdf', type: 'PDF', size: '3.2MB' },
+                    { name: '夹具零件标准库.zip', type: 'ZIP', size: '5.6MB' }
+                ]
+            },
+            {
+                id: 14,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'machining',
+                sourceText: '加工类',
+                question: '数控车床编程与操作：G代码编程与加工',
+                workOrder: {
+                    number: 'WO-2024-014',
+                    material: 'G代码练习毛坯',
+                    specification: 'Φ50×180mm',
+                    quantity: '1件',
+                    operator: '陈工',
+                    timeSlot: '2026-03-10 14:00-17:00'
+                },
+                processRoute: 'G代码编程加工 | 8道工序',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: 'Φ50×180mm',
+                    precision: 'IT7级',
+                    roughness: 'Ra3.2',
+                    description: '完成轴类零件的数控车床编程与加工，使用G71粗车循环和G70精车循环。程序需包含安全指令和刀具补偿，保证加工精度和表面质量。'
+                },
+                processSteps: [
+                    { id: 1, name: '下料', desc: '根据工艺要求，将原材料切割至指定长度', params: ['切割长度', '端面平整度'], tips: '使用锯床进行切割，确保端面平整，无毛刺。切割长度公差控制在±0.5mm以内。' },
+                    { id: 2, name: '车端面', desc: '车削工件两端面，保证端面与轴线垂直', params: ['主轴转速', '进给速度', '端面粗糙度'], tips: '装夹时注意校正，车刀对准工件中心。端面车削后粗糙度应达到Ra3.2。' },
+                    { id: 3, name: '钻中心孔', desc: '在工件两端钻中心孔，为后续加工定位', params: ['钻头直径', '钻孔深度', '主轴转速'], tips: '中心钻对准工件中心，钻孔深度适中，不宜过深。注意冷却液的使用。' },
+                    { id: 4, name: '粗车外圆', desc: '粗车各段外圆，留有余量供精加工', params: ['主轴转速', '进给速度', '切削深度', '留量'], tips: '粗车采用较大的切削深度和进给量，提高加工效率。各段外圆留0.5mm精加工余量。' },
+                    { id: 5, name: '精车外圆', desc: '精车各段外圆至图纸要求尺寸', params: ['主轴转速', '进给速度', '切削深度', '表面粗糙度'], tips: '精车采用较小的切削深度和进给量，保证加工精度。表面粗糙度达到Ra1.6。' },
+                    { id: 6, name: '切槽', desc: '加工各退刀槽和密封槽', params: ['槽宽', '槽深', '主轴转速'], tips: '切槽刀安装要牢固，切削深度逐渐加大，避免刀具损坏。注意槽的尺寸精度。' },
+                    { id: 7, name: '车螺纹', desc: '加工连接螺纹', params: ['螺距', '螺纹深度', '主轴转速', '进给速度'], tips: '螺纹车刀对准工件中心，检查螺距设置。采用分刀切削，最后一刀光整加工。' },
+                    { id: 8, name: '检验入库', desc: '全面检验工件尺寸，合格后入库', params: ['外径尺寸', '长度尺寸', '表面粗糙度', '螺纹精度'], tips: '使用游标卡尺、千分尺等工具全面检验。填写检验记录单，合格品办理入库。' }
+                ],
+                attachments: [
+                    { name: 'G代码编程练习图纸.dwg', type: 'DWG', size: '1.2MB' },
+                    { name: 'G代码指令手册.pdf', type: 'PDF', size: '850KB' },
+                    { name: '编程示例程序.txt', type: 'TXT', size: '8KB' }
+                ],
+                taskRequirements: [
+                    '按8道工序完成G代码编程与加工',
+                    '每道工序填写加工参数',
+                    '同步设备数据并记录',
+                    '完成工序后提交检验',
+                    '上传加工完成的零件照片',
+                    '提交工序参数记录表'
+                ],
+                scoringCriteria: [
+                    '工序完整性（30分）：完成全部8道工序',
+                    '尺寸精度（30分）：达到IT7级精度要求',
+                    '表面质量（20分）：表面粗糙度Ra3.2',
+                    '操作规范（20分）：安全操作，参数记录完整'
+                ],
+                submitType: 'file'
+            },
+            {
+                id: 15,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'programming',
+                sourceText: '编程类',
+                question: '数控编程-实训任务三：圆弧插补与轮廓加工',
+                workOrder: {
+                    number: 'WO-PROG-003',
+                    material: '45#钢轮廓轴',
+                    specification: '含圆弧轮廓',
+                    quantity: '1件',
+                    operator: '王编程',
+                    timeSlot: '2026-03-03 08:00-11:00'
+                },
+                processRoute: '轮廓编程 | 4个编程阶段',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: 'Φ40×120mm',
+                    precision: 'IT8级',
+                    roughness: 'Ra3.2',
+                    description: '编写含圆弧轮廓的数控车床加工程序，使用G02/G03圆弧插补指令完成凹圆弧和凸圆弧加工。圆弧半径R10mm和R5mm，需计算圆心坐标和插补参数。'
+                },
+                processSteps: [
+                    { id: 1, name: '轮廓分析', desc: '分析零件轮廓和几何参数', params: ['圆弧半径', '圆心位置', '起点终点'], tips: '分析零件轮廓中的圆弧元素，确定圆弧半径R、圆心坐标、起点和终点位置。区分凸圆弧和凹圆弧。' },
+                    { id: 2, name: '节点计算', desc: '计算轮廓节点坐标', params: ['切点计算', '交点坐标', '轮廓节点'], tips: '计算圆弧与直线的切点，确定各节点坐标。建立坐标系，列出所有轮廓点的X、Z坐标值。' },
+                    { id: 3, name: '程序编制', desc: '编写圆弧插补程序', params: ['G02/G03', 'R方式', 'I_K方式'], tips: '使用G02(顺时针)或G03(逆时针)指令。可用R方式或I_K方式指定圆心。推荐用I_K方式，精度更高。' },
+                    { id: 4, name: '刀补应用', desc: '应用刀具半径补偿', params: ['G41/G42', '刀补号', '补偿方向'], tips: '使用G41(左补偿)或G42(右补偿)进行刀具半径补偿。根据加工方向正确选择补偿方向，避免过切。' }
+                ],
+                attachments: [
+                    { name: '圆弧轮廓图纸.pdf', type: 'PDF', size: '260KB' },
+                    { name: '圆弧插补计算表.xlsx', type: 'XLSX', size: '55KB' },
+                    { name: '刀补应用指南.pdf', type: 'PDF', size: '420KB' }
+                ]
+            },
+            {
+                id: 16,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'inspection',
+                sourceText: '检测类',
+                question: '质量检测-实训任务：轴承座成品检验',
+                workOrder: {
+                    number: 'WO-2024-001',
+                    material: '轴承座',
+                    specification: 'BZ-200',
+                    quantity: '50件',
+                    operator: '李华',
+                    timeSlot: '2026-03-11 08:00-12:00'
+                },
+                processRoute: '轴承座检验 | 8个检测项目',
+                requirements: {
+                    material: 'HT200',
+                    blankSize: '铸件毛坯',
+                    precision: 'IT8级',
+                    roughness: 'Ra3.2',
+                    description: '对轴承座成品进行全面质量检测，包括尺寸精度、形位公差、表面粗糙度和外观质量。使用游标卡尺、千分尺、粗糙度仪等检测工具。'
+                },
+                // 检测项目列表（与实训页完全一致）
+                checkItems: [
+                    { id: 1, name: '外径尺寸', standard: 'Φ50±0.02mm', result: '', verdict: 'pending', status: 'pending', unit: 'mm', type: 'input' },
+                    { id: 2, name: '内径尺寸', standard: 'Φ30±0.02mm', result: '', verdict: 'pending', status: 'pending', unit: 'mm', type: 'input' },
+                    { id: 3, name: '总长度', standard: '80±0.05mm', result: '', verdict: 'pending', status: 'pending', unit: 'mm', type: 'input' },
+                    { id: 4, name: '孔距', standard: '60±0.03mm', result: '', verdict: 'pending', status: 'pending', unit: 'mm', type: 'input' },
+                    { id: 5, name: '表面粗糙度', standard: 'Ra3.2', result: '', verdict: 'pending', status: 'pending', unit: 'μm', type: 'input' },
+                    { id: 6, name: '外观质量', standard: '无划痕、无毛刺', result: '', verdict: 'pending', status: 'pending', unit: '', type: 'select' },
+                    { id: 7, name: '垂直度', standard: '≤0.05mm', result: '', verdict: 'pending', status: 'pending', unit: 'mm', type: 'input' },
+                    { id: 8, name: '同轴度', standard: '≤0.03mm', result: '', verdict: 'pending', status: 'pending', unit: 'mm', type: 'input' }
+                ],
+                attachments: [
+                    { name: '轴承座检测图纸.pdf', type: 'PDF', size: '1.2MB' },
+                    { name: '质量检测标准.pdf', type: 'PDF', size: '850KB' },
+                    { name: '检测工具使用手册.pdf', type: 'PDF', size: '680KB' }
+                ]
+            },
+            {
+                id: 17,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'design',
+                sourceText: '设计类',
+                question: '机械设计-实训任务三：轴类零件工程图绘制',
+                workOrder: {
+                    number: 'WO-DESIGN-003',
+                    material: '阶梯轴零件',
+                    specification: 'Φ40/Φ30×150mm',
+                    quantity: '1件',
+                    operator: '李设计',
+                    timeSlot: '2026-03-04 08:00-12:00'
+                },
+                processRoute: '工程图绘制 | 4个设计阶段',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: '锻件毛坯',
+                    precision: 'IT7级',
+                    roughness: 'Ra1.6-3.2',
+                    description: '完成阶梯轴零件的二维工程图设计，包括主视图、剖视图、断面图、局部放大图等。正确标注尺寸、公差、表面粗糙度和技术要求。'
+                },
+                processSteps: [
+                    { id: 1, name: '视图选择', desc: '确定视图表达方案', params: ['主视图', '剖视图', '断面图'], tips: '主视图采用水平放置，键槽朝前。需要剖视图表达内部结构，断面图表达键槽和孔。局部放大图表达退刀槽。' },
+                    { id: 2, name: '尺寸标注', desc: '标注全部尺寸', params: ['定形尺寸', '定位尺寸', '总体尺寸'], tips: '标注各段直径和长度尺寸，键槽尺寸，中心孔尺寸。重要尺寸从基准直接标注，避免封闭尺寸链。' },
+                    { id: 3, name: '公差标注', desc: '标注尺寸公差和形位公差', params: ['尺寸公差', '形位公差', '基准符号'], tips: '配合尺寸标注公差带代号如Φ40k6。形位公差标注同轴度、圆跳动等，正确标注基准符号。' },
+                    { id: 4, name: '技术要求', desc: '填写技术要求和标题栏', params: ['热处理', '表面处理', '未注公差'], tips: '填写材料、热处理要求(调质HRC28-32)、表面处理、未注尺寸公差等级、形位公差等级等技术要求。' }
+                ],
+                attachments: [
+                    { name: '阶梯轴三维模型.step', type: 'STEP', size: '850KB' },
+                    { name: '制图标准GB/T14689.pdf', type: 'PDF', size: '680KB' },
+                    { name: '公差配合标准.pdf', type: 'PDF', size: '920KB' }
+                ]
+            },
+            {
+                id: 18,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'process',
+                sourceText: '工艺类',
+                question: '机械制造工艺-实训任务三：切削用量计算与优化',
+                workOrder: {
+                    number: 'WO-PROC-003',
+                    material: '45#钢轴类零件',
+                    specification: 'Φ50×200mm',
+                    quantity: '1件',
+                    operator: '张工艺',
+                    timeSlot: '2026-03-04 13:00-17:00'
+                },
+                processRoute: '切削参数优化 | 4个工艺阶段',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: 'Φ55×210mm',
+                    precision: 'IT7级',
+                    roughness: 'Ra3.2',
+                    description: '根据零件材料和加工要求，计算并优化切削用量参数。包括切削速度、进给量、切削深度的选择，以及切削力、切削功率的计算。'
+                },
+                processSteps: [
+                    { id: 1, name: '刀具选择', desc: '选择合适的刀具材料和几何参数', params: ['刀具材料', '前角', '后角', '主偏角'], tips: '45#钢粗加工选用YT15硬质合金刀具，前角12°，后角8°，主偏角75°。精加工选用YT30，前角15°。' },
+                    { id: 2, name: '切削速度', desc: '计算切削速度Vc', params: ['Vc公式', '刀具寿命', '修正系数'], tips: '使用公式Vc=Cv/(T^m·ap^xv·f^yv)·Kv。查表得Cv=242，m=0.2，计算Vc≈120m/min，取n=600r/min。' },
+                    { id: 3, name: '进给量选择', desc: '确定进给量f', params: ['表面粗糙度', '切削力', '机床功率'], tips: '根据表面粗糙度要求Ra3.2，选择f=0.2mm/r。校核切削力Fc=CFc·ap^xFc·f^yFc·KFc，应小于机床允许值。' },
+                    { id: 4, name: '参数优化', desc: '优化切削参数组合', params: ['切削效率', '加工成本', '刀具磨损'], tips: '综合考虑切削效率、加工成本和刀具寿命，优化ap、f、Vc的组合。粗加工ap=2-3mm，精加工ap=0.3-0.5mm。' }
+                ],
+                attachments: [
+                    { name: '切削用量手册.pdf', type: 'PDF', size: '2.5MB' },
+                    { name: '切削参数计算表.xlsx', type: 'XLSX', size: '85KB' },
+                    { name: '刀具选用指南.pdf', type: 'PDF', size: '1.8MB' }
+                ]
+            },
+            {
+                id: 19,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'machining',
+                sourceText: '加工类',
+                question: '数控车床编程与操作：宏程序加工',
+                workOrder: {
+                    number: 'WO-2024-019',
+                    material: '宏程序练习毛坯',
+                    specification: 'Φ55×200mm',
+                    quantity: '1件',
+                    operator: '刘工',
+                    timeSlot: '2026-03-18 08:00-11:00'
+                },
+                processRoute: '宏程序加工 | 8道工序',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: 'Φ55×200mm',
+                    precision: 'IT7级',
+                    roughness: 'Ra3.2',
+                    description: '完成轴类零件的宏程序编程与加工，学习宏程序的基本语法和变量定义，使用宏程序实现参数化编程，保证加工精度和表面质量。'
+                },
+                processSteps: [
+                    { id: 1, name: '下料', desc: '根据工艺要求，将原材料切割至指定长度', params: ['切割长度', '端面平整度'], tips: '使用锯床进行切割，确保端面平整，无毛刺。切割长度公差控制在±0.5mm以内。' },
+                    { id: 2, name: '车端面', desc: '车削工件两端面，保证端面与轴线垂直', params: ['主轴转速', '进给速度', '端面粗糙度'], tips: '装夹时注意校正，车刀对准工件中心。端面车削后粗糙度应达到Ra3.2。' },
+                    { id: 3, name: '钻中心孔', desc: '在工件两端钻中心孔，为后续加工定位', params: ['钻头直径', '钻孔深度', '主轴转速'], tips: '中心钻对准工件中心，钻孔深度适中，不宜过深。注意冷却液的使用。' },
+                    { id: 4, name: '粗车外圆', desc: '粗车各段外圆，留有余量供精加工', params: ['主轴转速', '进给速度', '切削深度', '留量'], tips: '粗车采用较大的切削深度和进给量，提高加工效率。各段外圆留0.5mm精加工余量。' },
+                    { id: 5, name: '精车外圆', desc: '精车各段外圆至图纸要求尺寸', params: ['主轴转速', '进给速度', '切削深度', '表面粗糙度'], tips: '精车采用较小的切削深度和进给量，保证加工精度。表面粗糙度达到Ra1.6。' },
+                    { id: 6, name: '切槽', desc: '加工各退刀槽和密封槽', params: ['槽宽', '槽深', '主轴转速'], tips: '切槽刀安装要牢固，切削深度逐渐加大，避免刀具损坏。注意槽的尺寸精度。' },
+                    { id: 7, name: '车螺纹', desc: '加工连接螺纹', params: ['螺距', '螺纹深度', '主轴转速', '进给速度'], tips: '螺纹车刀对准工件中心，检查螺距设置。采用分刀切削，最后一刀光整加工。' },
+                    { id: 8, name: '检验入库', desc: '全面检验工件尺寸，合格后入库', params: ['外径尺寸', '长度尺寸', '表面粗糙度', '螺纹精度'], tips: '使用游标卡尺、千分尺等工具全面检验。填写检验记录单，合格品办理入库。' }
+                ],
+                attachments: [
+                    { name: '宏程序加工图纸.dwg', type: 'DWG', size: '1.4MB' },
+                    { name: '宏程序编程手册.pdf', type: 'PDF', size: '920KB' },
+                    { name: '宏程序示例.txt', type: 'TXT', size: '12KB' }
+                ],
+                taskRequirements: [
+                    '按8道工序完成宏程序编程与加工',
+                    '每道工序填写加工参数',
+                    '同步设备数据并记录',
+                    '完成工序后提交检验',
+                    '上传加工完成的零件照片',
+                    '提交工序参数记录表'
+                ],
+                scoringCriteria: [
+                    '工序完整性（30分）：完成全部8道工序',
+                    '尺寸精度（30分）：达到IT7级精度要求',
+                    '表面质量（20分）：表面粗糙度Ra3.2',
+                    '操作规范（20分）：安全操作，参数记录完整'
+                ],
+                submitType: 'file'
+            },
+            {
+                id: 20,
+                type: '实操题',
+                source: 'practice',
+                practiceType: 'inspection',
+                sourceText: '检测类',
+                question: '精密检测-实训任务四：孔系位置度检测',
+                workOrder: {
+                    number: 'WO-INSP-004',
+                    material: '法兰盘零件',
+                    specification: '4×Φ10均布孔',
+                    quantity: '1件',
+                    operator: '赵检测',
+                    timeSlot: '2026-03-05 08:00-11:00'
+                },
+                processRoute: '孔系检测 | 4个检测阶段',
+                requirements: {
+                    material: '45#钢',
+                    blankSize: 'Φ100×20mm',
+                    precision: 'IT8级',
+                    roughness: 'Ra3.2',
+                    description: '对法兰盘零件的孔系进行位置度检测。4个Φ10mm安装孔均布在Φ80mm分度圆上，位置度公差Φ0.05mm。使用三坐标测量机或专用检具进行检测。'
+                },
+                processSteps: [
+                    { id: 1, name: '基准建立', desc: '建立测量基准坐标系', params: ['端面基准', '中心定位', '坐标原点'], tips: '以法兰盘端面为Z轴基准，外圆中心为X、Y原点，建立坐标系。使用3-2-1法确定基准，确保定位准确。' },
+                    { id: 2, name: '孔径测量', desc: '测量各孔直径尺寸', params: ['孔径测量', '圆度检查', '圆柱度'], tips: '测量每个安装孔的直径，检查圆度和圆柱度。孔径应为Φ10+0.018/+0.000mm，使用内径千分表测量。' },
+                    { id: 3, name: '位置度检测', desc: '检测孔的位置度误差', params: ['孔心坐标', '理论位置', '位置度计算'], tips: '测量各孔实际中心坐标，计算与理论位置的偏差。位置度误差=2×√(ΔX²+ΔY²)，应≤0.05mm。' },
+                    { id: 4, name: '分度误差', desc: '检测孔间角度分度误差', params: ['角度测量', '分度精度', '累积误差'], tips: '计算相邻孔间的实际角度，与理论90°比较。分度误差应控制在±0.5°以内，检查4个孔的角度累积误差。' }
+                ],
+                attachments: [
+                    { name: '法兰盘检测图纸.pdf', type: 'PDF', size: '340KB' },
+                    { name: '位置度检测规范.pdf', type: 'PDF', size: '580KB' },
+                    { name: '孔系检测记录表.xlsx', type: 'XLSX', size: '38KB' }
+                ]
+            }
+        ];
+
+        let currentQuestionIndex = 0;
+        const totalQuestions = questions.length;
+
+        // 初始化题目
+        function initQuestions() {
+            renderQuestion(currentQuestionIndex);
+            updateAnswerSheet();
+            updateExamInfo();
+        }
+
+        // 渲染题目
+        function renderQuestion(index) {
+            const question = questions[index];
+            const questionNumber = document.querySelector('.question-number');
+            const questionType = document.querySelector('.question-type');
+            const questionSource = document.getElementById('questionSource');
+            const questionText = document.querySelector('.question-text');
+            const optionsList = document.querySelector('.options-list');
+            const examSidebar = document.querySelector('.exam-sidebar');
+
+            // 更新题号和总数
+            questionNumber.textContent = `第${index + 1}题 / 共${totalQuestions}题`;
+            
+            // 更新题目类型
+            questionType.textContent = question.type;
+            
+            // 更新题目来源标签
+            questionSource.textContent = question.sourceText;
+            // 根据题目类型设置对应的CSS类
+            const typeClass = question.practiceType || question.source;
+            questionSource.className = `question-source ${typeClass}`;
+            
+            // 更新题目内容
+            questionText.textContent = question.question;
+            
+            // 根据题目类型渲染不同的内容
+            if (question.type === '实操题') {
+                const practiceType = question.practiceType || 'machining';
+                
+                // ===== 加工类：使用工序进度结构 =====
+                // ===== 其他类：使用实训页结构（要求+答题区） =====
+                let leftHtml = '';
+                
+                // 工单信息已移到右侧边栏
+                
+                if (practiceType === 'machining') {
+                    // ===== 加工类：工序进度 + 工序详情 =====
+                    if (question.processSteps) {
+                        const totalSteps = question.processSteps.length;
+                        const currentStep = 1;
+                        const progressPercent = (currentStep / totalSteps * 100).toFixed(1);
+                        
+                        leftHtml += `
+                            <div class="panel-card" style="background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px;">
+                                <div class="panel-title" style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="iconfont icon-liucheng"></i>
+                                    工序进度
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: linear-gradient(135deg, #F0F5FF 0%, #E6F7FF 100%); border-radius: 12px; margin-bottom: 16px; border: 1px solid #D6E4FF;">
+                                    <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                                        <span style="font-size: 14px; color: #666;">第 <strong style="color: #1890FF; font-size: 18px; font-weight: 700;">${currentStep}</strong>/${totalSteps} 道</span>
+                                    </div>
+                                    <div style="flex: 1; height: 10px; background: #E8E8E8; border-radius: 5px; overflow: hidden;">
+                                        <div style="height: 100%; background: linear-gradient(90deg, #1890FF 0%, #36CFC9 50%, #52C41A 100%); border-radius: 5px; width: ${progressPercent}%;"></div>
+                                    </div>
+                                    <div style="font-size: 16px; font-weight: 700; color: #52C41A; min-width: 50px; text-align: right;">${progressPercent}%</div>
+                                </div>
+                                <div style="display: flex; flex-direction: row; align-items: flex-start; gap: 0; overflow-x: auto; padding: 24px 16px; background: linear-gradient(135deg, #F8FAFC 0%, #F1F5F9 100%); border-radius: 16px; border: 1px solid #E2E8F0;">
+                                    ${question.processSteps.map((step, idx) => {
+                                        const stepNum = idx + 1;
+                                        let stepClass = 'pending';
+                                        let statusText = '待进行';
+                                        if (stepNum < currentStep) { stepClass = 'completed'; statusText = '已完成'; }
+                                        else if (stepNum === currentStep) { stepClass = 'active'; statusText = '进行中'; }
+                                        return `
+                                            <div style="display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 0 16px; min-width: 100px; text-align: center;">
+                                                <div style="width: 40px; height: 40px; background: ${stepClass === 'completed' ? 'linear-gradient(135deg, #52C41A 0%, #389E0D 100%)' : stepClass === 'active' ? 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)' : '#fff'}; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: ${stepClass === 'pending' ? '#94A3B8' : '#fff'}; border: 2px solid ${stepClass === 'completed' ? '#52C41A' : stepClass === 'active' ? '#3B82F6' : '#E2E8F0'};">${stepClass === 'completed' ? '✓' : stepNum}</div>
+                                                <div style="font-size: 13px; font-weight: 600; color: ${stepClass === 'active' ? '#2563EB' : stepClass === 'completed' ? '#389E0D' : '#94A3B8'};">${step.name}</div>
+                                                <div style="font-size: 11px; padding: 3px 10px; border-radius: 12px; background: ${stepClass === 'completed' ? 'linear-gradient(135deg, #52C41A 0%, #389E0D 100%)' : stepClass === 'active' ? 'linear-gradient(135deg, #3B82F6 0%, #2563EB 100%)' : '#F1F5F9'}; color: ${stepClass === 'pending' ? '#94A3B8' : '#fff'};">${statusText}</div>
+                                            </div>
+                                        `;
+                                    }).join('')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                } else if (practiceType === 'inspection') {
+                    // ===== 检测类：检测进度条（与实训页一致） =====
+                    if (question.checkItems) {
+                        const totalItems = question.checkItems.length;
+                        const checkedItems = question.checkItems.filter(item => item.status !== 'pending').length;
+                        const progressPercent = (checkedItems / totalItems * 100).toFixed(0);
+                        
+                        leftHtml += `
+                            <div class="panel-card" style="background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px;">
+                                <div class="panel-title" style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 16px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="iconfont icon-jindu"></i>
+                                    检测进度
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 16px; padding: 16px 20px; background: linear-gradient(135deg, #F9F0FF 0%, #F0E6FF 100%); border-radius: 12px; margin-bottom: 16px; border: 1px solid #D3ADF7;">
+                                    <div style="display: flex; align-items: center; gap: 8px; white-space: nowrap;">
+                                        <span style="font-size: 14px; color: #666;">已检测 <strong style="color: #722ED1; font-size: 18px; font-weight: 700;">${checkedItems}</strong>/${totalItems} 项</span>
+                                    </div>
+                                    <div style="flex: 1; height: 10px; background: #E8E8E8; border-radius: 5px; overflow: hidden;">
+                                        <div style="height: 100%; background: linear-gradient(90deg, #722ED1 0%, #B37FEB 100%); border-radius: 5px; width: ${progressPercent}%;"></div>
+                                    </div>
+                                    <div style="font-size: 16px; font-weight: 700; color: #722ED1; min-width: 50px; text-align: right;">${progressPercent}%</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                // 编程类不显示进度条，直接显示代码编辑区
+                
+                // ===== 加工类：当前工序操作面板（设备数采+产品参数）=====
+                // ===== 非加工类：当前步骤答题区（与实训页一致）=====
+                if (question.processSteps && practiceType === 'machining') {
+                    const currentStepIndex = 0;
+                    const currentStep = question.processSteps[currentStepIndex];
+                    
+                    leftHtml += `
+                        <!-- 当前工序操作面板 - 加工类专用 -->
+                        <div class="panel-card" style="background: linear-gradient(135deg, #001529 0%, #002140 100%); border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); margin-bottom: 20px; color: #fff;">
+                            <!-- 工序标题头 -->
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                <div style="font-size: 18px; font-weight: 600; color: #fff;">工序${currentStep.id}：${currentStep.name}</div>
+                                <div style="padding: 6px 16px; background: rgba(250, 140, 22, 0.2); border-radius: 20px; color: #FAAD14; font-size: 13px; font-weight: 500;">当前工序</div>
+                            </div>
+                            
+                            <!-- 第1部分：设备数采 -->
+                            <div style="background: rgba(255,255,255,0.08); border-radius: 12px; padding: 20px; margin-bottom: 20px; border: 1px solid rgba(255,255,255,0.1);">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1);">
+                                    <div style="font-size: 15px; font-weight: 600; color: #fff; display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 18px;">📟</span> 设备数采
+                                    </div>
+                                </div>
+                                <!-- 设备信息头部 -->
+                                <div style="display: flex; gap: 24px; margin-bottom: 16px; padding: 12px 16px; background: rgba(0,0,0,0.2); border-radius: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 13px; color: #88AACC;">设备名称：</span>
+                                        <span style="font-size: 14px; font-weight: 600; color: #fff;">数控车床-01</span>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px;">
+                                        <span style="font-size: 13px; color: #88AACC;">设备状态：</span>
+                                        <span style="padding: 4px 12px; background: rgba(82, 196, 26, 0.2); border-radius: 4px; color: #52C41A; font-size: 13px; font-weight: 500;">待机</span>
+                                    </div>
+                                </div>
+                                <!-- 设备参数网格 -->
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px;">
+                                    <div style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 14px; border: 1px solid rgba(255,255,255,0.05);">
+                                        <div style="font-size: 12px; color: #88AACC; margin-bottom: 8px;">主轴转速</div>
+                                        <div style="font-size: 22px; font-weight: 700; color: #00D4FF; margin-bottom: 4px;">--</div>
+                                        <div style="font-size: 11px; color: #88AACC;">RPM</div>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 14px; border: 1px solid rgba(255,255,255,0.05);">
+                                        <div style="font-size: 12px; color: #88AACC; margin-bottom: 8px;">进给速度</div>
+                                        <div style="font-size: 22px; font-weight: 700; color: #00D4FF; margin-bottom: 4px;">--</div>
+                                        <div style="font-size: 11px; color: #88AACC;">mm/min</div>
+                                    </div>
+                                    <div style="background: rgba(255,255,255,0.05); border-radius: 8px; padding: 14px; border: 1px solid rgba(255,255,255,0.05);">
+                                        <div style="font-size: 12px; color: #88AACC; margin-bottom: 8px;">切削深度</div>
+                                        <div style="font-size: 22px; font-weight: 700; color: #00D4FF; margin-bottom: 4px;">--</div>
+                                        <div style="font-size: 11px; color: #88AACC;">mm</div>
+                                    </div>
+                                </div>
+                                <button style="width: 100%; padding: 12px; background: linear-gradient(135deg, #1890FF 0%, #36CFC9 100%); border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <i class="iconfont icon-tongbu"></i> 同步设备参数
+                                </button>
+                            </div>
+                            
+                            <!-- 第2部分：产品参数 -->
+                            <div style="background: rgba(255,255,255,0.05); border-radius: 12px; padding: 20px; border: 1px solid rgba(255,255,255,0.08);">
+                                <div style="font-size: 15px; font-weight: 600; margin-bottom: 16px; color: #fff; display: flex; align-items: center; gap: 8px;">
+                                    <span style="font-size: 18px;">📝</span> 产品参数
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 20px;">
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                                        <span style="font-size: 13px; color: #88AACC;">实际长度(mm)</span>
+                                        <input type="text" placeholder="请输入" style="padding: 10px 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; background: rgba(255,255,255,0.1); color: #fff; font-size: 14px;">
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                                        <span style="font-size: 13px; color: #88AACC;">直径(mm)</span>
+                                        <input type="text" placeholder="请输入" style="padding: 10px 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; background: rgba(255,255,255,0.1); color: #fff; font-size: 14px;">
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                                        <span style="font-size: 13px; color: #88AACC;">表面粗糙度(Ra)</span>
+                                        <input type="text" placeholder="请输入" style="padding: 10px 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; background: rgba(255,255,255,0.1); color: #fff; font-size: 14px;">
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                                        <span style="font-size: 13px; color: #88AACC;">圆度误差(mm)</span>
+                                        <input type="text" placeholder="请输入" style="padding: 10px 12px; border: 1px solid rgba(255,255,255,0.2); border-radius: 6px; background: rgba(255,255,255,0.1); color: #fff; font-size: 14px;">
+                                    </div>
+                                </div>
+                                
+                                <!-- 按钮组 -->
+                                <div style="display: flex; gap: 12px;">
+                                    <button style="flex: 1; padding: 14px; background: linear-gradient(135deg, #F0F0F0 0%, #E0E0E0 100%); border: 1px solid #D0D0D0; border-radius: 8px; color: #666; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                        <i class="iconfont icon-baocun"></i> 保存
+                                    </button>
+                                </div>
+                            </div>
+                            
+                            <!-- 操作提示 -->
+                            <div style="margin-top: 20px; padding: 16px; background: rgba(250, 140, 22, 0.1); border-radius: 8px; border: 1px solid rgba(250, 140, 22, 0.3);">
+                                <div style="font-size: 14px; font-weight: 600; color: #FAAD14; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                                    <i class="iconfont icon-tishi"></i>操作提示
+                                </div>
+                                <div style="font-size: 13px; color: rgba(255,255,255,0.7); line-height: 1.6;">${currentStep.tips}</div>
+                            </div>
+                        </div>
+                    `;
+                } else if (practiceType === 'inspection' && question.checkItems) {
+                    // ===== 检测类：检测项目表格（与实训页完全一致）=====
+                    leftHtml += `
+                        <!-- 检测项目表格 - 检测类专用 -->
+                        <div class="panel-card" style="background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px;">
+                            <div style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                <i class="iconfont icon-jiancha" style="color: #722ED1;"></i>
+                                检测项目
+                            </div>
+                            
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                                <thead>
+                                    <tr style="background: #FAFAFA; border-bottom: 1px solid #E8E8E8;">
+                                        <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #333; font-size: 14px; width: 50px;">序号</th>
+                                        <th style="padding: 14px 12px; text-align: left; font-weight: 600; color: #333; font-size: 14px;">检测项目</th>
+                                        <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #333; font-size: 14px; width: 140px;">标准要求</th>
+                                        <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #333; font-size: 14px; width: 160px;">检测结果</th>
+                                        <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #333; font-size: 14px; width: 100px;">判定</th>
+                                        <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #333; font-size: 14px; width: 70px;">状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${question.checkItems.map((item, idx) => `
+                                        <tr style="border-bottom: 1px solid #F0F0F0; ${item.status === 'pending' ? '' : item.status === 'pass' ? 'background: #F6FFED;' : 'background: #FFF2F0;'}" onmouseover="this.style.background='#F9F0FF'" onmouseout="this.style.background='${item.status === 'pending' ? '' : item.status === 'pass' ? '#F6FFED' : '#FFF2F0'}'">
+                                            <td style="padding: 16px 12px; text-align: center; font-weight: 500; color: #333; font-size: 14px;">${item.id}</td>
+                                            <td style="padding: 16px 12px; text-align: left; color: #333; font-size: 14px;">${item.name}</td>
+                                            <td style="padding: 16px 12px; text-align: center; color: #666; font-size: 14px; white-space: nowrap;">${item.standard}</td>
+                                            <td style="padding: 16px 12px; text-align: center;">
+                                                ${item.type === 'select' ? `
+                                                    <!-- 外观质量使用下拉选择 -->
+                                                    <select onchange="updateCheckResult(${idx}, this.value)" 
+                                                            style="padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px; cursor: pointer; width: 100px; background: #fff; color: #333;">
+                                                        <option value="" ${!item.result ? 'selected' : ''}>请选择</option>
+                                                        <option value="合格" ${item.result === '合格' ? 'selected' : ''}>合格</option>
+                                                        <option value="不合格" ${item.result === '不合格' ? 'selected' : ''}>不合格</option>
+                                                    </select>
+                                                ` : `
+                                                    <!-- 数值输入框带单位 -->
+                                                    <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                                        <input type="text" 
+                                                               placeholder="输入数值" 
+                                                               value="${item.result}"
+                                                               onchange="updateCheckResult(${idx}, this.value)"
+                                                               style="width: 80px; padding: 8px 10px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px; text-align: center; background: #fff; color: #333;">
+                                                        <span style="font-size: 13px; color: #999;">${item.unit}</span>
+                                                    </div>
+                                                `}
+                                            </td>
+                                            <td style="padding: 16px 12px; text-align: center;">
+                                                <select onchange="updateCheckVerdict(${idx}, this.value)" 
+                                                        style="padding: 8px 10px; border: 1px solid ${item.verdict === 'pass' ? '#52C41A' : item.verdict === 'fail' ? '#FF4D4F' : '#D9D9D9'}; border-radius: 4px; font-size: 14px; cursor: pointer; background: ${item.verdict === 'pass' ? '#F6FFED' : item.verdict === 'fail' ? '#FFF2F0' : '#fff'}; color: ${item.verdict === 'pass' ? '#52C41A' : item.verdict === 'fail' ? '#FF4D4F' : '#333'}; width: 90px;">
+                                                    <option value="pending" ${item.verdict === 'pending' ? 'selected' : ''}>待判定</option>
+                                                    <option value="pass" ${item.verdict === 'pass' ? 'selected' : ''}>合格</option>
+                                                    <option value="fail" ${item.verdict === 'fail' ? 'selected' : ''}>不合格</option>
+                                                </select>
+                                            </td>
+                                            <td style="padding: 16px 12px; text-align: center;">
+                                                <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 13px; font-weight: 500; ${item.status === 'pending' ? 'background: #F5F5F5; color: #999;' : item.status === 'pass' ? 'background: #F6FFED; color: #52C41A;' : 'background: #FFF2F0; color: #FF4D4F;'}">
+                                                    ${item.status === 'pending' ? '待检测' : item.status === 'pass' ? '合格' : '不合格'}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                            
+                            <!-- 按钮组 -->
+                            <div style="display: flex; gap: 12px; padding-top: 20px; border-top: 1px solid #F0F0F0;">
+                                <button style="flex: 1; padding: 14px; background: #F5F5F5; border: 1px solid #D9D9D9; border-radius: 8px; color: #666; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="saveCheckResult()">
+                                    <i class="iconfont icon-baocun"></i> 保存
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else if (practiceType === 'inspection') {
+                    // ===== 检测类：使用processSteps生成检测项目表格（与实训页一致）=====
+                    // 将processSteps转换为检测项目表格格式
+                    const checkItemsFromSteps = question.processSteps ? question.processSteps.map((step, idx) => ({
+                        id: idx + 1,
+                        name: step.name,
+                        standard: step.params ? step.params.join('、') : '按规范执行',
+                        result: '',
+                        verdict: 'pending',
+                        status: 'pending',
+                        unit: '',
+                        type: 'input'
+                    })) : [
+                        { id: 1, name: '量具准备', standard: '选择和校准测量工具', result: '', verdict: 'pending', status: 'pending', unit: '', type: 'input' },
+                        { id: 2, name: '尺寸测量', standard: '测量零件尺寸精度', result: '', verdict: 'pending', status: 'pending', unit: 'mm', type: 'input' },
+                        { id: 3, name: '形位公差', standard: '测量形位公差', result: '', verdict: 'pending', status: 'pending', unit: 'mm', type: 'input' },
+                        { id: 4, name: '粗糙度检测', standard: '检测表面粗糙度', result: '', verdict: 'pending', status: 'pending', unit: 'μm', type: 'input' },
+                        { id: 5, name: '报告编制', standard: '整理数据出具报告', result: '', verdict: 'pending', status: 'pending', unit: '', type: 'input' }
+                    ];
+                    
+                    leftHtml += `
+                        <!-- 检测项目表格 - 检测类专用（与实训页一致） -->
+                        <div class="panel-card" style="background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px;">
+                            <div style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                <i class="iconfont icon-jiancha" style="color: #722ED1;"></i>
+                                检测项目
+                            </div>
+                            
+                            <table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+                                <thead>
+                                    <tr style="background: #FAFAFA; border-bottom: 1px solid #E8E8E8;">
+                                        <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #333; font-size: 14px; width: 50px;">序号</th>
+                                        <th style="padding: 14px 12px; text-align: left; font-weight: 600; color: #333; font-size: 14px;">检测项目</th>
+                                        <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #333; font-size: 14px; width: 200px;">标准要求</th>
+                                        <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #333; font-size: 14px; width: 140px;">检测结果</th>
+                                        <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #333; font-size: 14px; width: 100px;">判定</th>
+                                        <th style="padding: 14px 12px; text-align: center; font-weight: 600; color: #333; font-size: 14px; width: 70px;">状态</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    ${checkItemsFromSteps.map((item, idx) => `
+                                        <tr style="border-bottom: 1px solid #F0F0F0;" onmouseover="this.style.background='#F9F0FF'" onmouseout="this.style.background=''">
+                                            <td style="padding: 16px 12px; text-align: center; font-weight: 500; color: #333; font-size: 14px;">${item.id}</td>
+                                            <td style="padding: 16px 12px; text-align: left; color: #333; font-size: 14px;">${item.name}</td>
+                                            <td style="padding: 16px 12px; text-align: center; color: #666; font-size: 14px;">${item.standard}</td>
+                                            <td style="padding: 16px 12px; text-align: center;">
+                                                <div style="display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                                    <input type="text" 
+                                                           placeholder="输入数值" 
+                                                           value="${item.result}"
+                                                           onchange="updateCheckResult(${idx}, this.value)"
+                                                           style="width: 80px; padding: 8px 10px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px; text-align: center; background: #fff; color: #333;">
+                                                    ${item.unit ? `<span style="font-size: 13px; color: #999;">${item.unit}</span>` : ''}
+                                                </div>
+                                            </td>
+                                            <td style="padding: 16px 12px; text-align: center;">
+                                                <select onchange="updateCheckVerdict(${idx}, this.value)" 
+                                                        style="padding: 8px 10px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 14px; cursor: pointer; background: #fff; color: #333; width: 90px;">
+                                                    <option value="pending" selected>待判定</option>
+                                                    <option value="pass">合格</option>
+                                                    <option value="fail">不合格</option>
+                                                </select>
+                                            </td>
+                                            <td style="padding: 16px 12px; text-align: center;">
+                                                <span style="display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 13px; font-weight: 500; background: #F5F5F5; color: #999;">
+                                                    待检测
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>
+                            
+                            <!-- 按钮组 -->
+                            <div style="display: flex; gap: 12px; padding-top: 20px; border-top: 1px solid #F0F0F0;">
+                                <button style="flex: 1; padding: 14px; background: #F5F5F5; border: 1px solid #D9D9D9; border-radius: 8px; color: #666; font-size: 15px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;" onclick="saveCheckResult()">
+                                    <i class="iconfont icon-baocun"></i> 保存
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else if (practiceType === 'design') {
+                    // ===== 设计类：设计内容填写（与实训页一致）=====
+                    leftHtml += `
+                        <!-- 设计内容填写 - 设计类专用 -->
+                        <div class="panel-card" style="background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px;">
+                            <div style="font-size: 18px; font-weight: 600; color: #333; margin-bottom: 20px;">
+                                设计内容填写
+                            </div>
+                            
+                            <!-- 说明文字 -->
+                            <div style="font-size: 14px; color: #333; margin-bottom: 16px; line-height: 1.6;">
+                                请根据设计要求和参考图纸，完成轴承座的设计，并填写设计说明：
+                            </div>
+                            
+                            <!-- 设计说明输入区 -->
+                            <div style="margin-bottom: 20px;">
+                                <textarea id="designContent" style="width: 100%; padding: 16px; border: 1px solid #E8E8E8; border-radius: 8px; font-size: 14px; resize: vertical; min-height: 180px; font-family: inherit; color: #333; line-height: 1.8;" placeholder="请填写设计说明，包括：
+1. 轴承座的主要结构组成（底座、轴承孔、安装孔等）
+2. 轴承孔的尺寸设计依据（轴承型号选择、配合关系等）
+3. 底座安装孔的布局方案（数量、位置和尺寸）
+4. 壁厚和加强筋的设计考虑
+5. 材料选择和热处理要求"></textarea>
+                            </div>
+                            
+                            <!-- 附件上传 -->
+                            <div style="margin-bottom: 24px; padding: 24px; background: #F0F7FF; border-radius: 8px; border: 2px dashed #1890FF; text-align: center; cursor: pointer;" onclick="document.getElementById('designFileUpload').click()">
+                                <div style="font-size: 32px; margin-bottom: 12px;">📎</div>
+                                <div style="font-size: 14px; color: #666; margin-bottom: 4px;">点击上传附件</div>
+                                <div style="font-size: 12px; color: #999;">支持 .prt, .sldprt, .step, .dwg, .pdf, .doc 格式</div>
+                                <input type="file" id="designFileUpload" style="display: none;" multiple>
+                            </div>
+                            
+                            <!-- 按钮组 -->
+                            <div style="display: flex; gap: 12px;">
+                                <button style="flex: 1; padding: 14px 24px; background: #F5F5F5; color: #666; border: 1px solid #D9D9D9; border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer;" onclick="saveDesignContent()">
+                                    保存
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else if (practiceType === 'process') {
+                    // ===== 工艺类：工序列表 + 工序详情编辑（与实训页一致）=====
+                    leftHtml += `
+                        <!-- 工艺路线编制 - 工艺类专用 -->
+                        <div class="panel-card" style="background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px;">
+                            <div style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                <i class="iconfont icon-liucheng" style="color: #1890FF;"></i>
+                                工艺路线编制
+                            </div>
+                            
+                            <!-- 工序列表 -->
+                            <div style="background: #FAFAFA; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                                    <span style="font-size: 14px; font-weight: 600; color: #333;">工序列表</span>
+                                    <button style="padding: 8px 16px; background: #1890FF; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 13px; display: flex; align-items: center; gap: 6px;" onclick="addProcessStep()">
+                                        <i class="iconfont icon-jia"></i> 添加工序
+                                    </button>
+                                </div>
+                                
+                                <table style="width: 100%; border-collapse: collapse; background: #fff; border-radius: 8px; overflow: hidden;">
+                                    <thead>
+                                        <tr style="background: #F5F7FA;">
+                                            <th style="padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #333; border-bottom: 1px solid #E8E8E8; width: 60px;">序号</th>
+                                            <th style="padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #333; border-bottom: 1px solid #E8E8E8;">工序名称</th>
+                                            <th style="padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #333; border-bottom: 1px solid #E8E8E8;">设备</th>
+                                            <th style="padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #333; border-bottom: 1px solid #E8E8E8;">工装</th>
+                                            <th style="padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #333; border-bottom: 1px solid #E8E8E8; width: 80px;">工时(分)</th>
+                                            <th style="padding: 12px 16px; text-align: center; font-size: 13px; font-weight: 600; color: #333; border-bottom: 1px solid #E8E8E8; width: 70px;">操作</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="processTableBody">
+                                        ${question.processSteps ? question.processSteps.map((step, idx) => `
+                                            <tr style="border-bottom: 1px solid #F0F0F0;" onmouseover="this.style.background='#F6FFFE'" onmouseout="this.style.background=''">
+                                                <td style="padding: 12px 16px; font-size: 13px; color: #666;">${(idx + 1) * 10}</td>
+                                                <td style="padding: 12px 16px;"><input type="text" value="${step.name}" placeholder="工序名称" style="width: 100%; padding: 6px 10px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 13px;"></td>
+                                                <td style="padding: 12px 16px;"><input type="text" placeholder="设备" style="width: 100%; padding: 6px 10px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 13px;"></td>
+                                                <td style="padding: 12px 16px;"><input type="text" placeholder="工装" style="width: 100%; padding: 6px 10px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 13px;"></td>
+                                                <td style="padding: 12px 16px;"><input type="number" placeholder="工时" style="width: 100%; padding: 6px 10px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 13px;"></td>
+                                                <td style="padding: 12px 16px; text-align: center;"><button style="padding: 4px 10px; background: #FFF2F0; color: #FF4D4F; border: 1px solid #FFCCC7; border-radius: 4px; cursor: pointer; font-size: 12px;" onclick="deleteProcessRow(this)">删除</button></td>
+                                            </tr>
+                                        `).join('') : ''}
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <!-- 工序详情编辑区 -->
+                            <div style="background: #FAFAFA; border-radius: 8px; padding: 20px; margin-bottom: 20px;">
+                                <div style="font-size: 14px; font-weight: 600; color: #333; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #E8E8E8;">
+                                    工序详情编辑（当前选中：${question.processSteps && question.processSteps[0] ? question.processSteps[0].name : '请选择工序'}）
+                                </div>
+                                <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;">
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-size: 12px; color: #666; font-weight: 500;">工序号</label>
+                                        <input type="text" value="10" readonly style="padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 13px; background: #F5F5F5;">
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-size: 12px; color: #666; font-weight: 500;">工序名称</label>
+                                        <input type="text" value="${question.processSteps && question.processSteps[0] ? question.processSteps[0].name : ''}" style="padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 13px;">
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-size: 12px; color: #666; font-weight: 500;">设备型号</label>
+                                        <select style="padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 13px;">
+                                            <option>CK6140数控车床</option>
+                                            <option>CK6150数控车床</option>
+                                            <option>C6140普通车床</option>
+                                        </select>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-size: 12px; color: #666; font-weight: 500;">主轴转速(r/min)</label>
+                                        <input type="number" placeholder="800" style="padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 13px;">
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-size: 12px; color: #666; font-weight: 500;">进给量(mm/r)</label>
+                                        <input type="number" placeholder="0.15" step="0.01" style="padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 13px;">
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 6px;">
+                                        <label style="font-size: 12px; color: #666; font-weight: 500;">切削深度(mm)</label>
+                                        <input type="number" placeholder="0.5" step="0.1" style="padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 13px;">
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 6px; grid-column: 1 / -1;">
+                                        <label style="font-size: 12px; color: #666; font-weight: 500;">工艺内容</label>
+                                        <textarea placeholder="详细描述本工序的加工内容和要求" style="padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 13px; min-height: 80px; resize: vertical;">${question.processSteps && question.processSteps[0] ? question.processSteps[0].desc : ''}</textarea>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 6px; grid-column: 1 / -1;">
+                                        <label style="font-size: 12px; color: #666; font-weight: 500;">质量要求</label>
+                                        <textarea placeholder="填写质量检验要求" style="padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 6px; font-size: 13px; min-height: 80px; resize: vertical;">${question.processSteps && question.processSteps[0] ? question.processSteps[0].tips : ''}</textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- 按钮组 -->
+                            <div style="display: flex; gap: 12px; padding-top: 20px; border-top: 1px solid #E8E8E8;">
+                                <button style="flex: 1; padding: 12px 24px; background: #fff; color: #666; border: 1px solid #D9D9D9; border-radius: 8px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;" onclick="saveProcessContent()">
+                                    <i class="iconfont icon-baocun"></i> 保存工艺
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                } else if (practiceType === 'programming') {
+                    // ===== 编程类：代码编辑区（与实训页一致）=====
+                    leftHtml += `
+                        <!-- 代码编辑区 - 编程类专用 -->
+                        <div class="panel-card" style="background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px;">
+                            <div style="font-size: 16px; font-weight: 600; color: #333; margin-bottom: 20px; display: flex; align-items: center; gap: 8px;">
+                                <i class="iconfont icon-code" style="color: #1890FF;"></i>
+                                代码编辑区
+                            </div>
+                            
+                            <!-- 代码编辑器容器 -->
+                            <div style="background: #1E1E1E; border-radius: 8px; overflow: hidden; margin-bottom: 20px;">
+                                <!-- 编辑器工具栏 -->
+                                <div style="background: #2D2D2D; padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;">
+                                    <div style="display: flex; gap: 12px;">
+                                        <select id="languageSelect" style="padding: 6px 12px; background: #3C3C3C; border: none; border-radius: 4px; color: #fff; font-size: 13px; cursor: pointer;">
+                                            <option value="gcode">G代码</option>
+                                            <option value="macro">宏程序</option>
+                                        </select>
+                                        <button onclick="formatCode()" style="padding: 6px 12px; background: #3C3C3C; border: none; border-radius: 4px; color: #fff; font-size: 13px; cursor: pointer; transition: all 0.3s;">格式化</button>
+                                        <button onclick="clearCode()" style="padding: 6px 12px; background: #3C3C3C; border: none; border-radius: 4px; color: #fff; font-size: 13px; cursor: pointer; transition: all 0.3s;">清空</button>
+                                    </div>
+                                    <button onclick="loadTemplate()" style="padding: 6px 12px; background: #3C3C3C; border: none; border-radius: 4px; color: #fff; font-size: 13px; cursor: pointer; transition: all 0.3s;">加载模板</button>
+                                </div>
+                                
+                                <!-- 代码输入区 -->
+                                <textarea id="codeEditor" style="min-height: 400px; padding: 16px; font-family: 'Consolas', 'Monaco', 'Courier New', monospace; font-size: 14px; line-height: 1.6; color: #D4D4D4; background: #1E1E1E; border: none; resize: vertical; width: 100%; outline: none;" placeholder="请输入G代码或宏程序...
+
+示例：
+O0001 (外圆粗车宏程序)
+#1=50 (工件外径)
+#2=30 (工件内径)
+#3=2 (切削深度)
+#4=0 (当前深度)
+
+N10 IF[#4GE#1-#2] GOTO 30
+#4=#4+#3
+G00 X#4 Z2
+G01 Z-50 F0.2
+G00 X#4 Z2
+GOTO 10
+
+N30 M30"></textarea>
+                            </div>
+                            
+                            <!-- 按钮组 -->
+                            <div style="display: flex; gap: 12px; margin-top: 20px;">
+                                <button style="flex: 1; padding: 12px 24px; background: #F5F5F5; color: #666; border: 1px solid #D9D9D9; border-radius: 8px; font-size: 15px; font-weight: 500; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.3s;" onclick="saveCode()">
+                                    <i class="iconfont icon-baocun"></i> 保存
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                // 要求区域 - 放到工序模块下方（根据类型显示不同内容）
+                if (question.requirements) {
+                    if (practiceType === 'machining') {
+                        // 加工类：显示加工要求
+                        leftHtml += `
+                            <div class="panel-card" style="background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px; border: 1px solid #E8E8E8;">
+                                <div style="font-size: 15px; font-weight: 600; color: #333; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid #F0F0F0;">
+                                    <i class="iconfont icon-yaoqiu" style="color: #1890FF;"></i> 加工要求
+                                </div>
+                                <div style="font-size: 14px; color: #333; line-height: 1.8;">
+                                    <p style="margin-bottom: 12px;"><strong style="color: #1890FF; font-weight: 600;">工件材料：</strong>${question.requirements.material}</p>
+                                    <p style="margin-bottom: 12px;"><strong style="color: #1890FF; font-weight: 600;">毛坯尺寸：</strong>${question.requirements.blankSize}</p>
+                                    <p style="margin-bottom: 12px;"><strong style="color: #1890FF; font-weight: 600;">加工精度：</strong>${question.requirements.precision}</p>
+                                    <p style="margin-bottom: 12px;"><strong style="color: #1890FF; font-weight: 600;">表面粗糙度：</strong>${question.requirements.roughness}</p>
+                                    <p style="color: #666;"><strong style="color: #1890FF; font-weight: 600;">技术要求：</strong>${question.requirements.description}</p>
+                                </div>
+                            </div>
+                        `;
+                    } else {
+                        // 非加工类：显示任务要求（与实训页一致）
+                        const stepTypeName = practiceType === 'design' ? '设计' : practiceType === 'programming' ? '编程' : practiceType === 'process' ? '工艺' : '检测';
+                        leftHtml += `
+                            <div class="panel-card" style="background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px; border: 1px solid #E8E8E8;">
+                                <div style="font-size: 15px; font-weight: 600; color: #333; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid #F0F0F0;">
+                                    <span style="font-size: 18px;">📋</span> ${stepTypeName}要求
+                                </div>
+                                <div style="font-size: 14px; color: #333; line-height: 1.8;">
+                                    ${question.requirements.description.replace(/\n/g, '<br>')}
+                                </div>
+                            </div>
+                        `;
+                    }
+                }
+                
+                // 参考附件 - 放到工序模块下方
+                if (question.attachments) {
+                    leftHtml += `
+                        <div class="panel-card" style="background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,0.06); margin-bottom: 20px; border: 1px solid #E8E8E8;">
+                            <div style="font-size: 15px; font-weight: 600; color: #333; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; padding-bottom: 12px; border-bottom: 1px solid #F0F0F0;">
+                                <i class="iconfont icon-fujian" style="color: #1890FF;"></i>参考附件 <span style="margin-left: 8px; font-size: 12px; color: #999; font-weight: normal;">共 ${question.attachments.length} 个</span>
+                            </div>
+                            <div style="display: flex; flex-direction: column; gap: 10px;">
+                                ${question.attachments.map(file => `
+                                    <div style="display: flex; align-items: center; padding: 12px; background: #F5F7FA; border-radius: 8px; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#E6F7FF'" onmouseout="this.style.background='#F5F7FA'">
+                                        <div style="font-size: 24px; margin-right: 12px;">${file.type === 'DWG' ? '📐' : file.type === 'PDF' ? '📋' : '🖼️'}</div>
+                                        <div style="flex: 1;">
+                                            <div style="color: #333; font-size: 14px;">${file.name}</div>
+                                            <div style="color: #999; font-size: 12px;">${file.type} · ${file.size}</div>
+                                        </div>
+                                        <div style="color: #1890FF; font-size: 13px;">
+                                            <i class="iconfont icon-yulan"></i> 预览
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                    `;
+                }
+                
+                optionsList.innerHTML = leftHtml;
+                
+                // ===== 右侧：根据题目类型展示不同内容 =====
+                let rightHtml = '';
+                
+                if (practiceType === 'machining') {
+                    // 加工类：工单信息 + 答题卡 + 提交按钮
+                    rightHtml = `
+                        <!-- 工单信息 -->
+                        <div class="sidebar-section">
+                            <div class="section-title">📋 工单信息</div>
+                            <div style="font-size: 13px; color: #595959;">
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                    <span style="color: #999;">试卷名称</span>
+                                    <span style="color: #333; font-weight: 500;">数控车床中级技能鉴定</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                    <span style="color: #999;">所属课程</span>
+                                    <span style="color: #333; font-weight: 500;">数控车床编程与操作</span>
+                                </div>
+                                <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                    <div style="color: #999; margin-bottom: 8px;">考试日期</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="color: #333; font-weight: 500;">2026-03-11</div>
+                                        <div style="color: #333; font-weight: 500;">2026-03-12</div>
+                                    </div>
+                                </div>
+                                <div style="padding: 8px 0;">
+                                    <div style="color: #999; margin-bottom: 8px;">考试时间段</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="color: #333; font-weight: 500; font-size: 12px;">08:00-10:00</div>
+                                        <div style="color: #333; font-weight: 500; font-size: 12px;">14:00-16:00</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 答题卡 -->
+                        <div class="sidebar-section">
+                            <div class="section-title">题目导航</div>
+                            <div class="answer-sheet" id="answerSheet">
+                                <!-- 动态生成答题卡 -->
+                            </div>
+                            <div class="card-legend">
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: #1890ff;"></div>
+                                    <span>当前题目</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: #52c41a;"></div>
+                                    <span>已作答</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: #fff; border: 1px solid #d9d9d9;"></div>
+                                    <span>未作答</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    rightHtml += `
+                        <button class="btn btn-danger btn-block" onclick="submitExam()">
+                            <i class="iconfont icon-tijiao"></i> 提交试卷
+                        </button>
+                    `;
+                } else if (practiceType === 'inspection') {
+                    // 检测类：与实训页一致的结构（工单信息 + 检测要求 + 参考附件 + 答题卡 + 提交按钮）
+                    rightHtml = `
+                        <!-- 工单信息 -->
+                        <div class="sidebar-section">
+                            <div class="section-title">📋 工单信息</div>
+                            <div style="font-size: 13px; color: #595959;">
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                    <span style="color: #999;">试卷名称</span>
+                                    <span style="color: #333; font-weight: 500;">精密零件尺寸检测技能鉴定</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                    <span style="color: #999;">所属课程</span>
+                                    <span style="color: #333; font-weight: 500;">精密测量与检测技术</span>
+                                </div>
+                                <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                    <div style="color: #999; margin-bottom: 8px;">考试日期</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="color: #333; font-weight: 500;">2026-03-11</div>
+                                        <div style="color: #333; font-weight: 500;">2026-03-12</div>
+                                    </div>
+                                </div>
+                                <div style="padding: 8px 0;">
+                                    <div style="color: #999; margin-bottom: 8px;">考试时间段</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="color: #333; font-weight: 500; font-size: 12px;">14:00-16:00</div>
+                                        <div style="color: #333; font-weight: 500; font-size: 12px;">09:00-11:00</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 检测要求（已隐藏） -->
+                        <!-- 
+                        <div class="sidebar-section">
+                            <div class="section-title">🔍 检测要求</div>
+                            <div style="font-size: 13px; color: #333; line-height: 1.8;">
+                                <p style="margin-bottom: 8px;"><strong style="color: #722ED1;">检测对象：</strong>${question.workOrder ? question.workOrder.material : '零件'}</p>
+                                <p style="margin-bottom: 8px;"><strong style="color: #722ED1;">检测类型：</strong>尺寸精度检测、形位公差检测</p>
+                                <p style="margin-bottom: 8px;"><strong style="color: #722ED1;">检测标准：</strong>GB/T 1804-m级</p>
+                                <p style="margin-bottom: 8px;"><strong style="color: #722ED1;">检测工具：</strong>游标卡尺、千分尺、正弦规、千分表</p>
+                                <p><strong style="color: #722ED1;">合格标准：</strong>所有检测项目均在公差范围内</p>
+                            </div>
+                        </div>
+                        -->
+                        
+                        <!-- 参考附件（已隐藏） -->
+                        <!--
+                        <div class="sidebar-section">
+                            <div class="section-title">📎 参考附件</div>
+                            <div style="font-size: 13px; color: #595959;">
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    ${question.attachments ? question.attachments.map(file => `
+                                        <div style="display: flex; align-items: center; gap: 8px; padding: 10px; background: #F9F0FF; border-radius: 6px; cursor: pointer; border: 1px solid #E6D7FF;">
+                                            <span style="font-size: 20px;">${file.type === 'PDF' ? '📋' : file.type === 'DWG' ? '📐' : '📄'}</span>
+                                            <div style="flex: 1;">
+                                                <div style="font-size: 13px; color: #333;">${file.name}</div>
+                                                <div style="font-size: 11px; color: #999;">${file.type} · ${file.size}</div>
+                                            </div>
+                                            <i class="iconfont icon-xiazai" style="color: #722ED1;"></i>
+                                        </div>
+                                    `).join('') : `
+                                        <div style="display: flex; align-items: center; gap: 8px; padding: 10px; background: #F9F0FF; border-radius: 6px; cursor: pointer; border: 1px solid #E6D7FF;">
+                                            <span style="font-size: 20px;">📋</span>
+                                            <div style="flex: 1;">
+                                                <div style="font-size: 13px; color: #333;">检测图纸.pdf</div>
+                                                <div style="font-size: 11px; color: #999;">PDF · 1.2 MB</div>
+                                            </div>
+                                            <i class="iconfont icon-xiazai" style="color: #722ED1;"></i>
+                                        </div>
+                                    `}
+                                </div>
+                            </div>
+                        </div>
+                        -->
+                        
+                        <!-- 答题卡 -->
+                        <div class="sidebar-section">
+                            <div class="section-title">题目导航</div>
+                            <div class="answer-sheet" id="answerSheet">
+                                <!-- 动态生成答题卡 -->
+                            </div>
+                            <div class="card-legend">
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: #1890ff;"></div>
+                                    <span>当前题目</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: #52c41a;"></div>
+                                    <span>已作答</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: #fff; border: 1px solid #d9d9d9;"></div>
+                                    <span>未作答</span>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+
+                    rightHtml += `
+                        <button class="btn btn-danger btn-block" onclick="submitExam()" style="background: linear-gradient(135deg, #722ED1 0%, #B37FEB 100%); border: none;">
+                            <i class="iconfont icon-tijiao"></i> 提交试卷
+                        </button>
+                    `;
+                } else {
+                    // 其他非加工类：与实训页一致的结构（答题卡 + 详细要求 + 参考附件 + 提交按钮）
+                    const stepTypeName = practiceType === 'design' ? '设计' : practiceType === 'programming' ? '编程' : '工艺';
+                    const courseName = practiceType === 'design' ? '机械CAD/CAM应用' : practiceType === 'programming' ? '数控编程技术' : '机械制造工艺学';
+                    const examName = practiceType === 'design' ? '机械零件设计技能鉴定' : practiceType === 'programming' ? '数控编程技能鉴定' : '工艺编制技能鉴定';
+                    
+                    rightHtml = `
+                        <!-- 工单信息 -->
+                        <div class="sidebar-section">
+                            <div class="section-title">📋 工单信息</div>
+                            <div style="font-size: 13px; color: #595959;">
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                    <span style="color: #999;">试卷名称</span>
+                                    <span style="color: #333; font-weight: 500;">${examName}</span>
+                                </div>
+                                <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                    <span style="color: #999;">所属课程</span>
+                                    <span style="color: #333; font-weight: 500;">${courseName}</span>
+                                </div>
+                                <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                    <div style="color: #999; margin-bottom: 8px;">考试日期</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="color: #333; font-weight: 500;">2026-03-11</div>
+                                        <div style="color: #333; font-weight: 500;">2026-03-12</div>
+                                    </div>
+                                </div>
+                                <div style="padding: 8px 0;">
+                                    <div style="color: #999; margin-bottom: 8px;">考试时间段</div>
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <div style="color: #333; font-weight: 500; font-size: 12px;">09:00-11:00</div>
+                                        <div style="color: #333; font-weight: 500; font-size: 12px;">14:00-16:00</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 答题卡 -->
+                        <div class="sidebar-section">
+                            <div class="section-title">题目导航</div>
+                            <div class="answer-sheet" id="answerSheet">
+                                <!-- 动态生成答题卡 -->
+                            </div>
+                            <div class="card-legend">
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: #1890ff;"></div>
+                                    <span>当前题目</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: #52c41a;"></div>
+                                    <span>已作答</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-dot" style="background: #fff; border: 1px solid #d9d9d9;"></div>
+                                    <span>未作答</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 详细要求 -->
+                        <div class="sidebar-section">
+                            <div class="section-title">${stepTypeName}要求</div>
+                            <div style="font-size: 13px; color: #595959; line-height: 1.8;">
+                                ${question.requirements ? question.requirements.description.replace(/\n/g, '<br>') : '请按照任务要求完成' + stepTypeName + '任务'}
+                            </div>
+                        </div>
+                        
+                        <!-- 参考附件 -->
+                        <div class="sidebar-section">
+                            <div class="section-title">参考附件</div>
+                            <div style="font-size: 13px; color: #595959;">
+                                <div style="display: flex; flex-direction: column; gap: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #F5F5F5; border-radius: 6px; cursor: pointer;">
+                                        <span style="font-size: 20px;">📄</span>
+                                        <div style="flex: 1;">
+                                            <div style="font-size: 13px; color: #333;">${stepTypeName}任务指导书.pdf</div>
+                                            <div style="font-size: 11px; color: #999;">2.3 MB</div>
+                                        </div>
+                                        <i class="iconfont icon-xiazai" style="color: #1890FF;"></i>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #F5F5F5; border-radius: 6px; cursor: pointer;">
+                                        <span style="font-size: 20px;">🖼️</span>
+                                        <div style="flex: 1;">
+                                            <div style="font-size: 13px; color: #333;">参考图纸.dwg</div>
+                                            <div style="font-size: 11px; color: #999;">1.5 MB</div>
+                                        </div>
+                                        <i class="iconfont icon-xiazai" style="color: #1890FF;"></i>
+                                    </div>
+                                    <div style="display: flex; align-items: center; gap: 8px; padding: 8px; background: #F5F5F5; border-radius: 6px; cursor: pointer;">
+                                        <span style="font-size: 20px;">📊</span>
+                                        <div style="flex: 1;">
+                                            <div style="font-size: 13px; color: #333;">参数表.xlsx</div>
+                                            <div style="font-size: 11px; color: #999;">856 KB</div>
+                                        </div>
+                                        <i class="iconfont icon-xiazai" style="color: #1890FF;"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    
+                    rightHtml += `
+                        <button class="btn btn-danger btn-block" onclick="submitExam()">
+                            <i class="iconfont icon-tijiao"></i> 提交试卷
+                        </button>
+                    `;
+                }
+                
+                examSidebar.innerHTML = rightHtml;
+                
+                // 重新渲染答题卡
+                updateAnswerSheet();
+                
+            } else {
+                // 选择题显示选项
+                const labels = ['A', 'B', 'C', 'D'];
+                optionsList.innerHTML = question.options.map((option, i) => `
+                    <label class="option-item">
+                        <input type="radio" name="answer" value="${labels[i]}" onchange="selectAnswer(${index}, '${labels[i]}')">
+                        <span class="option-label">${labels[i]}</span>
+                        <span class="option-text">${option}</span>
+                    </label>
+                `).join('');
+
+                // 恢复已选答案
+                if (question.selectedAnswer) {
+                    const radio = document.querySelector(`input[value="${question.selectedAnswer}"]`);
+                    if (radio) radio.checked = true;
+                }
+                
+                // 恢复右侧边栏默认内容（普通题目也显示工单信息）
+                examSidebar.innerHTML = `
+                    <!-- 工单信息 -->
+                    <div class="sidebar-section">
+                        <div class="section-title">📋 工单信息</div>
+                        <div style="font-size: 13px; color: #595959;">
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                <span style="color: #999;">试卷名称</span>
+                                <span style="color: #333; font-weight: 500;">数控车床中级技能鉴定</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                <span style="color: #999;">所属课程</span>
+                                <span style="color: #333; font-weight: 500;">数控车床编程与操作</span>
+                            </div>
+                            <div style="padding: 8px 0; border-bottom: 1px solid #F5F5F5;">
+                                <div style="color: #999; margin-bottom: 8px;">考试日期</div>
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <div style="color: #333; font-weight: 500;">2026-03-11</div>
+                                    <div style="color: #333; font-weight: 500;">2026-03-12</div>
+                                </div>
+                            </div>
+                            <div style="padding: 8px 0;">
+                                <div style="color: #999; margin-bottom: 8px;">考试时间段</div>
+                                <div style="display: flex; flex-direction: column; gap: 4px;">
+                                    <div style="color: #333; font-weight: 500; font-size: 12px;">08:00-10:00</div>
+                                    <div style="color: #333; font-weight: 500; font-size: 12px;">14:00-16:00</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-section">
+                        <div class="section-title">题目导航</div>
+                        <div class="answer-sheet" id="answerSheet">
+                            <!-- 动态生成答题卡 -->
+                        </div>
+                        <div class="card-legend">
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #1890ff;"></div>
+                                <span>当前题目</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #52c41a;"></div>
+                                <span>已作答</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-dot" style="background: #fff; border: 1px solid #d9d9d9;"></div>
+                                <span>未作答</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 考试信息模块已隐藏 -->
+                    <!--
+                    <div class="sidebar-section">
+                        <div class="section-title">考试信息</div>
+                        <div style="font-size: 14px; color: #595959;" id="examInfo">
+                            <div style="margin-bottom: 8px;">题目总数：<span id="totalQuestions">20</span>题</div>
+                            <div style="margin-bottom: 8px;">普通题目：<span id="normalCount">3</span>题</div>
+                            <div style="margin-bottom: 8px;">实训题目：<span id="practiceCount">2</span>题</div>
+                            <div style="margin-bottom: 8px;">已作答：<span id="answeredCount">0</span>题</div>
+                            <div>未作答：<span id="unansweredCount">5</span>题</div>
+                        </div>
+                    </div>
+                    -->
+
+                    <button class="btn btn-danger btn-block" onclick="submitExam()">
+                        <i class="iconfont icon-tijiao"></i> 提交试卷
+                    </button>
+                `;
+
+                // 重新渲染答题卡
+                updateAnswerSheet();
+                // updateExamInfo(); // 考试信息模块已隐藏
+            }
+
+            // 更新答题卡当前题标记
+            updateAnswerSheetCurrent(index);
+        }
+        
+        // 处理文件上传
+        function handleFileUpload(questionIndex, input) {
+            const files = input.files;
+            if (files.length > 0) {
+                const uploadedFilesDiv = document.getElementById(`uploadedFiles${questionIndex}`);
+                let filesHtml = '<div style="font-weight: 600; color: #333; margin-bottom: 8px;">已选择的文件：</div>';
+                
+                for (let i = 0; i < files.length; i++) {
+                    filesHtml += `
+                        <div style="padding: 8px 12px; background: #f5f5f5; border-radius: 4px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;">
+                            <span style="color: #333;"><i class="iconfont icon-file" style="margin-right: 8px; color: #1890ff;"></i>${files[i].name}</span>
+                            <span style="color: #999; font-size: 12px;">${(files[i].size / 1024).toFixed(1)} KB</span>
+                        </div>
+                    `;
+                }
+                
+                uploadedFilesDiv.innerHTML = filesHtml;
+                
+                // 标记题目为已作答
+                questions[questionIndex].answered = true;
+                questions[questionIndex].uploadedFiles = files;
+                updateAnswerSheet();
+                updateExamInfo();
+                
+                alert(`成功上传 ${files.length} 个文件！`);
+            }
+        }
+
+        // 选择答案
+        function selectAnswer(questionIndex, answer) {
+            questions[questionIndex].selectedAnswer = answer;
+            questions[questionIndex].answered = true;
+            updateAnswerSheet();
+            updateExamInfo();
+        }
+
+        // 更新考试信息统计
+        function updateExamInfo() {
+            const totalQuestions = questions.length;
+            const normalCount = questions.filter(q => q.source === 'normal').length;
+            const practiceCount = questions.filter(q => q.source === 'practice').length;
+            const answeredCount = questions.filter(q => q.answered).length;
+            const unansweredCount = totalQuestions - answeredCount;
+
+            document.getElementById('totalQuestions').textContent = totalQuestions;
+            document.getElementById('normalCount').textContent = normalCount;
+            document.getElementById('practiceCount').textContent = practiceCount;
+            document.getElementById('answeredCount').textContent = answeredCount;
+            document.getElementById('unansweredCount').textContent = unansweredCount;
+        }
+
+        // 更新答题卡
+        function updateAnswerSheet() {
+            const answerSheet = document.querySelector('.answer-sheet');
+            answerSheet.innerHTML = questions.map((q, i) => {
+                return `
+                <div class="answer-item ${q.answered ? 'answered' : ''} ${i === currentQuestionIndex ? 'current' : ''}" 
+                     onclick="goToQuestion(${i})" 
+                     title="${q.sourceText}">${i + 1}</div>
+            `}).join('');
+        }
+
+        // 更新答题卡当前题标记
+        function updateAnswerSheetCurrent(index) {
+            const items = document.querySelectorAll('.answer-item');
+            items.forEach((item, i) => {
+                if (i === index) {
+                    item.classList.add('current');
+                } else {
+                    item.classList.remove('current');
+                }
+            });
+        }
+
+        // 跳转到指定题目
+        function goToQuestion(index) {
+            currentQuestionIndex = index;
+            renderQuestion(index);
+        }
+
+        function prevQuestion() {
+            if (currentQuestionIndex > 0) {
+                currentQuestionIndex--;
+                renderQuestion(currentQuestionIndex);
+            } else {
+                alert('已经是第一题了');
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestionIndex < totalQuestions - 1) {
+                currentQuestionIndex++;
+                renderQuestion(currentQuestionIndex);
+            } else {
+                alert('已经是最后一题了');
+            }
+        }
+
+        function submitExam() {
+            if (confirm('确定要提交试卷吗？提交后将无法修改答案。')) {
+                alert('试卷已提交！');
+                window.location.href = './学生端_考试结果.html';
+            }
+        }
+        
+        // 保存答案
+        function saveAnswer() {
+            alert('答案已保存！');
+        }
+
+        // 提交答案
+        function submitAnswer() {
+            if (confirm('确定要提交答案吗？')) {
+                alert('答案已提交！');
+                // 标记当前题目为已作答
+                const currentQuestion = examData.questions[currentQuestionIndex];
+                if (currentQuestion) {
+                    currentQuestion.selectedAnswer = '已作答';
+                    updateAnswerSheet();
+                }
+            }
+        }
+
+        // 保存设计内容
+        function saveDesignContent() {
+            const content = document.getElementById('designContent');
+            if (content) {
+                alert('设计内容已保存！');
+            }
+        }
+
+        // 提交设计内容
+        function submitDesignContent() {
+            const content = document.getElementById('designContent');
+            if (content && content.value.trim() === '') {
+                alert('请填写设计说明后再提交！');
+                return;
+            }
+            if (confirm('确定要提交设计内容吗？')) {
+                alert('设计内容已提交！');
+                // 标记当前题目为已作答
+                const currentQuestion = examData.questions[currentQuestionIndex];
+                if (currentQuestion) {
+                    currentQuestion.selectedAnswer = '已作答';
+                    updateAnswerSheet();
+                }
+            }
+        }
+        
+        // 更新检测结果
+        function updateCheckResult(index, value) {
+            const currentQuestion = examData.questions[currentQuestionIndex];
+            if (currentQuestion && currentQuestion.checkItems && currentQuestion.checkItems[index]) {
+                currentQuestion.checkItems[index].result = value;
+                // 如果有输入值，自动更新状态为待判定
+                if (value && value.trim() !== '') {
+                    currentQuestion.checkItems[index].status = 'pending';
+                }
+            }
+        }
+        
+        // 更新检测判定
+        function updateCheckVerdict(index, verdict) {
+            const currentQuestion = examData.questions[currentQuestionIndex];
+            if (currentQuestion && currentQuestion.checkItems && currentQuestion.checkItems[index]) {
+                currentQuestion.checkItems[index].verdict = verdict;
+                currentQuestion.checkItems[index].status = verdict;
+                // 重新渲染以更新样式
+                renderQuestion(currentQuestionIndex);
+            }
+        }
+        
+        // 保存检测结果
+        function saveCheckResult() {
+            const currentQuestion = examData.questions[currentQuestionIndex];
+            if (currentQuestion && currentQuestion.checkItems) {
+                const checkedCount = currentQuestion.checkItems.filter(item => item.result && item.result.trim() !== '').length;
+                alert(`检测结果已保存！已完成 ${checkedCount}/8 项检测。`);
+            }
+        }
+        
+        // 提交检测结果
+        function submitCheckResult() {
+            const currentQuestion = examData.questions[currentQuestionIndex];
+            if (currentQuestion && currentQuestion.checkItems) {
+                const uncheckedItems = currentQuestion.checkItems.filter(item => !item.result || item.result.trim() === '');
+                const unverdictItems = currentQuestion.checkItems.filter(item => item.verdict === 'pending');
+                
+                if (uncheckedItems.length > 0) {
+                    alert(`还有 ${uncheckedItems.length} 项未填写检测结果，请完成后再提交！`);
+                    return;
+                }
+                
+                if (unverdictItems.length > 0) {
+                    alert(`还有 ${unverdictItems.length} 项未进行合格判定，请完成后再提交！`);
+                    return;
+                }
+                
+                if (confirm('确定要提交检测结果吗？提交后将无法修改！')) {
+                    const passCount = currentQuestion.checkItems.filter(item => item.verdict === 'pass').length;
+                    const failCount = currentQuestion.checkItems.filter(item => item.verdict === 'fail').length;
+                    alert(`检测结果已提交！\n合格：${passCount} 项\n不合格：${failCount} 项`);
+                    
+                    // 标记当前题目为已作答
+                    currentQuestion.selectedAnswer = '已提交';
+                    updateAnswerSheet();
+                }
+            }
+        }
+        
+        // ===== 编程类专用函数 =====
+        
+        // 格式化代码
+        function formatCode() {
+            const editor = document.getElementById('codeEditor');
+            if (editor) {
+                let code = editor.value;
+                // 简单的格式化：统一换行、去除多余空行
+                code = code.replace(/\r\n/g, '\n').replace(/\n{3,}/g, '\n\n');
+                editor.value = code;
+                alert('代码已格式化！');
+            }
+        }
+        
+        // 清空代码
+        function clearCode() {
+            const editor = document.getElementById('codeEditor');
+            if (editor && confirm('确定要清空代码吗？')) {
+                editor.value = '';
+            }
+        }
+        
+        // 加载模板
+        function loadTemplate() {
+            const editor = document.getElementById('codeEditor');
+            const language = document.getElementById('languageSelect')?.value || 'gcode';
+            
+            if (editor) {
+                let template = '';
+                if (language === 'gcode') {
+                    template = `O0001 (数控车床加工程序)
+(工件材料: 45#钢)
+(毛坯尺寸: Φ55×85)
+
+N10 G99 G21 G40 (初始化)
+N20 T0101 (外圆粗车刀)
+N30 S800 M03 (主轴正转)
+N40 G00 X55.0 Z2.0 (快速定位)
+
+(粗车循环)
+N50 G71 U2.0 R0.5
+N60 G71 P70 Q130 U0.5 W0.1 F0.2
+
+N70 G00 X20.0
+N80 G01 Z0 F0.1
+N90 X24.0 Z-2.0 (倒角)
+N100 Z-30.0
+N110 X40.0
+N120 Z-50.0
+N130 X55.0
+
+N140 G00 X100.0 Z100.0 (退刀)
+N150 M30 (程序结束)`;
+                } else {
+                    template = `O0002 (宏程序示例)
+(使用变量实现循环加工)
+
+#1=50.0  (工件外径)
+#2=30.0  (工件内径)
+#3=2.0   (每次切削深度)
+#4=0     (当前切削深度)
+#5=0.2   (进给速度)
+
+N10 G99 G21 G40
+N20 T0101
+N30 S800 M03
+
+(宏程序循环)
+N40 WHILE[#4LT#1-#2]DO1
+N50   #4=#4+#3
+N60   IF[#4GT#1-#2]THEN#4=#1-#2
+N70   G00 X[#2+#4+2] Z2.0
+N80   G01 Z-50.0 F#5
+N90   G00 X[#2+#4+2] Z2.0
+N100 END1
+
+N110 G00 X100.0 Z100.0
+N120 M30`;
+                }
+                editor.value = template;
+                alert('模板已加载！');
+            }
+        }
+        
+        // 运行代码
+        function runCode() {
+            const editor = document.getElementById('codeEditor');
+            const outputPanel = document.getElementById('outputPanel');
+            const outputContent = document.getElementById('outputContent');
+            
+            if (editor && outputPanel && outputContent) {
+                const code = editor.value.trim();
+                if (!code) {
+                    alert('请先输入代码！');
+                    return;
+                }
+                
+                // 显示运行结果面板
+                outputPanel.style.display = 'block';
+                
+                // 模拟运行结果
+                const lines = code.split('\n').length;
+                const hasError = code.includes('XXX') || code.includes('ERROR');
+                
+                if (hasError) {
+                    outputContent.innerHTML = `<span style="color: #FF6B6B;">❌ 编译错误</span>
+────────────────────
+<span style="color: #FF6B6B;">第 15 行: 语法错误 - 未知指令</span>
+<span style="color: #FFA500;">警告: 缺少刀具补偿设置</span>
+
+请检查代码后重试。`;
+                } else {
+                    outputContent.innerHTML = `<span style="color: #52C41A;">✓ 编译成功</span>
+────────────────────
+程序行数: ${lines} 行
+预估加工时间: 8分 32秒
+刀具路径: 已生成
+
+<span style="color: #1890FF;">模拟运行中...</span>
+G00 X55.0 Z2.0
+G71 U2.0 R0.5
+...
+<span style="color: #52C41A;">✓ 程序验证通过，可以提交</span>`;
+                }
+            }
+        }
+        
+        // 清空运行结果
+        function clearOutput() {
+            const outputPanel = document.getElementById('outputPanel');
+            const outputContent = document.getElementById('outputContent');
+            if (outputPanel && outputContent) {
+                outputContent.innerHTML = '点击"运行代码"查看执行结果...';
+                outputPanel.style.display = 'none';
+            }
+        }
+        
+        // 保存代码
+        function saveCode() {
+            const editor = document.getElementById('codeEditor');
+            if (editor) {
+                alert('代码已保存！');
+            }
+        }
+        
+        // 提交代码
+        function submitCode() {
+            const editor = document.getElementById('codeEditor');
+            if (editor) {
+                const code = editor.value.trim();
+                if (!code) {
+                    alert('请先输入代码后再提交！');
+                    return;
+                }
+                if (confirm('确定要提交代码吗？')) {
+                    alert('代码已提交！');
+                    // 标记当前题目为已作答
+                    const currentQuestion = examData.questions[currentQuestionIndex];
+                    if (currentQuestion) {
+                        currentQuestion.selectedAnswer = '已作答';
+                        updateAnswerSheet();
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- 学生端导航组件加载器 -->
+    <script src="./nav-loader-student.js"></script>
+</body>
+</html>

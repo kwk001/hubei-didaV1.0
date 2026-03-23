@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设备报警分析 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        /* 统计卡片 */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .stat-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .stat-icon.red { background: linear-gradient(135deg, #FFF1F0 0%, #FFCCC7 100%); }
+        .stat-icon.orange { background: linear-gradient(135deg, #FFF7E6 0%, #FFE7BA 100%); }
+        .stat-icon.blue { background: linear-gradient(135deg, #E6F7FF 0%, #BAE7FF 100%); }
+        .stat-icon.green { background: linear-gradient(135deg, #F6FFED 0%, #D9F7BE 100%); }
+
+        .stat-content { flex: 1; }
+        .stat-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #262626;
+            margin-bottom: 4px;
+        }
+        .stat-label {
+            font-size: 13px;
+            color: #8C8C8C;
+        }
+
+        /* 搜索筛选 */
+        .search-filter-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-select, .date-picker {
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            min-width: 140px;
+        }
+
+        .btn-search, .btn-export {
+            padding: 10px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-search {
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+        }
+
+        .btn-export {
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            color: #666;
+        }
+
+        /* 图表容器 */
+        .chart-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .chart-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .chart-container {
+            width: 100%;
+            height: 350px;
+        }
+
+        /* 数据表格 */
+        .table-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .table-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .data-table th {
+            background: #FAFAFA;
+            padding: 12px 16px;
+            text-align: left;
+            font-size: 13px;
+            font-weight: 600;
+            color: #333;
+            border-bottom: 2px solid #E8E8E8;
+        }
+
+        .data-table td {
+            padding: 16px;
+            border-bottom: 1px solid #F0F0F0;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .data-table tbody tr:hover {
+            background: #F5F7FA;
+        }
+
+        /* 报警等级 */
+        .alarm-level {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .alarm-level.urgent {
+            background: #FFF1F0;
+            color: #CF1322;
+            border: 1px solid #FFA39E;
+        }
+
+        .alarm-level.serious {
+            background: #FFF7E6;
+            color: #D46B08;
+            border: 1px solid #FFD591;
+        }
+
+        .alarm-level.normal {
+            background: #E6F7FF;
+            color: #096DD9;
+            border: 1px solid #91D5FF;
+        }
+
+        /* 处理状态 */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .status-badge.pending {
+            background: #FFF7E6;
+            color: #FA8C16;
+        }
+
+        .status-badge.processing {
+            background: #E6F7FF;
+            color: #1890FF;
+        }
+
+        .status-badge.resolved {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        /* 分页 */
+        .pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        .pagination-left {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .pagination-right {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-btn {
+            padding: 8px 14px;
+            border: 1px solid #D9D9D9;
+            background: #fff;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .pagination-btn.active {
+            background: #1890FF;
+            color: #fff;
+            border-color: #1890FF;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+<div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">报表 / 设备报警分析</div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <div class="content-body">
+            <!-- 统计卡片 -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-icon red">🚨</div>
+                    <div class="stat-content">
+                        <div class="stat-value">156</div>
+                        <div class="stat-label">本月报警总数</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">⚠️</div>
+                    <div class="stat-content">
+                        <div class="stat-value">23</div>
+                        <div class="stat-label">今日报警数</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">🔧</div>
+                    <div class="stat-content">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">待处理报警</div>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">✅</div>
+                    <div class="stat-content">
+                        <div class="stat-value">89.7%</div>
+                        <div class="stat-label">处理完成率</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 搜索筛选 -->
+            <div class="search-filter-card">
+                <div class="search-row">
+                    <select class="filter-select">
+                        <option value="">选择车间</option>
+                        <option value="workshop1">数控加工车间</option>
+                        <option value="workshop2">模具制造车间</option>
+                        <option value="workshop3">精密加工车间</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">选择设备</option>
+                        <option value="device1">数控车床-01</option>
+                        <option value="device2">数控车床-02</option>
+                        <option value="device3">数控铣床-01</option>
+                        <option value="device4">加工中心-01</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">报警等级</option>
+                        <option value="urgent">紧急</option>
+                        <option value="serious">严重</option>
+                        <option value="normal">一般</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="">处理状态</option>
+                        <option value="pending">待处理</option>
+                        <option value="processing">处理中</option>
+                        <option value="resolved">已解决</option>
+                    </select>
+                    <select class="filter-select">
+                        <option value="day">按日统计</option>
+                        <option value="month">按月统计</option>
+                        <option value="year">按年统计</option>
+                    </select>
+                    <input type="date" class="date-picker" value="2025-01-01">
+                    <span style="color: #999; padding: 10px 0;">至</span>
+                    <input type="date" class="date-picker" value="2025-01-31">
+                    <button class="btn-search">🔍 查询</button>
+                    <button class="btn-export">📥 导出报表</button>
+                </div>
+            </div>
+
+            <!-- 报警统计图表 -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <div class="chart-title">设备报警次数统计（2025年1月）</div>
+                </div>
+                <div class="chart-container" id="alarmChart"></div>
+            </div>
+
+            <!-- 报警记录表格 -->
+            <div class="table-card">
+                <div class="table-header">
+                    <div class="table-title">设备报警记录明细</div>
+                </div>
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>报警时间</th>
+                            <th>设备名称</th>
+                            <th>报警号</th>
+                            <th>报警信息</th>
+                            <th>报警等级</th>
+                            <th>处理状态</th>
+                            <th>处理人</th>
+                            <th>操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>2025-01-20 14:35:22</td>
+                            <td>数控车床-01</td>
+                            <td>ALM-001</td>
+                            <td>主轴温度过高，超过设定阈值85℃</td>
+                            <td><span class="alarm-level urgent">紧急</span></td>
+                            <td><span class="status-badge processing">处理中</span></td>
+                            <td>张师傅</td>
+                            <td><a href="#">查看详情</a></td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-20 13:18:45</td>
+                            <td>数控铣床-02</td>
+                            <td>ALM-023</td>
+                            <td>刀具磨损严重，建议更换刀具</td>
+                            <td><span class="alarm-level serious">严重</span></td>
+                            <td><span class="status-badge resolved">已解决</span></td>
+                            <td>李师傅</td>
+                            <td><a href="#">查看详情</a></td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-20 11:42:10</td>
+                            <td>加工中心-01</td>
+                            <td>ALM-015</td>
+                            <td>润滑液位低，请及时添加润滑油</td>
+                            <td><span class="alarm-level normal">一般</span></td>
+                            <td><span class="status-badge resolved">已解决</span></td>
+                            <td>王师傅</td>
+                            <td><a href="#">查看详情</a></td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-20 10:25:33</td>
+                            <td>数控车床-03</td>
+                            <td>ALM-008</td>
+                            <td>伺服电机过载，检查负载情况</td>
+                            <td><span class="alarm-level serious">严重</span></td>
+                            <td><span class="status-badge pending">待处理</span></td>
+                            <td>-</td>
+                            <td><a href="#">查看详情</a></td>
+                        </tr>
+                        <tr>
+                            <td>2025-01-20 09:12:18</td>
+                            <td>数控铣床-01</td>
+                            <td>ALM-031</td>
+                            <td>气压不足，检查气源压力</td>
+                            <td><span class="alarm-level normal">一般</span></td>
+                            <td><span class="status-badge resolved">已解决</span></td>
+                            <td>赵师傅</td>
+                            <td><a href="#">查看详情</a></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- 分页 -->
+                <div class="pagination">
+                    <div class="pagination-left">显示第 1-5 条，共 156 条记录</div>
+                    <div class="pagination-right">
+                        <button class="pagination-btn" disabled>上一页</button>
+                        <button class="pagination-btn active">1</button>
+                        <button class="pagination-btn">2</button>
+                        <button class="pagination-btn">3</button>
+                        <button class="pagination-btn">...</button>
+                        <button class="pagination-btn">32</button>
+                        <button class="pagination-btn">下一页</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 报警统计数据
+        const alarmData = [
+            { device: '数控车床-01', urgent: 5, serious: 8, normal: 12 },
+            { device: '数控车床-02', urgent: 3, serious: 6, normal: 15 },
+            { device: '数控铣床-01', urgent: 4, serious: 7, normal: 10 },
+            { device: '数控铣床-02', urgent: 2, serious: 5, normal: 14 },
+            { device: '加工中心-01', urgent: 6, serious: 9, normal: 11 },
+            { device: '磨床-01', urgent: 1, serious: 4, normal: 8 },
+            { device: '钻床-01', urgent: 2, serious: 3, normal: 9 }
+        ];
+
+        // 渲染报警统计图表
+        function renderAlarmChart() {
+            const container = document.getElementById('alarmChart');
+            if (!container) return;
+
+            const width = container.clientWidth;
+            const height = 350;
+            const padding = { top: 40, right: 40, bottom: 80, left: 60 };
+            const chartWidth = width - padding.left - padding.right;
+            const chartHeight = height - padding.top - padding.bottom;
+
+            const maxValue = 30;
+            const barWidth = chartWidth / alarmData.length * 0.6;
+            const barGap = chartWidth / alarmData.length * 0.4;
+
+            let svg = `
+                <svg width="${width}" height="${height}" style="overflow: visible;">
+                    <!-- 网格线 -->
+                    ${[0, 10, 20, 30].map(val => {
+                        const y = padding.top + chartHeight - (val / maxValue) * chartHeight;
+                        return `<line stroke="#F0F0F0" stroke-width="1" stroke-dasharray="4,4" 
+                                x1="${padding.left}" y1="${y}" x2="${width - padding.right}" y2="${y}" />`;
+                    }).join('')}
+                    
+                    <!-- Y轴 -->
+                    <line stroke="#D9D9D9" stroke-width="1" 
+                          x1="${padding.left}" y1="${padding.top}" x2="${padding.left}" y2="${padding.top + chartHeight}" />
+                    
+                    <!-- X轴 -->
+                    <line stroke="#D9D9D9" stroke-width="1" 
+                          x1="${padding.left}" y1="${padding.top + chartHeight}" x2="${width - padding.right}" y2="${padding.top + chartHeight}" />
+                    
+                    <!-- Y轴标签 -->
+                    ${[0, 10, 20, 30].map(val => {
+                        const y = padding.top + chartHeight - (val / maxValue) * chartHeight;
+                        return `<text fill="#666" font-size="12" text-anchor="end" x="${padding.left - 10}" y="${y + 4}">${val}次</text>`;
+                    }).join('')}
+                    
+                    <!-- 堆叠柱状图 -->
+                    ${alarmData.map((item, index) => {
+                        const x = padding.left + index * (chartWidth / alarmData.length) + barGap / 2;
+                        const total = item.urgent + item.serious + item.normal;
+                        
+                        const urgentHeight = (item.urgent / maxValue) * chartHeight;
+                        const seriousHeight = (item.serious / maxValue) * chartHeight;
+                        const normalHeight = (item.normal / maxValue) * chartHeight;
+                        
+                        const urgentY = padding.top + chartHeight - urgentHeight;
+                        const seriousY = urgentY - seriousHeight;
+                        const normalY = seriousY - normalHeight;
+                        
+                        return `
+                            <rect x="${x}" y="${urgentY}" width="${barWidth}" height="${urgentHeight}" 
+                                  fill="#FF4D4F" rx="4" onmouseenter="showAlarmTooltip(event, '${item.device}', '紧急', ${item.urgent})" onmouseleave="hideAlarmTooltip()" />
+                            <rect x="${x}" y="${seriousY}" width="${barWidth}" height="${seriousHeight}" 
+                                  fill="#FAAD14" rx="4" onmouseenter="showAlarmTooltip(event, '${item.device}', '严重', ${item.serious})" onmouseleave="hideAlarmTooltip()" />
+                            <rect x="${x}" y="${normalY}" width="${barWidth}" height="${normalHeight}" 
+                                  fill="#1890FF" rx="4" onmouseenter="showAlarmTooltip(event, '${item.device}', '一般', ${item.normal})" onmouseleave="hideAlarmTooltip()" />
+                            <text fill="#333" font-size="11" text-anchor="middle" x="${x + barWidth/2}" y="${padding.top + chartHeight + 20}" transform="rotate(-45, ${x + barWidth/2}, ${padding.top + chartHeight + 20})">${item.device}</text>
+                            <text fill="#666" font-size="12" font-weight="600" text-anchor="middle" x="${x + barWidth/2}" y="${normalY - 5}">${total}</text>
+                        `;
+                    }).join('')}
+                    
+                    <!-- 图例 -->
+                    <rect x="${width - 200}" y="10" width="12" height="12" fill="#FF4D4F" rx="2" />
+                    <text fill="#666" font-size="12" x="${width - 180}" y="21">紧急</text>
+                    <rect x="${width - 130}" y="10" width="12" height="12" fill="#FAAD14" rx="2" />
+                    <text fill="#666" font-size="12" x="${width - 110}" y="21">严重</text>
+                    <rect x="${width - 60}" y="10" width="12" height="12" fill="#1890FF" rx="2" />
+                    <text fill="#666" font-size="12" x="${width - 40}" y="21">一般</text>
+                </svg>
+                
+                <!-- 提示框 -->
+                <div id="alarmTooltip" style="position: absolute; background: rgba(0,0,0,0.8); color: #fff; padding: 8px 12px; border-radius: 4px; font-size: 12px; pointer-events: none; opacity: 0; transition: opacity 0.3s; z-index: 100;"></div>
+            `;
+
+            container.innerHTML = svg;
+        }
+
+        // 显示提示框
+        function showAlarmTooltip(event, device, level, count) {
+            const tooltip = document.getElementById('alarmTooltip');
+            tooltip.innerHTML = `<strong>${device}</strong><br>${level}: ${count}次`;
+            tooltip.style.left = (event.pageX - event.target.closest('.chart-container').getBoundingClientRect().left + 10) + 'px';
+            tooltip.style.top = (event.pageY - event.target.closest('.chart-container').getBoundingClientRect().top - 30) + 'px';
+            tooltip.style.opacity = '1';
+        }
+
+        // 隐藏提示框
+        function hideAlarmTooltip() {
+            document.getElementById('alarmTooltip').style.opacity = '0';
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 菜单折叠
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 页面加载完成后渲染图表
+        window.addEventListener('load', function() {
+            setTimeout(renderAlarmChart, 100);
+        });
+
+        // 窗口大小改变时重新渲染
+        window.addEventListener('resize', function() {
+            renderAlarmChart();
+        });
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

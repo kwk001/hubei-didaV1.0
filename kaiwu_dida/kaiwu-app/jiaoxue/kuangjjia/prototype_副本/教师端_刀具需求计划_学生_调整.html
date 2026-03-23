@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>刀具调整 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .page-header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .page-title::before {
+            content: '';
+            width: 4px;
+            height: 18px;
+            background: #1890FF;
+            border-radius: 2px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .btn-default { background: #fff; color: #666; border: 1px solid #D9D9D9; }
+        .btn-default:hover { border-color: #1890FF; color: #1890FF; }
+        .btn-primary { background: #1890FF; color: #fff; }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success { background: #52C41A; color: #fff; }
+        .btn-success:hover { background: #73D13D; }
+        
+        .content-body {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+        }
+        
+        .info-card {
+            background: #fff;
+            border-radius: 8px;
+            border: 1px solid #E8E8E8;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+        .info-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+        .info-label {
+            font-size: 12px;
+            color: #999;
+        }
+        .info-value {
+            font-size: 14px;
+            color: #333;
+            font-weight: 500;
+        }
+        
+        .adjust-type-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+        .adjust-tab {
+            padding: 10px 24px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+        .adjust-tab:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+        .adjust-tab.active {
+            background: #1890FF;
+            border-color: #1890FF;
+            color: #fff;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+        }
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        .data-table th,
+        .data-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .data-table th {
+            background: #FAFAFA;
+            font-weight: 500;
+            color: #666;
+        }
+        .data-table tbody tr:hover {
+            background: #F5F7FA;
+        }
+        
+        .toolbar-bottom {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+            padding-top: 20px;
+            border-top: 1px solid #F0F0F0;
+        }
+        
+        .adjust-input {
+            width: 80px;
+            padding: 6px 10px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            text-align: center;
+        }
+        .adjust-input:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+        }
+        
+        .adjust-type-select {
+            padding: 6px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            background: #fff;
+            cursor: pointer;
+        }
+        .adjust-type-select:focus {
+            outline: none;
+            border-color: #1890FF;
+        }
+        
+        .checkbox {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: #F6FFED;
+            border: 1px solid #B7EB8F;
+            border-radius: 4px;
+            margin-top: 16px;
+        }
+        .summary-info {
+            display: flex;
+            gap: 32px;
+        }
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .summary-label {
+            font-size: 13px;
+            color: #666;
+        }
+        .summary-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: #52C41A;
+        }
+        
+        .form-item {
+            margin-bottom: 16px;
+        }
+        .form-item label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 6px;
+        }
+        .form-item textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 4px;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
+        }
+        .form-item textarea:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 2px rgba(24,144,255,0.2);
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏 -->
+    <div class="sidebar" id="sidebar"></div>
+    
+    <div class="main-content">
+        <!-- 页面头部 -->
+        <div class="page-header">
+            <div class="page-title">刀具需求调整</div>
+            <button class="btn btn-default" onclick="window.location.href='./教师端_刀具需求计划_学生.html'">
+                <i class="iconfont icon-arrow-left"></i> 返回
+            </button>
+        </div>
+        
+        <!-- 内容区域 -->
+        <div class="content-body">
+            <!-- 基本信息 -->
+            <div class="info-card">
+                <div class="card-title">基本信息</div>
+                <div class="info-grid">
+                    <div class="info-item">
+                        <span class="info-label">学生姓名</span>
+                        <span class="info-value">张三</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">学号</span>
+                        <span class="info-value">2021001</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">班级</span>
+                        <span class="info-value">数控2101班</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">实训项目</span>
+                        <span class="info-value">阶梯轴加工</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 调整类型选择 -->
+            <div class="adjust-type-tabs">
+                <div class="adjust-tab active" data-type="add">增加需求</div>
+                <div class="adjust-tab" data-type="reduce">减少需求</div>
+                <div class="adjust-tab" data-type="replace">规格替换</div>
+            </div>
+            
+            <!-- 当前需求清单 -->
+            <div class="info-card">
+                <div class="card-title">当前需求清单</div>
+                <div class="table-container">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" class="checkbox" checked></th>
+                                <th>工序</th>
+                                <th>设备</th>
+                                <th>刀具编码</th>
+                                <th>刀具名称</th>
+                                <th>规格</th>
+                                <th>原需求</th>
+                                <th>已领用</th>
+                                <th>调整类型</th>
+                                <th>调整数量</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox" checked></td>
+                                <td>粗车</td>
+                                <td>C001</td>
+                                <td>T010</td>
+                                <td>外圆车刀</td>
+                                <td>20×20mm</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td>
+                                    <select class="adjust-type-select">
+                                        <option value="add">增加</option>
+                                        <option value="reduce">减少</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" class="adjust-input" value="1" min="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox" checked></td>
+                                <td>精车</td>
+                                <td>C001</td>
+                                <td>T012</td>
+                                <td>精车刀</td>
+                                <td>16×16mm</td>
+                                <td>1</td>
+                                <td>1</td>
+                                <td>
+                                    <select class="adjust-type-select">
+                                        <option value="add">增加</option>
+                                        <option value="reduce" selected>减少</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" class="adjust-input" value="0" min="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td>铣槽</td>
+                                <td>M001</td>
+                                <td>T001</td>
+                                <td>立铣刀</td>
+                                <td>Φ10mm</td>
+                                <td>2</td>
+                                <td>2</td>
+                                <td>
+                                    <select class="adjust-type-select">
+                                        <option value="add">增加</option>
+                                        <option value="reduce">减少</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" class="adjust-input" value="0" min="0">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="checkbox"></td>
+                                <td>钻孔</td>
+                                <td>D001</td>
+                                <td>T005</td>
+                                <td>麻花钻</td>
+                                <td>Φ8mm</td>
+                                <td>1</td>
+                                <td>0</td>
+                                <td>
+                                    <select class="adjust-type-select">
+                                        <option value="add">增加</option>
+                                        <option value="reduce">减少</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <input type="number" class="adjust-input" value="0" min="0">
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- 调整汇总 -->
+                <div class="summary-row">
+                    <div class="summary-info">
+                        <div class="summary-item">
+                            <span class="summary-label">增加项数：</span>
+                            <span class="summary-value">1</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">减少项数：</span>
+                            <span class="summary-value">0</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">调整后总数：</span>
+                            <span class="summary-value">7</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 调整说明 -->
+            <div class="info-card">
+                <div class="card-title">调整说明</div>
+                <div class="form-item">
+                    <label>调整原因</label>
+                    <textarea placeholder="请说明调整刀具需求的原因..."></textarea>
+                </div>
+                <div class="form-item">
+                    <label>备注</label>
+                    <textarea placeholder="请输入其他需要说明的内容（选填）..."></textarea>
+                </div>
+            </div>
+            
+            <!-- 底部操作栏 -->
+            <div class="toolbar-bottom">
+                <button class="btn btn-default" onclick="window.location.href='./教师端_刀具需求计划_学生.html'">取消</button>
+                <button class="btn btn-success" onclick="alert('调整申请已提交！'); window.location.href='./教师端_刀具需求计划_学生.html'">
+                    <i class="iconfont icon-check"></i> 确认调整
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // 加载侧边栏
+        fetch('./sidebar.html')
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('sidebar').innerHTML = html;
+            });
+        
+        // 调整类型标签切换
+        document.querySelectorAll('.adjust-tab').forEach(tab => {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.adjust-tab').forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1035 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实训开始 - 学生端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <!-- 开始实训页面不加载导航样式，保持沉浸式体验 -->
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* 主内容区全屏显示 */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            margin-left: 0;
+        }
+        
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 24px;
+        }
+
+        .logo {
+            height: 64px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: bold;
+            color: #fff;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .menu-group {
+            padding: 16px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .menu-title {
+            padding: 12px 24px;
+            color: rgba(255,255,255,0.65);
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .menu-items {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .menu-item {
+            padding: 12px 24px 12px 48px;
+            cursor: pointer;
+            color: rgba(255,255,255,0.65);
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background: #1890FF;
+            color: #fff;
+        }
+
+        .header {
+            height: 64px;
+            background: #fff;
+            border-bottom: 1px solid #E8E8E8;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 24px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+            color: #595959;
+        }
+
+        .breadcrumb a {
+            color: #595959;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .breadcrumb a:hover {
+            color: #FA8C16;
+            text-decoration: underline;
+        }
+
+        .breadcrumb a:focus-visible {
+            outline: 2px solid #FA8C16;
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        .breadcrumb li[aria-current="page"] {
+            color: #1f1f1f;
+            font-weight: 500;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #595959;
+        }
+
+        .logout-btn {
+            padding: 6px 16px;
+            background: #FF4D4F;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .logout-btn:hover {
+            background: #ff7875;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(255, 77, 79, 0.3);
+        }
+
+        .logout-btn:focus-visible {
+            outline: 2px solid #FF4D4F;
+            outline-offset: 2px;
+        }
+
+        .logout-btn:active {
+            transform: translateY(0);
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .btn-text {
+            background: none;
+            border: none;
+            color: #595959;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-text:hover {
+            color: #FA8C16;
+            background: rgba(250, 140, 22, 0.08);
+        }
+
+        .btn-text:focus-visible {
+            outline: 2px solid #FA8C16;
+            outline-offset: 2px;
+        }
+
+        /* Skip to content link */
+        .skip-link {
+            position: absolute;
+            top: -40px;
+            left: 0;
+            background: #FA8C16;
+            color: #fff;
+            padding: 8px 16px;
+            text-decoration: none;
+            border-radius: 0 0 8px 0;
+            z-index: 10000;
+            font-size: 14px;
+            font-weight: 500;
+            transition: top 0.3s ease;
+        }
+
+        .skip-link:focus {
+            top: 0;
+            outline: 2px solid #fff;
+            outline-offset: 2px;
+        }
+
+        /* Visually hidden but accessible to screen readers */
+        .visually-hidden {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        .page-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin: 0;
+        }
+
+        .training-timer {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #ff4d4f;
+            border: 1px solid rgba(255, 77, 79, 0.2);
+            box-shadow: 0 4px 12px rgba(255, 77, 79, 0.1);
+            animation: pulse-timer 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-timer {
+            0%, 100% { box-shadow: 0 4px 12px rgba(255, 77, 79, 0.1); }
+            50% { box-shadow: 0 4px 20px rgba(255, 77, 79, 0.2); }
+        }
+
+        .training-timer i {
+            animation: rotate-clock 10s linear infinite;
+        }
+
+        @keyframes rotate-clock {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        .training-container {
+            display: flex;
+            gap: 24px;
+            height: calc(100vh - 200px);
+        }
+
+        .task-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            overflow-y: auto;
+        }
+
+        .task-card {
+            background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border: 1px solid rgba(250, 140, 22, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .task-card:hover {
+            box-shadow: 0 8px 32px rgba(250, 140, 22, 0.12);
+            transform: translateY(-2px);
+        }
+
+        .task-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .task-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin: 0;
+        }
+
+        .task-status {
+            padding: 6px 16px;
+            background: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+            color: #1890ff;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            border: 1px solid rgba(24, 144, 255, 0.2);
+            animation: status-glow 3s ease-in-out infinite;
+        }
+
+        @keyframes status-glow {
+            0%, 100% { box-shadow: 0 0 0 rgba(24, 144, 255, 0); }
+            50% { box-shadow: 0 0 8px rgba(24, 144, 255, 0.3); }
+        }
+
+        .task-content h4 {
+            font-size: 15px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin: 0 0 12px 0;
+        }
+
+        .task-desc p {
+            font-size: 14px;
+            color: #595959;
+            line-height: 1.6;
+            margin: 0 0 20px 0;
+        }
+
+        .task-requirements ul {
+            margin: 0 0 20px 0;
+            padding-left: 20px;
+        }
+
+        .task-requirements li {
+            font-size: 14px;
+            color: #595959;
+            line-height: 1.8;
+        }
+
+        .material-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .material-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            background: linear-gradient(135deg, #f5f5f5 0%, #fafafa 100%);
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-size: 14px;
+            border: 1px solid transparent;
+        }
+
+        .material-item:focus-visible {
+            outline: 2px solid #1890ff;
+            outline-offset: 2px;
+        }
+
+        .material-item:hover {
+            background: linear-gradient(135deg, #e6f7ff 0%, #f0f9ff 100%);
+            border-color: rgba(24, 144, 255, 0.3);
+            transform: translateX(4px);
+            box-shadow: 0 4px 12px rgba(24, 144, 255, 0.15);
+        }
+
+        .material-item:hover:focus-visible {
+            outline-color: #1890ff;
+        }
+
+        .material-item i {
+            color: #1890ff;
+            font-size: 18px;
+            transition: transform 0.3s ease;
+        }
+
+        .material-item:hover i {
+            transform: scale(1.1);
+        }
+
+        .drawing-area {
+            background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+            border-radius: 16px;
+            padding: 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border: 1px solid rgba(250, 140, 22, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .drawing-area:hover {
+            box-shadow: 0 8px 32px rgba(250, 140, 22, 0.1);
+        }
+
+        .drawing-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .drawing-header h4 {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin: 0;
+        }
+
+        .drawing-tools {
+            display: flex;
+            gap: 8px;
+        }
+
+        .tool-btn {
+            width: 40px;
+            height: 40px;
+            border: 1px solid #e8e8e8;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .tool-btn:focus-visible {
+            outline: 2px solid #FA8C16;
+            outline-offset: 2px;
+        }
+
+        .tool-btn:hover {
+            border-color: #FA8C16;
+            color: #FA8C16;
+            background: linear-gradient(135deg, #fff7e6 0%, #ffffff 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 16px rgba(250, 140, 22, 0.2);
+        }
+
+        .tool-btn:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(250, 140, 22, 0.15);
+        }
+
+        .tool-btn.active {
+            border-color: #FA8C16;
+            background: linear-gradient(135deg, #FA8C16 0%, #FF9C2E 100%);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(250, 140, 22, 0.3);
+        }
+
+        .tool-btn[aria-pressed="true"] {
+            border-color: #FA8C16;
+            background: linear-gradient(135deg, #FA8C16 0%, #FF9C2E 100%);
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(250, 140, 22, 0.3);
+        }
+
+        .canvas-container {
+            flex: 1;
+            background: linear-gradient(135deg, #f8f9fa 0%, #f0f0f0 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed #d9d9d9;
+            transition: all 0.3s ease;
+        }
+
+        .canvas-container:hover {
+            border-color: #FA8C16;
+            background: linear-gradient(135deg, #fff7e6 0%, #fff 100%);
+        }
+
+        .canvas-placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            color: #8c8c8c;
+            transition: all 0.3s ease;
+        }
+
+        .canvas-container:hover .canvas-placeholder {
+            color: #FA8C16;
+        }
+
+        .canvas-placeholder i {
+            font-size: 64px;
+            transition: all 0.3s ease;
+        }
+
+        .canvas-container:hover .canvas-placeholder i {
+            transform: scale(1.05);
+        }
+
+        .training-sidebar {
+            width: 280px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .sidebar-section {
+            background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+            border: 1px solid rgba(250, 140, 22, 0.08);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .sidebar-section:hover {
+            box-shadow: 0 8px 32px rgba(250, 140, 22, 0.1);
+        }
+
+        .section-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f1f1f;
+            margin-bottom: 16px;
+        }
+
+        .progress-info {
+            margin-bottom: 16px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: linear-gradient(135deg, #f0f0f0 0%, #e8e8e8 100%);
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 8px;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #FA8C16 0%, #FF9C2E 50%, #FFB84D 100%);
+            border-radius: 5px;
+            transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(
+                90deg,
+                transparent 0%,
+                rgba(255,255,255,0.3) 50%,
+                transparent 100%
+            );
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .progress-text {
+            font-size: 13px;
+            color: #8c8c8c;
+        }
+
+        .task-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .step-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step-item:hover {
+            background: rgba(0,0,0,0.02);
+        }
+
+        .step-item.completed {
+            color: #52c41a;
+        }
+
+        .step-item.completed i {
+            animation: check-bounce 0.5s ease;
+        }
+
+        @keyframes check-bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .step-item.current {
+            color: #FA8C16;
+            background: linear-gradient(135deg, #fff7e6 0%, #fff 100%);
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(250, 140, 22, 0.1);
+        }
+
+        .step-item.current i {
+            animation: pulse-step 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse-step {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.05); }
+        }
+
+        .step-item.pending {
+            color: #8c8c8c;
+        }
+
+        .action-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn:focus-visible {
+            outline: 2px solid #FA8C16;
+            outline-offset: 2px;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #FA8C16 0%, #FF9C2E 100%);
+            color: #fff;
+            box-shadow: 0 4px 14px rgba(250, 140, 22, 0.35);
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #FF9C2E 0%, #FFB84D 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(250, 140, 22, 0.45);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 10px rgba(250, 140, 22, 0.35);
+        }
+
+        .btn-default {
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            color: #595959;
+            border: 1px solid #e8e8e8;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .btn-default:hover {
+            border-color: #FA8C16;
+            color: #FA8C16;
+            background: linear-gradient(135deg, #fff7e6 0%, #ffffff 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(250, 140, 22, 0.15);
+        }
+
+        .btn-default:active {
+            transform: translateY(0);
+        }
+
+        .btn-block {
+            width: 100%;
+            justify-content: center;
+        }
+
+        .btn i {
+            transition: transform 0.3s ease;
+        }
+
+        .btn:hover i {
+            transform: translateX(2px);
+        }
+
+        /* 尊重用户的减少动画偏好 */
+        @media (prefers-reduced-motion: reduce) {
+            .btn,
+            .btn::before,
+            .btn i,
+            .task-card,
+            .drawing-area,
+            .sidebar-section,
+            .material-item,
+            .tool-btn,
+            .canvas-container,
+            .canvas-placeholder,
+            .canvas-placeholder i,
+            .progress-fill::after,
+            .training-timer,
+            .training-timer i,
+            .task-status,
+            .step-item.current i,
+            .step-item.completed i,
+            .skip-link,
+            .logout-btn,
+            .breadcrumb a {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+
+        /* Content loading placeholder */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+            border-radius: 4px;
+        }
+
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .skeleton {
+                animation: none;
+                background: #f0f0f0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Skip to content link for accessibility -->
+    <a href="#main-content" class="skip-link">跳转到主要内容</a>
+    
+    <div class="main-content" id="main-content" role="main">
+        <header class="header" role="banner">
+            <nav aria-label="面包屑导航">
+                <ol class="breadcrumb">
+                    <li><a href="./学生端_首页.html">首页</a></li>
+                    <li aria-hidden="true">/</li>
+                    <li><a href="./学生端_我的课程.html">我的学习</a></li>
+                    <li aria-hidden="true">/</li>
+                    <li aria-current="page">实训任务</li>
+                </ol>
+            </nav>
+            <div class="user-info">
+                <i class="iconfont icon-xueshengguanli" aria-hidden="true"></i>
+                <span>学生：李明</span>
+                <button type="button" class="logout-btn" onclick="logout()">退出</button>
+            </div>
+        </header>
+
+        <div class="content-body">
+            <header class="page-header">
+                <div class="header-left">
+                    <button type="button" class="btn btn-text" onclick="goBack()">
+                        <i class="iconfont icon-fanhui" aria-hidden="true"></i> 返回课程
+                    </button>
+                    <h1 class="page-title" id="trainingTitle">实训任务</h1>
+                </div>
+                <div class="training-timer" role="timer" aria-label="剩余时间">
+                    <i class="iconfont icon-shijian" aria-hidden="true"></i>
+                    <span id="timer" aria-live="polite">03:59:59</span>
+                </div>
+            </header>
+
+            <div class="training-container">
+                <section class="task-section" aria-labelledby="task-section-title">
+                    <h2 id="task-section-title" class="visually-hidden">任务内容</h2>
+                    <article class="task-card">
+                        <header class="task-header">
+                            <h3 class="task-title">组合体三视图绘制实训</h3>
+                            <span class="task-status" role="status" aria-label="任务状态：进行中">进行中</span>
+                        </header>
+                        <div class="task-content">
+                            <section class="task-desc" aria-labelledby="desc-title">
+                                <h4 id="desc-title">任务描述</h4>
+                                <p>根据提供的组合体实物或三维模型，绘制该组合体的三视图（主视图、俯视图、左视图）。要求正确表达组合体的形状特征，标注必要的尺寸。</p>
+                            </section>
+                            <section class="task-requirements" aria-labelledby="req-title">
+                                <h4 id="req-title">任务要求</h4>
+                                <ul>
+                                    <li>正确绘制三视图，投影关系正确</li>
+                                    <li>线型使用规范，轮廓线清晰</li>
+                                    <li>标注主要尺寸，尺寸标注规范</li>
+                                    <li>图纸整洁，布局合理</li>
+                                </ul>
+                            </section>
+                            <section class="task-materials" aria-labelledby="materials-title">
+                                <h4 id="materials-title">参考资料</h4>
+                                <div class="material-list">
+                                    <button type="button" class="material-item" onclick="viewMaterial('material1')" aria-label="查看图片：组合体实物图.jpg">
+                                        <i class="iconfont icon-tupian" aria-hidden="true"></i>
+                                        <span>组合体实物图.jpg</span>
+                                    </button>
+                                    <button type="button" class="material-item" onclick="viewMaterial('material2')" aria-label="查看PDF：三视图绘制规范.pdf">
+                                        <i class="iconfont icon-PDF" aria-hidden="true"></i>
+                                        <span>三视图绘制规范.pdf</span>
+                                    </button>
+                                </div>
+                            </section>
+                        </div>
+                    </article>
+
+                    <section class="drawing-area" aria-labelledby="drawing-title">
+                        <header class="drawing-header">
+                            <h4 id="drawing-title">绘图区域</h4>
+                            <div class="drawing-tools" role="toolbar" aria-label="绘图工具">
+                                <button type="button" class="tool-btn" onclick="selectTool('line')" aria-pressed="false" aria-label="直线工具" title="直线工具">
+                                    <i class="iconfont icon-zhixian" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="tool-btn" onclick="selectTool('circle')" aria-pressed="false" aria-label="圆形工具" title="圆形工具">
+                                    <i class="iconfont icon-yuanxing" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="tool-btn" onclick="selectTool('rect')" aria-pressed="false" aria-label="矩形工具" title="矩形工具">
+                                    <i class="iconfont icon-juxing" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="tool-btn" onclick="selectTool('text')" aria-pressed="false" aria-label="文字工具" title="文字工具">
+                                    <i class="iconfont icon-wenzi" aria-hidden="true"></i>
+                                </button>
+                                <button type="button" class="tool-btn" onclick="clearCanvas()" aria-label="清空画布" title="清空画布">
+                                    <i class="iconfont icon-qingkong" aria-hidden="true"></i>
+                                </button>
+                            </div>
+                        </header>
+                        <div class="canvas-container" role="application" aria-label="绘图画布">
+                            <div class="canvas-placeholder">
+                                <i class="iconfont icon-huatu" aria-hidden="true"></i>
+                                <span>绘图区域 - 请在此绘制三视图</span>
+                            </div>
+                        </div>
+                    </section>
+                </section>
+
+                <aside class="training-sidebar" aria-label="任务侧边栏">
+                    <section class="sidebar-section" aria-labelledby="progress-title">
+                        <h3 id="progress-title" class="section-title">任务进度</h3>
+                        <div class="progress-info">
+                            <div class="progress-bar" role="progressbar" aria-valuenow="35" aria-valuemin="0" aria-valuemax="100" aria-label="完成进度">
+                                <div class="progress-fill" style="width: 35%"></div>
+                            </div>
+                            <span class="progress-text">已完成 35%</span>
+                        </div>
+                        <div class="task-steps" role="list" aria-label="任务步骤">
+                            <div class="step-item completed" role="listitem" aria-label="已完成：阅读任务要求">
+                                <i class="iconfont icon-wancheng" aria-hidden="true"></i>
+                                <span>阅读任务要求</span>
+                            </div>
+                            <div class="step-item completed" role="listitem" aria-label="已完成：查看参考资料">
+                                <i class="iconfont icon-wancheng" aria-hidden="true"></i>
+                                <span>查看参考资料</span>
+                            </div>
+                            <div class="step-item current" role="listitem" aria-current="step" aria-label="当前：绘制三视图">
+                                <i class="iconfont icon-jinhangzhong" aria-hidden="true"></i>
+                                <span>绘制三视图</span>
+                            </div>
+                            <div class="step-item pending" role="listitem" aria-label="待完成：标注尺寸">
+                                <i class="iconfont icon-shijian" aria-hidden="true"></i>
+                                <span>标注尺寸</span>
+                            </div>
+                            <div class="step-item pending" role="listitem" aria-label="待完成：提交任务">
+                                <i class="iconfont icon-shijian" aria-hidden="true"></i>
+                                <span>提交任务</span>
+                            </div>
+                        </div>
+                    </section>
+
+                    <section class="sidebar-section" aria-labelledby="action-title">
+                        <h3 id="action-title" class="section-title">操作</h3>
+                        <div class="action-list">
+                            <button type="button" class="btn btn-default btn-block" onclick="saveDraft()">
+                                <i class="iconfont icon-baocun" aria-hidden="true"></i> 保存草稿
+                            </button>
+                            <button type="button" class="btn btn-primary btn-block" onclick="submitTraining()">
+                                <i class="iconfont icon-tijiao" aria-hidden="true"></i> 提交任务
+                            </button>
+                        </div>
+                    </section>
+                </aside>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function getUrlParam(name) {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get(name);
+        }
+
+        window.onload = function() {
+            const trainingName = getUrlParam('trainingName');
+            if (trainingName) {
+                document.getElementById('trainingTitle').textContent = trainingName;
+            }
+            startTimer();
+        };
+
+        function startTimer() {
+            let hours = 3;
+            let minutes = 59;
+            let seconds = 59;
+            
+            const timer = setInterval(() => {
+                if (seconds === 0) {
+                    if (minutes === 0) {
+                        if (hours === 0) {
+                            clearInterval(timer);
+                            alert('实训时间到！');
+                            return;
+                        }
+                        hours--;
+                        minutes = 59;
+                    } else {
+                        minutes--;
+                    }
+                    seconds = 59;
+                } else {
+                    seconds--;
+                }
+                
+                const hourStr = hours.toString().padStart(2, '0');
+                const minStr = minutes.toString().padStart(2, '0');
+                const secStr = seconds.toString().padStart(2, '0');
+                document.getElementById('timer').textContent = hourStr + ':' + minStr + ':' + secStr;
+            }, 1000);
+        }
+
+        function goBack() {
+            if (confirm('确定要退出实训吗？已绘制的图纸将自动保存为草稿。')) {
+                window.location.href = './学生端_课程详情.html';
+            }
+        }
+
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        function viewMaterial(materialId) {
+            alert('查看资料: ' + materialId);
+        }
+
+        let currentTool = null;
+
+        function selectTool(tool) {
+            // 重置所有工具的 aria-pressed 状态
+            document.querySelectorAll('.tool-btn[aria-pressed]').forEach(btn => {
+                btn.setAttribute('aria-pressed', 'false');
+                btn.classList.remove('active');
+            });
+
+            // 设置当前工具状态
+            const toolButtons = document.querySelectorAll('.tool-btn');
+            toolButtons.forEach(btn => {
+                if (btn.getAttribute('onclick') && btn.getAttribute('onclick').includes("'" + tool + "'")) {
+                    btn.setAttribute('aria-pressed', 'true');
+                    btn.classList.add('active');
+                }
+            });
+
+            currentTool = tool;
+            console.log('选择工具: ' + tool);
+        }
+
+        function clearCanvas() {
+            if (confirm('确定要清空画布吗？此操作不可撤销。')) {
+                alert('画布已清空');
+            }
+        }
+
+        function saveDraft() {
+            alert('草稿已保存！');
+        }
+
+        function submitTraining() {
+            if (confirm('确定要提交任务吗？提交后将无法修改。')) {
+                alert('任务已提交！');
+                window.location.href = './学生端_实训结果.html';
+            }
+        }
+    </script>
+    <!-- 开始实训页面不加载导航栏，保持沉浸式体验 -->
+</body>
+</html>

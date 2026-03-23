@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>阶段模板管理 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #F5F7FA; display: flex; height: 100vh; overflow: hidden; }
+.menu-title.collapsed
+.menu-item span { display: flex; align-items: center; }
+
+        .content { flex: 1; overflow: auto; padding: 20px; }
+        .filter-bar { background: #fff; padding: 16px 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .filter-row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+        .filter-item { display: flex; align-items: center; gap: 8px; }
+        .filter-item label { font-size: 13px; color: #666; white-space: nowrap; }
+        .filter-item input, .filter-item select { padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 13px; min-width: 140px; }
+        .filter-btns { display: flex; gap: 8px; margin-left: auto; }
+        .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; font-size: 13px; transition: all 0.3s; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-primary { background: #1890FF; color: #fff; }
+        .btn-primary:hover { background: #40A9FF; }
+        .btn-success { background: #52C41A; color: #fff; }
+        .btn-success:hover { background: #73D13D; }
+        .btn-warning { background: #FA8C16; color: #fff; }
+        .btn-warning:hover { background: #FFA940; }
+        .btn-danger { background: #FF4D4F; color: #fff; }
+        .btn-danger:hover { background: #FF7875; }
+        .btn-default { background: #fff; color: #666; border: 1px solid #D9D9D9; }
+        .btn-default:hover { border-color: #1890FF; color: #1890FF; }
+        .toolbar { background: #fff; padding: 12px 20px; border-radius: 8px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); display: flex; justify-content: space-between; align-items: center; }
+        .toolbar-left { display: flex; gap: 8px; }
+        .toolbar-right { display: flex; gap: 8px; align-items: center; }
+        .table-container { background: #fff; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); overflow: hidden; }
+        .data-table { width: 100%; border-collapse: collapse; }
+        .data-table th { background: #FAFAFA; padding: 12px 16px; text-align: left; font-size: 13px; font-weight: 600; color: #333; border-bottom: 1px solid #E8E8E8; white-space: nowrap; }
+        .data-table td { padding: 12px 16px; font-size: 13px; color: #666; border-bottom: 1px solid #F0F0F0; }
+        .data-table tbody tr:hover { background: #F6FFFE; }
+        .data-table tbody tr.selected { background: #E6F7FF; }
+        .checkbox { width: 16px; height: 16px; cursor: pointer; }
+        .status-tag { display: inline-block; padding: 4px 12px; border-radius: 4px; font-size: 12px; font-weight: 500; }
+        .status-enabled { background: #F6FFED; color: #52C41A; border: 1px solid #B7EB8F; }
+        .status-disabled { background: #FFF2F0; color: #FF4D4F; border: 1px solid #FFA39E; }
+        .pagination { display: flex; justify-content: flex-end; align-items: center; padding: 16px 20px; gap: 8px; }
+        .pagination-btn { padding: 6px 12px; border: 1px solid #D9D9D9; background: #fff; border-radius: 4px; cursor: pointer; font-size: 13px; }
+        .pagination-btn:hover { border-color: #1890FF; color: #1890FF; }
+        .pagination-btn.active { background: #1890FF; color: #fff; border-color: #1890FF; }
+        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5); z-index: 1000; justify-content: center; align-items: center; }
+        .modal.active { display: flex; }
+        .modal-content { background: #fff; border-radius: 8px; width: 90%; max-width: 900px; max-height: 90vh; overflow: auto; }
+        .modal-header { padding: 16px 20px; border-bottom: 1px solid #E8E8E8; display: flex; justify-content: space-between; align-items: center; }
+        .modal-title { font-size: 16px; font-weight: 600; color: #333; }
+        .modal-close { font-size: 20px; color: #999; cursor: pointer; background: none; border: none; }
+        .modal-close:hover { color: #666; }
+        .modal-body { padding: 20px; }
+        .modal-footer { padding: 16px 20px; border-top: 1px solid #E8E8E8; display: flex; justify-content: flex-end; gap: 12px; }
+        .form-row { display: flex; gap: 16px; margin-bottom: 16px; }
+        .form-item { flex: 1; }
+        .form-item label { display: block; font-size: 13px; color: #666; margin-bottom: 8px; }
+        .form-item input, .form-item select, .form-item textarea { width: 100%; padding: 8px 12px; border: 1px solid #D9D9D9; border-radius: 4px; font-size: 13px; }
+        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+        .stat-card { background: #fff; padding: 16px 20px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+        .stat-value { font-size: 24px; font-weight: 600; color: #333; margin-bottom: 4px; }
+        .stat-label { font-size: 13px; color: #666; }
+        .stat-card.primary .stat-value { color: #1890FF; }
+        .stat-card.success .stat-value { color: #52C41A; }
+        .stat-card.warning .stat-value { color: #FA8C16; }
+        .stat-card.danger .stat-value { color: #FF4D4F; }
+        
+        /* 阶段配置样式 */
+        .stage-config { background: #FAFAFA; border: 1px solid #E8E8E8; border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+        .stage-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+        .stage-title { font-size: 14px; font-weight: 600; color: #333; }
+        .stage-list { display: flex; flex-direction: column; gap: 8px; }
+        .stage-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #fff; border-radius: 4px; border: 1px solid #E8E8E8; }
+        .stage-drag { color: #999; cursor: move; font-size: 16px; }
+        .stage-color { width: 24px; height: 24px; border-radius: 4px; cursor: pointer; }
+        .stage-name { flex: 1; }
+        .stage-duration { width: 80px; }
+        .stage-dependency { width: 120px; }
+        .stage-actions { display: flex; gap: 8px; }
+        .btn-icon { width: 28px; height: 28px; border: none; background: transparent; cursor: pointer; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #666; }
+        .btn-icon:hover { background: #F5F5F5; color: #1890FF; }
+        .btn-icon.delete:hover { color: #FF4D4F; }
+        
+        /* 颜色选择器 */
+        .color-picker { display: flex; gap: 8px; flex-wrap: wrap; }
+        .color-option { width: 32px; height: 32px; border-radius: 4px; cursor: pointer; border: 2px solid transparent; }
+        .color-option.selected { border-color: #333; }
+        .color-option.design { background: #1890FF; }
+        .color-option.process { background: #52C41A; }
+        .color-option.program { background: #FA8C16; }
+        .color-option.machining { background: #FF4D4F; }
+        .color-option.inspect { background: #722ED1; }
+        .color-option.deliver { background: #13C2C2; }
+    
+        /* 菜单图标宽度修复 */
+        .menu-item .iconfont {
+            width: 20px;
+            min-width: 20px;
+            text-align: center;
+            margin-right: 8px;
+            font-size: 16px;
+            display: inline-block;
+            flex-shrink: 0;
+        }
+        
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <div class="main-content">
+        <div class="header">
+            <div>首页 / 生产管理 / 阶段模板管理</div>
+            <div>👤 教师：张老师 | <button class="btn btn-danger" onclick="logout()">退出</button></div>
+        </div>
+        
+        <div class="content">
+            <div class="stats-row">
+                <div class="stat-card primary">
+                    <div class="stat-value">8</div>
+                    <div class="stat-label">模板总数</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">已启用</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-value">2</div>
+                    <div class="stat-label">已禁用</div>
+                </div>
+                <div class="stat-card danger">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">默认模板</div>
+                </div>
+            </div>
+            
+            <div class="filter-bar">
+                <div class="filter-row">
+                    <div class="filter-item">
+                        <label>模板名称</label>
+                        <input type="text" placeholder="请输入模板名称">
+                    </div>
+                    <div class="filter-item">
+                        <label>产品类型</label>
+                        <select>
+                            <option value="">全部</option>
+                            <option value="轴类">轴类零件</option>
+                            <option value="盘类">盘类零件</option>
+                            <option value="箱体">箱体零件</option>
+                            <option value="齿轮">齿轮类</option>
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label>适用客户</label>
+                        <input type="text" placeholder="请输入客户名称">
+                    </div>
+                    <div class="filter-item">
+                        <label>模板状态</label>
+                        <select>
+                            <option value="">全部</option>
+                            <option value="enabled">已启用</option>
+                            <option value="disabled">已禁用</option>
+                        </select>
+                    </div>
+                    <div class="filter-btns">
+                        <button class="btn btn-primary">🔍 查询</button>
+                        <button class="btn btn-default">重置</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="toolbar">
+                <div class="toolbar-left">
+                    <button class="btn btn-success" onclick="showCreateModal()">➕ 新增模板</button>
+                    <button class="btn btn-primary" onclick="setDefaultTemplate()">⭐ 设为默认</button>
+                </div>
+                <div class="toolbar-right">
+                    <button class="btn btn-default">✅ 批量启用</button>
+                    <button class="btn btn-default">🚫 批量禁用</button>
+                    <button class="btn btn-danger">🗑️ 批量删除</button>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 40px;"><input type="checkbox" class="checkbox"></th>
+                            <th>模板名称</th>
+                            <th>产品类型</th>
+                            <th>适用客户</th>
+                            <th>阶段数量</th>
+                            <th>总工期(天)</th>
+                            <th>模板状态</th>
+                            <th>是否默认</th>
+                            <th>创建时间</th>
+                            <th style="width: 180px;">操作</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="checkbox" class="checkbox"></td>
+                            <td>标准加工模板</td>
+                            <td>轴类零件</td>
+                            <td>通用</td>
+                            <td>6</td>
+                            <td>15</td>
+                            <td><span class="status-tag status-enabled">已启用</span></td>
+                            <td>⭐ 是</td>
+                            <td>2025-01-10 10:30:00</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;">详情</button>
+                                <button class="btn btn-warning" style="padding: 4px 12px; font-size: 12px;">编辑</button>
+                                <button class="btn btn-danger" style="padding: 4px 12px; font-size: 12px;">删除</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="checkbox"></td>
+                            <td>精密加工模板</td>
+                            <td>盘类零件</td>
+                            <td>某某机械厂</td>
+                            <td>7</td>
+                            <td>20</td>
+                            <td><span class="status-tag status-enabled">已启用</span></td>
+                            <td>否</td>
+                            <td>2025-01-09 14:20:00</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;">详情</button>
+                                <button class="btn btn-warning" style="padding: 4px 12px; font-size: 12px;">编辑</button>
+                                <button class="btn btn-danger" style="padding: 4px 12px; font-size: 12px;">删除</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td><input type="checkbox" class="checkbox"></td>
+                            <td>批量生产模板</td>
+                            <td>箱体零件</td>
+                            <td>某某制造厂</td>
+                            <td>5</td>
+                            <td>12</td>
+                            <td><span class="status-tag status-enabled">已启用</span></td>
+                            <td>否</td>
+                            <td>2025-01-08 09:15:00</td>
+                            <td>
+                                <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;">详情</button>
+                                <button class="btn btn-warning" style="padding: 4px 12px; font-size: 12px;">编辑</button>
+                                <button class="btn btn-danger" style="padding: 4px 12px; font-size: 12px;">删除</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
+                <div class="pagination">
+                    <span style="font-size: 13px; color: #666;">共 8 条记录</span>
+                    <button class="pagination-btn">上一页</button>
+                    <button class="pagination-btn active">1</button>
+                    <button class="pagination-btn">2</button>
+                    <button class="pagination-btn">下一页</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="modal" id="createModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <span class="modal-title">➕ 新增阶段模板</span>
+                <button class="modal-close" onclick="closeModal('createModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>模板名称 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" placeholder="请输入模板名称">
+                    </div>
+                    <div class="form-item">
+                        <label>产品类型 <span style="color: #FF4D4F;">*</span></label>
+                        <select>
+                            <option value="">请选择产品类型</option>
+                            <option value="轴类">轴类零件</option>
+                            <option value="盘类">盘类零件</option>
+                            <option value="箱体">箱体零件</option>
+                            <option value="齿轮">齿轮类</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-item">
+                        <label>适用客户</label>
+                        <input type="text" placeholder="请输入适用客户（通用则不填）">
+                    </div>
+                    <div class="form-item">
+                        <label>模板描述</label>
+                        <input type="text" placeholder="请输入模板描述">
+                    </div>
+                </div>
+                
+                <h4 style="font-size: 14px; margin: 20px 0 12px; color: #333;">阶段配置</h4>
+                
+                <div class="stage-config">
+                    <div class="stage-header">
+                        <div class="stage-title">阶段列表（可拖拽排序）</div>
+                        <button class="btn btn-primary" style="padding: 4px 12px; font-size: 12px;" onclick="addStage()">➕ 添加阶段</button>
+                    </div>
+                    <div class="stage-list" id="stageList">
+                        <div class="stage-item">
+                            <div class="stage-drag">⋮⋮</div>
+                            <div class="stage-color" style="background: #1890FF;"></div>
+                            <div class="stage-name">
+                                <input type="text" value="设计阶段" style="width: 100%;">
+                            </div>
+                            <div class="stage-duration">
+                                <input type="number" value="3" style="width: 100%;"> 天
+                            </div>
+                            <div class="stage-dependency">
+                                <select style="width: 100%;">
+                                    <option value="">无依赖</option>
+                                </select>
+                            </div>
+                            <div class="stage-actions">
+                                <button class="btn-icon delete" onclick="removeStage(this)">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="stage-item">
+                            <div class="stage-drag">⋮⋮</div>
+                            <div class="stage-color" style="background: #52C41A;"></div>
+                            <div class="stage-name">
+                                <input type="text" value="工艺阶段" style="width: 100%;">
+                            </div>
+                            <div class="stage-duration">
+                                <input type="number" value="2" style="width: 100%;"> 天
+                            </div>
+                            <div class="stage-dependency">
+                                <select style="width: 100%;">
+                                    <option value="">设计阶段</option>
+                                </select>
+                            </div>
+                            <div class="stage-actions">
+                                <button class="btn-icon delete" onclick="removeStage(this)">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="stage-item">
+                            <div class="stage-drag">⋮⋮</div>
+                            <div class="stage-color" style="background: #FA8C16;"></div>
+                            <div class="stage-name">
+                                <input type="text" value="编程阶段" style="width: 100%;">
+                            </div>
+                            <div class="stage-duration">
+                                <input type="number" value="2" style="width: 100%;"> 天
+                            </div>
+                            <div class="stage-dependency">
+                                <select style="width: 100%;">
+                                    <option value="">工艺阶段</option>
+                                </select>
+                            </div>
+                            <div class="stage-actions">
+                                <button class="btn-icon delete" onclick="removeStage(this)">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="stage-item">
+                            <div class="stage-drag">⋮⋮</div>
+                            <div class="stage-color" style="background: #FF4D4F;"></div>
+                            <div class="stage-name">
+                                <input type="text" value="加工阶段" style="width: 100%;">
+                            </div>
+                            <div class="stage-duration">
+                                <input type="number" value="5" style="width: 100%;"> 天
+                            </div>
+                            <div class="stage-dependency">
+                                <select style="width: 100%;">
+                                    <option value="">编程阶段</option>
+                                </select>
+                            </div>
+                            <div class="stage-actions">
+                                <button class="btn-icon delete" onclick="removeStage(this)">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="stage-item">
+                            <div class="stage-drag">⋮⋮</div>
+                            <div class="stage-color" style="background: #722ED1;"></div>
+                            <div class="stage-name">
+                                <input type="text" value="检测阶段" style="width: 100%;">
+                            </div>
+                            <div class="stage-duration">
+                                <input type="number" value="2" style="width: 100%;"> 天
+                            </div>
+                            <div class="stage-dependency">
+                                <select style="width: 100%;">
+                                    <option value="">加工阶段</option>
+                                </select>
+                            </div>
+                            <div class="stage-actions">
+                                <button class="btn-icon delete" onclick="removeStage(this)">🗑️</button>
+                            </div>
+                        </div>
+                        <div class="stage-item">
+                            <div class="stage-drag">⋮⋮</div>
+                            <div class="stage-color" style="background: #13C2C2;"></div>
+                            <div class="stage-name">
+                                <input type="text" value="交付阶段" style="width: 100%;">
+                            </div>
+                            <div class="stage-duration">
+                                <input type="number" value="1" style="width: 100%;"> 天
+                            </div>
+                            <div class="stage-dependency">
+                                <select style="width: 100%;">
+                                    <option value="">检测阶段</option>
+                                </select>
+                            </div>
+                            <div class="stage-actions">
+                                <button class="btn-icon delete" onclick="removeStage(this)">🗑️</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: #F6FFED; padding: 12px; border-radius: 4px; margin-top: 16px;">
+                    <span style="font-size: 13px; color: #52C41A;">✅ 总工期：15天 | 阶段数：6个</span>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-default" onclick="closeModal('createModal')">取消</button>
+                <button class="btn btn-primary">保存模板</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showCreateModal() {
+            document.getElementById('createModal').classList.add('active');
+        }
+        
+        function closeModal(id) {
+            document.getElementById(id).classList.remove('active');
+        }
+        
+        function setDefaultTemplate() {
+            alert('设为默认模板');
+        }
+        
+        function addStage() {
+            const stageList = document.getElementById('stageList');
+            const newStage = document.createElement('div');
+            newStage.className = 'stage-item';
+            newStage.innerHTML = `
+                <div class="stage-drag">⋮⋮</div>
+                <div class="stage-color" style="background: #1890FF;"></div>
+                <div class="stage-name">
+                    <input type="text" value="新阶段" style="width: 100%;">
+                </div>
+                <div class="stage-duration">
+                    <input type="number" value="1" style="width: 100%;"> 天
+                </div>
+                <div class="stage-dependency">
+                    <select style="width: 100%;">
+                        <option value="">无依赖</option>
+                    </select>
+                </div>
+                <div class="stage-actions">
+                    <button class="btn-icon delete" onclick="removeStage(this)">🗑️</button>
+                </div>
+            `;
+            stageList.appendChild(newStage);
+        }
+        
+        function removeStage(btn) {
+            if (confirm('确定要删除该阶段吗？')) {
+                btn.closest('.stage-item').remove();
+            }
+        }
+        
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+        
+        function logout() {
+            if (confirm('确定要退出登录吗？')) {
+                alert('已退出登录');
+            }
+        }
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>

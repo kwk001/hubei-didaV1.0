@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>实训题目 - 教务管理端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <link rel="stylesheet" href="./components.css">
+    <style>
+        /* 页面特定样式 - 题型标签 */
+        .type-tag { 
+            display: inline-flex; 
+            align-items: center;
+            padding: 3px 10px; 
+            border-radius: 12px; 
+            font-size: 11px; 
+            font-weight: 500;
+            border: 1px solid transparent;
+        }
+        .type-process { background: #F6FFED; color: #52C41A; border-color: #B7EB8F; }
+        .type-programming { background: #FFF7E6; color: #FA8C16; border-color: #FFD591; }
+        .type-design { background: #E6F7FF; color: #1890FF; border-color: #91D5FF; }
+        .type-machining { background: #FFF2F0; color: #FF4D4F; border-color: #FFCCC7; }
+        .type-inspection { background: #F9F0FF; color: #722ED1; border-color: #D3ADF7; }
+        
+        /* 难度标签 */
+        .difficulty-tag { 
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 8px; 
+            border-radius: 4px; 
+            font-size: 12px;
+            font-weight: 500;
+        }
+        .difficulty-easy { background: #F6FFED; color: #52C41A; }
+        .difficulty-medium { background: #FFF7E6; color: #FA8C16; }
+        .difficulty-hard { background: #FFF1F0; color: #FF4D4F; }
+
+        /* 统计卡片样式 */
+        .stats-row {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+        .stat-card {
+            flex: 1;
+            background: #fff;
+            border-radius: 12px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        }
+        .stat-card.success { border-left: 4px solid #52C41A; }
+        .stat-card.primary { border-left: 4px solid #1890FF; }
+        .stat-card.info { border-left: 4px solid #722ED1; }
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .stat-card.success .stat-icon { background: #F6FFED; }
+        .stat-card.primary .stat-icon { background: #E6F7FF; }
+        .stat-card.info .stat-icon { background: #F9F0FF; }
+        .stat-info h3 {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 4px;
+            font-weight: normal;
+        }
+        .stat-info .number {
+            font-size: 28px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        /* 内容区域边距 */
+        .content-area {
+            padding: 16px !important;
+        }
+
+        /* 统计卡片间距 */
+        .stats-row {
+            margin-bottom: 16px !important;
+        }
+
+        /* 筛选条件模块 */
+        .filter-section {
+            margin-bottom: 16px !important;
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+        }
+
+        /* 批量操作栏 */
+        .batch-operation-bar {
+            margin-bottom: 16px !important;
+        }
+
+        /* 表格区域 */
+        .table-section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 2px 12px rgba(99,102,241,0.06);
+            overflow: hidden;
+        }
+        .table-section .data-table {
+            border-radius: 12px;
+            box-shadow: none;
+            border: none;
+            overflow: hidden;
+        }
+        .table-section .pagination {
+            border-top: 1px solid #F0F0F0;
+            background: transparent;
+            padding: 16px 0 0 0;
+            margin-top: 16px;
+        }
+
+        /* 批量操作栏 */
+        .batch-operation-bar {
+            background: linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(99,102,241,0.02) 100%);
+            border: 1px solid rgba(99,102,241,0.15);
+            border-radius: 12px;
+            padding: 12px 16px;
+            margin-bottom: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .batch-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .batch-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #1e293b;
+        }
+        .batch-info {
+            font-size: 13px;
+            color: #64748b;
+        }
+        .batch-info strong {
+            color: #6366f1;
+            font-weight: 600;
+        }
+        .batch-right {
+            display: flex;
+            gap: 8px;
+        }
+        .btn-batch {
+            padding: 6px 14px;
+            border: 1px solid rgba(99,102,241,0.2);
+            background: #fff;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            color: #64748b;
+            transition: all 0.25s ease;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+        .btn-batch:hover {
+            border-color: #6366f1;
+            color: #6366f1;
+            background: rgba(99,102,241,0.04);
+            transform: translateY(-1px);
+        }
+        .btn-batch.danger:hover {
+            border-color: #ef4444;
+            color: #ef4444;
+            background: rgba(239,68,68,0.04);
+        }
+    </style>
+</head>
+<body>
+    <!-- 侧边栏导航容器 -->
+    <div id="nav-container"></div>
+
+    <div class="main-content">
+        <div class="header">
+            <div class="header-left">
+                <nav class="breadcrumb">
+                    <a href="./教学实训平台_教务管理端.html">教务管理</a>
+                    <span class="breadcrumb-separator">/</span>
+                    <span>实训题目</span>
+                </nav>
+            </div>
+            <div class="header-right">
+                <div id="user-menu-container"></div>
+            </div>
+        </div>
+
+        <div class="content-wrapper">
+            <!-- 左侧树状图 -->
+            <div class="tree-sidebar" style="display: none;">
+                <div class="tree-header">
+                    <span class="tree-title">分类目录</span>
+                    <div class="tree-actions">
+                        <button class="tree-btn" onclick="TreeSidebar.expandAll()">展开</button>
+                        <button class="tree-btn" onclick="TreeSidebar.collapseAll()">收起</button>
+                    </div>
+                </div>
+                <div class="tree-search">
+                    <input type="text" placeholder="搜索专业、课程或文件夹..." id="treeSearch" oninput="TreeSidebar.filter(this.value)">
+                </div>
+                <div class="tree-content" id="treeContent"></div>
+            </div>
+
+            <!-- 右侧内容区 -->
+            <div class="content-area">
+                <!-- 统计卡片 -->
+                <div class="stats-row">
+                    <div class="stat-card success">
+                        <div class="stat-icon">✓</div>
+                        <div class="stat-info">
+                            <h3>题目总数</h3>
+                            <div class="number">328</div>
+                        </div>
+                    </div>
+                    <div class="stat-card primary">
+                        <div class="stat-icon">📈</div>
+                        <div class="stat-info">
+                            <h3>本周新增</h3>
+                            <div class="number">18</div>
+                        </div>
+                    </div>
+                    <div class="stat-card info">
+                        <div class="stat-icon">📅</div>
+                        <div class="stat-info">
+                            <h3>本月新增</h3>
+                            <div class="number">56</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 筛选区域 -->
+                <div class="filter-section">
+                    <div class="filter-header">
+                        <div class="filter-title">
+                            <i class="iconfont icon-shaixuan"></i>
+                            筛选条件
+                        </div>
+                        <button class="filter-toggle" id="filterToggle" onclick="FilterSection.toggle(this)">
+                            <span class="toggle-text">收起</span>
+                            <span class="toggle-icon">
+                                <svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <path d="M2.5 4.5L6 8L9.5 4.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
+                        </button>
+                    </div>
+                    <div id="filterRow" class="filter-row">
+                        <!-- 筛选字段由 JS 动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 批量操作栏 -->
+                <div class="batch-operation-bar" style="display: none;">
+                    <div class="batch-left">
+                        <label class="batch-checkbox">
+                            <input type="checkbox" id="selectAll" onchange="toggleSelectAll()">
+                            <span>全选</span>
+                        </label>
+                        <span class="batch-info">已选择 <strong id="selectedCount">0</strong> 项</span>
+                    </div>
+                    <div class="batch-right">
+                        <button class="btn-batch" onclick="batchExport()">
+                            <i class="iconfont icon-xiazai"></i> 批量导出
+                        </button>
+                        <button class="btn-batch danger" onclick="batchDelete()">
+                            <i class="iconfont icon-shanchu"></i> 批量删除
+                        </button>
+                    </div>
+                </div>
+
+                <!-- 数据表格容器 -->
+                <div class="table-section">
+                    <div id="dataTable" class="data-table"></div>
+                    <!-- 分页 -->
+                    <div id="pagination" class="pagination"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./common.js"></script>
+    <script src="./components.js"></script>
+    <script src="./nav-loader-universal.js" data-nav-type="admin"></script>
+    <script>
+        // ==================== 实训题目数据 ====================
+        const questionData = [
+            { id: 1, content: '数控车床对刀操作中，X轴对刀的步骤和注意事项是什么？', course: '数控车床', type: 'process', typeName: '工艺类', difficulty: 'easy', difficultyName: '简单', updater: '张老师', updateTime: '2026-03-11 11:22:25' },
+            { id: 2, content: '编写数控车床加工程序，完成外圆粗加工和精加工。', course: '数控车床', type: 'programming', typeName: '编程类', difficulty: 'medium', difficultyName: '中等', updater: '李老师', updateTime: '2026-03-11 10:15:30' },
+            { id: 3, content: '根据零件图纸，分析加工工艺路线，确定装夹方案。', course: '数控车床', type: 'design', typeName: '设计类', difficulty: 'medium', difficultyName: '中等', updater: '王老师', updateTime: '2026-03-10 16:45:18' },
+            { id: 4, content: '描述轴类零件的外圆车削加工步骤和参数设置。', course: '数控车床', type: 'machining', typeName: '加工类', difficulty: 'hard', difficultyName: '困难', updater: '刘老师', updateTime: '2026-03-10 14:20:33' },
+            { id: 5, content: '使用千分尺测量工件外径，说明测量步骤和注意事项。', course: '数控车床', type: 'inspection', typeName: '检测类', difficulty: 'easy', difficultyName: '简单', updater: '陈老师', updateTime: '2026-03-10 09:30:45' },
+            { id: 6, content: '数控铣床加工中心对刀操作步骤详解。', course: '数控铣床', type: 'process', typeName: '工艺类', difficulty: 'medium', difficultyName: '中等', updater: '赵老师', updateTime: '2026-03-09 17:10:22' },
+            { id: 7, content: '编写数控铣床加工程序，完成平面铣削加工。', course: '数控铣床', type: 'programming', typeName: '编程类', difficulty: 'hard', difficultyName: '困难', updater: '孙老师', updateTime: '2026-03-09 11:05:55' },
+            { id: 8, content: '分析箱体零件的加工工艺，确定加工顺序。', course: '数控铣床', type: 'design', typeName: '设计类', difficulty: 'medium', difficultyName: '中等', updater: '周老师', updateTime: '2026-03-09 08:40:12' },
+            { id: 9, content: '描述型腔铣削加工的刀具路径规划方法。', course: '数控铣床', type: 'machining', typeName: '加工类', difficulty: 'hard', difficultyName: '困难', updater: '吴老师', updateTime: '2026-03-09 08:00:38' },
+            { id: 10, content: '使用游标卡尺测量孔径，说明测量要点。', course: '数控铣床', type: 'inspection', typeName: '检测类', difficulty: 'easy', difficultyName: '简单', updater: '郑老师', updateTime: '2026-03-09 07:15:25' },
+            { id: 11, content: '模具设计中的分型面选择原则有哪些？', course: '模具设计基础', type: 'design', typeName: '设计类', difficulty: 'medium', difficultyName: '中等', updater: '钱老师', updateTime: '2026-03-09 06:30:48' },
+            { id: 12, content: '注塑模具的浇注系统设计要点。', course: '注塑模具', type: 'design', typeName: '设计类', difficulty: 'hard', difficultyName: '困难', updater: '冯老师', updateTime: '2026-03-09 05:45:33' }
+        ];
+
+        // ==================== 筛选字段配置 ====================
+        const filterFields = [
+            { type: 'text', label: '题目名称', name: 'content', placeholder: '请输入题目名称' },
+            { 
+                type: 'select', 
+                label: '题型', 
+                name: 'type',
+                options: [
+                    { value: '', label: '全部题型' },
+                    { value: 'process', label: '工艺类' },
+                    { value: 'programming', label: '编程类' },
+                    { value: 'design', label: '设计类' },
+                    { value: 'machining', label: '加工类' },
+                    { value: 'inspection', label: '检测类' }
+                ]
+            },
+            { 
+                type: 'select', 
+                label: '难度', 
+                name: 'difficulty',
+                options: [
+                    { value: '', label: '全部难度' },
+                    { value: 'easy', label: '简单' },
+                    { value: 'medium', label: '中等' },
+                    { value: 'hard', label: '困难' }
+                ]
+            },
+            { 
+                type: 'select', 
+                label: '时间范围', 
+                name: 'time',
+                options: [
+                    { value: '', label: '全部时间' },
+                    { value: 'today', label: '今天' },
+                    { value: 'week', label: '本周' },
+                    { value: 'month', label: '本月' }
+                ]
+            }
+        ];
+
+        // ==================== 表格列配置 ====================
+        const columns = [
+            { 
+                title: '序号', 
+                dataIndex: 'id', 
+                width: 60,
+                render: (val, row) => `<input type="checkbox" class="row-checkbox" value="${row.id}" onchange="updateSelectedCount()"> ${val}`
+            },
+            {
+                title: '题目名称',
+                dataIndex: 'content',
+                width: 350,
+                render: (val) => `<span style="color: #1e293b; font-weight: 500;">${val}</span>`
+            },
+            { title: '所属课程', dataIndex: 'course', width: 120 },
+            {
+                title: '题型',
+                dataIndex: 'typeName',
+                width: 100,
+                render: (val, row) => {
+                    const typeClass = {
+                        '工艺类': 'type-process',
+                        '编程类': 'type-programming',
+                        '设计类': 'type-design',
+                        '加工类': 'type-machining',
+                        '检测类': 'type-inspection'
+                    }[val] || 'type-process';
+                    return `<span class="type-tag ${typeClass}">${val}</span>`;
+                }
+            },
+            {
+                title: '难度',
+                dataIndex: 'difficultyName',
+                width: 80,
+                render: (val) => {
+                    const diffClass = {
+                        '简单': 'difficulty-easy',
+                        '中等': 'difficulty-medium',
+                        '困难': 'difficulty-hard'
+                    }[val] || 'difficulty-easy';
+                    return `<span class="difficulty-tag ${diffClass}">${val}</span>`;
+                }
+            },
+            { title: '更新人', dataIndex: 'updater', width: 100 },
+            { title: '更新时间', dataIndex: 'updateTime', width: 150 }
+        ];
+
+        // ==================== 初始化 ====================
+        document.addEventListener('DOMContentLoaded', function() {
+            // 初始化筛选组件
+            FilterSection.init({
+                containerId: 'filterRow',
+                fields: filterFields,
+                onSearch: (values) => {
+                    console.log('筛选条件:', values);
+                    filterQuestions(values);
+                },
+                onReset: () => {
+                    DataTable.setData(questionData);
+                }
+            });
+
+            // 初始化表格
+            DataTable.init({
+                containerId: 'dataTable',
+                columns: columns,
+                data: questionData,
+                fixedFirstColumn: true,
+                fixedLastColumn: true
+            });
+
+            // 初始化分页
+            Pagination.init({
+                containerId: 'pagination',
+                total: questionData.length,
+                pageSize: 10,
+                current: 1,
+                onChange: (page) => {
+                    console.log('切换到第', page, '页');
+                }
+            });
+        });
+
+        // ==================== 筛选功能 ====================
+        function filterQuestions(values) {
+            let filtered = questionData;
+            
+            if (values.content) {
+                filtered = filtered.filter(item => item.content.includes(values.content));
+            }
+            if (values.type) {
+                filtered = filtered.filter(item => item.type === values.type);
+            }
+            if (values.difficulty) {
+                filtered = filtered.filter(item => item.difficulty === values.difficulty);
+            }
+            if (values.time) {
+                const now = new Date();
+                filtered = filtered.filter(item => {
+                    const itemDate = new Date(item.updateTime);
+                    switch(values.time) {
+                        case 'today':
+                            return itemDate.toDateString() === now.toDateString();
+                        case 'week':
+                            const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
+                            return itemDate >= weekAgo;
+                        case 'month':
+                            const monthAgo = new Date(now - 30 * 24 * 60 * 60 * 1000);
+                            return itemDate >= monthAgo;
+                        default:
+                            return true;
+                    }
+                });
+            }
+            
+            DataTable.setData(filtered);
+            Pagination.updateTotal(filtered.length);
+        }
+
+        // ==================== 批量操作 ====================
+        let selectedItems = [];
+
+        function toggleSelectAll() {
+            const checkboxes = document.querySelectorAll('.row-checkbox');
+            const selectAllCheckbox = document.getElementById('selectAll');
+            checkboxes.forEach(cb => {
+                cb.checked = selectAllCheckbox.checked;
+            });
+            updateSelectedCount();
+        }
+
+        function updateSelectedCount() {
+            const checkboxes = document.querySelectorAll('.row-checkbox:checked');
+            selectedItems = Array.from(checkboxes).map(cb => cb.value);
+            document.getElementById('selectedCount').textContent = selectedItems.length;
+            
+            const batchBar = document.querySelector('.batch-operation-bar');
+            if (selectedItems.length > 0) {
+                batchBar.style.display = 'flex';
+            } else {
+                batchBar.style.display = 'none';
+            }
+        }
+
+        function batchExport() {
+            if (selectedItems.length === 0) {
+                alert('请先选择要导出的题目');
+                return;
+            }
+            alert(`导出 ${selectedItems.length} 道题目`);
+        }
+
+        function batchDelete() {
+            if (selectedItems.length === 0) {
+                alert('请先选择要删除的题目');
+                return;
+            }
+            if (confirm(`确定要删除选中的 ${selectedItems.length} 道题目吗？`)) {
+                alert('删除成功');
+                selectedItems = [];
+                document.querySelector('.batch-operation-bar').style.display = 'none';
+                DataTable.setData(questionData);
+            }
+        }
+    </script>
+</body>
+</html>

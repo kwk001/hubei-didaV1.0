@@ -1,0 +1,1872 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>新增实训任务 - 教师端</title>
+    <link rel="stylesheet" href="https://at.alicdn.com/t/c/font_5124072_s39q5gmh59a.css">
+    <link rel="stylesheet" href="./common.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background: #F5F7FA;
+            display: flex;
+            height: 100vh;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .header {
+            background: #fff;
+            padding: 16px 24px;
+            border-bottom: 1px solid #F0F0F0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .breadcrumb span {
+            color: #1890FF;
+            cursor: pointer;
+        }
+
+        .breadcrumb span:hover {
+            text-decoration: underline;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .logout-btn:hover {
+            color: #1890FF;
+        }
+
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #F0F2F5;
+        }
+
+        /* 返回按钮 */
+        .btn-back {
+            padding: 10px 20px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            margin-bottom: 20px;
+            transition: all 0.3s;
+        }
+
+        .btn-back:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        /* 表单卡片 */
+        .form-card {
+            background: #fff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        .form-card-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #1890FF;
+            box-shadow: 0 0 0 3px rgba(24,144,255,0.1);
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        /* 多选下拉框样式 */
+        .multi-select-container {
+            position: relative;
+            width: 100%;
+        }
+        .multi-select-trigger {
+            width: 100%;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 44px;
+        }
+        .multi-select-trigger:hover {
+            border-color: #1890FF;
+        }
+        .multi-select-trigger .iconfont {
+            font-size: 12px;
+            color: #999;
+            transition: transform 0.3s;
+            flex-shrink: 0;
+        }
+        .multi-select-trigger.active .iconfont {
+            transform: rotate(180deg);
+        }
+        .multi-select-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            margin-top: 4px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 100;
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .multi-select-options {
+            padding: 8px 0;
+        }
+        .multi-select-option {
+            padding: 10px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: background 0.2s;
+        }
+        .multi-select-option:hover {
+            background: #F0F9FF;
+        }
+        .multi-select-option input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+        .multi-select-option span {
+            font-size: 14px;
+            color: #333;
+        }
+        .multi-select-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            flex: 1;
+            overflow: hidden;
+        }
+        .multi-select-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            background: #E6F7FF;
+            border: 1px solid #1890FF;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #1890FF;
+            flex-shrink: 0;
+        }
+        .multi-select-tag .remove {
+            cursor: pointer;
+            font-size: 14px;
+            line-height: 1;
+        }
+        .multi-select-tag .remove:hover {
+            color: #FF4D4F;
+        }
+        .multi-select-placeholder {
+            color: #999;
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* 题目列表 */
+        .question-list {
+            margin-top: 20px;
+        }
+
+        .question-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px;
+            background: #FAFAFA;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border: 1px solid #F0F0F0;
+        }
+
+        .question-number {
+            width: 32px;
+            height: 32px;
+            background: #1890FF;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            flex-shrink: 0;
+        }
+
+        .question-content {
+            flex: 1;
+        }
+
+        .question-title {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 4px;
+        }
+
+        .question-meta {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .question-score-input {
+            width: 80px;
+            padding: 8px 12px;
+            border: 1px solid #D9D9D9;
+            border-radius: 6px;
+            text-align: center;
+        }
+
+        .question-delete {
+            color: #FF4D4F;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .question-delete:hover {
+            text-decoration: underline;
+        }
+
+        /* 空提示 */
+        .empty-tip {
+            text-align: center;
+            padding: 60px 20px;
+            color: #999;
+        }
+
+        .empty-tip-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        /* 班级选择样式 */
+        .class-select-container {
+            border: 1px dashed #D9D9D9;
+            border-radius: 8px;
+            padding: 12px;
+            min-height: 48px;
+        }
+        .class-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .class-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 12px;
+            background: #E6F7FF;
+            border: 1px solid #91D5FF;
+            border-radius: 4px;
+            font-size: 13px;
+            color: #1890FF;
+        }
+        .class-tag .remove {
+            cursor: pointer;
+            font-size: 14px;
+            color: #1890FF;
+        }
+        .class-tag .remove:hover {
+            color: #FF4D4F;
+        }
+        .btn-select-class {
+            padding: 6px 16px;
+            background: #fff;
+            border: 1px solid #1890FF;
+            border-radius: 4px;
+            color: #1890FF;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .btn-select-class:hover {
+            background: #E6F7FF;
+        }
+
+        /* 班级选择弹窗 */
+        .class-modal-body {
+            padding: 20px 24px;
+            overflow-y: auto;
+            max-height: 400px;
+        }
+        .class-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+        }
+        .class-option {
+            padding: 12px 16px;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .class-option:hover {
+            border-color: #1890FF;
+            background: #F0F9FF;
+        }
+        .class-option.selected {
+            border-color: #1890FF;
+            background: #E6F7FF;
+            color: #1890FF;
+        }
+        .class-option .class-name {
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+        .class-option .student-num {
+            font-size: 12px;
+            color: #999;
+        }
+        .class-option.selected .student-num {
+            color: #1890FF;
+        }
+
+        /* 班级学生选择列表 */
+        .class-student-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .class-student-item {
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .class-student-item.expanded {
+            border-color: #1890FF;
+        }
+        .class-header {
+            display: flex;
+            align-items: center;
+            padding: 12px 16px;
+            background: #FAFAFA;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .class-header:hover {
+            background: #F0F9FF;
+        }
+        .class-checkbox {
+            margin-right: 12px;
+        }
+        .class-checkbox input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+        .class-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .class-info .class-name {
+            font-size: 15px;
+            font-weight: 500;
+            color: #333;
+        }
+        .class-info .student-count {
+            font-size: 13px;
+            color: #999;
+        }
+        .expand-icon {
+            font-size: 12px;
+            color: #999;
+            transition: all 0.3s;
+        }
+        .student-list {
+            padding: 16px;
+            background: #fff;
+            border-top: 1px solid #F0F0F0;
+        }
+        .student-list-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+        .student-list-header label {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 14px;
+            color: #333;
+            cursor: pointer;
+        }
+        .student-list-header .selected-count {
+            font-size: 13px;
+            color: #1890FF;
+        }
+        .student-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+        .student-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .student-item:hover {
+            background: #F0F9FF;
+        }
+        .student-item input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+        .student-item span {
+            font-size: 13px;
+            color: #333;
+        }
+        .selected-summary {
+            font-size: 14px;
+            color: #666;
+        }
+        .selected-summary span {
+            color: #1890FF;
+            font-weight: 500;
+        }
+        .footer-buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        /* 按钮 */
+        .btn-primary {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(24,144,255,0.3);
+        }
+
+        .btn-secondary {
+            padding: 12px 24px;
+            background: #fff;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .btn-secondary:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+        }
+
+        .btn-success {
+            padding: 12px 24px;
+            background: linear-gradient(135deg, #52C41A 0%, #389E0D 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s;
+        }
+
+        .btn-success:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(82,196,26,0.3);
+        }
+
+        /* 弹窗样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 800px;
+            max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 24px;
+            border-bottom: 1px solid #F0F0F0;
+        }
+
+        .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .modal-close {
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: #F5F7FA;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 20px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-close:hover {
+            background: #E8E8E8;
+            color: #666;
+        }
+
+        .modal-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px 24px;
+        }
+
+        .modal-search {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .modal-search-input {
+            flex: 1;
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+
+        .modal-search-select {
+            padding: 10px 16px;
+            border: 1px solid #D9D9D9;
+            border-radius: 8px;
+            font-size: 14px;
+            background: #fff;
+            min-width: 120px;
+        }
+
+        .modal-search-btn {
+            padding: 10px 20px;
+            background: linear-gradient(135deg, #1890FF 0%, #096DD9 100%);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .bank-question-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .bank-question-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            padding: 16px;
+            border: 1px solid #E8E8E8;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            transition: all 0.3s;
+        }
+
+        .bank-question-item:hover {
+            border-color: #1890FF;
+            background: #F5F7FA;
+        }
+
+        .bank-question-checkbox {
+            padding-top: 2px;
+        }
+
+        .bank-question-checkbox input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .bank-question-info {
+            flex: 1;
+        }
+
+        .bank-question-content {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .bank-question-meta {
+            display: flex;
+            gap: 12px;
+        }
+
+        .bank-question-type {
+            padding: 2px 8px;
+            background: #E6F7FF;
+            color: #1890FF;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .bank-question-difficulty {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .bank-question-difficulty.easy {
+            background: #F6FFED;
+            color: #52C41A;
+        }
+
+        .bank-question-difficulty.medium {
+            background: #FFF7E6;
+            color: #FA8C16;
+        }
+
+        .bank-question-difficulty.hard {
+            background: #FFF2F0;
+            color: #FF4D4F;
+        }
+
+        .bank-question-course {
+            padding: 2px 8px;
+            background: #F5F5F5;
+            color: #666;
+            border-radius: 4px;
+            font-size: 12px;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 24px;
+            border-top: 1px solid #F0F0F0;
+            background: #FAFAFA;
+            border-radius: 0 0 12px 12px;
+        }
+
+        .modal-selected-info {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .modal-selected-info span {
+            color: #1890FF;
+            font-weight: 600;
+        }
+
+        .modal-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+            padding-top: 24px;
+            border-top: 1px solid #F0F0F0;
+        }
+
+        /* 添加题目按钮 */
+        .add-question-btn {
+            width: 100%;
+            padding: 16px;
+            border: 2px dashed #D9D9D9;
+            background: #FAFAFA;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #666;
+            transition: all 0.3s;
+            margin-top: 16px;
+        }
+
+        .add-question-btn:hover {
+            border-color: #1890FF;
+            color: #1890FF;
+            background: #E6F7FF;
+        }
+
+        /* 总分显示 */
+        .score-summary {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 20px;
+            background: linear-gradient(135deg, #E6F7FF 0%, #F0F7FF 100%);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .score-summary-label {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .score-summary-value {
+            font-size: 24px;
+            font-weight: 700;
+            color: #1890FF;
+        }
+    </style>
+</head>
+<body>
+    <!-- 导航容器 - 由通用加载器动态加载 -->
+    <div id="nav-container"></div>
+    
+
+    <!-- 主内容区 -->
+    <div class="main-content">
+        <div class="header">
+            <div class="breadcrumb">
+                <span onclick="goBack()">实训任务管理</span> / 新增实训任务
+            </div>
+            <button class="logout-btn" onclick="logout()">退出登录</button>
+        </div>
+
+        <div class="content-body">
+            <button class="btn-back" onclick="goBack()">
+                ← 返回列表
+            </button>
+
+            <!-- 基本信息 -->
+            <div class="form-card">
+                <div class="form-card-title">基本信息</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">任务名称 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" class="form-input" id="paperName" placeholder="请输入任务名称">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">所属课程 <span style="color: #FF4D4F;">*</span></label>
+                        <select class="form-select" id="courseSelect" onchange="onCourseChange(this.value)">
+                            <option value="">请选择课程</option>
+                            <option value="数控车削加工">数控车削加工</option>
+                            <option value="机械制图">机械制图</option>
+                            <option value="数控铣削加工">数控铣削加工</option>
+                            <option value="CAD/CAM技术">CAD/CAM技术</option>
+                            <option value="智能制造技术">智能制造技术</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">任课教师</label>
+                        <input type="text" class="form-input" id="teacherName" placeholder="选择课程后自动获取" readonly style="background-color: #F5F5F5; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">上课日期 <span style="color: #FF4D4F;">*</span></label>
+                        <div class="multi-select-container" id="courseDateContainer">
+                            <div class="multi-select-trigger" onclick="toggleDateDropdown()">
+                                <div class="multi-select-tags" id="courseDateDisplay">
+                                    <span class="multi-select-placeholder">请选择日期</span>
+                                </div>
+                                <i class="iconfont icon-down"></i>
+                            </div>
+                            <div class="multi-select-dropdown" id="courseDateDropdown" style="display: none;">
+                                <div class="multi-select-options" id="courseDateOptions">
+                                    <!-- 动态生成日期选项 -->
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="courseDate" value="">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">上课时间段 <span style="color: #FF4D4F;">*</span></label>
+                        <div class="multi-select-container" id="courseTimeContainer">
+                            <div class="multi-select-trigger" onclick="toggleTimeDropdown()">
+                                <div class="multi-select-tags" id="courseTimeDisplay">
+                                    <span class="multi-select-placeholder">请选择时间段</span>
+                                </div>
+                                <i class="iconfont icon-down"></i>
+                            </div>
+                            <div class="multi-select-dropdown" id="courseTimeDropdown" style="display: none;">
+                                <div class="multi-select-options" id="courseTimeOptions">
+                                    <!-- 动态生成时间段选项 -->
+                                </div>
+                            </div>
+                        </div>
+                        <input type="hidden" id="courseTime" value="">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">上课教室 <span style="color: #FF4D4F;">*</span></label>
+                        <input type="text" class="form-input" id="courseClassroom" placeholder="选择课程后自动获取" readonly style="background-color: #F5F5F5; cursor: not-allowed;">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">总分</label>
+                        <input type="number" class="form-input" id="totalScore" placeholder="自动计算" readonly style="background-color: #F5F5F5; cursor: not-allowed;">
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">备注</label>
+                        <textarea class="form-textarea" id="paperDescription" placeholder="请输入备注（选填）" style="min-height: 80px; resize: vertical;"></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 发布对象 -->
+            <div class="form-card">
+                <div class="form-card-title">发布对象</div>
+                <div class="form-row">
+                    <div class="form-group" style="flex: 1;">
+                        <label class="form-label">选择班级 <span style="color: #FF4D4F;">*</span></label>
+                        <div class="class-select-container" id="classSelectContainer">
+                            <div class="class-tags" id="selectedClasses"></div>
+                            <button type="button" class="btn-select-class" onclick="openClassSelectModal()">+ 选择班级</button>
+                        </div>
+                        <div class="selected-students-info" id="selectedStudentsInfo" style="display: none; margin-top: 12px; padding: 12px; background: #F6FFED; border-radius: 8px; color: #52C41A; font-size: 14px;">
+                            已选择 <span id="studentCount">0</span> 名学生
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 题目设置 -->
+            <div class="form-card">
+                <div class="form-card-title">题目设置</div>
+                
+                <!-- 总分显示 -->
+                <div class="score-summary">
+                    <span class="score-summary-label">当前总分</span>
+                    <span class="score-summary-value" id="currentTotalScore">0 分</span>
+                </div>
+
+                <!-- 题目列表 -->
+                <div class="question-list" id="questionList">
+                    <!-- 动态生成 -->
+                </div>
+
+                <!-- 空提示 -->
+                <div class="empty-tip" id="emptyTip">
+                    <div class="empty-tip-icon">📝</div>
+                    <div>暂无题目，请点击下方按钮添加</div>
+                </div>
+
+                <!-- 添加题目按钮 -->
+                <button class="add-question-btn" onclick="openQuestionBank()">
+                    + 从题库选择题目
+                </button>
+            </div>
+
+            <!-- 操作按钮 -->
+            <div class="btn-group">
+                <button class="btn-secondary" onclick="goBack()">取消</button>
+                <button class="btn-success" onclick="savePaper()">确认</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let questionCount = 0;
+        let questions = [];
+
+        // 初始化
+        function init() {
+            updateTotalScore();
+        }
+
+        // 返回
+        function goBack() {
+            window.location.href = './教师端_实训试卷库.html';
+        }
+
+        // 退出登录
+        function logout() {
+            localStorage.removeItem('iBodaoUser');
+            window.location.href = './教学实训平台_登录.html';
+        }
+
+        // 菜单折叠
+        function toggleMenu(element) {
+            element.classList.toggle('collapsed');
+            const menuItems = element.nextElementSibling;
+            if (menuItems && menuItems.classList.contains('menu-items')) {
+                menuItems.classList.toggle('collapsed');
+            }
+        }
+
+        // 添加题目
+        function addQuestion() {
+            questionCount++;
+            const question = {
+                id: questionCount,
+                title: `题目 ${questionCount}`,
+                type: '单选题',
+                score: 5
+            };
+            questions.push(question);
+            renderQuestions();
+            updateTotalScore();
+        }
+
+        // 渲染题目列表
+        function renderQuestions() {
+            const list = document.getElementById('questionList');
+            const emptyTip = document.getElementById('emptyTip');
+
+            if (questions.length === 0) {
+                list.innerHTML = '';
+                emptyTip.style.display = 'block';
+                return;
+            }
+
+            emptyTip.style.display = 'none';
+            list.innerHTML = questions.map((q, index) => `
+                <div class="question-item" data-id="${q.id}">
+                    <div class="question-number">${index + 1}</div>
+                    <div class="question-content">
+                        <div class="question-title">${q.title}</div>
+                        <div class="question-meta">${q.type}</div>
+                    </div>
+                    <input type="number" class="question-score-input" value="${q.score}" 
+                           onchange="updateQuestionScore(${q.id}, this.value)" min="1">
+                    <div class="question-delete" onclick="deleteQuestion(${q.id})">删除</div>
+                </div>
+            `).join('');
+        }
+
+        // 更新题目分数
+        function updateQuestionScore(id, score) {
+            const question = questions.find(q => q.id === id);
+            if (question) {
+                question.score = parseInt(score) || 0;
+                updateTotalScore();
+            }
+        }
+
+        // 删除题目
+        function deleteQuestion(id) {
+            if (!confirm('确定要删除这道题目吗？')) return;
+            questions = questions.filter(q => q.id !== id);
+            renderQuestions();
+            updateTotalScore();
+        }
+
+        // 更新总分
+        function updateTotalScore() {
+            const total = questions.reduce((sum, q) => sum + q.score, 0);
+            document.getElementById('currentTotalScore').textContent = total + ' 分';
+            document.getElementById('totalScore').value = total;
+        }
+
+        // 保存草稿
+        function saveDraft() {
+            const name = document.getElementById('paperName').value;
+            if (!name) {
+                alert('请输入试卷名称');
+                return;
+            }
+            alert('草稿保存成功！');
+        }
+
+        // 保存试卷
+        function savePaper() {
+            const name = document.getElementById('paperName').value;
+            if (!name) {
+                alert('请输入试卷名称');
+                return;
+            }
+            if (questions.length === 0) {
+                alert('请至少添加一道题目');
+                return;
+            }
+            alert('试卷保存成功！');
+            goBack();
+        }
+
+        // 打开题库选择弹窗
+        function openQuestionBank() {
+            // 创建弹窗
+            const modal = document.createElement('div');
+            modal.id = 'questionBankModal';
+            modal.innerHTML = `
+                <div class="modal-overlay" onclick="closeQuestionBank(event)">
+                    <div class="modal-content" onclick="event.stopPropagation()">
+                        <div class="modal-header">
+                            <h3 class="modal-title">📚 从普通题库选择题目</h3>
+                            <button class="modal-close" onclick="closeQuestionBank()">×</button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- 搜索筛选 -->
+                            <div class="modal-search">
+                                <input type="text" class="modal-search-input" id="bankSearchInput" placeholder="搜索题目内容...">
+                                <select class="modal-search-select" id="bankTypeFilter">
+                                    <option value="">全部题型</option>
+                                    <option value="single">单选题</option>
+                                    <option value="multiple">多选题</option>
+                                    <option value="judge">判断题</option>
+                                    <option value="fill">填空题</option>
+                                    <option value="essay">简答题</option>
+                                </select>
+                                <select class="modal-search-select" id="bankDifficultyFilter">
+                                    <option value="">全部难度</option>
+                                    <option value="easy">简单</option>
+                                    <option value="medium">中等</option>
+                                    <option value="hard">困难</option>
+                                </select>
+                                <button class="modal-search-btn" onclick="searchBankQuestions()">🔍 搜索</button>
+                            </div>
+                            <!-- 题目列表 -->
+                            <div class="bank-question-list" id="bankQuestionList">
+                                <!-- 动态生成 -->
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <div class="modal-selected-info">
+                                已选择 <span id="selectedCount">0</span> 道题目
+                            </div>
+                            <div class="modal-actions">
+                                <button class="btn-secondary" onclick="closeQuestionBank()">取消</button>
+                                <button class="btn-primary" onclick="confirmSelectQuestions()">确定添加</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+            
+            // 加载题库数据
+            loadBankQuestions();
+        }
+
+        // 关闭题库选择弹窗
+        function closeQuestionBank(event) {
+            if (!event || event.target.classList.contains('modal-overlay') || event.target.classList.contains('modal-close')) {
+                const modal = document.getElementById('questionBankModal');
+                if (modal) {
+                    modal.remove();
+                }
+            }
+        }
+
+        // 题库数据（模拟从普通题库获取）
+        const bankQuestions = [
+            { id: 101, content: '计算机的CPU主要由哪两部分组成？', type: 'single', difficulty: 'easy', course: '计算机基础' },
+            { id: 102, content: '以下哪些是计算机的输入设备？', type: 'multiple', difficulty: 'medium', course: '计算机基础' },
+            { id: 103, content: '计算机内存断电后数据不会丢失。', type: 'judge', difficulty: 'easy', course: '计算机基础' },
+            { id: 104, content: '计算机的五大组成部分包括输入设备、输出设备、存储器、______和______。', type: 'fill', difficulty: 'medium', course: '计算机基础' },
+            { id: 105, content: '简述计算机操作系统的主要功能及其作用。', type: 'essay', difficulty: 'medium', course: '计算机基础' },
+            { id: 201, content: 'Java中，以下哪个关键字用于定义类？', type: 'single', difficulty: 'easy', course: 'Java程序设计' },
+            { id: 202, content: '面向对象的三大特性是封装、继承和______。', type: 'fill', difficulty: 'easy', course: 'Java程序设计' },
+            { id: 203, content: '以下哪些是Java的基本数据类型？', type: 'multiple', difficulty: 'medium', course: 'Java程序设计' },
+            { id: 301, content: 'HTML中，用于定义超链接的标签是&lt;a&gt;。', type: 'judge', difficulty: 'easy', course: 'Web前端开发' },
+            { id: 302, content: 'CSS中，以下哪个属性用于设置背景颜色？', type: 'single', difficulty: 'easy', course: 'Web前端开发' }
+        ];
+
+        let selectedBankQuestions = [];
+
+        // 加载题库题目
+        function loadBankQuestions() {
+            const container = document.getElementById('bankQuestionList');
+            const typeMap = {
+                'single': '单选题',
+                'multiple': '多选题',
+                'judge': '判断题',
+                'fill': '填空题',
+                'essay': '简答题'
+            };
+            const difficultyMap = {
+                'easy': { label: '简单', class: 'easy' },
+                'medium': { label: '中等', class: 'medium' },
+                'hard': { label: '困难', class: 'hard' }
+            };
+            
+            container.innerHTML = bankQuestions.map(q => `
+                <div class="bank-question-item" data-id="${q.id}">
+                    <div class="bank-question-checkbox">
+                        <input type="checkbox" id="bq${q.id}" value="${q.id}" onchange="toggleSelectQuestion(${q.id})">
+                    </div>
+                    <div class="bank-question-info">
+                        <div class="bank-question-content">${q.content}</div>
+                        <div class="bank-question-meta">
+                            <span class="bank-question-type">${typeMap[q.type]}</span>
+                            <span class="bank-question-difficulty ${difficultyMap[q.difficulty].class}">${difficultyMap[q.difficulty].label}</span>
+                            <span class="bank-question-course">${q.course}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 搜索题库题目
+        function searchBankQuestions() {
+            const keyword = document.getElementById('bankSearchInput').value.toLowerCase();
+            const type = document.getElementById('bankTypeFilter').value;
+            const difficulty = document.getElementById('bankDifficultyFilter').value;
+            
+            const filtered = bankQuestions.filter(q => {
+                const matchKeyword = !keyword || q.content.toLowerCase().includes(keyword);
+                const matchType = !type || q.type === type;
+                const matchDifficulty = !difficulty || q.difficulty === difficulty;
+                return matchKeyword && matchType && matchDifficulty;
+            });
+            
+            // 重新渲染
+            const container = document.getElementById('bankQuestionList');
+            const typeMap = {
+                'single': '单选题',
+                'multiple': '多选题',
+                'judge': '判断题',
+                'fill': '填空题',
+                'essay': '简答题'
+            };
+            const difficultyMap = {
+                'easy': { label: '简单', class: 'easy' },
+                'medium': { label: '中等', class: 'medium' },
+                'hard': { label: '困难', class: 'hard' }
+            };
+            
+            container.innerHTML = filtered.map(q => `
+                <div class="bank-question-item" data-id="${q.id}">
+                    <div class="bank-question-checkbox">
+                        <input type="checkbox" id="bq${q.id}" value="${q.id}" onchange="toggleSelectQuestion(${q.id})" ${selectedBankQuestions.includes(q.id) ? 'checked' : ''}>
+                    </div>
+                    <div class="bank-question-info">
+                        <div class="bank-question-content">${q.content}</div>
+                        <div class="bank-question-meta">
+                            <span class="bank-question-type">${typeMap[q.type]}</span>
+                            <span class="bank-question-difficulty ${difficultyMap[q.difficulty].class}">${difficultyMap[q.difficulty].label}</span>
+                            <span class="bank-question-course">${q.course}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 切换题目选择
+        function toggleSelectQuestion(id) {
+            const index = selectedBankQuestions.indexOf(id);
+            if (index > -1) {
+                selectedBankQuestions.splice(index, 1);
+            } else {
+                selectedBankQuestions.push(id);
+            }
+            document.getElementById('selectedCount').textContent = selectedBankQuestions.length;
+        }
+
+        // 确认选择题目
+        function confirmSelectQuestions() {
+            if (selectedBankQuestions.length === 0) {
+                alert('请至少选择一道题目');
+                return;
+            }
+            
+            // 将选中的题目添加到试卷
+            selectedBankQuestions.forEach(id => {
+                const bankQ = bankQuestions.find(q => q.id === id);
+                if (bankQ) {
+                    questionCount++;
+                    const typeMap = {
+                        'single': '单选题',
+                        'multiple': '多选题',
+                        'judge': '判断题',
+                        'fill': '填空题',
+                        'essay': '简答题'
+                    };
+                    questions.push({
+                        id: questionCount,
+                        title: bankQ.content.substring(0, 30) + (bankQ.content.length > 30 ? '...' : ''),
+                        type: typeMap[bankQ.type],
+                        score: 5,
+                        source: '普通题库'
+                    });
+                }
+            });
+            
+            renderQuestions();
+            updateTotalScore();
+            closeQuestionBank();
+            selectedBankQuestions = [];
+            alert('题目添加成功！');
+        }
+
+        // 页面加载时初始化
+        window.onload = init;
+
+        // 排课数据（从教务端课程排课管理页获取）
+        const scheduleData = [
+            { id: 1, name: '机械制图', code: 'ME101', date: '2026-03-10', time: '08:00-09:40', teacher: '张教授', classroom: 'A101', class: '机械2301班', students: 45 },
+            { id: 2, name: '机械制图', code: 'ME101', date: '2026-03-12', time: '08:00-09:40', teacher: '张教授', classroom: 'A101', class: '机械2301班', students: 45 },
+            { id: 3, name: '数控编程与操作', code: 'ME205', date: '2026-03-10', time: '10:00-11:40', teacher: '李副教授', classroom: 'B203', class: '数控2301班', students: 38 },
+            { id: 4, name: '数控编程与操作', code: 'ME205', date: '2026-03-12', time: '10:00-11:40', teacher: '李副教授', classroom: 'B203', class: '数控2301班', students: 38 },
+            { id: 5, name: '模具设计基础', code: 'ME301', date: '2026-03-11', time: '14:00-15:40', teacher: '王讲师', classroom: 'C305', class: '模具2301班', students: 42 },
+            { id: 6, name: '工业机器人编程', code: 'ME405', date: '2026-03-11', time: '08:00-09:40', teacher: '赵教授', classroom: 'D401', class: '机器人2301班', students: 35 },
+            { id: 7, name: '电工电子技术', code: 'EE101', date: '2026-03-10', time: '14:00-15:40', teacher: '刘副教授', classroom: 'E102', class: '电气2301班', students: 48 },
+            { id: 8, name: 'CAD/CAM技术', code: 'ME202', date: '2026-03-13', time: '10:00-11:40', teacher: '陈讲师', classroom: '机房A', class: '机械2302班', students: 40 },
+            { id: 9, name: '机械设计基础', code: 'ME201', date: '2026-03-13', time: '08:00-09:40', teacher: '杨教授', classroom: 'A102', class: '机械2302班', students: 43 },
+            { id: 10, name: '数控加工工艺', code: 'ME302', date: '2026-03-11', time: '10:00-11:40', teacher: '周副教授', classroom: 'B204', class: '数控2302班', students: 36 },
+            { id: 11, name: 'PLC应用技术', code: 'EE205', date: '2026-03-14', time: '08:00-09:40', teacher: '吴讲师', classroom: 'E201', class: '电气2302班', students: 40 },
+            { id: 12, name: '液压与气动技术', code: 'ME303', date: '2026-03-14', time: '10:00-11:40', teacher: '郑教授', classroom: 'A103', class: '机械2303班', students: 44 },
+            { id: 13, name: '3D打印技术', code: 'ME401', date: '2026-03-15', time: '14:00-15:40', teacher: '孙副教授', classroom: '实训中心B', class: '模具2302班', students: 32 },
+            { id: 14, name: '智能制造技术', code: 'ME501', date: '2026-03-15', time: '08:00-09:40', teacher: '钱教授', classroom: '智能制造实验室', class: '机器人2302班', students: 30 },
+            { id: 15, name: '电气控制技术', code: 'EE301', date: '2026-03-16', time: '10:00-11:40', teacher: '冯讲师', classroom: 'E202', class: '电气2303班', students: 46 }
+        ];
+
+        // 课程名称映射（用于匹配select的value）
+        const courseNameMap = {
+            '机械制图': '机械制图',
+            '数控编程与操作': '数控车削加工',
+            '模具设计基础': '数控铣削加工',
+            'CAD/CAM技术': 'CAD/CAM技术',
+            '智能制造技术': '智能制造技术',
+            '工业机器人编程': '数控车削加工',
+            '电工电子技术': '机械制图',
+            '机械设计基础': '机械制图',
+            '数控加工工艺': '数控铣削加工',
+            'PLC应用技术': '数控车削加工',
+            '液压与气动技术': '机械制图',
+            '3D打印技术': 'CAD/CAM技术',
+            '电气控制技术': '机械制图'
+        };
+
+        // 存储选中的日期和时间段
+        let selectedDates = [];
+        let selectedTimes = [];
+
+        // 课程选择变化时更新教师、日期、时间段、教室
+        function onCourseChange(course) {
+            const teacherInput = document.getElementById('teacherName');
+            const classroomSelect = document.getElementById('courseClassroom');
+            
+            // 重置所有选择
+            selectedDates = [];
+            selectedTimes = [];
+            updateDateDisplay();
+            updateTimeDisplay();
+            classroomSelect.value = '';
+            teacherInput.value = '';
+            
+            if (!course) return;
+            
+            // 获取该课程的排课数据
+            const courseSchedules = scheduleData.filter(s => courseNameMap[s.name] === course);
+            
+            if (courseSchedules.length > 0) {
+                // 设置教师（取第一个）
+                teacherInput.value = courseSchedules[0].teacher;
+                
+                // 设置教室（取第一个）
+                classroomSelect.value = courseSchedules[0].classroom;
+                
+                // 渲染日期选项
+                renderDateOptions(course);
+            }
+        }
+
+        // 渲染日期选项
+        function renderDateOptions(course) {
+            const courseSchedules = scheduleData.filter(s => courseNameMap[s.name] === course);
+            const uniqueDates = [...new Set(courseSchedules.map(s => s.date))];
+            const optionsContainer = document.getElementById('courseDateOptions');
+            
+            optionsContainer.innerHTML = uniqueDates.map(date => `
+                <label class="multi-select-option">
+                    <input type="checkbox" value="${date}" ${selectedDates.includes(date) ? 'checked' : ''} 
+                           onchange="toggleDate('${date}', this.checked)">
+                    <span>${date}</span>
+                </label>
+            `).join('');
+        }
+
+        // 切换日期选择
+        function toggleDate(date, isChecked) {
+            if (isChecked) {
+                if (!selectedDates.includes(date)) {
+                    selectedDates.push(date);
+                }
+            } else {
+                selectedDates = selectedDates.filter(d => d !== date);
+            }
+            updateDateDisplay();
+            updateTimeOptions();
+        }
+
+        // 更新日期显示
+        function updateDateDisplay() {
+            const display = document.getElementById('courseDateDisplay');
+            const hiddenInput = document.getElementById('courseDate');
+            
+            if (selectedDates.length === 0) {
+                display.innerHTML = '<span class="multi-select-placeholder">请选择日期</span>';
+                hiddenInput.value = '';
+            } else {
+                display.innerHTML = selectedDates.map(date => `
+                    <span class="multi-select-tag">
+                        ${date}
+                        <span class="remove" onclick="event.stopPropagation(); removeDate('${date}')">&times;</span>
+                    </span>
+                `).join('');
+                hiddenInput.value = selectedDates.join(',');
+            }
+        }
+
+        // 移除日期
+        function removeDate(date) {
+            selectedDates = selectedDates.filter(d => d !== date);
+            updateDateDisplay();
+            updateTimeOptions();
+            // 更新checkbox状态
+            const checkbox = document.querySelector(`#courseDateOptions input[value="${date}"]`);
+            if (checkbox) checkbox.checked = false;
+        }
+
+        // 切换日期下拉框
+        function toggleDateDropdown() {
+            const dropdown = document.getElementById('courseDateDropdown');
+            const trigger = document.querySelector('#courseDateContainer .multi-select-trigger');
+            const isVisible = dropdown.style.display === 'block';
+            
+            // 关闭其他下拉框
+            document.querySelectorAll('.multi-select-dropdown').forEach(d => d.style.display = 'none');
+            document.querySelectorAll('.multi-select-trigger').forEach(t => t.classList.remove('active'));
+            
+            if (!isVisible) {
+                dropdown.style.display = 'block';
+                trigger.classList.add('active');
+            }
+        }
+
+        // 更新时间段选项
+        function updateTimeOptions() {
+            const course = document.getElementById('courseSelect').value;
+            if (!course || selectedDates.length === 0) {
+                document.getElementById('courseTimeOptions').innerHTML = '';
+                return;
+            }
+            
+            const courseSchedules = scheduleData.filter(s => 
+                courseNameMap[s.name] === course && selectedDates.includes(s.date)
+            );
+            const uniqueTimes = [...new Set(courseSchedules.map(s => s.time))];
+            const optionsContainer = document.getElementById('courseTimeOptions');
+            
+            optionsContainer.innerHTML = uniqueTimes.map(time => `
+                <label class="multi-select-option">
+                    <input type="checkbox" value="${time}" ${selectedTimes.includes(time) ? 'checked' : ''} 
+                           onchange="toggleTime('${time}', this.checked)">
+                    <span>${time}</span>
+                </label>
+            `).join('');
+        }
+
+        // 切换时间段选择
+        function toggleTime(time, isChecked) {
+            if (isChecked) {
+                if (!selectedTimes.includes(time)) {
+                    selectedTimes.push(time);
+                }
+            } else {
+                selectedTimes = selectedTimes.filter(t => t !== time);
+            }
+            updateTimeDisplay();
+        }
+
+        // 更新时间段显示
+        function updateTimeDisplay() {
+            const display = document.getElementById('courseTimeDisplay');
+            const hiddenInput = document.getElementById('courseTime');
+            
+            if (selectedTimes.length === 0) {
+                display.innerHTML = '<span class="multi-select-placeholder">请选择时间段</span>';
+                hiddenInput.value = '';
+            } else {
+                display.innerHTML = selectedTimes.map(time => `
+                    <span class="multi-select-tag">
+                        ${time}
+                        <span class="remove" onclick="event.stopPropagation(); removeTime('${time}')">&times;</span>
+                    </span>
+                `).join('');
+                hiddenInput.value = selectedTimes.join(',');
+            }
+        }
+
+        // 移除时间段
+        function removeTime(time) {
+            selectedTimes = selectedTimes.filter(t => t !== time);
+            updateTimeDisplay();
+            // 更新checkbox状态
+            const checkbox = document.querySelector(`#courseTimeOptions input[value="${time}"]`);
+            if (checkbox) checkbox.checked = false;
+        }
+
+        // 切换时间段下拉框
+        function toggleTimeDropdown() {
+            const dropdown = document.getElementById('courseTimeDropdown');
+            const trigger = document.querySelector('#courseTimeContainer .multi-select-trigger');
+            const isVisible = dropdown.style.display === 'block';
+            
+            // 关闭其他下拉框
+            document.querySelectorAll('.multi-select-dropdown').forEach(d => d.style.display = 'none');
+            document.querySelectorAll('.multi-select-trigger').forEach(t => t.classList.remove('active'));
+            
+            if (!isVisible) {
+                dropdown.style.display = 'block';
+                trigger.classList.add('active');
+            }
+        }
+
+        // 点击外部关闭下拉框
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.multi-select-container')) {
+                document.querySelectorAll('.multi-select-dropdown').forEach(d => d.style.display = 'none');
+                document.querySelectorAll('.multi-select-trigger').forEach(t => t.classList.remove('active'));
+            }
+        });
+
+        // 班级数据（包含学生列表）
+        const classData = [
+            { 
+                name: '机械2301班', 
+                students: 45,
+                studentList: ['张三', '李四', '王五', '赵六', '钱七', '孙八', '周九', '吴十', '郑十一', '王十二', '冯十三', '陈十四', '褚十五', '卫十六', '蒋十七', '沈十八', '韩十九', '杨二十', '朱二一', '秦二二', '尤二三', '许二四', '何二五', '吕二六', '施二七', '张二八', '孔二九', '曹三十', '严三一', '华三二', '金三三', '魏三四', '陶三五', '姜三六', '戚三七', '谢三八', '邹三九', '喻四十', '柏四一', '水四二', '窦四三', '章四四', '云四五']
+            },
+            { 
+                name: '机械2302班', 
+                students: 42,
+                studentList: ['刘备', '关羽', '张飞', '赵云', '马超', '黄忠', '魏延', '姜维', '廖化', '周仓', '关平', '张苞', '马岱', '王平', '李严', '法正', '庞统', '徐庶', '诸葛亮', '黄月英', '孙尚香', '大乔', '小乔', '貂蝉', '吕布', '董卓', '袁绍', '袁术', '刘表', '刘璋', '张鲁', '马腾', '韩遂', '公孙瓒', '陶谦', '孔融', '祢衡', '杨修', '丁仪', '丁廙', '曹植', '曹丕']
+            },
+            { 
+                name: '机械2303班', 
+                students: 48,
+                studentList: ['孙悟空', '猪八戒', '沙和尚', '唐僧', '白龙马', '观音菩萨', '如来佛祖', '玉皇大帝', '太上老君', '太白金星', '哪吒', '二郎神', '托塔天王', '四大天王', '千里眼', '顺风耳', '雷公', '电母', '风伯', '雨师', '土地公', '城隍爷', '阎罗王', '判官', '黑白无常', '牛头马面', '孟婆', '嫦娥', '吴刚', '玉兔', '七仙女', '织女', '牛郎', '后羿', '夸父', '精卫', '女娲', '伏羲', '神农', '黄帝', '炎帝', '蚩尤', '刑天', '共工', '祝融', '颛顼', '帝喾', '尧']
+            },
+            { 
+                name: '数控2301班', 
+                students: 40,
+                studentList: ['李白', '杜甫', '白居易', '王维', '孟浩然', '王昌龄', '高适', '岑参', '韩愈', '柳宗元', '刘禹锡', '李商隐', '杜牧', '苏轼', '辛弃疾', '李清照', '陆游', '王安石', '欧阳修', '范仲淹', '司马光', '文天祥', '岳飞', '于谦', '郑成功', '林则徐', '康有为', '梁启超', '谭嗣同', '孙中山', '黄兴', '宋教仁', '蔡锷', '袁世凯', '张作霖', '吴佩孚', '孙传芳', '冯玉祥', '阎锡山', '李宗仁']
+            },
+            { 
+                name: '数控2302班', 
+                students: 38,
+                studentList: ['秦始皇', '汉武帝', '唐太宗', '宋太祖', '明太祖', '康熙', '乾隆', '雍正', '顺治', '嘉庆', '道光', '咸丰', '同治', '光绪', '宣统', '朱元璋', '朱棣', '朱允炆', '朱高炽', '朱瞻基', '朱祁镇', '朱祁钰', '朱见深', '朱祐樘', '朱厚照', '朱厚熜', '朱载坖', '朱翊钧', '朱常洛', '朱由校', '朱由检', '努尔哈赤', '皇太极', '多尔衮', '顺治', '康熙', '雍正', '乾隆']
+            },
+            { 
+                name: '模具2301班', 
+                students: 44,
+                studentList: ['孔子', '孟子', '荀子', '老子', '庄子', '墨子', '韩非子', '孙子', '鬼谷子', '苏秦', '张仪', '商鞅', '李斯', '吕不韦', '管仲', '鲍叔牙', '晏婴', '蔺相如', '廉颇', '李牧', '白起', '王翦', '蒙恬', '章邯', '项羽', '刘邦', '韩信', '张良', '萧何', '陈平', '周勃', '灌婴', '樊哙', '曹参', '彭越', '英布', '卢绾', '夏侯婴', '周亚夫', '卫青', '霍去病', '李广', '李陵', '苏武']
+            },
+            { 
+                name: '模具2302班', 
+                students: 41,
+                studentList: ['王羲之', '王献之', '顾恺之', '吴道子', '阎立本', '张择端', '范宽', '郭熙', '李唐', '刘松年', '马远', '夏圭', '赵孟頫', '黄公望', '倪瓒', '王蒙', '吴镇', '沈周', '文徵明', '唐寅', '仇英', '徐渭', '陈洪绶', '八大山人', '石涛', '郑板桥', '齐白石', '徐悲鸿', '张大千', '黄宾虹', '傅抱石', '李可染', '吴昌硕', '潘天寿', '林风眠', '刘海粟', '关山月', '黎雄才', '赵少昂', '杨善深', '高剑父']
+            },
+            { 
+                name: '电气2301班', 
+                students: 46,
+                studentList: ['张衡', '祖冲之', '郦道元', '贾思勰', '沈括', '郭守敬', '徐光启', '宋应星', '李时珍', '孙思邈', '华佗', '扁鹊', '张仲景', '皇甫谧', '王叔和', '葛洪', '陶弘景', '苏敬', '唐慎微', '刘完素', '张从正', '李东垣', '朱丹溪', '李时珍', '万密斋', '薛己', '张景岳', '赵献可', '李中梓', '陈实功', '吴有性', '叶天士', '薛雪', '吴鞠通', '王清任', '王孟英', '费伯雄', '雷丰', '陆九芝', '唐宗海', '张锡纯', '恽铁樵', '施今墨', '孔伯华', '萧龙友', '汪逢春']
+            },
+            { 
+                name: '电气2302班', 
+                students: 43,
+                studentList: ['司马迁', '班固', '范晔', '陈寿', '裴松之', '刘知几', '杜佑', '司马光', '郑樵', '马端临', '章学诚', '赵翼', '王鸣盛', '钱大昕', '顾炎武', '黄宗羲', '王夫之', '戴震', '段玉裁', '王念孙', '王引之', '俞樾', '孙诒让', '章太炎', '王国维', '梁启超', '陈寅恪', '钱穆', '顾颉刚', '傅斯年', '胡适', '鲁迅', '郭沫若', '范文澜', '翦伯赞', '吕振羽', '侯外庐', '嵇文甫', '吴泽', '杨宽', '白寿彝', '周谷城', '黎澍', '李学勤']
+            },
+            { 
+                name: '机器人2301班', 
+                students: 39,
+                studentList: ['詹天佑', '茅以升', '钱学森', '邓稼先', '钱三强', '钱伟长', '华罗庚', '陈景润', '苏步青', '吴文俊', '陈省身', '丘成桐', '杨振宁', '李政道', '丁肇中', '朱棣文', '崔琦', '高锟', '屠呦呦', '莫言', '袁隆平', '钟南山', '李兰娟', '张文宏', '施一公', '饶毅', '颜宁', '曹原', '韦东奕', '陈杲', '陆朝阳', '潘建伟', '郭光灿', '杜江峰', '薛其坤', '王贻芳', '周忠和', '白春礼', '路甬祥', '韩启德']
+            },
+            { 
+                name: '机器人2302班', 
+                students: 37,
+                studentList: ['马云', '马化腾', '李彦宏', '雷军', '刘强东', '张一鸣', '黄峥', '王兴', '程维', '张旭豪', '宿华', '周源', '唐岩', '王小川', '傅盛', '周鸿祎', '丁磊', '陈天桥', '史玉柱', '朱骏', '陈一舟', '张朝阳', '王志东', '求伯君', '雷军', '求伯君', '王志东', '张小龙', '张磊', '沈南鹏', '熊晓鸽', '徐新', '徐小平', '俞敏洪', '李国庆', '陈年', '凡客', '刘强东', '龚宇', '龚宇', '龚宇']
+            },
+            { 
+                name: '智能制造2301班', 
+                students: 50,
+                studentList: ['姚明', '刘翔', '李娜', '孙杨', '张继科', '马龙', '林丹', '丁俊晖', '郭晶晶', '伏明霞', '王军霞', '邓亚萍', '张怡宁', '王楠', '郭跃', '李晓霞', '丁宁', '刘诗雯', '陈梦', '孙颖莎', '王曼昱', '樊振东', '许昕', '王楚钦', '林高远', '梁靖崑', '周启豪', '陈幸同', '王艺迪', '朱雨玲', '何卓佳', '钱天一', '蒯曼', '石川佳纯', '福原爱', '伊藤美诚', '平野美宇', '早田希娜', '张本智和', '水谷隼', '丹羽孝希', '吉村真晴', '宇田幸矢', '户上隼辅', '松平健太', '吉田雅己', '及川瑞基', '森园政崇', '大岛祐哉', '神巧也']
+            }
+        ];
+
+        // 已选择的班级和学生
+        let selectedClasses = [];
+        let selectedStudents = {}; // 按班级存储选择的学生
+
+        // 打开班级选择弹窗（带学生列表）
+        function openClassSelectModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.id = 'classSelectModal';
+            modal.innerHTML = `
+                <div class="modal-content" style="width: 800px; max-height: 80vh;">
+                    <div class="modal-header">
+                        <div class="modal-title">选择班级和学生</div>
+                        <button class="modal-close" onclick="closeClassSelectModal()">&times;</button>
+                    </div>
+                    <div class="class-modal-body" style="padding: 20px; overflow-y: auto;">
+                        <div class="class-student-list" id="classStudentList">
+                            ${classData.map(cls => {
+                                const isSelected = selectedClasses.includes(cls.name);
+                                const classSelectedStudents = selectedStudents[cls.name] || [];
+                                return `
+                                    <div class="class-student-item ${isSelected ? 'expanded' : ''}" data-class="${cls.name}">
+                                        <div class="class-header" onclick="toggleClassExpand('${cls.name}')">
+                                            <div class="class-checkbox">
+                                                <input type="checkbox" ${isSelected ? 'checked' : ''} 
+                                                       onchange="toggleClassSelection('${cls.name}', this.checked)"
+                                                       onclick="event.stopPropagation()">
+                                            </div>
+                                            <div class="class-info">
+                                                <span class="class-name">${cls.name}</span>
+                                                <span class="student-count">(${cls.students}人)</span>
+                                            </div>
+                                            <div class="expand-icon">${isSelected ? '▼' : '▶'}</div>
+                                        </div>
+                                        <div class="student-list" style="display: ${isSelected ? 'block' : 'none'};">
+                                            <div class="student-list-header">
+                                                <label><input type="checkbox" class="select-all-students" 
+                                                              data-class="${cls.name}" 
+                                                              ${classSelectedStudents.length === cls.studentList.length ? 'checked' : ''}
+                                                              onchange="toggleSelectAllStudents('${cls.name}', this.checked)"> 全选</label>
+                                                <span class="selected-count">已选 ${classSelectedStudents.length}/${cls.students} 人</span>
+                                            </div>
+                                            <div class="student-grid">
+                                                ${cls.studentList.map((student, idx) => `
+                                                    <label class="student-item">
+                                                        <input type="checkbox" 
+                                                               ${classSelectedStudents.includes(student) ? 'checked' : ''}
+                                                               onchange="toggleStudent('${cls.name}', '${student}', this.checked)">
+                                                        <span>${student}</span>
+                                                    </label>
+                                                `).join('')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                `;
+                            }).join('')}
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <div class="selected-summary">
+                            已选择 <span id="totalSelectedClasses">${selectedClasses.length}</span> 个班级，
+                            <span id="totalSelectedStudents">${getTotalSelectedStudents()}</span> 名学生
+                        </div>
+                        <div class="footer-buttons">
+                            <button class="btn-secondary" onclick="closeClassSelectModal()">取消</button>
+                            <button class="btn-primary" onclick="confirmClassSelect()">确定</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(modal);
+        }
+
+        // 切换班级展开/收起
+        function toggleClassExpand(className) {
+            const item = document.querySelector(`.class-student-item[data-class="${className}"]`);
+            if (item) {
+                item.classList.toggle('expanded');
+                const studentList = item.querySelector('.student-list');
+                const expandIcon = item.querySelector('.expand-icon');
+                if (studentList.style.display === 'none') {
+                    studentList.style.display = 'block';
+                    expandIcon.textContent = '▼';
+                } else {
+                    studentList.style.display = 'none';
+                    expandIcon.textContent = '▶';
+                }
+            }
+        }
+
+        // 切换班级选择
+        function toggleClassSelection(className, isChecked) {
+            const classInfo = classData.find(c => c.name === className);
+            
+            if (isChecked) {
+                if (!selectedClasses.includes(className)) {
+                    selectedClasses.push(className);
+                }
+                // 默认全选该班级所有学生
+                selectedStudents[className] = [...classInfo.studentList];
+            } else {
+                const index = selectedClasses.indexOf(className);
+                if (index > -1) {
+                    selectedClasses.splice(index, 1);
+                }
+                delete selectedStudents[className];
+            }
+            
+            // 重新渲染弹窗
+            openClassSelectModal();
+        }
+
+        // 切换学生选择
+        function toggleStudent(className, studentName, isChecked) {
+            if (!selectedStudents[className]) {
+                selectedStudents[className] = [];
+            }
+            
+            if (isChecked) {
+                if (!selectedStudents[className].includes(studentName)) {
+                    selectedStudents[className].push(studentName);
+                }
+            } else {
+                const idx = selectedStudents[className].indexOf(studentName);
+                if (idx > -1) {
+                    selectedStudents[className].splice(idx, 1);
+                }
+            }
+            
+            // 更新班级选择状态
+            if (selectedStudents[className].length > 0 && !selectedClasses.includes(className)) {
+                selectedClasses.push(className);
+            } else if (selectedStudents[className].length === 0 && selectedClasses.includes(className)) {
+                const idx = selectedClasses.indexOf(className);
+                if (idx > -1) {
+                    selectedClasses.splice(idx, 1);
+                }
+            }
+            
+            updateSelectedSummary();
+            updateStudentListUI(className);
+        }
+
+        // 全选/取消全选学生
+        function toggleSelectAllStudents(className, isChecked) {
+            const classInfo = classData.find(c => c.name === className);
+            
+            if (isChecked) {
+                selectedStudents[className] = [...classInfo.studentList];
+                if (!selectedClasses.includes(className)) {
+                    selectedClasses.push(className);
+                }
+            } else {
+                selectedStudents[className] = [];
+                const idx = selectedClasses.indexOf(className);
+                if (idx > -1) {
+                    selectedClasses.splice(idx, 1);
+                }
+            }
+            
+            updateSelectedSummary();
+            updateStudentListUI(className);
+        }
+
+        // 更新学生列表UI
+        function updateStudentListUI(className) {
+            const item = document.querySelector(`.class-student-item[data-class="${className}"]`);
+            if (item) {
+                const classInfo = classData.find(c => c.name === className);
+                const selectedCount = (selectedStudents[className] || []).length;
+                
+                // 更新已选数量
+                item.querySelector('.selected-count').textContent = `已选 ${selectedCount}/${classInfo.students} 人`;
+                
+                // 更新全选checkbox
+                const selectAllCheckbox = item.querySelector('.select-all-students');
+                selectAllCheckbox.checked = selectedCount === classInfo.students;
+                
+                // 更新班级checkbox
+                const classCheckbox = item.querySelector('.class-checkbox input');
+                classCheckbox.checked = selectedClasses.includes(className);
+            }
+        }
+
+        // 获取总共选择的学生数
+        function getTotalSelectedStudents() {
+            let total = 0;
+            Object.values(selectedStudents).forEach(list => {
+                total += list.length;
+            });
+            return total;
+        }
+
+        // 更新选择汇总
+        function updateSelectedSummary() {
+            const totalClasses = document.getElementById('totalSelectedClasses');
+            const totalStudents = document.getElementById('totalSelectedStudents');
+            if (totalClasses) totalClasses.textContent = selectedClasses.length;
+            if (totalStudents) totalStudents.textContent = getTotalSelectedStudents();
+        }
+
+        // 关闭班级选择弹窗
+        function closeClassSelectModal() {
+            const modal = document.getElementById('classSelectModal');
+            if (modal) {
+                modal.remove();
+            }
+        }
+
+        // 确认班级选择
+        function confirmClassSelect() {
+            renderSelectedClasses();
+            updateStudentCount();
+            closeClassSelectModal();
+        }
+
+        // 渲染已选择的班级
+        function renderSelectedClasses() {
+            const container = document.getElementById('selectedClasses');
+            container.innerHTML = selectedClasses.map(cls => {
+                const selectedCount = (selectedStudents[cls] || []).length;
+                return `
+                    <div class="class-tag">
+                        <span>${cls}(${selectedCount}人)</span>
+                        <span class="remove" onclick="removeClass('${cls}')">&times;</span>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // 移除班级
+        function removeClass(className) {
+            const index = selectedClasses.indexOf(className);
+            if (index > -1) {
+                selectedClasses.splice(index, 1);
+            }
+            delete selectedStudents[className];
+            renderSelectedClasses();
+            updateStudentCount();
+        }
+
+        // 更新学生数量
+        function updateStudentCount() {
+            const info = document.getElementById('selectedStudentsInfo');
+            const countSpan = document.getElementById('studentCount');
+            const totalStudents = getTotalSelectedStudents();
+            
+            if (totalStudents > 0) {
+                countSpan.textContent = totalStudents;
+                info.style.display = 'block';
+            } else {
+                info.style.display = 'none';
+            }
+        }
+    </script>
+    <!-- 导航组件加载器 -->
+    <script src="./nav-loader-universal.js" data-nav-type="teacher"></script>
+</body>
+</html>
